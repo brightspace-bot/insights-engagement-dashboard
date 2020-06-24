@@ -13,6 +13,8 @@ describe('d2l-labs-engagement-dashboard', () => {
 		await page.setViewport({width: 800, height: 800, deviceScaleFactor: 2});
 		await page.goto(`${visualDiff.getBaseUrl()}/test/engagement-dashboard.visual-diff.html`, {waitUntil: ['networkidle0', 'load']});
 		await page.bringToFront();
+		// wait for data to load
+		await new Promise(resolve => setTimeout(resolve, 1500));
 	});
 
 	beforeEach(async() => {

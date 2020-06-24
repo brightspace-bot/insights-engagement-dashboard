@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "npm run lint:eslint && npm run lint:lit",
     "lint:eslint": "eslint . --ext .js,.html",
-    "lint:lit": "lit-analyzer engagement-dashboard.js demo test",
+    "lint:lit": "lit-analyzer engagement-dashboard.js demo test components",
     "start": "es-dev-server --app-index demo/index.html --node-resolve --dedupe --open --watch",
     "test": "npm run lint && npm run test:headless && npm run test:diff",
     "test:diff": "mocha ./**/*.visual-diff.js -t 40000",
@@ -19,12 +19,12 @@
   "author": "D2L Corporation",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@brightspace-ui/visual-diff": "^1",
+    "@brightspace-ui/visual-diff": "^1.4.1",
     "@open-wc/testing": "^2",
-    "@open-wc/testing-karma": "^3",
+    "@open-wc/testing-karma": "^3.4.5",
     "babel-eslint": "^10",
     "deepmerge": "^3",
-    "es-dev-server": "^1",
+    "es-dev-server": "^1.55.1",
     "eslint": "^6",
     "eslint-config-brightspace": "^0.6.7",
     "eslint-plugin-html": "^6",
@@ -33,11 +33,14 @@
     "frau-ci": "^1",
     "karma-sauce-launcher": "^2",
     "lit-analyzer": "^1",
-    "puppeteer": "^1"
+    "puppeteer": "^4"
   },
   "dependencies": {
-    "@brightspace-ui/core": "^1",
+    "@adobe/lit-mobx": "0.0.4",
+    "@brightspace-ui/core": "^1.55.1",
     "@webcomponents/webcomponentsjs": "^2",
-    "lit-element": "^2"
+    "highcharts": "^8.1.2",
+    "lit-element": "^2",
+    "mobx": "^5.15.4"
   }
 }
