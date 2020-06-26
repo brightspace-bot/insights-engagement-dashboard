@@ -7,6 +7,7 @@ describe('d2l-labs-engagement-dashboard', () => {
 	describe('accessibility', () => {
 		it('should pass all axe tests', async() => {
 			const el = await fixture(html`<d2l-labs-engagement-dashboard></d2l-labs-engagement-dashboard>`);
+			await new Promise(resolve => setTimeout(resolve, 1500));
 			await expect(el).to.be.accessible();
 		});
 	});
