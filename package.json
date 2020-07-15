@@ -1,7 +1,7 @@
 {
-  "name": "d2l-engagement-dashboard",
+  "name": "@brightspace/d2l-engagement-dashboard",
   "description": "D2L Insights Engagement Dashboard",
-  "repository": "https://github.com/BrightspaceUILabs/engagement-dashboard.git",
+  "repository": "https://github.com/Brightspace/insights-engagement-dashboard.git",
   "private": true,
   "scripts": {
     "lint": "npm run lint:eslint && npm run lint:lit",
