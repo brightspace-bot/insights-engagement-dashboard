@@ -82,4 +82,4 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		`;
 	}
 }
-customElements.define('insights-engagement-dashboard', EngagementDashboard);
+customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);
