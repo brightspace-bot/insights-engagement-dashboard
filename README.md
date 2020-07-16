@@ -25,14 +25,14 @@ D2L Insights Engagement Dashboard
 To install from NPM:
 
 ```shell
-npm install @brightspace-ui-labs/engagement-dashboard
+npm install @brightspace/d2l-engagement-dashboard
 ```
 
 ## Usage
 
 ```html
 <script type="module">
-    import '@brightspace-ui-labs/engagement-dashboard/engagement-dashboard.js';
+    import '@brightspace/d2l-engagement-dashboard/engagement-dashboard.js';
 </script>
 <d2l-labs-engagement-dashboard>My element</d2l-labs-engagement-dashboard>
 ```
