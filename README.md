@@ -1,4 +1,4 @@
-# d2l-labs-engagement-dashboard
+# d2l-insights-engagement-dashboard
 
 [![Dependabot badge](https://flat.badgen.net/dependabot/Brightspace/insights-engagement-dashboard?icon=dependabot)](https://app.dependabot.com/)
 [![Build Status](https://travis-ci.com/Brightspace/insights-engagement-dashboard.svg?token=aRyJmELoyBiYim4zrMB7&branch=master)](https://travis-ci.com/Brightspace/insights-engagement-dashboard)
@@ -19,7 +19,6 @@
 
 D2L Insights Engagement Dashboard
 
-
 ## Usage
 
 ```html
@@ -37,7 +36,7 @@ D2L Insights Engagement Dashboard
 
 **Accessibility:**
 
-To make your usage of `d2l-labs-engagement-dashboard` accessible, use the following properties when applicable:
+To make your usage of `d2l-insights-engagement-dashboard` accessible, use the following properties when applicable:
 
 | Attribute | Description |
 |--|--|
