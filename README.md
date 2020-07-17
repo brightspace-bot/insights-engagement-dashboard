@@ -25,7 +25,7 @@ D2L Insights Engagement Dashboard
 <script type="module">
     import '@brightspace/d2l-engagement-dashboard/engagement-dashboard.js';
 </script>
-<d2l-labs-engagement-dashboard>My element</d2l-labs-engagement-dashboard>
+<d2l-insights-engagement-dashboard>My element</d2l-insights-engagement-dashboard>
 ```
 
 **Properties:**
