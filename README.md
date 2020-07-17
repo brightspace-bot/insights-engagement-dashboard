@@ -1,8 +1,7 @@
 # d2l-labs-engagement-dashboard
 
-[![NPM version](https://img.shields.io/npm/v/@brightspace-ui-labs/engagement-dashboard.svg)](https://www.npmjs.org/package/@brightspace-ui-labs/engagement-dashboard)
-[![Dependabot badge](https://flat.badgen.net/dependabot/BrightspaceUILabs/engagement-dashboard?icon=dependabot)](https://app.dependabot.com/)
-[![Build status](https://travis-ci.com/@brightspace-ui-labs/engagement-dashboard.svg?branch=master)](https://travis-ci.com/@brightspace-ui-labs/engagement-dashboard)
+[![Dependabot badge](https://flat.badgen.net/dependabot/Brightspace/insights-engagement-dashboard?icon=dependabot)](https://app.dependabot.com/)
+[![Build Status](https://travis-ci.com/Brightspace/insights-engagement-dashboard.svg?token=aRyJmELoyBiYim4zrMB7&branch=master)](https://travis-ci.com/Brightspace/insights-engagement-dashboard)
 
 > Note: this is a ["labs" component](https://github.com/BrightspaceUI/guide/wiki/Component-Tiers). While functional, these tasks are prerequisites to promotion to BrightspaceUI "official" status:
 >
@@ -20,22 +19,6 @@
 
 D2L Insights Engagement Dashboard
 
-## Installation
-
-To install from NPM:
-
-```shell
-npm install @brightspace/d2l-engagement-dashboard
-```
-
-## Usage
-
-```html
-<script type="module">
-    import '@brightspace/d2l-engagement-dashboard/engagement-dashboard.js';
-</script>
-<d2l-labs-engagement-dashboard>My element</d2l-labs-engagement-dashboard>
-```
 
 **Properties:**
 
