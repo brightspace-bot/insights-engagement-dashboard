@@ -29,6 +29,7 @@
     "eslint": "^6",
     "eslint-config-brightspace": "^0.9.0",
     "eslint-plugin-html": "^6",
+    "eslint-plugin-json": "^2.1.1",
     "eslint-plugin-lit": "^1",
     "eslint-plugin-sort-class-members": "^1",
     "frau-ci": "^1",
