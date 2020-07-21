@@ -1,7 +1,7 @@
 # d2l-insights-engagement-dashboard
 
+[![Build Status](https://travis-ci.com/Brightspace/insights-engagement-dashboard.svg?branch=master)](https://travis-ci.com/Brightspace/insights-engagement-dashboard)
 [![Dependabot badge](https://flat.badgen.net/dependabot/Brightspace/insights-engagement-dashboard?icon=dependabot)](https://app.dependabot.com/)
-[![Build Status](https://travis-ci.com/Brightspace/insights-engagement-dashboard.svg?token=aRyJmELoyBiYim4zrMB7&branch=master)](https://travis-ci.com/Brightspace/insights-engagement-dashboard)
 
 > Note: this is a ["labs" component](https://github.com/BrightspaceUI/guide/wiki/Component-Tiers). While functional, these tasks are prerequisites to promotion to BrightspaceUI "official" status:
 >
