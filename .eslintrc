@@ -16,7 +16,7 @@
       "html"
     ],
     "rules": {
-		"no-console": ["warn"],
-		"sort-class-members/sort-class-members": ["warn"]
+        "no-console": ["warn"],
+        "sort-class-members/sort-class-members": ["warn"]
     }
 }
