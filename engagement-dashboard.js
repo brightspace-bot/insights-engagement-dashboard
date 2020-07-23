@@ -1,5 +1,3 @@
-'use strict';
-
 import './components/histogram-card.js';
 import './components/summary-card.js';
 import './components/filter-logic-wrapper';
@@ -7,7 +5,7 @@ import './components/filter-logic-wrapper';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data, Histogram } from './model/data.js';
 import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
-import getRoles from "./model/roles";
+import getRoles from './model/roles';
 
 class EngagementDashboard extends LocalizeMixin(LitElement) {
 
@@ -81,7 +79,7 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		return html`
 				<h2>Hello ${this.prop1}!</h2>
 
-				<d2l-filter-logic-wrapper filterName="Roles" .data="${getRoles()}"></d2l-filter-logic-wrapper>
+				<d2l-filter-logic-wrapper filterName="Roles" .allData="${getRoles()}"></d2l-filter-logic-wrapper>
 
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="summary-container">

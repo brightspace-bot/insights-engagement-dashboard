@@ -1,5 +1,3 @@
-'use strict';
-
 import '@brightspace-ui/facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown';
 import '@brightspace-ui/facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-category';
 import '@brightspace-ui/facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-option';
@@ -10,7 +8,11 @@ class FilterLogicWrapper extends LitElement {
 	static get properties() {
 		return {
 			filterName: {type: String, attribute: true},
-			data: {
+			allData: {
+				type: Array,
+				attribute: false
+			},
+			visibleData: {
 				type: Array,
 				attribute: false
 			},
@@ -22,9 +24,12 @@ class FilterLogicWrapper extends LitElement {
 	constructor() {
 		super();
 
-		this.filterName = "";
+		this.filterName = '';
 
-		this.data = [];
+		this._searchTerm = '';
+
+		this._allData = [];
+		this.visibleData = [];
 		this.selectedDataCount = 0;
 
 		this.addEventListener('d2l-filter-dropdown-option-change', this._handleSelectionToggle);
@@ -32,35 +37,47 @@ class FilterLogicWrapper extends LitElement {
 		this.addEventListener('d2l-filter-dropdown-category-searched', this._handleSearch);
 	}
 
+	get allData() { return this._allData; }
+	set allData(val) {
+		this._allData = val;
+		this.visibleData = val;
+	}
+
+	get searchTerm() { return this._searchTerm; }
+	set searchTerm(val) {
+		val = val.toLowerCase();
+		if (this._searchTerm === val) return;
+
+		this._searchTerm = val;
+		this.updateVisibleData();
+	}
+
 	_handleSelectionToggle(event) {
 		if (!event || !event.detail) return;
 
 		if (event.detail.categoryKey === this.filterName) {
+			this.allData.find(obj => obj.id === event.detail.menuItemKey).selected = event.detail.selected;
 			this.selectedDataCount += event.detail.selected ? 1 : -1;
+			this.updateVisibleData();
 		}
 	}
 
 	_handleSelectionCleared() {
-		// checkbox selection should be editable directly via props, this hack should not be necessary :(
+		// checkbox selection should be editable directly via the component's props, this hack should not be necessary :(
 		this.shadowRoot.querySelectorAll('d2l-filter-dropdown-option').forEach(opt => opt.deselect());
-		// this.data.forEach(obj => obj.selected = false); // maybe this isn't necessary anymore
+		this._allData.forEach(obj => obj.selected = false);
 		this.selectedDataCount = 0;
+		this.updateVisibleData();
 	}
 
 	_handleSearch(event) {
-		// TODO: search doesn't work yet
-		// if (!event || !event.detail) return;
-		//
-		// const searchValue = event.detail.value;
-		// this.data.filter(obj => obj.displayName.startsWith(searchValue)).forEach(obj => obj.visible = true);
-		// this.data.filter(obj => !obj.displayName.startsWith(searchValue)).forEach(obj => obj.visible = false);
-		// const parentNode = this.shadowRoot.querySelector('d2l-filter-dropdown-category');
-		//
-		// while (parentNode.lastChild) {
-		// 	parentNode.removeChild(parentNode.lastChild);
-		// }
-		//
-		// this.render();
+		if (!event || !event.detail) return;
+		this.searchTerm = event.detail.value;
+	}
+
+	updateVisibleData() {
+		// TODO: consider localization in filtering code
+		this.visibleData = this.allData.filter(obj => obj.displayName.toLowerCase().startsWith(this._searchTerm));
 	}
 
 	render() {
@@ -72,11 +89,15 @@ class FilterLogicWrapper extends LitElement {
 			opener-text-multiple="${this.filterName}: ${this.selectedDataCount} selected"
 			total-selected-option-count="${this.selectedDataCount}">
 
-				<d2l-filter-dropdown-category key="${this.filterName}" category-text="${this.filterName}" selected-option-count="${this.selectedDataCount}">
-					${this.data.filter(obj => obj.visible)
-					.map(obj =>
-						html`<d2l-filter-dropdown-option text="${obj.displayName}" value="${obj.id}" ?selected="${obj.selected}"/>`
+				<d2l-filter-dropdown-category
+					key="${this.filterName}"
+					category-text="${this.filterName}">
+
+					${this.visibleData.map(obj =>
+						html`<d2l-filter-dropdown-option text="${obj.displayName}" value="${obj.id}" ?selected="${obj.selected}">
+						</d2l-filter-dropdown-option>`
 					)}
+
 				</d2l-filter-dropdown-category>
 
 			</d2l-filter-dropdown>
