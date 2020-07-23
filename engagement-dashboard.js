@@ -4,8 +4,8 @@ import './components/filter-logic-wrapper';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data, Histogram } from './model/data.js';
-import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
 import getRoles from './model/roles';
+import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
 
 class EngagementDashboard extends LocalizeMixin(LitElement) {
 

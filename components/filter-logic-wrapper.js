@@ -8,19 +8,12 @@ class FilterLogicWrapper extends LitElement {
 	static get properties() {
 		return {
 			filterName: {type: String, attribute: true},
-			allData: {
-				type: Array,
-				attribute: false
-			},
-			visibleData: {
-				type: Array,
-				attribute: false
-			},
-			selectedDataCount: {type: Array, attribute: false}
+			allData: { type: Array,	attribute: false },
+			visibleData: { type: Array, attribute: false },
+			selectedDataCount: {type: Number, attribute: false}
 		};
 	}
 
-	// TODO: define data structure requirements (id & displayName)
 	constructor() {
 		super();
 
@@ -38,9 +31,12 @@ class FilterLogicWrapper extends LitElement {
 	}
 
 	get allData() { return this._allData; }
+	/**
+	 * @param {{id: String, displayName: String}[]} val
+	 */
 	set allData(val) {
-		this._allData = val;
-		this.visibleData = val;
+		this._allData = val.map(obj => { return {...obj, selected: false} });
+		this.visibleData = this._allData;
 	}
 
 	get searchTerm() { return this._searchTerm; }

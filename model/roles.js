@@ -35,9 +35,7 @@ function getRoles() {
 	return roles.map(obj => {
 		return {
 			id: obj.Identifier,
-			displayName: obj.DisplayName,
-			// TODO: move these attributes to filter component
-			selected: false
+			displayName: obj.DisplayName
 		};
 	});
 }
