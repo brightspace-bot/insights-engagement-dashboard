@@ -1,9 +1,13 @@
+'use strict';
+
 import './components/histogram-card.js';
 import './components/summary-card.js';
+import './components/filter-logic-wrapper';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data, Histogram } from './model/data.js';
 import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
+import getRoles from "./model/roles";
 
 class EngagementDashboard extends LocalizeMixin(LitElement) {
 
@@ -13,22 +17,24 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 	}
 
 	static get styles() {
-		return css`
-			:host {
-				display: block;
-			}
-			:host([hidden]) {
-				display: none;
-			}
+		return [
+			css`
+				:host {
+					display: block;
+				}
+				:host([hidden]) {
+					display: none;
+				}
 
-			/* NB: this layout css doesn't quite work; do not ship */
-			.summary-container {
-				margin-top: 10px;
-				margin-bottom: 25px;
-				display: flex;
-				flex-wrap: wrap;
-			}
-		`;
+				/* NB: this layout css doesn't quite work; do not ship */
+				.summary-container {
+					margin-top: 10px;
+					margin-bottom: 25px;
+					display: flex;
+					flex-wrap: wrap;
+				}
+			`
+		];
 	}
 
 	static async getLocalizeResources(langs) {
@@ -74,6 +80,9 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		console.log('engagement-dashboard render');
 		return html`
 				<h2>Hello ${this.prop1}!</h2>
+
+				<d2l-filter-logic-wrapper filterName="Roles" .data="${getRoles()}"></d2l-filter-logic-wrapper>
+
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
