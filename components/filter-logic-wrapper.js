@@ -35,7 +35,7 @@ class FilterLogicWrapper extends LitElement {
 	 * @param {{id: String, displayName: String}[]} val
 	 */
 	set allData(val) {
-		this._allData = val.map(obj => { return {...obj, selected: false} });
+		this._allData = val.map(obj => { return {...obj, selected: false}; });
 		this.visibleData = this._allData;
 	}
 
