@@ -31,13 +31,30 @@ const roles = [
 	}
 ];
 
-function getRoles() {
-	return roles.map(obj => {
-		return {
-			id: obj.Identifier,
-			displayName: obj.DisplayName
-		};
-	});
+class Roles {
+	constructor() {
+		// load roles
+		this.roles = roles.map(obj => {
+			return {...obj, selected: false};
+		});
+	}
+
+	/**
+	 * @returns {{displayName: (string), id: (string)}[]}
+	 */
+	getRoleDataForFilter() {
+		return this.roles.map(obj => {
+			return {id: obj.Identifier, displayName: obj.DisplayName};
+		});
+	}
+
+	getSelectedRoleIds() {
+		return this.roles.filter(role => role.selected).map(role => role.Identifier);
+	}
+
+	setSelectedState(roleId, selected) {
+		this.roles.find(role => role.Identifier === roleId).selected = selected;
+	}
 }
 
-export default getRoles;
+export default Roles;

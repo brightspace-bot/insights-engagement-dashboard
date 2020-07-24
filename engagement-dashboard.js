@@ -1,11 +1,11 @@
 import './components/histogram-card.js';
 import './components/summary-card.js';
-import './components/filter-logic-wrapper';
+import './components/simple-filter';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data, Histogram } from './model/data.js';
-import getRoles from './model/roles';
 import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
+import Roles from './model/roles';
 
 class EngagementDashboard extends LocalizeMixin(LitElement) {
 
@@ -72,6 +72,17 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		});
 
 		this.histogram = new Histogram({id: 'engagement-demo-chart', field: 'n', title: 'distribution of n'}, this._data);
+
+		this.roles = new Roles();
+
+		this.addEventListener('d2l-simple-filter-selected', this._updateFilterSelections);
+	}
+
+	_updateFilterSelections(event) {
+		if (event.detail.filterName === 'Roles') {
+			this.roles.setSelectedState(event.detail.itemId, event.detail.selected);
+			console.log(`Selected role ids: ${this.roles.getSelectedRoleIds()}`);
+		}
 	}
 
 	render() {
@@ -79,7 +90,7 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		return html`
 				<h2>Hello ${this.prop1}!</h2>
 
-				<d2l-filter-logic-wrapper filterName="Roles" .allData="${getRoles()}"></d2l-filter-logic-wrapper>
+				<d2l-simple-filter name="Roles" .data="${this.roles.getRoleDataForFilter()}"></d2l-simple-filter>
 
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="summary-container">
