@@ -11,6 +11,7 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 	static get properties() {
 		return {
+			roleData: {type: Array, attribute: false}
 		};
 	}
 
@@ -73,7 +74,11 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 		this.histogram = new Histogram({id: 'engagement-demo-chart', field: 'n', title: 'distribution of n'}, this._data);
 
+		this.roleData = [];
 		this.roles = new Roles();
+		this.roles.fetchRolesFromLms().then(() => {
+			this.roleData = this.roles.getRoleDataForFilter();
+		});
 
 		this.addEventListener('d2l-simple-filter-selected', this._updateFilterSelections);
 	}
@@ -90,7 +95,7 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		return html`
 				<h2>Hello ${this.prop1}!</h2>
 
-				<d2l-simple-filter name="Roles" .data="${this.roles.getRoleDataForFilter()}"></d2l-simple-filter>
+				<d2l-simple-filter name="Roles" .data="${this.roleData}"></d2l-simple-filter>
 
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="summary-container">
