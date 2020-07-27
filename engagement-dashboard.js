@@ -1,17 +1,15 @@
 import './components/histogram-card.js';
 import './components/summary-card.js';
-import './components/simple-filter';
+import './components/insights-role-filter.js';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data, Histogram } from './model/data.js';
 import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
-import Roles from './model/roles';
 
 class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 	static get properties() {
 		return {
-			roleData: {type: Array, attribute: false}
 		};
 	}
 
@@ -73,21 +71,12 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		});
 
 		this.histogram = new Histogram({id: 'engagement-demo-chart', field: 'n', title: 'distribution of n'}, this._data);
-
-		this.roleData = [];
-		this.roles = new Roles();
-		this.roles.fetchRolesFromLms().then(() => {
-			this.roleData = this.roles.getRoleDataForFilter();
-		});
-
-		this.addEventListener('d2l-simple-filter-selected', this._updateFilterSelections);
 	}
 
-	_updateFilterSelections(event) {
-		if (event.detail.filterName === 'Roles') {
-			this.roles.setSelectedState(event.detail.itemId, event.detail.selected);
-			console.log(`Selected role ids: ${this.roles.getSelectedRoleIds()}`);
-		}
+	_handleRoleSelectionsUpdated(event) {
+		event.stopPropagation();
+		// event.target should be d2l-insights-role-filter
+		console.log(`List of selected role ids: ${event.target.selected}`);
 	}
 
 	render() {
@@ -95,7 +84,7 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		return html`
 				<h2>Hello ${this.prop1}!</h2>
 
-				<d2l-simple-filter name="Roles" .data="${this.roleData}"></d2l-simple-filter>
+				<d2l-insights-role-filter @role-selections-updated="${this._handleRoleSelectionsUpdated}"></d2l-insights-role-filter>
 
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="summary-container">
