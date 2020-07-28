@@ -41,6 +41,7 @@
     "@adobe/lit-mobx": "0.0.4",
     "@brightspace-ui/core": "^1.55.1",
     "@webcomponents/webcomponentsjs": "^2",
+    "fetch-mock": "^9.10.5",
     "highcharts": "^8.1.2",
     "lit-element": "^2",
     "mobx": "^5.15.4"
