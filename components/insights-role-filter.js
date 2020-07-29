@@ -4,13 +4,14 @@ import {html, LitElement} from 'lit-element';
 import Roles from '../model/roles';
 
 /**
+ * @property {{id: string, displayName: string}[]} _filterData
  * @fires d2l-insights-role-filter-change
  */
 class InsightsRoleFilter extends LitElement {
 
 	static get properties() {
 		return {
-			_roleData: {type: Array, attribute: false}
+			_filterData: {type: Array, attribute: false}
 		};
 	}
 
@@ -18,16 +19,41 @@ class InsightsRoleFilter extends LitElement {
 		super();
 
 		this._name = 'Roles';
-
 		this._roleData = [];
-		this._roles = new Roles();
-		this._roles.fetchRolesFromLms().then(() => {
-			this._roleData = this._roles.getRoleDataForFilter();
-		});
+
+		const roles = new Roles();
+		roles.fetchRolesFromLms().then(this._setRoleData.bind(this));
 	}
 
 	get selected() {
-		return this._roles.getSelectedRoleIds();
+		return this._roleData.filter(role => role.selected).map(role => role.Identifier);
+	}
+
+	_setRoleData(roleData) {
+		roleData.sort((role1, role2) => {
+			// NB: it seems that localeCompare is pretty slow, but that's ok in this case, since there
+			// shouldn't usually be many roles, and loading/sorting roles is only expected to happen infrequently.
+			return role1.DisplayName.localeCompare(role2.DisplayName)
+				|| role1.Identifier.localeCompare(role2.Identifier);
+		});
+
+		this._roleData = roleData.map(obj => {
+			return {...obj, selected: false};
+		});
+		this._setFilterData(); // triggers re-render
+	}
+
+	/**
+	 * @returns {{displayName: (string), id: (string)}[]}
+	 */
+	_setFilterData() {
+		this._filterData = this._roleData.map(obj => {
+			return {id: obj.Identifier, displayName: obj.DisplayName};
+		});
+	}
+
+	_setSelectedState(roleId, selected) {
+		this._roleData.find(role => role.Identifier === roleId).selected = selected;
 	}
 
 	render() {
@@ -35,13 +61,13 @@ class InsightsRoleFilter extends LitElement {
 			<d2l-simple-filter
 				@item-selected="${this._updateFilterSelections}"
 				name="${this._name}"
-				.data="${this._roleData}">
+				.data="${this._filterData}">
 			</d2l-simple-filter>
 		`;
 	}
 
 	_updateFilterSelections(event) {
-		this._roles.setSelectedState(event.detail.itemId, event.detail.selected);
+		this._setSelectedState(event.detail.itemId, event.detail.selected);
 		this.dispatchEvent(new Event('d2l-insights-role-filter-change'));
 	}
 }

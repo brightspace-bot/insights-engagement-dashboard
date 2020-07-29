@@ -46,11 +46,39 @@ describe('d2l-insights-role-filter', () => {
 	});
 
 	describe('render', () => {
-		it('should create a simple filter using the correct role data', async() => {
+		it('should render roles in order by displayName and id', async() => {
+			fetchMock.reset();
+
+			const mockLmsResponseData = [
+				{
+					Identifier: '4',
+					DisplayName: 'ZZZRole',
+					Code: null
+				},
+				{
+					Identifier: '3',
+					DisplayName: 'Role',
+					Code: null
+				},
+				{
+					Identifier: '2',
+					DisplayName: 'Role',
+					Code: null
+				},
+				{
+					Identifier: '1',
+					DisplayName: 'role', // localeCompare causes lowercase to come before uppercase
+					Code: null
+				}
+			];
+
+			fetchMock.get(rolesEndpoint, mockLmsResponseData);
+
 			const expectedFilterData = [
-				{ id: '1', displayName: 'Role1' },
-				{ id: '2', displayName: 'Role2' },
-				{ id: '3', displayName: 'Role3' }
+				{ id: '1', displayName: 'role' },
+				{ id: '2', displayName: 'Role' },
+				{ id: '3', displayName: 'Role' },
+				{ id: '4', displayName: 'ZZZRole' }
 			];
 			const el = await fixture(html`<d2l-insights-role-filter></d2l-insights-role-filter>`);
 			await new Promise(resolve => setTimeout(resolve, 500));
@@ -60,7 +88,7 @@ describe('d2l-insights-role-filter', () => {
 	});
 
 	describe('item selection', () => {
-		it('should update the role model when an item is de/selected', async() => {
+		it('should return only selected items when they are de/selected', async() => {
 			const el = await fixture(html`<d2l-insights-role-filter></d2l-insights-role-filter>`);
 			await new Promise(resolve => setTimeout(resolve, 500));
 
