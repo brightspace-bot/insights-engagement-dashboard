@@ -57,7 +57,8 @@ export class Data {
 		this.serverData = {
 			records: [],
 			orgUnits: [],
-			users: []
+			users: [],
+			selectedOrgUnitIds: []
 		};
 		filters
 			.map(params => new Filter(params, this))
@@ -72,16 +73,6 @@ export class Data {
 			this.serverData = data;
 			this.isLoading = false;
 		});
-	}
-
-	getChildren(orgUnitId) {
-		if (!orgUnitId) {
-			const rootOrgUnit = this.serverData.orgUnits.filter(x => x[3].includes(0))[0];
-			orgUnitId = rootOrgUnit && rootOrgUnit[0]; // todo: constants for indices
-		}
-		// TODO: filter out semesters
-		// TODO: consider moving this logic to OuFilter
-		return this.serverData.orgUnits.filter(x => x[3].includes(orgUnitId));
 	}
 
 	getRecordsInView(id) {
@@ -117,7 +108,6 @@ export class Data {
 	}
 
 	_persist() {
-		console.log('persist');
 		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
 			Object.keys(this.filters)
 				.map(f => ({id: f, applied: this.filters[f].isApplied}))

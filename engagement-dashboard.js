@@ -62,12 +62,14 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 						orgUnits: [
 							[1, 'Course 1', 3, [3, 4]],
 							[2, 'Course 2', 3, [3, 4]],
-							[3, 'Department', 2, [5]],
+							[6, 'Course 3', 3, [7, 4]],
+							[3, 'Department 1', 2, [5]],
+							[7, 'Department 2', 2, [5]],
 							[4, 'Semester', 5, [6606]],
 							[5, 'Faculty', 7, [6606]],
 							[6606, 'Dev', 1, [0]]
 						],
-						selectedOrgUnits: [2]
+						selectedOrgUnitIds: [2]
 					}),
 					100
 				)

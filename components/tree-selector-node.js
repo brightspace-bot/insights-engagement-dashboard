@@ -3,23 +3,26 @@ import '@brightspace-ui/core/components/inputs/input-checkbox';
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 
 class TreeSelectorNode extends LitElement {
-
+	/**
+	 * @property {string} name
+	 * @property {{name: string, tree:{}[], getTree: function, isOpen: boolean, selectedState: string}[]} tree - used to initialize, but will not be updated
+	 * @property {function} getTree - async callback which should return the tree (provide either tree or getTree)
+	 * @property {boolean} isOpen
+	 * @property {boolean} selectedState - may be "explicit", "implicit", "indeterminate", or "none"
+	 * @fires change - value of this.selected has changed
+	 */
 	static get properties() {
 		return {
-			// todo: https://github.com/BrightspaceUI/guide/wiki/LitElement-Best-Practices-&-Gotchas#-do-use-correct-casing-for-attributes-and-properties
 			name: { type: String },
-			// an array of objects with properties name, [children], getChildren, isOpen, isExplicitlySelected
-			// used to initialize, but not updated after
 			tree: { type: Object, attribute: false },
-			getChildren: { type: Object, attribute: false },
-			// if true, children are loaded (if needed) and shown; if false, children are rendered but hidden
-			isOpen: { type: Boolean, reflect: true },
-			// "explicit", "implicit", "indeterminate", or "none"
-			selectedState: { type: String, reflect: true }
+			getTree: { type: Object, attribute: false },
+			isOpen: { type: Boolean, reflect: true, attribute: 'is-open' },
+			selectedState: { type: String, reflect: true, attribute: 'selected-state' }
 		};
 	}
 
 	static get styles() {
+		// TODO: fix indent on childless nodes
 		return css`
 			:host {
 				display: block;
@@ -77,11 +80,16 @@ class TreeSelectorNode extends LitElement {
 		return subtree_ ? [...subtree_.children] : [];
 	}
 
-	_getChildSelectedState(i) {
+	_getChildSelectedState(childState) {
 		if (this._showSelected) return 'implicit';
 
-		const currentState = (this._domChildren[i] || {}).selectedState || 'none';
+		const currentState = childState.selectedState || 'none';
 		return currentState === 'implicit' ? 'none' : currentState;
+	}
+
+	_getChildState(x, i) {
+		// take defaults from x, the provided init data
+		return this._domChildren[i] || x;
 	}
 
 	get _isRoot() {
@@ -91,15 +99,18 @@ class TreeSelectorNode extends LitElement {
 	async _onArrowClick() {
 		this.isOpen = !this.isOpen;
 
-		// lazy load children if needed
-		if (this.isOpen && !this.tree && this.getChildren) {
-			this.tree = await this.getChildren();
+		// lazy load subtree if needed
+		if (this.isOpen && !this.tree && this.getTree) {
+			this.tree = await this.getTree();
 		}
 	}
 
 	_onChange(e) {
 		this.selectedState = e.target.checked ? 'explicit' : 'none';
 
+		/**
+		 * @event change
+		 */
 		this.dispatchEvent(new CustomEvent(
 			'change',
 			{bubbles: true, composed: false}
@@ -140,7 +151,7 @@ class TreeSelectorNode extends LitElement {
 
 	_renderArrowControl() {
 		// show the open/close arrow if this is not a leaf
-		if (this.isOpen || this.tree || this.getChildren) {
+		if (this.isOpen || this.tree || this.getTree) {
 			return html`<span class="arrow" ?open="${this.isOpen}" @click="${this._onArrowClick}"></span>`;
 		} else {
 			return html``;
@@ -163,16 +174,17 @@ class TreeSelectorNode extends LitElement {
 
 	_renderSubtree() {
 		if (this.tree) {
-			return html`<div class="subtree" ?hidden="${!this._isRoot && !this.isOpen}" id="subtree" ?root="${this._isRoot}">${this.tree.map((x, i) =>
-				html`<d2l-insights-tree-selector-node
+			return html`<div class="subtree" ?hidden="${!this._isRoot && !this.isOpen}" id="subtree" ?root="${this._isRoot}">${this.tree.map((x, i) => {
+				const childState = this._getChildState(x, i);
+				return html`<d2l-insights-tree-selector-node
 					name="${x.name}"
-					.tree="${x.children}"
-					.getChildren="${x.getChildren}"
-					?isOpen="${x.isOpen}"
-					selectedState="${this._getChildSelectedState(i)}"
+					.tree="${x.tree}"
+					.getTree="${x.getTree}"
+					?is-open="${childState.isOpen}"
+					selected-state="${this._getChildSelectedState(childState)}"
 					@change="${this._onSubtreeChange}"
-				></d2l-insights-tree-selector-node>`
-			)}</div>`;
+				></d2l-insights-tree-selector-node>`;
+			}) }</div>`;
 		} else {
 			return html``;
 		}
