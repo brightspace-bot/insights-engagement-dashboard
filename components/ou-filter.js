@@ -12,6 +12,9 @@ const STATE = 5;
 
 const SEMESTER_TYPE = 5;
 
+/**
+ * @property {Object} data - an instance of Data from model/data.js
+ */
 class OuFilter extends MobxLitElement {
 
 	static get properties() {
@@ -35,18 +38,16 @@ class OuFilter extends MobxLitElement {
 		this._prepareData();
 
 		return html`<div class="ou-filter" ?loading="${this.data.isLoading}">
-			<d2l-insights-tree-selector id="ou-tree-selector" .tree="${this._getChildren()}" @change="${this._onChange}">
+			<d2l-insights-tree-selector id="ou-tree-selector" name="Org Unit" .tree="${this._getChildren()}" @change="${this._onChange}">
 		</div>`;
 	}
 
 	get selected() {
-		return this.shadowRoot.getElementById('ou-tree-selector')
-			.selected;
+		return this.shadowRoot.getElementById('ou-tree-selector').selected;
 	}
 
 	_getChildren(id) {
-		console.log(`GET CHILDREN ${id}`);
-		// TODO: handle truncation case (getChildren calls LMS)
+		// coming soon: handle truncation case (getChildren calls LMS)
 		if (!id) {
 			const rootOrgUnit = this.data.serverData.orgUnits.filter(x => x[PARENTS].includes(0))[0];
 			id = rootOrgUnit && rootOrgUnit[ID];
@@ -63,11 +64,11 @@ class OuFilter extends MobxLitElement {
 				name: `${x[NAME]} (${x[ID]})`,
 				// pre-load down to any selected descendents: otherwise selecting then deselecting this node
 				// before opening it won't deselect them
-				// we could open them here, too, if desired
 				tree: (x[TYPE] !== 3 && x[STATE] === 'indeterminate') ? this._getChildren(x[ID]) : null,
 				getTree: (x[TYPE] === 3 || x[STATE] === 'indeterminate') ? null : async() => this._getChildren(x[ID]),
 				selectedState: x[STATE]
-			}));
+			}))
+			.sort((a, b) => a.name.localeCompare(b.name));
 	}
 
 	_markSelected(id, isExplicit) {
@@ -95,7 +96,7 @@ class OuFilter extends MobxLitElement {
 		this.data.serverData.orgUnits.forEach(x => x[PARENTS].forEach(y => y !== 0 && this._tree[y][CHILDREN].push(x[ID])));
 
 		// mark selected states
-		this.data.serverData.selectedOrgUnitIds.forEach(x => this._markSelected(x, true));
+		this.data.serverData.selectedOrgUnitIds && this.data.serverData.selectedOrgUnitIds.forEach(x => this._markSelected(x, true));
 	}
 }
 customElements.define('d2l-insights-ou-filter', OuFilter);

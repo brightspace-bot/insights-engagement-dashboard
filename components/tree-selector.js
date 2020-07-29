@@ -1,18 +1,21 @@
 import './tree-selector-node.js';
-import '@brightspace-ui/core/components/inputs/input-checkbox';
+import '@brightspace-ui/core/components/dropdown/dropdown-content';
+import '@brightspace-ui/core/components/dropdown/dropdown';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
-
+/**
+ * @property {string} name
+ * @property {{name: string, tree:{}[], getTree: function, isOpen: boolean, selectedState: string}[]} tree - used to initialize, but will not be updated
+ * tree - an array of the same form
+ * getTree - is async callback which should return the tree (provide either tree or getTree for each node)
+ * selectedState - may be "explicit", "implicit", "indeterminate", or "none"
+ * @fires change - value of this.selected has changed
+ */
 class TreeSelector extends LitElement {
 
 	static get properties() {
 		return {
-			/**
-			 * an array of nodes
-			 * each node is an object with properties name, children, getChildren, isOpen, isExplicitlySelected
-			 * where children is an array of the same and getChildren is an async method which should return the
-			 * children of the node or an empty array. All properties but "name" are optional.
-			 */
+			name: { type: String },
 			tree: { type: Object, attribute: false }
 		};
 	}
@@ -43,12 +46,20 @@ class TreeSelector extends LitElement {
 	}
 
 	render() {
-		// TODO: drop-down & list selected
-		return html`<d2l-insights-tree-selector-node
-			id="tree-selector-root-node"
-			.tree="${this.tree}"
-			@change="${this._onChange}"
-		  ></d2l-insights-tree-selector-node>`;
+		return html`
+			<d2l-dropdown>
+				<button class="d2l-dropdown-opener d2l-input-select" aria-label="Open ${this.name} filter">
+					${this.name}
+				</button>
+				<d2l-dropdown-content align="start">
+					<d2l-insights-tree-selector-node
+						id="tree-selector-root-node"
+						.tree="${this.tree}"
+						@change="${this._onChange}"
+					></d2l-insights-tree-selector-node>
+				</d2l-dropdown-content>
+			</d2l-dropdown>
+		`;
 	}
 
 	get selected() {
@@ -56,6 +67,9 @@ class TreeSelector extends LitElement {
 	}
 
 	_onChange() {
+		/**
+		 * @event change
+		 */
 		this.dispatchEvent(new CustomEvent(
 			'change',
 			{bubbles: true, composed: false}

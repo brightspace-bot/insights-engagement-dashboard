@@ -2,15 +2,15 @@ import '@brightspace-ui/core/components/inputs/input-checkbox';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 
+/**
+ * @property {string} name
+ * @property {{name: string, tree:{}[], getTree: function, isOpen: boolean, selectedState: string}[]} tree - used to initialize, but will not be updated
+ * @property {function} getTree - async callback which should return the tree (provide either tree or getTree)
+ * @property {boolean} isOpen
+ * @property {string} selectedState - may be "explicit", "implicit", "indeterminate", or "none"
+ * @fires change - value of this.selected has changed
+ */
 class TreeSelectorNode extends LitElement {
-	/**
-	 * @property {string} name
-	 * @property {{name: string, tree:{}[], getTree: function, isOpen: boolean, selectedState: string}[]} tree - used to initialize, but will not be updated
-	 * @property {function} getTree - async callback which should return the tree (provide either tree or getTree)
-	 * @property {boolean} isOpen
-	 * @property {boolean} selectedState - may be "explicit", "implicit", "indeterminate", or "none"
-	 * @fires change - value of this.selected has changed
-	 */
 	static get properties() {
 		return {
 			name: { type: String },
@@ -22,7 +22,6 @@ class TreeSelectorNode extends LitElement {
 	}
 
 	static get styles() {
-		// TODO: fix indent on childless nodes
 		return css`
 			:host {
 				display: block;
@@ -39,6 +38,9 @@ class TreeSelectorNode extends LitElement {
 			}
 			.arrow[open]:before {
 				content: "v "
+			}
+			.no-arrow {
+				margin-left: 15px
 			}
 			
 			.subtree {
@@ -136,10 +138,10 @@ class TreeSelectorNode extends LitElement {
 			// if (children.every(x => x.isExplicitlySelected)) {
 			if (children.every(x => x.selectedState === 'explicit')) {
 				this.selectedState = 'explicit';
-			} else if (children.some(x => x.selectedState === 'explicit')) {
+			} else if (children.some(x => x.selectedState === 'explicit' || x.selectedState === 'indeterminate')) {
 				this.selectedState = 'indeterminate';
 			} else {
-				this.selectedState = children.some(x => x.selectedState === 'indeterminate') ? 'indeterminate' : 'none';
+				this.selectedState = 'none';
 			}
 		}
 
@@ -154,7 +156,7 @@ class TreeSelectorNode extends LitElement {
 		if (this.isOpen || this.tree || this.getTree) {
 			return html`<span class="arrow" ?open="${this.isOpen}" @click="${this._onArrowClick}"></span>`;
 		} else {
-			return html``;
+			return html`<span class="no-arrow"></span>`;
 		}
 	}
 

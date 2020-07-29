@@ -1,15 +1,47 @@
 import './components/histogram-card.js';
-import './components/summary-card.js';
 import './components/ou-filter.js';
+import './components/summary-card.js';
 
-import { css, html, LitElement } from 'lit-element/lit-element.js';
-import { Data } from './model/data.js';
-import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
+import {css, html, LitElement} from 'lit-element/lit-element.js';
+import {Data} from './model/data.js';
+import {LocalizeMixin} from '@brightspace-ui/core/mixins/localize-mixin.js';
 
+async function fetchData() {
+	const response = await fetch('/d2l/api/ap/unstable/insights/data/engagement');
+	return await response.json();
+}
+
+async function testData() {
+	return new Promise(resolve =>
+		setTimeout(
+			() => resolve({
+				records: [{UserId: 1, OrgUnitId: 1}, {UserId: 2, OrgUnitId: 1}, {UserId: 2, OrgUnitId: 2}],
+				orgUnits: [
+					[1, 'Course 1', 3, [3, 4]],
+					[2, 'Course 2', 3, [3, 4]],
+					[6, 'Course 3', 3, [7, 4]],
+					[8, 'Course 4', 3, [5]],
+					[3, 'Department 1', 2, [5]],
+					[7, 'Department 2', 2, [5]],
+					[4, 'Semester', 5, [6606]],
+					[5, 'Faculty', 7, [6606]],
+					[6606, 'Dev', 1, [0]]
+				],
+				selectedOrgUnitIds: [2]
+			}),
+			100
+		)
+	);
+}
+
+/**
+ * @property {Boolean} useTestData - if true, use canned data; otherwise call the LMS
+ */
 class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 	static get properties() {
 		return {
+			useTestData: { type: Boolean, attribute: 'use-test-data' }
 		};
 	}
 
@@ -49,31 +81,9 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		return null;
 	}
 
-	constructor() {
-		super();
-
-		// just some demo data with a delay to simulate an API call
+	render() {
 		this._data = new Data({
-			// TODO: call API
-			recordProvider: () => new Promise(resolve =>
-				setTimeout(
-					() => resolve({
-						records: [{UserId: 1, OrgUnitId: 1}, {UserId: 2, OrgUnitId: 1}, {UserId: 2, OrgUnitId: 2}],
-						orgUnits: [
-							[1, 'Course 1', 3, [3, 4]],
-							[2, 'Course 2', 3, [3, 4]],
-							[6, 'Course 3', 3, [7, 4]],
-							[3, 'Department 1', 2, [5]],
-							[7, 'Department 2', 2, [5]],
-							[4, 'Semester', 5, [6606]],
-							[5, 'Faculty', 7, [6606]],
-							[6606, 'Dev', 1, [0]]
-						],
-						selectedOrgUnitIds: [2]
-					}),
-					100
-				)
-			),
+			recordProvider: this.useTestData ? testData : fetchData,
 			filters: [
 				{
 					id: 'd2l-insights-engagement-summary',
@@ -83,12 +93,8 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 				}
 			]
 		});
-	}
 
-	render() {
-		console.log('engagement-dashboard render');
 		return html`
-				<h2>Hello ${this.prop1}!</h2>
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter .data="${this._data}" @change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
