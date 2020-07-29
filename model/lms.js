@@ -1,7 +1,7 @@
 const rolesEndpoint = '/d2l/api/lp/1.23/roles/';
 
-class Roles {
-	async fetchRolesFromLms() {
+class Lms {
+	async fetchRoles() {
 		const response = await fetch(rolesEndpoint);
 
 		/**
@@ -12,4 +12,4 @@ class Roles {
 	}
 }
 
-export default Roles;
+export default Lms;

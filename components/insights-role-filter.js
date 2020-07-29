@@ -1,7 +1,7 @@
 import './simple-filter';
 
 import {html, LitElement} from 'lit-element';
-import Roles from '../model/roles';
+import Lms from '../model/lms';
 
 /**
  * @property {{id: string, displayName: string}[]} _filterData
@@ -21,8 +21,8 @@ class InsightsRoleFilter extends LitElement {
 		this._name = 'Roles';
 		this._roleData = [];
 
-		const roles = new Roles();
-		roles.fetchRolesFromLms().then(this._setRoleData.bind(this));
+		const lms = new Lms();
+		lms.fetchRoles().then(this._setRoleData.bind(this));
 	}
 
 	get selected() {
