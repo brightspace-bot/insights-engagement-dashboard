@@ -8,13 +8,13 @@ class Roles {
 		 * Expected data format from Roles API
 		 * @type {{Identifier: string, DisplayName: string, Code: string|null}[]}
 		 */
-		const data = await response.json();
+		const responseData = await response.json();
 
-		this.roleData = data.map(obj => {
+		this._roleData = responseData.map(obj => {
 			return {...obj, selected: false};
 		});
 
-		this.roleData.sort((role1, role2) => {
+		this._roleData.sort((role1, role2) => {
 			// NB: it seems that localeCompare is pretty slow, but that's ok in this case, since there
 			// shouldn't usually be many roles, and loading/sorting roles is only expected to happen infrequently.
 			return role1.DisplayName.localeCompare(role2.DisplayName)
@@ -26,19 +26,18 @@ class Roles {
 	 * @returns {{displayName: (string), id: (string)}[]}
 	 */
 	getRoleDataForFilter() {
-		return this.roleData.map(obj => {
+		return this._roleData.map(obj => {
 			return {id: obj.Identifier, displayName: obj.DisplayName};
 		});
 	}
 
 	getSelectedRoleIds() {
-		return this.roleData.filter(role => role.selected).map(role => role.Identifier);
+		return this._roleData.filter(role => role.selected).map(role => role.Identifier);
 	}
 
 	setSelectedState(roleId, selected) {
-		this.roleData.find(role => role.Identifier === roleId).selected = selected;
+		this._roleData.find(role => role.Identifier === roleId).selected = selected;
 	}
 }
 
 export default Roles;
-export {rolesEndpoint};

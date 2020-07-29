@@ -84,7 +84,7 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		return html`
 				<h2>Hello ${this.prop1}!</h2>
 
-				<d2l-insights-role-filter @role-selections-updated="${this._handleRoleSelectionsUpdated}"></d2l-insights-role-filter>
+				<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}"></d2l-insights-role-filter>
 
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="summary-container">

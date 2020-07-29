@@ -1,6 +1,8 @@
-import Roles, {rolesEndpoint} from '../../model/roles';
+import Roles from '../../model/roles';
 import {expect} from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
+
+const rolesEndpoint = '/d2l/api/lp/1.23/roles/';
 
 describe('roles', () => {
 	let sut;
@@ -63,8 +65,8 @@ describe('roles', () => {
 			const sut = new Roles();
 			await sut.fetchRolesFromLms();
 
-			expect(sut.roleData.length).to.equal(4);
-			sut.roleData.forEach((role, idx) => {
+			expect(sut._roleData.length).to.equal(4);
+			sut._roleData.forEach((role, idx) => {
 				// verify order
 				expect(Number(role.Identifier)).to.equal(idx + 1);
 				expect(role.selected).to.be.false;
@@ -86,41 +88,24 @@ describe('roles', () => {
 	});
 
 	describe('get/set selected', () => {
-		describe('setSelectedState', () => {
-			it('should set selected state', () => {
+		it('should only return the selected role ids', () => {
+			// nothing should be selected initially
+			expect(sut.getSelectedRoleIds()).to.deep.equal([]);
 
-				sut.setSelectedState('1', true);
-				sut.setSelectedState('2', false);
-				// don't set 3
+			sut.setSelectedState('1', true);
+			sut.setSelectedState('3', true);
 
-				expect(sut.roleData.find(role => role.Identifier === '1').selected).to.be.true;
-				expect(sut.roleData.find(role => role.Identifier === '2').selected).to.be.false;
-				expect(sut.roleData.find(role => role.Identifier === '3').selected).to.be.false;
+			expect(sut.getSelectedRoleIds()).to.deep.equal(['1', '3']);
 
-				// test setting a second time
-				sut.setSelectedState('1', false);
-				sut.setSelectedState('2', true);
-				// don't set 3
+			sut.setSelectedState('2', true);
+			sut.setSelectedState('3', false);
 
-				expect(sut.roleData.find(role => role.Identifier === '1').selected).to.be.false;
-				expect(sut.roleData.find(role => role.Identifier === '2').selected).to.be.true;
-				expect(sut.roleData.find(role => role.Identifier === '3').selected).to.be.false;
-			});
-		});
+			expect(sut.getSelectedRoleIds()).to.deep.equal(['1', '2']);
 
-		describe('getSelectedRoleIds', () => {
-			it('should only return the selected role ids', () => {
-				sut.setSelectedState('1', true);
-				// don't set 2
-				sut.setSelectedState('3', true);
+			sut.setSelectedState('1', false);
+			sut.setSelectedState('2', false);
 
-				expect(sut.getSelectedRoleIds()).to.deep.equal(['1', '3']);
-
-				sut.setSelectedState('2', true);
-				sut.setSelectedState('3', false);
-
-				expect(sut.getSelectedRoleIds()).to.deep.equal(['1', '2']);
-			});
+			expect(sut.getSelectedRoleIds()).to.deep.equal([]);
 		});
 	});
 });

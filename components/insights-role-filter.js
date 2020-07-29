@@ -4,45 +4,45 @@ import {html, LitElement} from 'lit-element';
 import Roles from '../model/roles';
 
 /**
- * @fires role-selections-updated
+ * @fires d2l-insights-role-filter-change
  */
 class InsightsRoleFilter extends LitElement {
 
 	static get properties() {
 		return {
-			roleData: {type: Array, attribute: false}
+			_roleData: {type: Array, attribute: false}
 		};
 	}
 
 	constructor() {
 		super();
 
-		this.name = 'Roles';
+		this._name = 'Roles';
 
-		this.roleData = [];
-		this.roles = new Roles();
-		this.roles.fetchRolesFromLms().then(() => {
-			this.roleData = this.roles.getRoleDataForFilter();
+		this._roleData = [];
+		this._roles = new Roles();
+		this._roles.fetchRolesFromLms().then(() => {
+			this._roleData = this._roles.getRoleDataForFilter();
 		});
 	}
 
 	get selected() {
-		return this.roles.getSelectedRoleIds();
+		return this._roles.getSelectedRoleIds();
 	}
 
 	render() {
 		return html`
 			<d2l-simple-filter
 				@item-selected="${this._updateFilterSelections}"
-				name="${this.name}"
-				.data="${this.roleData}">
+				name="${this._name}"
+				.data="${this._roleData}">
 			</d2l-simple-filter>
 		`;
 	}
 
 	_updateFilterSelections(event) {
-		this.roles.setSelectedState(event.detail.itemId, event.detail.selected);
-		this.dispatchEvent(new Event('role-selections-updated'));
+		this._roles.setSelectedState(event.detail.itemId, event.detail.selected);
+		this.dispatchEvent(new Event('d2l-insights-role-filter-change'));
 	}
 }
 customElements.define('d2l-insights-role-filter', InsightsRoleFilter);

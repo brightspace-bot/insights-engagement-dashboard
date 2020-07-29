@@ -8,6 +8,8 @@ import {html, LitElement} from 'lit-element';
 import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-styles';
 
 /**
+ * @property {string} name
+ * @property {{id: string, displayName: string}[]} data
  * @fires item-selected - event.detail contains {string} filterName, {string} id, and {boolean} selected
  */
 class SimpleFilter extends LitElement {
@@ -26,9 +28,6 @@ class SimpleFilter extends LitElement {
 	constructor() {
 		super();
 
-		/**
-		 * @type {{id: string, displayName: string}[]}
-		 */
 		this.data = [];
 		this.name = '';
 	}

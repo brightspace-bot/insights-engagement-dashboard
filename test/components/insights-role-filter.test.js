@@ -2,8 +2,9 @@ import '../../components/insights-role-filter';
 
 import {expect, fixture, html, oneEvent} from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
-import {rolesEndpoint} from '../../model/roles';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
+
+const rolesEndpoint = '/d2l/api/lp/1.23/roles/';
 
 describe('d2l-insights-role-filter', () => {
 	beforeEach(() => {
@@ -64,9 +65,7 @@ describe('d2l-insights-role-filter', () => {
 			await new Promise(resolve => setTimeout(resolve, 500));
 
 			// everything should be deselected initially
-			el.roles.roleData.forEach(role => {
-				expect(role.selected).to.be.false;
-			});
+			expect(el.selected).to.deep.equal([]);
 
 			const checkboxes = Array.from(
 				el.shadowRoot.querySelector('d2l-simple-filter').shadowRoot.querySelectorAll('d2l-input-checkbox')
@@ -75,22 +74,19 @@ describe('d2l-insights-role-filter', () => {
 			checkboxes.find(checkbox => checkbox.value === '2').simulateClick();
 			checkboxes.find(checkbox => checkbox.value === '3').simulateClick();
 
-			expect(el.roles.roleData.find(role => role.Identifier === '1').selected).to.be.false;
-			expect(el.roles.roleData.find(role => role.Identifier === '2').selected).to.be.true;
-			expect(el.roles.roleData.find(role => role.Identifier === '3').selected).to.be.true;
+			expect(el.selected).to.deep.equal(['2', '3']);
 
 			checkboxes.find(checkbox => checkbox.value === '2').simulateClick();
 
-			expect(el.roles.roleData.find(role => role.Identifier === '1').selected).to.be.false;
-			expect(el.roles.roleData.find(role => role.Identifier === '2').selected).to.be.false;
-			expect(el.roles.roleData.find(role => role.Identifier === '3').selected).to.be.true;
+			expect(el.selected).to.deep.equal(['3']);
+
 		});
 
-		it('should fire a role-selections-updated event when an item is selected', async() => {
+		it('should fire a d2l-insights-role-filter-change event when an item is selected', async() => {
 			const el = await fixture(html`<d2l-insights-role-filter></d2l-insights-role-filter>`);
 			await new Promise(resolve => setTimeout(resolve, 500));
 
-			const listener = oneEvent(el, 'role-selections-updated');
+			const listener = oneEvent(el, 'd2l-insights-role-filter-change');
 
 			const checkboxes = Array.from(
 				el.shadowRoot.querySelector('d2l-simple-filter').shadowRoot.querySelectorAll('d2l-input-checkbox')
@@ -99,7 +95,7 @@ describe('d2l-insights-role-filter', () => {
 			checkboxes.find(checkbox => checkbox.value === '1').simulateClick();
 
 			const event = await listener; // if no event is fired, this will time out after 2 seconds
-			expect(event.type).to.equal('role-selections-updated');
+			expect(event.type).to.equal('d2l-insights-role-filter-change');
 			expect(event.target).to.equal(el);
 		});
 	});
