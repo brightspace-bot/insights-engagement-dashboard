@@ -5,7 +5,7 @@ import Lms from '../model/lms';
 
 /**
  * @property {{id: string, displayName: string}[]} _filterData
- * @fires d2l-insights-role-filter-change
+ * @fires d2l-insights-role-filter-change - detail includes the list of selected role ids
  */
 class InsightsRoleFilter extends LitElement {
 
@@ -22,7 +22,7 @@ class InsightsRoleFilter extends LitElement {
 		this._roleData = [];
 
 		const lms = new Lms();
-		lms.fetchRoles().then(this._setRoleData.bind(this));
+		lms.fetchRoles().then(data => this._setRoleData(data));
 	}
 
 	get selected() {
@@ -59,7 +59,7 @@ class InsightsRoleFilter extends LitElement {
 	render() {
 		return html`
 			<d2l-simple-filter
-				@item-selected="${this._updateFilterSelections}"
+				@d2l-simple-filter-selected="${this._updateFilterSelections}"
 				name="${this._name}"
 				.data="${this._filterData}">
 			</d2l-simple-filter>

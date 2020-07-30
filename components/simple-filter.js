@@ -10,7 +10,7 @@ import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-
 /**
  * @property {string} name
  * @property {{id: string, displayName: string}[]} data
- * @fires item-selected - event.detail contains {string} filterName, {string} id, and {boolean} selected
+ * @fires d2l-simple-filter-selected - event.detail contains {string} filterName, {string} id, and {boolean} selected
  */
 class SimpleFilter extends LitElement {
 
@@ -52,7 +52,7 @@ class SimpleFilter extends LitElement {
 
 	_handleElementSelected(event) {
 		// propagate the event one level up, since it can't cross the shadow DOM boundary
-		this.dispatchEvent(new CustomEvent('item-selected', {
+		this.dispatchEvent(new CustomEvent('d2l-simple-filter-selected', {
 			detail: {
 				itemId: event.target.value,
 				selected: event.target.checked

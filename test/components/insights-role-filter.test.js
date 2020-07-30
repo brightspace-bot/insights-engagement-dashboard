@@ -34,7 +34,7 @@ describe('d2l-insights-role-filter', () => {
 	describe('accessibility', () => {
 		it('should pass all axe tests', async() => {
 			const el = await fixture(html`<d2l-insights-role-filter></d2l-insights-role-filter>`);
-			await new Promise(resolve => setTimeout(resolve, 1500));
+			await el.updateComplete;
 			await expect(el).to.be.accessible();
 		});
 	});
