@@ -14,6 +14,7 @@ const SEMESTER_TYPE = 5;
 
 /**
  * @property {Object} data - an instance of Data from model/data.js
+ * @fires d2l-insights-ou-filter-change
  */
 class OuFilter extends MobxLitElement {
 
@@ -38,7 +39,7 @@ class OuFilter extends MobxLitElement {
 		this._prepareData();
 
 		return html`<div class="ou-filter" ?loading="${this.data.isLoading}">
-			<d2l-insights-tree-selector id="ou-tree-selector" name="Org Unit" .tree="${this._getChildren()}" @change="${this._onChange}">
+			<d2l-insights-tree-selector id="ou-tree-selector" name="Org Unit" .tree="${this._getChildren()}" @d2l-insights-tree-selector-change="${this._onChange}">
 		</div>`;
 	}
 
@@ -61,7 +62,7 @@ class OuFilter extends MobxLitElement {
 			.map(childId => this._tree[childId])
 			.filter(x => x[TYPE] !== SEMESTER_TYPE)
 			.map(x => ({
-				name: `${x[NAME]} (${x[ID]})`,
+				name: `${x[NAME]} (Id: ${x[ID]})`,
 				// pre-load down to any selected descendents: otherwise selecting then deselecting this node
 				// before opening it won't deselect them
 				tree: (x[TYPE] !== 3 && x[STATE] === 'indeterminate') ? this._getChildren(x[ID]) : null,
@@ -78,8 +79,11 @@ class OuFilter extends MobxLitElement {
 	}
 
 	_onChange() {
+		/**
+		 * @event d2l-insights-ou-filter-change
+		 */
 		this.dispatchEvent(new CustomEvent(
-			'change',
+			'd2l-insights-ou-filter-change',
 			{bubbles: true, composed: false}
 		));
 	}

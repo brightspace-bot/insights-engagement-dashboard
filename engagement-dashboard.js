@@ -24,10 +24,11 @@ async function testData() {
 					[3, 'Department 1', 2, [5]],
 					[7, 'Department 2', 2, [5]],
 					[4, 'Semester', 5, [6606]],
-					[5, 'Faculty', 7, [6606]],
+					[5, 'Faculty 1', 7, [6606]],
+					[9, 'Faculty 2', 7, [6606]],
 					[6606, 'Dev', 1, [0]]
 				],
-				selectedOrgUnitIds: [2]
+				selectedOrgUnitIds: [1, 2]
 			}),
 			100
 		)
@@ -85,19 +86,19 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		this._data = new Data({
 			recordProvider: this.useTestData ? testData : fetchData,
 			filters: [
-				{
-					id: 'd2l-insights-engagement-summary',
-					title: 'Summary',
-					countUniqueField: 'UserId',
-					messageProvider: () => 'users'
-				}
+				// {
+				// 	id: 'd2l-insights-engagement-summary',
+				// 	title: 'Summary',
+				// 	countUniqueField: 'UserId',
+				// 	messageProvider: () => 'users'
+				// }
 			]
 		});
 
 		return html`
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="view-filters-container">
-					<d2l-insights-ou-filter .data="${this._data}" @change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
+					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
 				</div>
 				<div class="summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}

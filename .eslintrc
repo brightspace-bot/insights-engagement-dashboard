@@ -17,6 +17,6 @@
     ],
     "rules": {
         "no-console": ["warn"],
-        "sort-class-members/sort-class-members": ["warn"]
+        "sort-class-members/sort-class-members": ["off"]
     }
 }

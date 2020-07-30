@@ -9,7 +9,7 @@ import {css, html, LitElement} from 'lit-element/lit-element.js';
  * tree - an array of the same form
  * getTree - is async callback which should return the tree (provide either tree or getTree for each node)
  * selectedState - may be "explicit", "implicit", "indeterminate", or "none"
- * @fires change - value of this.selected has changed
+ * @fires d2l-insights-tree-selector-change - value of this.selected has changed
  */
 class TreeSelector extends LitElement {
 
@@ -48,14 +48,13 @@ class TreeSelector extends LitElement {
 	render() {
 		return html`
 			<d2l-dropdown>
-				<button class="d2l-dropdown-opener d2l-input-select" aria-label="Open ${this.name} filter">
-					${this.name}
-				</button>
+				<button class="d2l-dropdown-opener d2l-input-select" aria-label="Open ${this.name} filter">${this.name}</button>
 				<d2l-dropdown-content align="start">
 					<d2l-insights-tree-selector-node
 						id="tree-selector-root-node"
 						.tree="${this.tree}"
-						@change="${this._onChange}"
+						root
+						@d2l-insights-tree-selector-change="${this._onChange}"
 					></d2l-insights-tree-selector-node>
 				</d2l-dropdown-content>
 			</d2l-dropdown>
@@ -68,10 +67,10 @@ class TreeSelector extends LitElement {
 
 	_onChange() {
 		/**
-		 * @event change
+		 * @event d2l-insights-tree-selector-change
 		 */
 		this.dispatchEvent(new CustomEvent(
-			'change',
+			'd2l-insights-tree-selector-change',
 			{bubbles: true, composed: false}
 		));
 	}
