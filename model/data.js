@@ -13,14 +13,14 @@ export class Histogram {
 		this.data = data;
 	}
 
+	get isLoading() {
+		return this.data.isLoading;
+	}
+
 	get series() {
 		const dataByU = {};
 		this.data.getRecordsInView(this.id).forEach(r => dataByU[r[this.field]] = [...dataByU[r[this.field]] || [], r]);
 		return Object.keys(dataByU).sort().map(k => dataByU[k].length);
-	}
-
-	get isLoading() {
-		return this.data.isLoading;
 	}
 }
 
@@ -37,6 +37,10 @@ export class Filter {
 		this.isApplied = isApplied;
 	}
 
+	get isLoading() {
+		return this.data.isLoading;
+	}
+
 	get message() {
 		return this.messageProvider(this);
 	}
@@ -44,17 +48,18 @@ export class Filter {
 	get stats() {
 		return this.data.getStats(this.id);
 	}
-
-	get isLoading() {
-		return this.data.isLoading;
-	}
 }
 
 export class Data {
 	constructor({recordProvider, filters}) {
 		this.isLoading = true;
-		this.records = [];
 		this.filters = {};
+		this.serverData = {
+			records: [],
+			orgUnits: [],
+			users: [],
+			selectedOrgUnitIds: []
+		};
 		filters
 			.map(params => new Filter(params, this))
 			.forEach(f => this.filters[f.id] = f);
@@ -64,14 +69,16 @@ export class Data {
 		// mobx will run _persist() whenever relevant state changes
 		autorun(() => this._persist());
 
-		recordProvider().then(records => {
-			this.records = records;
+		recordProvider().then(data => {
+			this.serverData = data;
 			this.isLoading = false;
 		});
 	}
 
-	setApplied(id, isApplied) {
-		if (this.filters[id]) this.filters[id].isApplied = isApplied;
+	getRecordsInView(id) {
+		// if id is omitted, all applied filters will be used
+		const otherFilters = Object.values(this.filters).filter(f => f.isApplied && f.id !== id);
+		return this.serverData.records.filter(r => otherFilters.every(f => r[f.field] < f.threshold));
 	}
 
 	getStats(id) {
@@ -79,36 +86,38 @@ export class Data {
 
 		const filter = this.filters[id];
 
-		const matchingRecords = recordsInView.filter(r => r[filter.field] < filter.threshold);
+		// NB: due to compact API response, we'll need to map field names to array indices
+		const matchingRecords = recordsInView.filter(r => !filter.field || (r[filter.field] < filter.threshold));
 		const value = countUnique(matchingRecords, filter.countUniqueField);
 
-		const deltaMatchingRecords = recordsInView.filter(r => r[filter.deltaField] < filter.threshold);
-		const oldValue = countUnique(deltaMatchingRecords, filter.countUniqueField);
+		let delta = null;
+		if (filter.deltaField) {
+			const deltaMatchingRecords = recordsInView.filter(r => r[filter.deltaField] < filter.threshold);
+			const oldValue = countUnique(deltaMatchingRecords, filter.countUniqueField);
+			delta = value - oldValue;
+		}
 
 		return {
 			value,
-			delta: value - oldValue
+			delta
 		};
 	}
 
-	getRecordsInView(id) {
-		// if id is omitted, all applied filters will be used
-		const otherFilters = Object.values(this.filters).filter(f => f.isApplied && f.id !== id);
-		return this.records.filter(r => otherFilters.every(f => r[f.field] < f.threshold));
+	setApplied(id, isApplied) {
+		if (this.filters[id]) this.filters[id].isApplied = isApplied;
+	}
+
+	_persist() {
+		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
+			Object.keys(this.filters)
+				.map(f => ({id: f, applied: this.filters[f].isApplied}))
+		));
 	}
 
 	_restore() {
 		// this might be better handled by url-rewriting
 		const state = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.state') || '[]');
 		state.forEach(filterState => this.setApplied(filterState.id, filterState.applied));
-	}
-
-	_persist() {
-		console.log('persist');
-		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
-			Object.keys(this.filters)
-				.map(f => ({id: f, applied: this.filters[f].isApplied}))
-		));
 	}
 }
 
@@ -133,7 +142,7 @@ decorate(Filter, {
 });
 
 decorate(Data, {
-	records: observable,
+	serverData: observable,
 	filters: observable,
 	isLoading: observable,
 	setApplied: action

@@ -4,6 +4,12 @@ import {html, LitElement} from 'lit-element';
 import Lms from '../model/lms';
 import {Localizer} from '../locales/localizer';
 
+const demoData = [
+	{ id: '500', displayName: 'Administrator' },
+	{ id: '600', displayName: 'Instructor' },
+	{ id: '700', displayName: 'Student' }
+];
+
 /**
  * @property {{id: string, displayName: string}[]} _filterData
  * @fires d2l-insights-role-filter-change - detail includes the list of selected role ids
@@ -12,7 +18,8 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
-			_filterData: {type: Array, attribute: false}
+			isDemo: { type: Boolean, attribute: 'demo' },
+			_filterData: { type: Array, attribute: false }
 		};
 	}
 
@@ -57,17 +64,21 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 	}
 
 	render() {
+		const filterData = this.isDemo ? demoData : this._filterData;
 		return html`
 			<d2l-simple-filter
 				@d2l-simple-filter-selected="${this._updateFilterSelections}"
 				name="${this.localize('components.insights-role-filter.name')}"
-				.data="${this._filterData}">
+				.data="${filterData}">
 			</d2l-simple-filter>
 		`;
 	}
 
 	_updateFilterSelections(event) {
 		this._setSelectedState(event.detail.itemId, event.detail.selected);
+		/**
+		 * @event d2l-insights-role-filter-change
+		 */
 		this.dispatchEvent(new Event('d2l-insights-role-filter-change'));
 	}
 }
