@@ -66,7 +66,8 @@ describe('d2l-insights-ou-filter', () => {
 	describe('selection', () => {
 		it('should return selected nodes', async() => {
 			const el = await fixture(html`<d2l-insights-ou-filter .data="${data}"></d2l-insights-ou-filter>`);
-			await el.updateComplete;
+			// on Safari only, the children don't finish rendering during the above await
+			await el.shadowRoot.querySelector('d2l-insights-tree-selector').updateComplete;
 			expect(el.selected.map(x => x.name)).to.deep.equal(['Course 2 (Id: 2)', 'Department 2 (Id: 7)']);
 		});
 	});
@@ -74,7 +75,7 @@ describe('d2l-insights-ou-filter', () => {
 	describe('events', () => {
 		it('should fire d2l-insights-ou-filter-change on selection change', async() => {
 			const el = await fixture(html`<d2l-insights-ou-filter .data="${data}"></d2l-insights-ou-filter>`);
-			await el.updateComplete;
+			await el.shadowRoot.querySelector('d2l-insights-tree-selector').updateComplete;
 			const listener = oneEvent(el, 'd2l-insights-ou-filter-change');
 			const childCheckbox = el.shadowRoot.querySelector('d2l-insights-tree-selector')
 				.shadowRoot.querySelector('d2l-insights-tree-selector-node') // hidden root node
