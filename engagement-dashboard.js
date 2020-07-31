@@ -104,9 +104,8 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="view-filters-container">
-					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
-					
-				<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}"></d2l-insights-role-filter>
+					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>					
+					<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}" ?demo="${this.useTestData}"></d2l-insights-role-filter>
 				</div>
 				<div class="summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
