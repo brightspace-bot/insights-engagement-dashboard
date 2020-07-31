@@ -9,6 +9,7 @@ describe('d2l-insights-engagement-dashboard', () => {
 			this.timeout(3000);
 
 			const el = await fixture(html`<d2l-insights-engagement-dashboard></d2l-insights-engagement-dashboard>`);
+			// need for this delay might be tied to the mock data async loading in engagement-dashboard.js
 			await new Promise(resolve => setTimeout(resolve, 1500));
 			await expect(el).to.be.accessible();
 		});

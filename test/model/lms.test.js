@@ -32,4 +32,8 @@ describe('Lms', () => {
 			expect(await sut.fetchRoles()).to.deep.equal(mockLmsResponseData);
 		});
 	});
+
+	after(() => {
+		fetchMock.reset();
+	});
 });

@@ -19,7 +19,8 @@ describe('d2l-simple-filter', () => {
 
 	beforeEach(async() => {
 		el = await fixture(html`<d2l-simple-filter name="${name}" .data="${testData}"></d2l-simple-filter>`);
-		await new Promise(resolve => setTimeout(resolve, 500));
+		await new Promise(resolve => setTimeout(resolve, 0)); // allow fetch to run
+		await el.updateComplete;
 	});
 
 	describe('accessibility', () => {
