@@ -1,5 +1,6 @@
 import './components/histogram-card.js';
 import './components/summary-card.js';
+import './components/insights-role-filter.js';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data, Histogram } from './model/data.js';
@@ -13,22 +14,24 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 	}
 
 	static get styles() {
-		return css`
-			:host {
-				display: block;
-			}
-			:host([hidden]) {
-				display: none;
-			}
+		return [
+			css`
+				:host {
+					display: block;
+				}
+				:host([hidden]) {
+					display: none;
+				}
 
-			/* NB: this layout css doesn't quite work; do not ship */
-			.summary-container {
-				margin-top: 10px;
-				margin-bottom: 25px;
-				display: flex;
-				flex-wrap: wrap;
-			}
-		`;
+				/* NB: this layout css doesn't quite work; do not ship */
+				.summary-container {
+					margin-top: 10px;
+					margin-bottom: 25px;
+					display: flex;
+					flex-wrap: wrap;
+				}
+			`
+		];
 	}
 
 	static async getLocalizeResources(langs) {
@@ -70,10 +73,19 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		this.histogram = new Histogram({id: 'engagement-demo-chart', field: 'n', title: 'distribution of n'}, this._data);
 	}
 
+	_handleRoleSelectionsUpdated(event) {
+		event.stopPropagation();
+		// event.target should be d2l-insights-role-filter
+		console.log(`List of selected role ids: ${event.target.selected}`);
+	}
+
 	render() {
 		console.log('engagement-dashboard render');
 		return html`
 				<h2>Hello ${this.prop1}!</h2>
+
+				<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}"></d2l-insights-role-filter>
+
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}

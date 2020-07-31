@@ -32,9 +32,10 @@
     "eslint-plugin-json": "^2.1.1",
     "eslint-plugin-lit": "^1",
     "eslint-plugin-sort-class-members": "^1",
+    "fetch-mock": "^9.10.5",
     "frau-ci": "^1",
     "karma-sauce-launcher": "^4",
-    "lit-analyzer": "^1",
+    "lit-analyzer": "^1.2.0",
     "puppeteer": "^5"
   },
   "dependencies": {
