@@ -1,6 +1,7 @@
 import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/summary-card.js';
+import './components/insights-role-filter.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 import {Data} from './model/data.js';
@@ -47,22 +48,24 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 	}
 
 	static get styles() {
-		return css`
-			:host {
-				display: block;
-			}
-			:host([hidden]) {
-				display: none;
-			}
+		return [
+			css`
+				:host {
+					display: block;
+				}
+				:host([hidden]) {
+					display: none;
+				}
 
-			/* NB: this layout css doesn't quite work; do not ship */
-			.summary-container {
-				margin-top: 10px;
-				margin-bottom: 25px;
-				display: flex;
-				flex-wrap: wrap;
-			}
-		`;
+				/* NB: this layout css doesn't quite work; do not ship */
+				.summary-container {
+					margin-top: 10px;
+					margin-bottom: 25px;
+					display: flex;
+					flex-wrap: wrap;
+				}
+			`
+		];
 	}
 
 	static async getLocalizeResources(langs) {
@@ -96,14 +99,24 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		});
 
 		return html`
+				<h2>Hello ${this.prop1}!</h2>
+
+
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="view-filters-container">
-					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
+					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>					
+					<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}" ?demo="${this.useTestData}"></d2l-insights-role-filter>
 				</div>
 				<div class="summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
 				</div>
 		`;
+	}
+
+	_handleRoleSelectionsUpdated(event) {
+		event.stopPropagation();
+		// event.target should be d2l-insights-role-filter
+		console.log(`List of selected role ids: ${event.target.selected}`);
 	}
 
 	_onOuFilterChange(e) {
