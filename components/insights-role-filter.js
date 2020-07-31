@@ -2,12 +2,13 @@ import './simple-filter';
 
 import {html, LitElement} from 'lit-element';
 import Lms from '../model/lms';
+import {Localizer} from '../locales/localizer';
 
 /**
  * @property {{id: string, displayName: string}[]} _filterData
  * @fires d2l-insights-role-filter-change - detail includes the list of selected role ids
  */
-class InsightsRoleFilter extends LitElement {
+class InsightsRoleFilter extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
@@ -18,7 +19,6 @@ class InsightsRoleFilter extends LitElement {
 	constructor() {
 		super();
 
-		this._name = 'Roles';
 		this._roleData = [];
 
 		const lms = new Lms();
@@ -60,7 +60,7 @@ class InsightsRoleFilter extends LitElement {
 		return html`
 			<d2l-simple-filter
 				@d2l-simple-filter-selected="${this._updateFilterSelections}"
-				name="${this._name}"
+				name="${this.localize('components.insights-role-filter.name')}"
 				.data="${this._filterData}">
 			</d2l-simple-filter>
 		`;
