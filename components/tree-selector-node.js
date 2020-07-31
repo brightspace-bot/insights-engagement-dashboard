@@ -1,3 +1,4 @@
+import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/inputs/input-checkbox';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
@@ -43,17 +44,29 @@ class TreeSelectorNode extends LitElement {
 				display: none;
 			}
 			
+			.node {
+				display: flex;
+				flex-wrap: nowrap;
+			}
+			
 			d2l-input-checkbox {
 				display: inline-block;
 			}
-			.open-control:before {
-				content: "> "
-			}
-			.open-control[open]:before {
-				content: "v "
+			
+			.no-open-control {
+				margin-left: 33px;
 			}
 			.open-control {
-				margin-left: 15px
+				margin-left: 15px;
+			}
+			.open-control .open {
+				display: none;
+			}
+			.open-control[open] .open {
+				display: inline-block;
+			}
+			.open-control[open] .closed {
+				display: none;
 			}
 			
 			.subtree {
@@ -96,18 +109,26 @@ class TreeSelectorNode extends LitElement {
 		}
 
 		return html`
-			${this._renderOpenControl()}
-			<d2l-input-checkbox
-				?checked="${this._showSelected}"
-				?indeterminate="${this._showIndeterminate}"
-				@change="${this._onChange}"
-			>${this.name}</d2l-input-checkbox>`;
+			<div class="node">
+				${this._renderOpenControl()}
+				<d2l-input-checkbox
+					?checked="${this._showSelected}"
+					?indeterminate="${this._showIndeterminate}"
+					@change="${this._onChange}"
+				>${this.name}</d2l-input-checkbox>
+			</div>
+		`;
 	}
 
 	_renderOpenControl() {
 		// show the open/close arrow if this is not a leaf
 		if (this.isOpen || this.tree || this.getTree) {
-			return html`<span class="open-control" ?open="${this.isOpen}" @click="${this._onArrowClick}"></span>`;
+			return html`
+				<span class="open-control" ?open="${this.isOpen}" @click="${this._onArrowClick}">
+					<d2l-icon class="closed" icon="tier1:arrow-expand-small"></d2l-icon>
+					<d2l-icon class="open" icon="tier1:arrow-collapse-small"></d2l-icon>
+				</span>
+			`;
 		} else {
 			return html`<span class="no-open-control"></span>`;
 		}
@@ -124,6 +145,7 @@ class TreeSelectorNode extends LitElement {
 					?open="${childState.isOpen}"
 					selected-state="${this._getChildSelectedState(childState)}"
 					@d2l-insights-tree-selector-change="${this._onSubtreeChange}"
+					@_open-or-close="${this._onSubtreeOpenOrClose}"
 				></d2l-insights-tree-selector-node>`;
 			}) }</div>`;
 		} else {
@@ -155,6 +177,19 @@ class TreeSelectorNode extends LitElement {
 		if (this.isOpen && !this.tree && this.getTree) {
 			this.tree = await this.getTree();
 		}
+
+		// This is caught by tree-selector and used to force d2l-dropdown-content to resize
+		this.dispatchEvent(new CustomEvent(
+			'_open-or-close',
+			{bubbles: true, composed: false}
+		));
+	}
+
+	_onSubtreeOpenOrClose() {
+		this.dispatchEvent(new CustomEvent(
+			'_open-or-close',
+			{bubbles: true, composed: false}
+		));
 	}
 
 	_onChange(e) {

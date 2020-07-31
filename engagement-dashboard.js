@@ -11,7 +11,7 @@ async function fetchData() {
 	return await response.json();
 }
 
-async function testData() {
+async function demoData() {
 	return new Promise(resolve =>
 		setTimeout(
 			() => resolve({
@@ -19,7 +19,7 @@ async function testData() {
 				orgUnits: [
 					[1, 'Course 1', 3, [3, 4]],
 					[2, 'Course 2', 3, [3, 4]],
-					[6, 'Course 3', 3, [7, 4]],
+					[6, 'Course 3 has a surprisingly long name, but nonetheless this kind of thing is bound to happen sometimes and we do need to design for it. Is that not so?', 3, [7, 4]],
 					[8, 'Course 4', 3, [5]],
 					[3, 'Department 1', 2, [5]],
 					[7, 'Department 2', 2, [5]],
@@ -42,7 +42,7 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 	static get properties() {
 		return {
-			useTestData: { type: Boolean, attribute: 'use-test-data' }
+			isDemo: { type: Boolean, attribute: 'demo' }
 		};
 	}
 
@@ -84,7 +84,7 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 	render() {
 		this._data = new Data({
-			recordProvider: this.useTestData ? testData : fetchData,
+			recordProvider: this.isDemo ? demoData : fetchData,
 			filters: [
 				// {
 				// 	id: 'd2l-insights-engagement-summary',
