@@ -4,9 +4,8 @@ import './components/insights-role-filter.js';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data, Histogram } from './model/data.js';
-import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
 
-class EngagementDashboard extends LocalizeMixin(LitElement) {
+class EngagementDashboard extends LitElement {
 
 	static get properties() {
 		return {
@@ -32,23 +31,6 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 				}
 			`
 		];
-	}
-
-	static async getLocalizeResources(langs) {
-		const langResources = {
-			'en': { 'myLangTerm': 'I am a localized string!' }
-		};
-
-		for (let i = 0; i < langs.length; i++) {
-			if (langResources[langs[i]]) {
-				return {
-					language: langs[i],
-					resources: langResources[langs[i]]
-				};
-			}
-		}
-
-		return null;
 	}
 
 	constructor() {
@@ -86,7 +68,6 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 				<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}"></d2l-insights-role-filter>
 
-				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
 					<d2l-labs-histogram-card id="${this.histogram.id}" .data="${this.histogram}"></d2l-labs-histogram-card>
