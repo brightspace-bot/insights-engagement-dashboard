@@ -5,9 +5,9 @@ import Lms from '../model/lms';
 import {Localizer} from '../locales/localizer';
 
 const demoData = [
-	{ id: '500', displayName: 'Administrator' },
-	{ id: '600', displayName: 'Instructor' },
-	{ id: '700', displayName: 'Student' }
+	{ Identifier: '500', DisplayName: 'Administrator' },
+	{ Identifier: '600', DisplayName: 'Instructor' },
+	{ Identifier: '700', DisplayName: 'Student' }
 ];
 
 /**
@@ -26,7 +26,9 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 	constructor() {
 		super();
 
+		this.isDemo = false;
 		this._roleData = [];
+		this._filterData = [];
 
 		const lms = new Lms();
 		lms.fetchRoles().then(data => this._setRoleData(data));
@@ -63,13 +65,18 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 		this._roleData.find(role => role.Identifier === roleId).selected = selected;
 	}
 
+	firstUpdated() {
+		if (this.isDemo) {
+			this._setRoleData(demoData);
+		}
+	}
+
 	render() {
-		const filterData = this.isDemo ? demoData : this._filterData;
 		return html`
 			<d2l-simple-filter
 				@d2l-simple-filter-selected="${this._updateFilterSelections}"
 				name="${this.localize('components.insights-role-filter.name')}"
-				.data="${filterData}">
+				.data="${this._filterData}">
 			</d2l-simple-filter>
 		`;
 	}
