@@ -39,7 +39,11 @@ class OuFilter extends MobxLitElement {
 		this._prepareData();
 
 		return html`<div class="ou-filter" ?loading="${this.data.isLoading}">
-			<d2l-insights-tree-selector id="ou-tree-selector" name="Org Unit" .tree="${this._getChildren()}" @d2l-insights-tree-selector-change="${this._onChange}">
+			<d2l-insights-tree-selector id="ou-tree-selector"
+				name="Org Unit"
+				.tree="${this._getChildren()}"
+				@d2l-insights-tree-selector-change="${this._onChange}"
+			></d2l-insights-tree-selector>
 		</div>`;
 	}
 
