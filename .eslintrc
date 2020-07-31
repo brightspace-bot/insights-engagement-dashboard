@@ -17,6 +17,7 @@
     ],
     "rules": {
         "no-console": ["warn"],
-        "sort-class-members/sort-class-members": ["off"]
+        "sort-class-members/sort-class-members": ["off"],
+        "indent": ["warn"]
     }
 }
