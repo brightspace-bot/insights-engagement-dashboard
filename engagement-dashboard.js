@@ -2,6 +2,7 @@ import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/summary-card.js';
 import './components/insights-role-filter.js';
+import './components/users-table.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 import {Data} from './model/data.js';
@@ -28,6 +29,10 @@ async function testData() {
 					[5, 'Faculty 1', 7, [6606]],
 					[9, 'Faculty 2', 7, [6606]],
 					[6606, 'Dev', 1, [0]]
+				],
+				users: [
+					[100, 'First', 'Last'],
+					[200, 'Test', 'Student']
 				],
 				selectedOrgUnitIds: [1, 2]
 			}),
@@ -107,6 +112,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<div class="summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
 				</div>
+				<d2l-insights-users-table .data="${this._data}"></d2l-insights-users-table>
 		`;
 	}
 
