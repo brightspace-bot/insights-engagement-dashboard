@@ -5,7 +5,6 @@ import './components/insights-role-filter.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 import {Data} from './model/data.js';
-import {LocalizeMixin} from '@brightspace-ui/core/mixins/localize-mixin.js';
 
 async function fetchData() {
 	const response = await fetch('/d2l/api/ap/unstable/insights/data/engagement');
@@ -39,7 +38,7 @@ async function testData() {
 /**
  * @property {Boolean} useTestData - if true, use canned data; otherwise call the LMS
  */
-class EngagementDashboard extends LocalizeMixin(LitElement) {
+class EngagementDashboard extends LitElement {
 
 	static get properties() {
 		return {
@@ -68,23 +67,6 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		];
 	}
 
-	static async getLocalizeResources(langs) {
-		const langResources = {
-			'en': { 'myLangTerm': 'I am a localized string!' }
-		};
-
-		for (let i = 0; i < langs.length; i++) {
-			if (langResources[langs[i]]) {
-				return {
-					language: langs[i],
-					resources: langResources[langs[i]]
-				};
-			}
-		}
-
-		return null;
-	}
-
 	render() {
 		this._data = new Data({
 			recordProvider: this.useTestData ? testData : fetchData,
@@ -101,10 +83,8 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		return html`
 				<h2>Hello ${this.prop1}!</h2>
 
-
-				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="view-filters-container">
-					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>					
+					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
 					<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}" ?demo="${this.useTestData}"></d2l-insights-role-filter>
 				</div>
 				<div class="summary-container">
