@@ -2,7 +2,7 @@ import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/summary-card.js';
 import './components/insights-role-filter.js';
-import './components/users-table.js';
+import './components/table.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 import {Data} from './model/data.js';
@@ -112,7 +112,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<div class="summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
 				</div>
-				<d2l-insights-users-table .data="${this._data}"></d2l-insights-users-table>
+				<d2l-insights-table .data="${this._data}"></d2l-insights-table>
 		`;
 	}
 
