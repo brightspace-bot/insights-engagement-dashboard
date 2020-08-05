@@ -1,17 +1,19 @@
-import {html} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 import {Localizer} from '../locales/localizer';
-import {MobxLitElement} from '@adobe/lit-mobx';
 import {RtlMixin} from '@brightspace-ui/core/mixins/rtl-mixin';
 import {tableStyle} from '../styles/table.style.js';
 
 /**
- * @prop {Object} data - an instance of Data from model/data.js
+ * @property {Array} columns - list of column header text
+ * @property {Array} data - a row-indexed 2D array of rows and columns.
+ * E.g. data[0] gets the entire first row; data[0][0] gets the first row / first column
  */
-class Table extends Localizer(RtlMixin(MobxLitElement)) {
+class Table extends Localizer(RtlMixin(LitElement)) {
 
 	static get properties() {
 		return {
-			data: {type: Object, attribute: false}
+			columns: {type: Array, attribute: false},
+			data: {type: Array, attribute: false}
 		};
 	}
 
@@ -21,30 +23,43 @@ class Table extends Localizer(RtlMixin(MobxLitElement)) {
 
 	constructor() {
 		super();
-		this.data = {};
+		this.columns = [];
+		this.data = [];
 	}
 
 	render() {
 		return html`
 			<table class="d2l-table">
-				<thead class="d2l-table-header">
-					<tr>
-						<th class="d2l-table-cell">${this.localize('components.insights-users-table.lastFirstName')}</th>
-					</tr>
-				</thead>
-				<tbody>
-					${this._renderRows()}
-				</tbody>
+				${this._renderThead()}
+				${this._renderTbody()}
 			</table>
 		`;
 	}
 
-	_renderRows() {
-		return this.data.serverData.users.map(user => html`
-			<tr>
-				<td class="d2l-table-cell">${`${user[2]}, ${user[1]}`}</td>
-			</tr>
-		`);
+	_renderThead() {
+		return html`
+			<thead class="d2l-table-header">
+				<tr>
+					${this.columns.map(name => html`
+						<th class="d2l-table-cell">${name}</th>
+					`)}
+				</tr>
+			</thead>
+		`;
+	}
+
+	_renderTbody() {
+		return html`
+			<tbody>
+				${this.data.map(row => html`
+					<tr>
+						${row.map(col => html`
+							<td class="d2l-table-cell">${col}</td>
+						`)}
+					</tr>
+				`)}
+			</tbody>
+		`;
 	}
 }
 customElements.define('d2l-insights-table', Table);

@@ -81,6 +81,14 @@ export class Data {
 		return this.serverData.records.filter(r => otherFilters.every(f => r[f.field] < f.threshold));
 	}
 
+	get userDataForDisplay() {
+		return this.serverData.users
+			.map(user => [`${user[2]}, ${user[1]}`]) // map to a 2D userData array, with column 0 as the lastFirstName
+			.sort((user1, user2) => {				 // sort by lastFirstName
+				return user1[0].localeCompare(user2[0]);
+			});
+	}
+
 	getStats(id) {
 		const recordsInView = this.getRecordsInView(id);
 
@@ -145,6 +153,7 @@ decorate(Data, {
 	serverData: observable,
 	filters: observable,
 	isLoading: observable,
-	setApplied: action
+	setApplied: action,
+	userDataForDisplay: computed
 });
 

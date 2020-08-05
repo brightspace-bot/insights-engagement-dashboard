@@ -4,15 +4,18 @@ import {expect, fixture, html} from '@open-wc/testing';
 import {runConstructor} from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-table', () => {
-	const data = {
-		serverData: {
-			users: [
-				[1, 'First1', 'Last1'],
-				[2, 'First2', 'Last2'],
-				[3, 'First3', 'Last3']
-			]
-		}
-	};
+	const columns = [
+		'header1',
+		'header2',
+		'header3'
+	];
+
+	const data = [
+		['First Item', 1, 'value1'],
+		['Second Item', 2, 'value2'],
+		['Third Item', 3, 'value3'],
+		['Fourth Item', 4, 'value4']
+	];
 
 	describe('constructor', () => {
 		it('should construct', () => {
@@ -22,22 +25,31 @@ describe('d2l-insights-table', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async() => {
-			const el = await fixture(html`<d2l-insights-table .data="${data}"></d2l-insights-table>`);
+			const el = await fixture(html`<d2l-insights-table .columns=${columns} .data="${data}"></d2l-insights-table>`);
 			await expect(el).to.be.accessible();
 		});
 	});
 
 	describe('render', () => {
-		it('should have a row for each user, and it should contain correct data', async() => {
-			const el = await fixture(html`<d2l-insights-table .data="${data}"></d2l-insights-table>`);
+		it('should have correct header and data', async() => {
+			const el = await fixture(html`<d2l-insights-table .columns=${columns} .data="${data}"></d2l-insights-table>`);
+
+			const headerCells = Array.from(el.shadowRoot.querySelectorAll('thead>tr>th'));
+			expect(headerCells.length).to.equal(columns.length);
+			headerCells.forEach((cell, idx) => {
+				expect(cell.innerText).to.equal(columns[idx]);
+			});
+
 			const rows = Array.from(el.shadowRoot.querySelectorAll('tbody>tr'));
-			expect(rows.length).to.equal(3);
+			expect(rows.length).to.equal(4);
+
 			rows.forEach((row, idx) => {
 				const cells = Array.from(row.querySelectorAll('td'));
-				const lastFirstNameCell = cells[0];
-				const expectedUser = data.serverData.users[idx];
+				expect(cells.length).to.equal(3);
 
-				expect(lastFirstNameCell.innerText).to.equal(`${expectedUser[2]}, ${expectedUser[1]}`);
+				cells.forEach((cell, jdx) => {
+					expect(cell.innerText).to.equal(data[idx][jdx].toString());
+				});
 			});
 		});
 	});
