@@ -53,6 +53,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 
 		return html`
 			<d2l-insights-table
+				title="${this.localize('components.insights-users-table.title')}"
 				.columns=${this.columns}
 				.data="${_displayData}"></d2l-insights-table>
 
