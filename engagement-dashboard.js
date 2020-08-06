@@ -2,6 +2,7 @@ import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/summary-card.js';
 import './components/insights-role-filter.js';
+import './components/semester-filter.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 import {Data} from './model/data.js';
@@ -104,7 +105,8 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="view-filters-container">
-					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>					
+					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
+					<d2l-insights-semester-filter @d2l-insights-semester-filter-change="${this._semesterFilterChange}" ?demo="${this.useTestData}"></d2l-insights-semester-filter>
 					<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}" ?demo="${this.useTestData}"></d2l-insights-role-filter>
 				</div>
 				<div class="summary-container">
@@ -121,6 +123,12 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 
 	_onOuFilterChange(e) {
 		console.log(`got ou filter change with selected nodes ${JSON.stringify(e.target.selected.map(x => x.name))}`);
+	}
+
+	_semesterFilterChange(event) {
+		event.stopPropagation();
+
+		console.log(`List of selected semesters: ${event.target.selected}`);
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);
