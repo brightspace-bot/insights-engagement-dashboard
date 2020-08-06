@@ -74,8 +74,10 @@ class EngagementDashboard extends Localizer(LitElement) {
 					flex-wrap: wrap;
 				}
 
-				h1 {
-					font-weight: normal; /* default for h1 is bold */
+				h1.d2l-heading-1 {
+					font-weight: normal;	/* default for h1 is bold */
+					margin: 0.67em 0;		/* required to be explicitly defined for Edge Legacy */
+					padding: 0;				/* required to be explicitly defined for Edge Legacy */
 				}
 
 				h2.d2l-heading-3 {
@@ -110,7 +112,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 		});
 
 		return html`
-				<h1>${this.localize('components.insights-engagement-dashboard.title')}</h1>
+				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
 
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
