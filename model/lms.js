@@ -16,9 +16,9 @@ class Lms {
 	 * @param {string|null} search - can be null
 	 * @returns {{PagingInfo:{Bookmark: string, HasMoreItems: boolean}, Items: {orgUnitId: number, orgUnitName: string}[]}}
 	 */
-	async fetchSemesters(bookmark, search) {
+	async fetchSemesters(pageSize, bookmark, search) {
 		const url = new URL('/d2l/api/ap/unstable/insights/data/semesters', location.href);
-		url.searchParams.set('pageSize', 3);
+		url.searchParams.set('pageSize', pageSize);
 		if (bookmark) {
 			url.searchParams.set('bookmark', bookmark);
 		}

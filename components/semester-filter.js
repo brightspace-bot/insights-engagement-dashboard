@@ -18,6 +18,7 @@ class SemesterFilter extends Localizer(LitElement) {
 	static get properties() {
 		return {
 			isDemo: { type: Boolean, attribute: 'demo' },
+			pageSize: { type: Number, attribute: 'page-size' },
 			_filterData: { type: Array, attribute: false },
 			_bookmark: { type: String, attribute: false },
 			_search: { types: String, attribute: false }
@@ -29,6 +30,7 @@ class SemesterFilter extends Localizer(LitElement) {
 		/** @type {{id: string, displayName: string, selected: boolean}[]} */
 		this._filterData = [];
 		this._bookmark = null;
+		this.pageSize = 3;
 	}
 
 	async firstUpdated() {
@@ -50,7 +52,7 @@ class SemesterFilter extends Localizer(LitElement) {
 			currentData = [];
 		}
 
-		const data = await this._lms.fetchSemesters(this._bookmark, this._search);
+		const data = await this._lms.fetchSemesters(this.pageSize, this._bookmark, this._search);
 
 		this._saveBookmark(data.PagingInfo);
 

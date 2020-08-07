@@ -12,7 +12,7 @@ class Lms {
 	 * @param {string|null} search - can be null
 	 * @returns {{PagingInfo:{Bookmark: string, HasMoreItems: boolean}, Items: {orgUnitId: number, orgUnitName: string}[]}}
 	 */
-	async fetchSemesters(bookmark, search) {
+	async fetchSemesters(pageSize, bookmark, search) {
 		let response = {
 			PagingInfo: {
 				Bookmark: '1326467654053_120127',
@@ -62,6 +62,7 @@ class Lms {
 				.filter(item => item.orgUnitName.toLowerCase().includes(search.toLowerCase()));
 		}
 
+		response.Items = response.Items.slice(0, pageSize);
 		return await new Promise(resolve =>	setTimeout(() => resolve(response), 100));
 	}
 }
