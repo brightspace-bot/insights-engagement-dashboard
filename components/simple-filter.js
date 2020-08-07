@@ -6,8 +6,7 @@ import '@brightspace-ui/core/components/inputs/input-checkbox';
 import '@brightspace-ui/core/components/inputs/input-search';
 import '@brightspace-ui/core/components/button/button-subtle.js';
 
-import {html, LitElement} from 'lit-element';
-import {ifDefined} from 'lit-html/directives/if-defined';
+import {css, html, LitElement} from 'lit-element';
 import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-styles';
 
 /**
@@ -29,7 +28,12 @@ class SimpleFilter extends LitElement {
 	}
 
 	static get styles() {
-		return [selectStyles];
+		return [selectStyles, css`
+				.d2l-simple-filter-search-container {
+					margin-bottom: 15px;
+				}
+			`
+		];
 	}
 
 	constructor() {
@@ -48,23 +52,46 @@ class SimpleFilter extends LitElement {
 					${this.name}
 				</button>
 				<d2l-dropdown-content align="start">
-					${this.searchable ?
-						html`<d2l-input-search
-							label="Search"
-							placeholder="Search for some stuff"
-							@d2l-input-search-searched="${this._handleSearchedClick}"></d2l-input-search>` :
-						html``}
+
+					${this._renderSearchContainer()}
+
 					<!-- placing a string inside the checkbox already acts as a label, no need to add one explicitly -->
 					${this.data.map(obj => html`
 						<d2l-input-checkbox value="${obj.id}" @change="${this._handleElementSelected}">${obj.displayName}</d2l-input-checkbox>
 					`)}
-					${ifDefined(this.loadMoreText) && this.loadMoreText !== 'null' ?
-						html`<d2l-button-subtle text="${this.loadMoreText}" @click="${this._handleLoadMoreClick}" ></d2l-button-subtle>` :
-						html``
-					}
+
+					${this._renderLoadMore()}
+
 				</d2l-dropdown-content>
 			</d2l-dropdown>
 		`;
+	}
+
+	_renderSearchContainer() {
+		if (!this.searchable) {
+			return html``;
+		}
+
+		return html`
+			<div class="d2l-simple-filter-search-container">
+				<d2l-input-search
+					label="Search"
+					placeholder="Search for some stuff"
+					@d2l-input-search-searched="${this._handleSearchedClick}">
+				</d2l-input-search>
+			</div>`;
+	}
+
+	_renderLoadMore() {
+		if (!this.loadMoreText || this.loadMoreText === 'null') {
+			return html``;
+		}
+
+		return html`
+			<d2l-button-subtle
+				text="${this.loadMoreText}"
+				@click="${this._handleLoadMoreClick}">
+			</d2l-button-subtle>`;
 	}
 
 	_handleElementSelected(event) {
