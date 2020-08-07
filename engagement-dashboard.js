@@ -3,9 +3,12 @@ import './components/ou-filter.js';
 import './components/summary-card.js';
 import './components/insights-role-filter.js';
 import './components/semester-filter.js';
+import './components/users-table.js';
+import './components/table.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 import {Data} from './model/data.js';
+import {heading3Styles} from '@brightspace-ui/core/components/typography/styles';
 import {Localizer} from './locales/localizer';
 
 async function fetchData() {
@@ -30,6 +33,10 @@ async function testData() {
 					[9, 'Faculty 2', 7, [6606]],
 					[6606, 'Dev', 1, [0]]
 				],
+				users: [
+					[100, 'First', 'Last'],
+					[200, 'Test', 'Student']
+				],
 				selectedOrgUnitIds: [1, 2]
 			}),
 			100
@@ -50,6 +57,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 
 	static get styles() {
 		return [
+			heading3Styles,
 			css`
 				:host {
 					display: block;
@@ -67,13 +75,19 @@ class EngagementDashboard extends Localizer(LitElement) {
 					flex-wrap: wrap;
 				}
 
-				h1 {
-					font-weight: normal; /* default is bold */
+				h1.d2l-heading-1 {
+					font-weight: normal;	/* default for h1 is bold */
+					margin: 0.67em 0;		/* required to be explicitly defined for Edge Legacy */
+					padding: 0;				/* required to be explicitly defined for Edge Legacy */
+				}
+
+				h2.d2l-heading-3 {
+					margin-bottom: 1rem; /* default for d2l h3 style is 1.5 rem */
 				}
 
 				@media screen and (max-width: 615px) {
 					h1 {
-						line-height: 1.2em;
+						line-height: 2rem;
 					}
 
 					:host {
@@ -99,16 +113,21 @@ class EngagementDashboard extends Localizer(LitElement) {
 		});
 
 		return html`
-				<h1>${this.localize('components.insights-engagement-dashboard.title')}</h1>
+				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
 
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
 					<d2l-insights-semester-filter @d2l-insights-semester-filter-change="${this._semesterFilterChange}" page-size="3" ?demo="${this.useTestData}"></d2l-insights-semester-filter>
 					<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}" ?demo="${this.useTestData}"></d2l-insights-role-filter>
 				</div>
+
+				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
 				</div>
+
+				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
+				<d2l-insights-users-table .data="${this._data}"></d2l-insights-users-table>
 		`;
 	}
 
