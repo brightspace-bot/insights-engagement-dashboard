@@ -1,60 +1,8 @@
 import './simple-filter';
 
 import {html, LitElement} from 'lit-element';
+import FakeLms from '../model/fake-lms';
 import Lms from '../model/lms';
-
-async function testData(bookmark, search) {
-	let response = {
-		PagingInfo: {
-			Bookmark: '1326467654053_120127',
-			HasMoreItems: true
-		},
-		Items: [
-			{
-				orgUnitId: 10007,
-				orgUnitName: 'IPSIS Semester New'
-			},
-			{
-				orgUnitId: 121194,
-				orgUnitName: 'Fall Test Semester'
-			},
-			{
-				orgUnitId: 120127,
-				orgUnitName: 'IPSIS Test Semester 1'
-			}
-		]
-	};
-	const secondPage = {
-		PagingInfo: {
-			Bookmark: '1326467625687_120124',
-			HasMoreItems: false
-		},
-		Items: [
-			{
-				orgUnitId: 120126,
-				orgUnitName: 'IPSIS Test Semester 12'
-			},
-			{
-				orgUnitId: 120125,
-				orgUnitName: 'IPSIS Test Semester 123'
-			},
-			{
-				orgUnitId: 120124,
-				orgUnitName: 'IPSIS Test Semester 4'
-			}
-		]
-	};
-	if (bookmark) {
-		response = secondPage;
-	}
-
-	if (search) {
-		response.Items = response.Items
-			.filter(item => item.orgUnitName.toLowerCase().includes(search.toLowerCase()));
-	}
-
-	return await new Promise(resolve =>	setTimeout(() => resolve(response), 100));
-}
 
 /**
  * @property {{id: string, displayName: string, selected: boolean}[]} _filterData
@@ -81,22 +29,17 @@ class SemesterFilter extends LitElement {
 		/** @type {{id: string, displayName: string, selected: boolean}[]} */
 		this._filterData = [];
 		this._bookmark = null;
+	}
 
-		this._lms = new Lms();
+	async firstUpdated() {
+		this._lms = this.isDemo ? new FakeLms() : new Lms();
+		await this._loadData();
 	}
 
 	get selected() {
 		return this._filterData
 			.filter(semester => semester.selected)
 			.map(semester => semester.id);
-	}
-
-	async firstUpdated() {
-		await this._loadData();
-	}
-
-	async _getData(search) {
-		return this.isDemo ? await testData(this._bookmark, search) : await this._lms.fetchSemesters(this._bookmark, search);
 	}
 
 	async _loadData(clear) {
@@ -107,7 +50,7 @@ class SemesterFilter extends LitElement {
 			currentData = [];
 		}
 
-		const data = await this._getData(this._search);
+		const data = await this._lms.fetchSemesters(this._bookmark, this._search);
 
 		this._saveBookmark(data.PagingInfo);
 
@@ -134,7 +77,7 @@ class SemesterFilter extends LitElement {
 				name="${this._name}"
 				load-more-text="${this._bookmark ? 'Load more' : null}"
 				@d2l-simple-filter-load-more-click="${this._loadMoreClick}"
-				?searchable="${true}"
+				searchable
 				@d2l-simple-filter-searched="${this._searchClick}"
 				.data="${this._filterData.filter(semester => semester.visible)}">
 			</d2l-simple-filter>
