@@ -6,7 +6,7 @@ import './components/semester-filter.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 import {Data} from './model/data.js';
-import {LocalizeMixin} from '@brightspace-ui/core/mixins/localize-mixin.js';
+import {Localizer} from './locales/localizer';
 
 async function fetchData() {
 	const response = await fetch('/d2l/api/ap/unstable/insights/data/engagement');
@@ -40,7 +40,7 @@ async function testData() {
 /**
  * @property {Boolean} useTestData - if true, use canned data; otherwise call the LMS
  */
-class EngagementDashboard extends LocalizeMixin(LitElement) {
+class EngagementDashboard extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
@@ -53,6 +53,7 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 			css`
 				:host {
 					display: block;
+					padding: 0 30px;
 				}
 				:host([hidden]) {
 					display: none;
@@ -65,25 +66,23 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 					display: flex;
 					flex-wrap: wrap;
 				}
+
+				h1 {
+					font-weight: normal; /* default is bold */
+				}
+
+				@media screen and (max-width: 615px) {
+					h1 {
+						line-height: 1.2em;
+					}
+
+					:host {
+						display: block;
+						padding: 0 18px;
+					}
+				}
 			`
 		];
-	}
-
-	static async getLocalizeResources(langs) {
-		const langResources = {
-			'en': { 'myLangTerm': 'I am a localized string!' }
-		};
-
-		for (let i = 0; i < langs.length; i++) {
-			if (langResources[langs[i]]) {
-				return {
-					language: langs[i],
-					resources: langResources[langs[i]]
-				};
-			}
-		}
-
-		return null;
 	}
 
 	render() {
@@ -100,10 +99,8 @@ class EngagementDashboard extends LocalizeMixin(LitElement) {
 		});
 
 		return html`
-				<h2>Hello ${this.prop1}!</h2>
+				<h1>${this.localize('components.insights-engagement-dashboard.title')}</h1>
 
-
-				<div>Localization Example: ${this.localize('myLangTerm')}</div>
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
 					<d2l-insights-semester-filter @d2l-insights-semester-filter-change="${this._semesterFilterChange}" ?demo="${this.useTestData}"></d2l-insights-semester-filter>
