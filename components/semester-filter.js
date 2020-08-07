@@ -1,19 +1,7 @@
 import './simple-filter';
 
 import {html, LitElement} from 'lit-element';
-
-async function fetchData(bookmark, search) {
-	const url = new URL('/d2l/api/ap/unstable/insights/data/semesters', location.href);
-	url.searchParams.set('pageSize', 3);
-	if (bookmark) {
-		url.searchParams.set('bookmark', bookmark);
-	}
-	if (search) {
-		url.searchParams.set('search', search);
-	}
-	const response = await fetch(url);
-	return await response.json();
-}
+import Lms from '../model/lms';
 
 async function testData(bookmark, search) {
 	let response = {
@@ -93,6 +81,8 @@ class SemesterFilter extends LitElement {
 		/** @type {{id: string, displayName: string, selected: boolean}[]} */
 		this._filterData = [];
 		this._bookmark = null;
+
+		this._lms = new Lms();
 	}
 
 	get selected() {
@@ -106,7 +96,7 @@ class SemesterFilter extends LitElement {
 	}
 
 	async _getData(search) {
-		return this.isDemo ? await testData(this._bookmark, search) : await fetchData(this._bookmark, search);
+		return this.isDemo ? await testData(this._bookmark, search) : await this._lms.fetchSemesters(this._bookmark, search);
 	}
 
 	async _loadData(clear) {
