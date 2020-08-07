@@ -2,7 +2,9 @@ import './simple-filter';
 
 import {html, LitElement} from 'lit-element';
 import FakeLms from '../model/fake-lms';
+import {ifDefined} from 'lit-html/directives/if-defined.js';
 import Lms from '../model/lms';
+import {Localizer} from '../locales/localizer';
 
 /**
  * @property {{id: string, displayName: string, selected: boolean}[]} _filterData
@@ -11,7 +13,7 @@ import Lms from '../model/lms';
  * @property {string[]} selected - array of selected ids
  * @fires d2l-insights-semester-filter-change
  */
-class SemesterFilter extends LitElement {
+class SemesterFilter extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
@@ -24,8 +26,6 @@ class SemesterFilter extends LitElement {
 
 	constructor() {
 		super();
-
-		this._name = 'Semester';
 		/** @type {{id: string, displayName: string, selected: boolean}[]} */
 		this._filterData = [];
 		this._bookmark = null;
@@ -57,8 +57,7 @@ class SemesterFilter extends LitElement {
 		this._filterData = currentData.concat(data.Items.map(item => ({
 			id: item.orgUnitId.toString(),
 			displayName: item.orgUnitName,
-			selected: false,
-			visible: true
+			selected: false
 		})));
 	}
 
@@ -74,12 +73,12 @@ class SemesterFilter extends LitElement {
 		return html`
 			<d2l-simple-filter
 				@d2l-simple-filter-selected="${this._updateFilterSelections}"
-				name="${this._name}"
-				load-more-text="${this._bookmark ? 'Load more' : null}"
+				name="${this.localize('components.semester-filter.name')}"
+				load-more-text="${ifDefined(this._bookmark ? this.localize('components.semester-filter.loadMore') : undefined)}"
 				@d2l-simple-filter-load-more-click="${this._loadMoreClick}"
 				searchable
 				@d2l-simple-filter-searched="${this._searchClick}"
-				.data="${this._filterData.filter(semester => semester.visible)}">
+				.data="${this._filterData}">
 			</d2l-simple-filter>
 		`;
 	}

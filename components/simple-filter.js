@@ -7,6 +7,7 @@ import '@brightspace-ui/core/components/inputs/input-search';
 import '@brightspace-ui/core/components/button/button-subtle.js';
 
 import {css, html, LitElement} from 'lit-element';
+import {Localizer} from '../locales/localizer';
 import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-styles';
 
 /**
@@ -16,7 +17,7 @@ import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-
  * @fires d2l-simple-filter-load-more-click
  * @fires d2l-simple-filter-searched
  */
-class SimpleFilter extends LitElement {
+class SimpleFilter extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
@@ -48,7 +49,7 @@ class SimpleFilter extends LitElement {
 	render() {
 		return html`
 			<d2l-dropdown>
-				<button class="d2l-dropdown-opener d2l-input-select" aria-label="Open ${this.name} filter">
+				<button class="d2l-dropdown-opener d2l-input-select" aria-label="${this.localize('components.simple-filter.dropdown-action', {name: this.name})}">
 					${this.name}
 				</button>
 				<d2l-dropdown-content align="start">
@@ -75,15 +76,15 @@ class SimpleFilter extends LitElement {
 		return html`
 			<div class="d2l-simple-filter-search-container">
 				<d2l-input-search
-					label="Search"
-					placeholder="Search for some stuff"
+					label="${this.localize('components.simple-filter.search-label')}"
+					placeholder="${this.localize('components.simple-filter.search-placeholder')}"
 					@d2l-input-search-searched="${this._handleSearchedClick}">
 				</d2l-input-search>
 			</div>`;
 	}
 
 	_renderLoadMore() {
-		if (!this.loadMoreText || this.loadMoreText === 'null') {
+		if (!this.loadMoreText) {
 			return html``;
 		}
 
