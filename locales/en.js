@@ -2,5 +2,12 @@
 
 export default {
 	"components.insights-engagement-dashboard.title": "Engagement Dashboard",
-	"components.insights-role-filter.name": "Roles"
+	"components.insights-engagement-dashboard.summaryHeading": "Summary View",
+	"components.insights-engagement-dashboard.resultsHeading": "Results",
+
+	"components.insights-role-filter.name": "Roles",
+
+	"components.insights-users-table.title": "User Details",
+	"components.insights-users-table.lastFirstName": "Last Name, First Name",
+	"components.insights-users-table.totalUsers": "Total Users: {num}"
 };
