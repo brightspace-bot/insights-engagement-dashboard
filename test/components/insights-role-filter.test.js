@@ -92,7 +92,7 @@ describe('d2l-insights-role-filter', () => {
 
 		beforeEach(async() => {
 			el = await fixture(html`<d2l-insights-role-filter></d2l-insights-role-filter>`);
-			await new Promise(resolve => setTimeout(resolve, 0)); // allow fetch to run
+			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run. Add 200 ms for Firefox on OSX
 			await el.updateComplete;
 		});
 

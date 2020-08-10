@@ -2,18 +2,19 @@ import './simple-filter';
 
 import {html, LitElement} from 'lit-element';
 import Lms from '../model/lms';
+import {Localizer} from '../locales/localizer';
 
 const demoData = [
-	{ id: '500', displayName: 'Administrator' },
-	{ id: '600', displayName: 'Instructor' },
-	{ id: '700', displayName: 'Student' }
+	{ Identifier: '500', DisplayName: 'Administrator' },
+	{ Identifier: '600', DisplayName: 'Instructor' },
+	{ Identifier: '700', DisplayName: 'Student' }
 ];
 
 /**
  * @property {{id: string, displayName: string}[]} _filterData
  * @fires d2l-insights-role-filter-change - detail includes the list of selected role ids
  */
-class InsightsRoleFilter extends LitElement {
+class InsightsRoleFilter extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
@@ -25,8 +26,9 @@ class InsightsRoleFilter extends LitElement {
 	constructor() {
 		super();
 
-		this._name = 'Roles';
+		this.isDemo = false;
 		this._roleData = [];
+		this._filterData = [];
 
 		const lms = new Lms();
 		lms.fetchRoles().then(data => this._setRoleData(data));
@@ -63,13 +65,18 @@ class InsightsRoleFilter extends LitElement {
 		this._roleData.find(role => role.Identifier === roleId).selected = selected;
 	}
 
+	firstUpdated() {
+		if (this.isDemo) {
+			this._setRoleData(demoData);
+		}
+	}
+
 	render() {
-		const filterData = this.isDemo ? demoData : this._filterData;
 		return html`
 			<d2l-simple-filter
 				@d2l-simple-filter-selected="${this._updateFilterSelections}"
-				name="${this._name}"
-				.data="${filterData}">
+				name="${this.localize('components.insights-role-filter.name')}"
+				.data="${this._filterData}">
 			</d2l-simple-filter>
 		`;
 	}
