@@ -34,7 +34,7 @@ class TreeSelector extends LitElement {
 				:host([hidden]) {
 					display: none;
 				}
-				
+
 				.search {
 					display: flex;
 					flex-wrap: nowrap;
@@ -79,9 +79,8 @@ class TreeSelector extends LitElement {
 		));
 	}
 
-	_onOpenOrClose() {
-		// NB: requestResize() doesn't exist yet
-		this.shadowRoot.querySelector('d2l-dropdown-content').requestResize();
+	async _onOpenOrClose() {
+		await this.shadowRoot.querySelector('d2l-dropdown-content').resize();
 	}
 }
 customElements.define('d2l-insights-tree-selector', TreeSelector);
