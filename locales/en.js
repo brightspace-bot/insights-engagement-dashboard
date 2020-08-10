@@ -9,6 +9,7 @@ export default {
 
 	"components.semester-filter.name": "Semesters",
 	"components.semester-filter.loadMore": "Load More",
+	"components.semester-filter.semester-name": "{orgUnitName} (Id: {id})",
 
 	"components.simple-filter.search-label": "Search",
 	"components.simple-filter.search-placeholder": "Search...",
