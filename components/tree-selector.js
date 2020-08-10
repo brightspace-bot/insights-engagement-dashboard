@@ -1,11 +1,12 @@
 import './tree-selector-node.js';
 import '@brightspace-ui/core/components/button/button-subtle.js';
-import '@brightspace-ui/core/components/dropdown/dropdown-button.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/inputs/input-search.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
+import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-styles';
+
 /**
  * @property {string} name
  * @property {{name: string, tree:{}[], getTree: function, isOpen: boolean, selectedState: string}[]} tree - used to initialize, but will not be updated
@@ -24,25 +25,29 @@ class TreeSelector extends LitElement {
 	}
 
 	static get styles() {
-		return css`
-			:host {
-				display: inline-block;
-			}
-			:host([hidden]) {
-				display: none;
-			}
-			
-			.search {
-				display: flex;
-				flex-wrap: nowrap;
-			}
-		`;
+		return [
+			selectStyles,
+			css`
+				:host {
+					display: inline-block;
+				}
+				:host([hidden]) {
+					display: none;
+				}
+				
+				.search {
+					display: flex;
+					flex-wrap: nowrap;
+				}
+			`
+		];
 	}
 
 	render() {
 		return html`
 			<d2l-dropdown>
-				<d2l-dropdown-button text="${this.name}">
+				<button class="d2l-dropdown-opener d2l-input-select" text="${this.name}">${this.name}
+				</button>
 					<d2l-dropdown-content align="start">
 						<div class="search" slot="header"><d2l-input-search
 							label="Org unit search"
@@ -56,7 +61,6 @@ class TreeSelector extends LitElement {
 							@_open-or-close="${this._onOpenOrClose}"
 						></d2l-insights-tree-selector-node>
 					</d2l-dropdown-content>
-				</d2l-dropdown-button>
 			</d2l-dropdown>
 		`;
 	}
