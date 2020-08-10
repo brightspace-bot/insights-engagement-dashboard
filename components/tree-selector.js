@@ -58,7 +58,7 @@ class TreeSelector extends LitElement {
 							.tree="${this.tree}"
 							root
 							@d2l-insights-tree-selector-change="${this._onChange}"
-							@_open-or-close="${this._onOpenOrClose}"
+							@d2l-insights-tree-selector-resize="${this._onResize}"
 						></d2l-insights-tree-selector-node>
 					</d2l-dropdown-content>
 			</d2l-dropdown>
@@ -79,7 +79,7 @@ class TreeSelector extends LitElement {
 		));
 	}
 
-	async _onOpenOrClose() {
+	async _onResize() {
 		await this.shadowRoot.querySelector('d2l-dropdown-content').resize();
 	}
 }

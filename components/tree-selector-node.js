@@ -10,6 +10,7 @@ import {css, html, LitElement} from 'lit-element/lit-element.js';
  * @property {boolean} isOpen
  * @property {string} selectedState - may be "explicit", "implicit", "indeterminate", or "none"
  * @fires d2l-insights-tree-selector-change - value of this.selected has changed
+ * @fires d2l-insights-tree-selector-resize - rendered size may have changed
  *
  * Note on selected-state
  * - "none" is a node that is not selected and has no selected descendents
@@ -43,16 +44,16 @@ class TreeSelectorNode extends LitElement {
 			:host([hidden]) {
 				display: none;
 			}
-			
+
 			.node {
 				display: flex;
 				flex-wrap: nowrap;
 			}
-			
+
 			d2l-input-checkbox {
 				display: inline-block;
 			}
-			
+
 			.no-open-control {
 				margin-left: 33px;
 			}
@@ -68,7 +69,7 @@ class TreeSelectorNode extends LitElement {
 			.open-control[open] .closed {
 				display: none;
 			}
-			
+
 			.subtree {
 				margin-left: 30px;
 			}
@@ -145,7 +146,7 @@ class TreeSelectorNode extends LitElement {
 					?open="${childState.isOpen}"
 					selected-state="${this._getChildSelectedState(childState)}"
 					@d2l-insights-tree-selector-change="${this._onSubtreeChange}"
-					@_open-or-close="${this._onSubtreeOpenOrClose}"
+					@d2l-insights-tree-selector-resize="${this._fireResize}"
 				></d2l-insights-tree-selector-node>`;
 			}) }</div>`;
 		} else {
@@ -179,29 +180,12 @@ class TreeSelectorNode extends LitElement {
 		}
 
 		// This is caught by tree-selector and used to force d2l-dropdown-content to resize
-		this.dispatchEvent(new CustomEvent(
-			'_open-or-close',
-			{bubbles: true, composed: false}
-		));
-	}
-
-	_onSubtreeOpenOrClose() {
-		this.dispatchEvent(new CustomEvent(
-			'_open-or-close',
-			{bubbles: true, composed: false}
-		));
+		this._fireResize();
 	}
 
 	_onChange(e) {
 		this.selectedState = e.target.checked ? 'explicit' : 'none';
-
-		/**
-		 * @event d2l-insights-tree-selector-change
-		 */
-		this.dispatchEvent(new CustomEvent(
-			'd2l-insights-tree-selector-change',
-			{bubbles: true, composed: false}
-		));
+		this._fireChange();
 	}
 
 	_onSubtreeChange() {
@@ -230,13 +214,7 @@ class TreeSelectorNode extends LitElement {
 			}
 		}
 
-		/**
-		 * @event d2l-insights-tree-selector-change
-		 */
-		this.dispatchEvent(new CustomEvent(
-			'd2l-insights-tree-selector-change',
-			{bubbles: true, composed: false}
-		));
+		this._fireChange();
 	}
 
 	get _showIndeterminate() {
@@ -247,6 +225,26 @@ class TreeSelectorNode extends LitElement {
 	get _showSelected() {
 		// return this.isExplicitlySelected || this.isImplicitlySelected;
 		return this.selectedState === 'explicit' || this.selectedState === 'implicit';
+	}
+
+	_fireChange() {
+		/**
+		 * @event d2l-insights-tree-selector-change
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-selector-change',
+			{bubbles: true, composed: false}
+		));
+	}
+
+	_fireResize() {
+		/**
+		 * @event d2l-insights-tree-selector-resize
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-selector-resize',
+			{bubbles: true, composed: false}
+		));
 	}
 }
 customElements.define('d2l-insights-tree-selector-node', TreeSelectorNode);
