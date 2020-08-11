@@ -5,6 +5,7 @@ import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/inputs/input-search.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
+import {Localizer} from '../locales/localizer';
 import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-styles';
 
 /**
@@ -15,7 +16,7 @@ import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-
  * selectedState - may be "explicit", "implicit", "indeterminate", or "none"
  * @fires d2l-insights-tree-selector-change - value of this.selected has changed
  */
-class TreeSelector extends LitElement {
+class TreeSelector extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
@@ -38,6 +39,7 @@ class TreeSelector extends LitElement {
 				.search {
 					display: flex;
 					flex-wrap: nowrap;
+					width: 334px;
 				}
 			`
 		];
@@ -46,12 +48,17 @@ class TreeSelector extends LitElement {
 	render() {
 		return html`
 			<d2l-dropdown>
-				<button class="d2l-dropdown-opener d2l-input-select" text="${this.name}">${this.name}</button>
+				<button class="d2l-dropdown-opener d2l-input-select"
+					aria-label="${this.localize('components.tree-selector.dropdown-action', {name: this.name})}"
+				>${this.name}</button>
 					<d2l-dropdown-content align="start">
-						<div class="search" slot="header"><d2l-input-search
-							label="Org unit search"
-							placeholder="Search..."
-						></d2l-input-search><d2l-button-subtle text="Clear"></d2l-button-subtle></div>
+						<div class="search" slot="header">
+							<d2l-input-search
+								label="${this.localize('components.tree-selector.search-label')}"
+								placeholder="${this.localize('components.tree-selector.search-placeholder')}"
+								@d2l-input-search-searched="${this._onSearch}"
+							></d2l-input-search>
+						</div>
 						<d2l-insights-tree-selector-node
 							id="tree-selector-root-node"
 							.tree="${this.tree}"
@@ -76,6 +83,10 @@ class TreeSelector extends LitElement {
 			'd2l-insights-tree-selector-change',
 			{bubbles: true, composed: false}
 		));
+	}
+
+	_onSearch() {
+		// coming soon
 	}
 
 	async _onResize() {

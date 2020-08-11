@@ -2,6 +2,7 @@ import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/inputs/input-checkbox';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
+import {Localizer} from '../locales/localizer';
 
 /**
  * @property {string} name
@@ -24,7 +25,7 @@ import {css, html, LitElement} from 'lit-element/lit-element.js';
  *      marked as explicitly selected. So if dept1 is selected and the user unchecks course1, then course2, course3,
  *      etc. are explicitly selected.
  */
-class TreeSelectorNode extends LitElement {
+class TreeSelectorNode extends Localizer(LitElement) {
 	static get properties() {
 		return {
 			name: { type: String },
@@ -61,8 +62,7 @@ class TreeSelectorNode extends LitElement {
 			.open-control {
 				cursor: default;
 				margin-top: -3px;
-				margin-left: 0px;
-				padding-right: 12px;
+				padding-inline-end: 12px;
 			}
 			.open-control .open {
 				display: none;
@@ -75,7 +75,7 @@ class TreeSelectorNode extends LitElement {
 			}
 
 			.subtree {
-				margin-left: 34px;
+				margin-inline-start: 34px;
 			}
 			.subtree[root] {
 				margin-left: 0px;
@@ -164,7 +164,12 @@ class TreeSelectorNode extends LitElement {
 	}
 
 	get _arrowLabel() {
-		return `${this.isOpen ? 'Collapse' : 'Expand'} ${this.name}`;
+		return this.localize(
+			this.isOpen ?
+				'components.tree-selector.arrow-label.open' :
+				'components.tree-selector.arrow-label.closed',
+			{name: this.name}
+		);
 	}
 
 	get _domChildren() {
