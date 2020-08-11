@@ -70,8 +70,8 @@ class OuFilter extends Localizer(MobxLitElement) {
 				name: this.localize('components.org-unit-filter.org-unit-name', {orgUnitName: x[NAME], id: x[ID]}),
 				// pre-load down to any selected descendents: otherwise selecting then deselecting this node
 				// before opening it won't deselect them
-				tree: (x[TYPE] !== 3 && x[STATE] === 'indeterminate') ? this._getChildren(x[ID]) : null,
-				getTree: (x[TYPE] === 3 || x[STATE] === 'indeterminate') ? null : async() => this._getChildren(x[ID]),
+				tree: (x[TYPE] !== 3 && x[STATE] !== 'none') ? this._getChildren(x[ID]) : null,
+				getTree: (x[TYPE] !== 3 && x[STATE] === 'none') ? async() => this._getChildren(x[ID]) : null,
 				selectedState: x[STATE]
 			}))
 			.sort((a, b) => a.name.localeCompare(b.name));
