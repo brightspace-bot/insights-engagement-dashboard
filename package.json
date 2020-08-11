@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@adobe/lit-mobx": "0.0.4",
-    "@brightspace-ui/core": "^1.55.1",
+    "@brightspace-ui/core": "^1.69.0",
     "@webcomponents/webcomponentsjs": "^2",
     "highcharts": "^8.1.2",
     "lit-element": "^2",

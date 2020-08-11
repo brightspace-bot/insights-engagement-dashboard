@@ -46,8 +46,7 @@ class TreeSelector extends LitElement {
 	render() {
 		return html`
 			<d2l-dropdown>
-				<button class="d2l-dropdown-opener d2l-input-select" text="${this.name}">${this.name}
-				</button>
+				<button class="d2l-dropdown-opener d2l-input-select" text="${this.name}">${this.name}</button>
 					<d2l-dropdown-content align="start">
 						<div class="search" slot="header"><d2l-input-search
 							label="Org unit search"

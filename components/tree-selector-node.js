@@ -52,13 +52,17 @@ class TreeSelectorNode extends LitElement {
 
 			d2l-input-checkbox {
 				display: inline-block;
+				margin-bottom: 16px;
 			}
 
 			.no-open-control {
-				margin-left: 33px;
+				margin-left: 30px;
 			}
 			.open-control {
-				margin-left: 15px;
+				cursor: default;
+				margin-top: -3px;
+				margin-left: 0px;
+				padding-right: 12px;
 			}
 			.open-control .open {
 				display: none;
@@ -71,7 +75,7 @@ class TreeSelectorNode extends LitElement {
 			}
 
 			.subtree {
-				margin-left: 30px;
+				margin-left: 34px;
 			}
 			.subtree[root] {
 				margin-left: 0px;
@@ -125,10 +129,15 @@ class TreeSelectorNode extends LitElement {
 		// show the open/close arrow if this is not a leaf
 		if (this.isOpen || this.tree || this.getTree) {
 			return html`
-				<span class="open-control" ?open="${this.isOpen}" @click="${this._onArrowClick}">
-					<d2l-icon class="closed" icon="tier1:arrow-expand-small"></d2l-icon>
-					<d2l-icon class="open" icon="tier1:arrow-collapse-small"></d2l-icon>
-				</span>
+				<a href="#" class="open-control"
+					?open="${this.isOpen}"
+				 	@click="${this._onArrowClick}"
+				 	aria-label="${this._arrowLabel}"
+				 	aria-expanded="${this.isOpen}"
+				 >
+					<d2l-icon class="closed" icon="tier1:arrow-expand"></d2l-icon>
+					<d2l-icon class="open" icon="tier1:arrow-collapse"></d2l-icon>
+				</a>
 			`;
 		} else {
 			return html`<span class="no-open-control"></span>`;
@@ -152,6 +161,10 @@ class TreeSelectorNode extends LitElement {
 		} else {
 			return html``;
 		}
+	}
+
+	get _arrowLabel() {
+		return `${this.isOpen ? 'Collapse' : 'Expand'} ${this.name}`;
 	}
 
 	get _domChildren() {

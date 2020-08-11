@@ -25,7 +25,7 @@ async function demoData() {
 					[1, 'Course 1', 3, [3, 4]],
 					[2, 'Course 2', 3, [3, 4]],
 					[6, 'Course 3 has a surprisingly long name, but nonetheless this kind of thing is bound to happen sometimes and we do need to design for it. Is that not so?', 3, [7, 4]],
-					[8, 'Course 4', 3, [5]],
+					[8, 'ZCourse 4', 3, [5]],
 					[3, 'Department 1', 2, [5]],
 					[7, 'Department 2', 2, [5]],
 					[4, 'Semester', 5, [6606]],
