@@ -16,5 +16,6 @@ export default {
 
 	"components.insights-users-table.title": "User Details",
 	"components.insights-users-table.lastFirstName": "Last Name, First Name",
-	"components.insights-users-table.totalUsers": "Total Users: {num}"
+	"components.insights-users-table.totalUsers": "Total Users: {num}",
+	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results."
 };

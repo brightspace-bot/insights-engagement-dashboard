@@ -109,6 +109,12 @@ class EngagementDashboard extends Localizer(LitElement) {
 				// 	countUniqueField: 'UserId',
 				// 	messageProvider: () => 'users'
 				// }
+				{
+					id: 'd2l-insights-engagement-results',
+					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
+					countUniqueField: 'UserId',
+					messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
+				}
 			]
 		});
 
