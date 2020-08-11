@@ -50,9 +50,9 @@ describe('d2l-insights-semester-filter', () => {
 	describe('render', () => {
 		it('should render semesters', async() => {
 			const expectedFilterData = [
-				{ id: '10007', displayName: 'IPSIS Semester New', selected: false },
-				{ id: '121194', displayName: 'Fall Test Semester', selected: false },
-				{ id: '120127', displayName: 'IPSIS Test Semester 1', selected: false }
+				{ id: '10007', displayName: 'IPSIS Semester New (Id: 10007)', selected: false },
+				{ id: '121194', displayName: 'Fall Test Semester (Id: 121194)', selected: false },
+				{ id: '120127', displayName: 'IPSIS Test Semester 1 (Id: 120127)', selected: false }
 			];
 
 			const el = await fixture(html`<d2l-insights-semester-filter></d2l-insights-semester-filter>`);
