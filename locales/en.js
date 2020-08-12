@@ -21,8 +21,10 @@ export default {
 	"components.tree-selector.search-label": "Search",
 	"components.tree-selector.search-placeholder": "Search...",
 	"components.tree-selector.dropdown-action": "Open {name} filter",
-	"components.tree-selector.arrow-label.closed": "Expand {name}",
-	"components.tree-selector.arrow-label.open": "Collapse {name}",
+	"components.tree-selector.arrow-label.closed": "Expand {name} at level {level}, child of {parentName}",
+	"components.tree-selector.arrow-label.open": "Collapse {name} at level {level}, child of {parentName}",
+	"components.tree-selector.arrow-label.root": "root",
+	"components.tree-selector.node.aria-label": "{name}, child of {parentName},",
 
 	"components.insights-users-table.title": "User Details",
 	"components.insights-users-table.lastFirstName": "Last Name, First Name",

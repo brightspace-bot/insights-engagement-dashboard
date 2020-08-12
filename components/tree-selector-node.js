@@ -3,6 +3,7 @@ import '@brightspace-ui/core/components/inputs/input-checkbox';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 import {Localizer} from '../locales/localizer';
+import {RtlMixin} from '@brightspace-ui/core/mixins/rtl-mixin.js';
 
 /**
  * @property {string} name
@@ -25,7 +26,7 @@ import {Localizer} from '../locales/localizer';
  *      marked as explicitly selected. So if dept1 is selected and the user unchecks course1, then course2, course3,
  *      etc. are explicitly selected.
  */
-class TreeSelectorNode extends Localizer(LitElement) {
+class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 	static get properties() {
 		return {
 			name: { type: String },
@@ -33,7 +34,10 @@ class TreeSelectorNode extends Localizer(LitElement) {
 			getTree: { type: Object, attribute: false },
 			isOpen: { type: Boolean, reflect: true, attribute: 'open' },
 			selectedState: { type: String, reflect: true, attribute: 'selected-state' },
-			isRoot: { type: Boolean, reflect: true, attribute: 'root' }
+			isRoot: { type: Boolean, reflect: true, attribute: 'root' },
+			// for screen readers
+			indentLevel: { type: Number, attribute: 'indent-level' },
+			parentName: { type: String, attribute: 'parent-name' }
 		};
 	}
 
@@ -58,11 +62,22 @@ class TreeSelectorNode extends Localizer(LitElement) {
 
 			.no-open-control {
 				margin-left: 30px;
+				margin-right: 0px;
 			}
+			:host([dir="rtl"]) .node .no-open-control {
+				margin-left: 0px;
+				margin-right: 30px;
+			}
+
 			.open-control {
 				cursor: default;
 				margin-top: -3px;
-				padding-inline-end: 12px;
+				padding-right: 12px;
+				padding-left: 0px;
+			}
+			:host([dir="rtl"]) .node .open-control {
+				padding-right: 0px;
+				padding-left: 12px;
 			}
 			.open-control .open {
 				display: none;
@@ -75,10 +90,18 @@ class TreeSelectorNode extends Localizer(LitElement) {
 			}
 
 			.subtree {
-				margin-inline-start: 34px;
+				margin-left: 34px;
+				margin-right: 0px;
+			}
+			:host([dir="rtl"]) .subtree {
+				margin-left: 0px;
+				margin-right: 34px;
 			}
 			.subtree[root] {
 				margin-left: 0px;
+			}
+			:host([dir="rtl"]) .subtree[root] {
+				margin-right: 0px;
 			}
 			.subtree[hidden] {
 				display: none;
@@ -91,6 +114,7 @@ class TreeSelectorNode extends Localizer(LitElement) {
 
 		this.isOpen = false;
 		this.selectedState = 'none';
+		this.indentLevel = 0;
 	}
 
 	get selected() {
@@ -119,6 +143,7 @@ class TreeSelectorNode extends Localizer(LitElement) {
 				<d2l-input-checkbox
 					?checked="${this._showSelected}"
 					?indeterminate="${this._showIndeterminate}"
+					aria-label="${this.localize('components.tree-selector.node.aria-label', {name: this.name, parentName: this.parentName})}"
 					@change="${this._onChange}"
 				>${this.name}</d2l-input-checkbox>
 			</div>
@@ -153,6 +178,8 @@ class TreeSelectorNode extends Localizer(LitElement) {
 					.tree="${x.tree}"
 					.getTree="${x.getTree}"
 					?open="${childState.isOpen}"
+					indent-level="${this.indentLevel + 1}"
+					parent-name="${this.name || this.localize('components.tree-selector.arrow-label.root')}"
 					selected-state="${this._getChildSelectedState(childState)}"
 					@d2l-insights-tree-selector-change="${this._onSubtreeChange}"
 					@d2l-insights-tree-selector-resize="${this._fireResize}"
@@ -168,7 +195,7 @@ class TreeSelectorNode extends Localizer(LitElement) {
 			this.isOpen ?
 				'components.tree-selector.arrow-label.open' :
 				'components.tree-selector.arrow-label.closed',
-			{name: this.name}
+			{name: this.name, level: this.indentLevel, parentName: this.parentName }
 		);
 	}
 
