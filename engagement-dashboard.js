@@ -5,6 +5,9 @@ import './components/insights-role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
 import './components/table.js';
+import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown.js';
+import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-category.js';
+import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-option.js';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
 import {Data} from './model/data.js';
@@ -117,8 +120,16 @@ class EngagementDashboard extends Localizer(LitElement) {
 
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
-					<d2l-insights-semester-filter @d2l-insights-semester-filter-change="${this._semesterFilterChange}" page-size="3" ?demo="${this.useTestData}"></d2l-insights-semester-filter>
+					<d2l-insights-semester-filter @d2l-insights-semester-filter-change="${this._semesterFilterChange}" page-size="6" ?demo="${this.useTestData}"></d2l-insights-semester-filter>
 					<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}" ?demo="${this.useTestData}"></d2l-insights-role-filter>
+
+					<d2l-filter-dropdown total-selected-option-count="0" opener-text="Semesters">
+						<d2l-filter-dropdown-category key="1" category-text="Semesters" selected-option-count="2">
+							<d2l-filter-dropdown-option text="Option 1 - 1" value="1"></d2l-filter-dropdown-option>
+							<d2l-filter-dropdown-option text="Option 1 - 2" value="2"></d2l-filter-dropdown-option>
+							<d2l-filter-dropdown-option text="Option 1 - 3" value="3"></d2l-filter-dropdown-option>
+						</d2l-filter-dropdown-category>
+					</d2l-filter-dropdown>
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
