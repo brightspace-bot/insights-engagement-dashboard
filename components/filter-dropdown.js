@@ -59,7 +59,7 @@ class DropdownFilter extends Localizer(LitElement) {
 					@d2l-filter-dropdown-category-searched="${this._handleSearchedClick}" >
 
 					${this.data.map(obj => html`
-						<d2l-filter-dropdown-option text="${obj.displayName}" value="${obj.id}"></d2l-filter-dropdown-option>
+						<d2l-filter-dropdown-option id="${obj.id}" text="${obj.displayName}" value="${obj.id}"></d2l-filter-dropdown-option>
 					`)}
 
 				</d2l-filter-dropdown-category>
@@ -71,7 +71,7 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	updated() {
-		if (this._loadMoreClickFlag) {
+		/*if (this._loadMoreClickFlag) {
 			this._loadMoreClickFlag = false;
 			return;
 		}
@@ -80,7 +80,7 @@ class DropdownFilter extends Localizer(LitElement) {
 		this.renderRoot.querySelectorAll('d2l-filter-dropdown-option')
 			.forEach(node => {
 				node.selected = false;
-			});
+			});*/
 	}
 
 	_renderLoadMore() {
