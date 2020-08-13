@@ -1,7 +1,3 @@
-import '@brightspace-ui/core/components/dropdown/dropdown-content';
-import '@brightspace-ui/core/components/dropdown/dropdown';
-import '@brightspace-ui/core/components/inputs/input-checkbox';
-import '@brightspace-ui/core/components/inputs/input-search';
 import '@brightspace-ui/core/components/button/button-subtle.js';
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown.js';
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-category.js';
@@ -32,8 +28,12 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	static get styles() {
-		return [css``
-		];
+		return [css`
+			d2l-button-subtle {
+				margin: 0.25rem;
+				display: grid;
+			}
+		`];
 	}
 
 	get selected() {
@@ -85,7 +85,7 @@ class DropdownFilter extends Localizer(LitElement) {
 
 		return html`
 			<d2l-button-subtle
-				text="${this.localize('components.simple-filter.loadMore')}"
+				text="${this.localize('components.dropdown-filter.loadMore')}"
 				@click="${this._handleLoadMoreClick}">
 			</d2l-button-subtle>`;
 	}
