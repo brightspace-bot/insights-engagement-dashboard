@@ -8,9 +8,9 @@ import {Localizer} from '../locales/localizer';
 
 /**
  * @property {{id: string, displayName: string, selected: boolean}[]} _filterData
- * @property {string} _bookmark
- * @property {string} _search - serach string
  * @property {string[]} selected - array of selected ids
+ * @property {number} page-size
+ * @property {boolean} demo
  * @fires d2l-insights-semester-filter-change
  * @fires d2l-insights-semester-filter-close
  */
