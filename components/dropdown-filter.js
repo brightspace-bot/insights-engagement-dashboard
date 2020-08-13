@@ -83,6 +83,16 @@ class DropdownFilter extends Localizer(LitElement) {
 		`;
 	}
 
+	async updated() {
+		if (!this.hasMore && this._loadMoreClickFlag) {
+			this._loadMoreClickFlag = false;
+
+			// move focus to the first filter item/option when the last page is loaded and Load More button is removed
+			await this.updateComplete;
+			this.shadowRoot.querySelector('d2l-filter-dropdown-option').focus();
+		}
+	}
+
 	_setSelectedState(id, selected) {
 		this.data.find(item => item.id === id)._selected = selected;
 		this._updateSelectedCount();
@@ -117,6 +127,7 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	_handleLoadMoreClick() {
+		this._loadMoreClickFlag = true;
 		this.dispatchEvent(new CustomEvent('d2l-insights-dropdown-filter-load-more-click'));
 	}
 
