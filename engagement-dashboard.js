@@ -117,7 +117,13 @@ class EngagementDashboard extends Localizer(LitElement) {
 
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
-					<d2l-insights-semester-filter @d2l-insights-semester-filter-change="${this._semesterFilterChange}" page-size="3" ?demo="${this.useTestData}"></d2l-insights-semester-filter>
+					<d2l-insights-semester-filter
+						page-size="3"
+						?demo="${this.useTestData}"
+						@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
+						@d2l-insights-semester-filter-close="${this._semesterFilterChange}"
+						>
+					</d2l-insights-semester-filter>
 					<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}" ?demo="${this.useTestData}"></d2l-insights-role-filter>
 				</div>
 

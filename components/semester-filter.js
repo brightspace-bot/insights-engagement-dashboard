@@ -13,6 +13,7 @@ import {Localizer} from '../locales/localizer';
  * @property {string} _search - serach string
  * @property {string[]} selected - array of selected ids
  * @fires d2l-insights-semester-filter-change
+ * @fires d2l-insights-semester-filter-close
  */
 class SemesterFilter extends Localizer(LitElement) {
 
@@ -28,7 +29,7 @@ class SemesterFilter extends Localizer(LitElement) {
 
 	constructor() {
 		super();
-		/** @type {{id: string, displayName: string, selected: boolean}[]} */
+		/** @type {{id: string, displayName: string}[]} */
 		this._filterData = [];
 		this._bookmark = null;
 		this.pageSize = 3;
@@ -40,9 +41,7 @@ class SemesterFilter extends Localizer(LitElement) {
 	}
 
 	get selected() {
-		return this._filterData
-			.filter(semester => semester.selected)
-			.map(semester => semester.id);
+		return this.shadowRoot.querySelector('d2l-insights-dropdown-filter').selected;
 	}
 
 	async _loadData(clear) {
@@ -68,10 +67,6 @@ class SemesterFilter extends Localizer(LitElement) {
 		this._bookmark = pagingInfo.HasMoreItems ? pagingInfo.Bookmark : null;
 	}
 
-	_setSelectedState(id, selected) {
-		this._filterData.find(semester => semester.id === id).selected = selected;
-	}
-
 	render() {
 		return html`
 			<d2l-insights-dropdown-filter
@@ -82,15 +77,19 @@ class SemesterFilter extends Localizer(LitElement) {
 				@d2l-insights-dropdown-filter-selected="${this._updateFilterSelections}"
 				@d2l-insights-dropdown-filter-load-more-click="${this._loadMoreClick}"
 				@d2l-insights-dropdown-filter-searched="${this._searchClick}"
+				@d2l-insights-dropdown-filter-selection-cleared="${this._updateFilterSelections}"
+				@d2l-insights-dropdown-filter-close="${this._filterClose}"
 			>
 			</d2l-insights-dropdown-filter>
 		`;
 	}
 
-	_updateFilterSelections(event) {
-		this._setSelectedState(event.detail.itemId, event.detail.selected);
-
+	_updateFilterSelections() {
 		this.dispatchEvent(new Event('d2l-insights-semester-filter-change'));
+	}
+
+	_filterClose() {
+		this.dispatchEvent(new Event('d2l-insights-semester-filter-close'));
 	}
 
 	async _searchClick(event) {
