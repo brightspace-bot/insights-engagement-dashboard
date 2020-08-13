@@ -73,6 +73,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 					margin-bottom: 25px;
 					display: flex;
 					flex-wrap: wrap;
+					width: 50%;
 				}
 
 				h1.d2l-heading-1 {
@@ -115,6 +116,24 @@ class EngagementDashboard extends Localizer(LitElement) {
 					countUniqueField: 'UserId',
 					messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
 				}
+				// {
+				// 	id: 'd2l-insights-engagement-results2',
+				// 	title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
+				// 	countUniqueField: 'UserId',
+				// 	messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
+				// },
+				// {
+				// 	id: 'd2l-insights-engagement-results3',
+				// 	title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
+				// 	countUniqueField: 'UserId',
+				// 	messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
+				// },
+				// {
+				// 	id: 'd2l-insights-engagement-results4',
+				// 	title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
+				// 	countUniqueField: 'UserId',
+				// 	messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
+				// }
 			]
 		});
 

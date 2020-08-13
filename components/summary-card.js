@@ -20,8 +20,8 @@ class SummaryCard extends MobxLitElement {
 			
 			.summary-card {
 				width: fit-content;
-				border-width: 4px;
-				border-color: aliceblue;
+				border-width: 1.5px;
+				border-color: var(--d2l-color-mica);
 				border-style: solid;
 				padding: 10px;
 				border-radius: 15px;
@@ -46,6 +46,7 @@ class SummaryCard extends MobxLitElement {
 			
 			.summary-card-title {
 				font-size: smaller;
+				font-weight: bold;
 			}
 			
 			.summary-card-field {
@@ -55,12 +56,16 @@ class SummaryCard extends MobxLitElement {
 			}
 			
 			.summary-card-value {
-				font-size: 40px;
+				font-size: 20px;
 				color: lightsteelblue;
+				margin: 0;
 			}
 			
 			.summary-card-message {
 				max-width: 120px;
+				font-size: 15px;
+				line-height: 1rem;
+				display: inline-block;
 			}
 		`;
 	}
