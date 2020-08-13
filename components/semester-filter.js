@@ -3,7 +3,6 @@ import './dropdown-filter';
 
 import {html, LitElement} from 'lit-element';
 import FakeLms from '../model/fake-lms';
-import {ifDefined} from 'lit-html/directives/if-defined.js';
 import Lms from '../model/lms';
 import {Localizer} from '../locales/localizer';
 
@@ -71,7 +70,7 @@ class SemesterFilter extends Localizer(LitElement) {
 		return html`
 			<d2l-insights-dropdown-filter
 				name="${this.localize('components.semester-filter.name')}"
-				?more="${ifDefined(this._bookmark ? true : undefined)}"
+				?more="${!!this._bookmark}"
 				.data="${this._filterData}"
 
 				@d2l-insights-dropdown-filter-selected="${this._updateFilterSelections}"
