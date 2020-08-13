@@ -19,7 +19,8 @@ class SummaryCard extends MobxLitElement {
 			}
 			
 			.summary-card {
-				width: fit-content;
+				width: 280px;
+				height: 120px;
 				border-width: 1.5px;
 				border-color: var(--d2l-color-mica);
 				border-style: solid;
@@ -58,11 +59,11 @@ class SummaryCard extends MobxLitElement {
 			.summary-card-value {
 				font-size: 20px;
 				color: lightsteelblue;
-				margin: 0;
+				margin: 10px;
 			}
 			
 			.summary-card-message {
-				max-width: 120px;
+				max-width: 170px;
 				font-size: 15px;
 				line-height: 1rem;
 				display: inline-block;

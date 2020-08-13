@@ -115,25 +115,25 @@ class EngagementDashboard extends Localizer(LitElement) {
 					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
 					countUniqueField: 'UserId',
 					messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
+				},
+				{
+					id: 'd2l-insights-engagement-results2',
+					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
+					countUniqueField: 'UserId',
+					messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
+				},
+				{
+					id: 'd2l-insights-engagement-results3',
+					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
+					countUniqueField: 'UserId',
+					messageProvider: () => 'Users currently have one or more overdue assignments.'
+				},
+				{
+					id: 'd2l-insights-engagement-results4',
+					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
+					countUniqueField: 'UserId',
+					messageProvider: () => 'Users have no system access in the last 14 days.'
 				}
-				// {
-				// 	id: 'd2l-insights-engagement-results2',
-				// 	title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
-				// 	countUniqueField: 'UserId',
-				// 	messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
-				// },
-				// {
-				// 	id: 'd2l-insights-engagement-results3',
-				// 	title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
-				// 	countUniqueField: 'UserId',
-				// 	messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
-				// },
-				// {
-				// 	id: 'd2l-insights-engagement-results4',
-				// 	title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
-				// 	countUniqueField: 'UserId',
-				// 	messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
-				// }
 			]
 		});
 
