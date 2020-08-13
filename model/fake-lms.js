@@ -13,10 +13,10 @@ class Lms {
 	 * @returns {{PagingInfo:{Bookmark: string, HasMoreItems: boolean}, Items: {orgUnitId: number, orgUnitName: string}[]}}
 	 */
 	async fetchSemesters(pageSize, bookmark, search) {
-		let response = {
+		const response = {
 			PagingInfo: {
-				Bookmark: '1326467654053_120127',
-				HasMoreItems: true
+				Bookmark: '0',
+				HasMoreItems: false
 			},
 			Items: [
 				{
@@ -30,15 +30,7 @@ class Lms {
 				{
 					orgUnitId: 120127,
 					orgUnitName: 'IPSIS Test Semester 1'
-				}
-			]
-		};
-		const secondPage = {
-			PagingInfo: {
-				Bookmark: '1326467625687_120124',
-				HasMoreItems: false
-			},
-			Items: [
+				},
 				{
 					orgUnitId: 120126,
 					orgUnitName: 'IPSIS Test Semester 12'
@@ -50,19 +42,27 @@ class Lms {
 				{
 					orgUnitId: 120124,
 					orgUnitName: 'IPSIS Test Semester 4'
+				},
+				{
+					orgUnitId: 1201240,
+					orgUnitName: 'IPSIS Test Semester 42'
 				}
 			]
 		};
-		if (bookmark) {
-			response = secondPage;
-		}
+
+		response.Items = response.Items.map((item, index) => Object.assign(item, {index}));
+
+		const index = parseInt(bookmark || '-1');
+		response.Items = response.Items.slice(index + 1);
 
 		if (search) {
 			response.Items = response.Items
 				.filter(item => item.orgUnitName.toLowerCase().includes(search.toLowerCase()));
 		}
-
+		response.PagingInfo.HasMoreItems = response.Items.length > pageSize;
 		response.Items = response.Items.slice(0, pageSize);
+		response.PagingInfo.Bookmark = response.Items[response.Items.length - 1].index.toString();
+
 		return await new Promise(resolve =>	setTimeout(() => resolve(response), 100));
 	}
 }
