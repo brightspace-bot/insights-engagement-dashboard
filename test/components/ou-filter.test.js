@@ -20,7 +20,7 @@ describe('d2l-insights-ou-filter', () => {
 				[6607, 'Dev', 1, [0]]
 			],
 			users: [],
-			selectedOrgUnitIds: [2, 7]
+			selectedOrgUnitIds: [2, 8]
 		}
 	};
 
@@ -51,8 +51,8 @@ describe('d2l-insights-ou-filter', () => {
 			const subtree = selector.tree[0].tree;
 			expect(subtree).to.exist;
 			expect(subtree).to.have.length(3);
-			expect(subtree[0]).to.deep.equal({ name: 'Course 4 (Id: 8)', selectedState: 'none', tree: null, getTree: null });
-			expect(subtree[2]).to.include({ name: 'Department 2 (Id: 7)', selectedState: 'explicit', tree: null });
+			expect(subtree[0]).to.deep.equal({ name: 'Course 4 (Id: 8)', selectedState: 'explicit', tree: null, getTree: null });
+			expect(subtree[2]).to.include({ name: 'Department 2 (Id: 7)', selectedState: 'none', tree: null });
 			expect(subtree[2]).to.have.property('getTree');
 			expect(await subtree[2].getTree()).to.deep.equal([{ name: 'Course 3 (Id: 6)', selectedState: 'none', tree: null, getTree: null }]);
 
@@ -68,7 +68,7 @@ describe('d2l-insights-ou-filter', () => {
 			const el = await fixture(html`<d2l-insights-ou-filter .data="${data}"></d2l-insights-ou-filter>`);
 			// on Safari only, the children don't finish rendering during the above await
 			await new Promise(resolve => setTimeout(resolve, 500));
-			expect(el.selected.map(x => x.name)).to.deep.equal(['Course 2 (Id: 2)', 'Department 2 (Id: 7)']);
+			expect(el.selected.map(x => x.name)).to.deep.equal(['Course 4 (Id: 8)', 'Course 2 (Id: 2)']);
 		});
 	});
 
