@@ -1,4 +1,5 @@
 import './simple-filter';
+import './dropdown-filter';
 
 import {html, LitElement} from 'lit-element';
 import FakeLms from '../model/fake-lms';
@@ -73,15 +74,16 @@ class SemesterFilter extends Localizer(LitElement) {
 
 	render() {
 		return html`
-			<d2l-simple-filter
-				@d2l-simple-filter-selected="${this._updateFilterSelections}"
+			<d2l-insights-dropdown-filter
 				name="${this.localize('components.semester-filter.name')}"
-				load-more-text="${ifDefined(this._bookmark ? this.localize('components.semester-filter.loadMore') : undefined)}"
-				@d2l-simple-filter-load-more-click="${this._loadMoreClick}"
-				searchable
-				@d2l-simple-filter-searched="${this._searchClick}"
-				.data="${this._filterData}">
-			</d2l-simple-filter>
+				?more="${ifDefined(this._bookmark ? true : undefined)}"
+				.data="${this._filterData}"
+
+				@d2l-insights-dropdown-filter-selected="${this._updateFilterSelections}"
+				@d2l-insights-dropdown-filter-load-more-click="${this._loadMoreClick}"
+				@d2l-insights-dropdown-filter-searched="${this._searchClick}"
+			>
+			</d2l-insights-dropdown-filter>
 		`;
 	}
 
