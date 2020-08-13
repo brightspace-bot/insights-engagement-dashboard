@@ -53,11 +53,11 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 			.node {
 				display: flex;
 				flex-wrap: nowrap;
+				margin-bottom: 16px;
 			}
 
 			d2l-input-checkbox {
 				display: inline-block;
-				margin-bottom: 16px;
 			}
 
 			.no-open-control {
@@ -106,6 +106,16 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 			.subtree[hidden] {
 				display: none;
 			}
+
+			.checkbox-text {
+				display: inline-block;
+				margin-left: 0.5rem;
+				margin-right: 0rem;
+			}
+			:host([dir="rtl"]) .node d2l-input-checkbox .checkbox-text {
+				margin-left: 0rem;
+				margin-right: 0.5rem;
+			}
 		`;
 	}
 
@@ -145,7 +155,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 					?indeterminate="${this._showIndeterminate}"
 					aria-label="${this.localize('components.tree-selector.node.aria-label', {name: this.name, parentName: this.parentName})}"
 					@change="${this._onChange}"
-				>${this.name}</d2l-input-checkbox>
+				><span class="checkbox-text">${this.name}</span></d2l-input-checkbox>
 			</div>
 		`;
 	}
