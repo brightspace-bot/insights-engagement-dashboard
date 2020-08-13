@@ -15,7 +15,6 @@ export default {
 	"components.simple-filter.dropdown-action": "Open {name} filter",
 
 	"components.dropdown-filter.load-more": "Load More",
-	"components.dropdown-filter.opener-text-single": "{filterName}: {value}",
 	"components.dropdown-filter.opener-text-multiple": "{filterName}: {selectedCount} selected",
 
 	"components.insights-users-table.title": "User Details",
