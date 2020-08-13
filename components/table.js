@@ -20,6 +20,13 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 
 	static get styles() {
 		return css`
+			:host {
+				display: block;
+			}
+			:host([hidden]) {
+				display: none;
+			}
+
 			:host([dir="rtl"]) .d2l-insights-table-table {
 				text-align: right;
 			}

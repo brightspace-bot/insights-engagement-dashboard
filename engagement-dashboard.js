@@ -34,8 +34,17 @@ async function demoData() {
 					[6606, 'Dev', 1, [0]]
 				],
 				users: [
-					[100, 'First', 'Last'],
-					[200, 'Test', 'Student']
+					[100, '1First', 'Last'],
+					[200, 'ATest', 'Student'],
+					[300, 'BTest', 'Student'],
+					[400, 'CTest', 'Student'],
+					[500, 'DTest', 'Student'],
+					[600, 'ETest', 'Student'],
+					[700, 'FTest', 'Student'],
+					[800, 'GTest', 'Student'],
+					[900, 'HTest', 'Student'],
+					[1000, 'ITest', 'Student'],
+					[1100, 'JTest', 'Student']
 				],
 				semesterTypeId: 25,
 				selectedOrgUnitIds: [1, 2]

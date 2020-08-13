@@ -44,6 +44,7 @@
   "dependencies": {
     "@adobe/lit-mobx": "0.0.4",
     "@brightspace-ui/core": "^1.69.0",
+    "@brightspace-ui-labs/pagination": "^0",
     "@webcomponents/webcomponentsjs": "^2",
     "d2l-facet-filter-sort": "BrightspaceUI/facet-filter-sort#semver:^3",
     "highcharts": "^8.1.2",
