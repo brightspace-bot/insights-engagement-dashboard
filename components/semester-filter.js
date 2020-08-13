@@ -57,8 +57,7 @@ class SemesterFilter extends Localizer(LitElement) {
 
 		this._filterData = currentData.concat(data.Items.map(item => ({
 			id: item.orgUnitId.toString(),
-			displayName: this.localize('components.semester-filter.semester-name', {orgUnitName: item.orgUnitName, id: item.orgUnitId}),
-			selected: false
+			displayName: this.localize('components.semester-filter.semester-name', {orgUnitName: item.orgUnitName, id: item.orgUnitId})
 		})));
 	}
 
