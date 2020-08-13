@@ -12,9 +12,11 @@ import {repeat} from 'lit-html/directives/repeat.js';
  * @property {{id: string, displayName: string, _selected: boolean}[]} data
  * @property {boolean} more - shows Load More button if true
  * @property {string[]} selected - returns list of ids for selected items
- * @fires d2l-simple-filter-selected - event.detail contains {string} filterName, {string} id, and {boolean} selected
- * @fires d2l-simple-filter-load-more-click
- * @fires d2l-simple-filter-searched
+ * @fires d2l-insights-dropdown-filter-selected - event.detail contains {string} filterName, {string} id, and {boolean} selected
+ * @fires d2l-insights-dropdown-filter-load-more-click
+ * @fires d2l-insights-dropdown-filter-searched
+ * @fires d2l-insights-dropdown-filter-selection-cleared
+ * @fires d2l-insights-dropdown-filter-close
  */
 class DropdownFilter extends Localizer(LitElement) {
 
@@ -55,8 +57,17 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	render() {
+		const firstSelected = this.data.find(item => item._selected) || {};
+
 		return html`
-			<d2l-filter-dropdown total-selected-option-count="${this._selectedCount}" opener-text="${this.name}">
+			<d2l-filter-dropdown
+				total-selected-option-count="${this._selectedCount}"
+				opener-text="${this.name}"
+				opener-text-single="${this.localize('components.dropdown-filter.opener-text-single', {filterName: this.name, value: firstSelected.displayName})}"
+				opener-text-multiple="${this.localize('components.dropdown-filter.opener-text-multiple', {filterName: this.name, selectedCount: this._selectedCount})}"
+				@d2l-filter-dropdown-cleared="${this._clearSelectionClick}"
+				@d2l-dropdown-close="${this._filterClose}"
+				>
 				<d2l-filter-dropdown-category
 					category-text="${this.name}"
 					@d2l-filter-dropdown-option-change="${this._handleElementSelected}"
@@ -76,6 +87,11 @@ class DropdownFilter extends Localizer(LitElement) {
 
 	_setSelectedState(id, selected) {
 		this.data.find(item => item.id === id)._selected = selected;
+		this._updateSelectedCount();
+	}
+
+	_updateSelectedCount() {
+		this._selectedCount = this.data.filter(item => item._selected).length;
 	}
 
 	_renderLoadMore() {
@@ -85,12 +101,14 @@ class DropdownFilter extends Localizer(LitElement) {
 
 		return html`
 			<d2l-button-subtle
-				text="${this.localize('components.dropdown-filter.loadMore')}"
+				text="${this.localize('components.dropdown-filter.load-more')}"
 				@click="${this._handleLoadMoreClick}">
 			</d2l-button-subtle>`;
 	}
 
 	_handleElementSelected(event) {
+		this._setSelectedState(event.detail.menuItemKey, event.detail.selected);
+
 		// propagate the event one level up, since it can't cross the shadow DOM boundary
 		this.dispatchEvent(new CustomEvent('d2l-insights-dropdown-filter-selected', {
 			detail: {
@@ -98,10 +116,6 @@ class DropdownFilter extends Localizer(LitElement) {
 				selected: event.detail.selected
 			}
 		}));
-
-		this._setSelectedState(event.detail.menuItemKey, event.detail.selected);
-
-		this._selectedCount = this.data.filter(item => item._selected).length;
 	}
 
 	_handleLoadMoreClick() {
@@ -110,10 +124,24 @@ class DropdownFilter extends Localizer(LitElement) {
 
 	_handleSearchedClick(event) {
 		this._searchIteration++;
+		this._selectedCount = 0;
 
 		this.dispatchEvent(new CustomEvent('d2l-insights-dropdown-filter-searched', {
 			detail: { value: event.detail.value }
 		}));
+	}
+
+	_clearSelectionClick() {
+		this._searchIteration++;
+		this._selectedCount = 0;
+
+		this.data.forEach(item => item._selected = false);
+
+		this.dispatchEvent(new CustomEvent('d2l-insights-dropdown-filter-selection-cleared'));
+	}
+
+	_filterClose() {
+		this.dispatchEvent(new CustomEvent('d2l-insights-dropdown-filter-close'));
 	}
 }
 

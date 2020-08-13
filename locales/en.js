@@ -14,7 +14,9 @@ export default {
 	"components.simple-filter.search-placeholder": "Search...",
 	"components.simple-filter.dropdown-action": "Open {name} filter",
 
-	"components.dropdown-filter.loadMore": "Load More",
+	"components.dropdown-filter.load-more": "Load More",
+	"components.dropdown-filter.opener-text-single": "{filterName}: {value}",
+	"components.dropdown-filter.opener-text-multiple": "{filterName}: {selectedCount} selected",
 
 	"components.insights-users-table.title": "User Details",
 	"components.insights-users-table.lastFirstName": "Last Name, First Name",
