@@ -11,7 +11,6 @@ export default {
 	"components.org-unit-filter.org-unit-name": "{orgUnitName} (Id: {id})",
 
 	"components.semester-filter.name": "Semesters",
-	"components.semester-filter.loadMore": "Load More",
 	"components.semester-filter.semester-name": "{orgUnitName} (Id: {id})",
 
 	"components.simple-filter.search-label": "Search",
@@ -25,6 +24,9 @@ export default {
 	"components.tree-selector.arrow-label.open": "Collapse {name} at level {level}, child of {parentName}",
 	"components.tree-selector.arrow-label.root": "root",
 	"components.tree-selector.node.aria-label": "{name}, child of {parentName},",
+
+	"components.dropdown-filter.load-more": "Load More",
+	"components.dropdown-filter.opener-text-multiple": "{filterName}: {selectedCount} selected",
 
 	"components.insights-users-table.title": "User Details",
 	"components.insights-users-table.lastFirstName": "Last Name, First Name",
