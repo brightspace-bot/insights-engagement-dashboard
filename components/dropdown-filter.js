@@ -68,12 +68,14 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	render() {
+		const openerSelectedText = this.localize('components.dropdown-filter.opener-text-multiple', {filterName: this.name, selectedCount: this._selectedCount});
+
 		return html`
 			<d2l-filter-dropdown
 				total-selected-option-count="${this._selectedCount}"
 				opener-text="${this.name}"
-				opener-text-single="${this.localize('components.dropdown-filter.opener-text-multiple', {filterName: this.name, selectedCount: this._selectedCount})}"
-				opener-text-multiple="${this.localize('components.dropdown-filter.opener-text-multiple', {filterName: this.name, selectedCount: this._selectedCount})}"
+				opener-text-single="${openerSelectedText}"
+				opener-text-multiple="${openerSelectedText}"
 				@d2l-filter-dropdown-cleared="${this._clearSelectionClick}"
 				@d2l-dropdown-close="${this._filterClose}"
 				>
