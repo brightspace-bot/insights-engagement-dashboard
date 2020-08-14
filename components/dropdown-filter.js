@@ -32,12 +32,6 @@ class DropdownFilter extends Localizer(LitElement) {
 
 	static get styles() {
 		return [css`
-			:host {
-				display: block;
-			}
-			:host([hidden]) {
-				display: none;
-			}
 			d2l-button-subtle {
 				margin: 0.25rem;
 				display: grid;
