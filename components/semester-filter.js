@@ -1,4 +1,3 @@
-import './simple-filter';
 import './dropdown-filter';
 
 import {html, LitElement} from 'lit-element';
