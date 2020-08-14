@@ -91,7 +91,7 @@ class DropdownFilter extends Localizer(LitElement) {
 		`;
 	}
 
-	async updated() {
+	updated() {
 		if (!this.hasMore && this._loadMoreClickFlag) {
 			this._loadMoreClickFlag = false;
 
