@@ -60,24 +60,9 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 				display: inline-block;
 			}
 
-			.no-open-control {
-				margin-left: 30px;
-				margin-right: 0px;
-			}
-			:host([dir="rtl"]) .node .no-open-control {
-				margin-left: 0px;
-				margin-right: 30px;
-			}
-
 			.open-control {
 				cursor: default;
 				margin-top: -3px;
-				padding-right: 12px;
-				padding-left: 0px;
-			}
-			:host([dir="rtl"]) .node .open-control {
-				padding-right: 0px;
-				padding-left: 12px;
 			}
 			.open-control .open {
 				display: none;
@@ -107,13 +92,11 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 				display: none;
 			}
 
-			.checkbox-text {
+			.node-text {
 				display: inline-block;
+				cursor: default;
+				width: 100%;
 				margin-left: 0.5rem;
-				margin-right: 0rem;
-			}
-			:host([dir="rtl"]) .node d2l-input-checkbox .checkbox-text {
-				margin-left: 0rem;
 				margin-right: 0.5rem;
 			}
 		`;
@@ -149,20 +132,21 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 
 		return html`
 			<div class="node">
-				${this._renderOpenControl()}
 				<d2l-input-checkbox
 					?checked="${this._showSelected}"
 					?indeterminate="${this._showIndeterminate}"
 					aria-label="${this.localize('components.tree-selector.node.aria-label', {name: this.name, parentName: this.parentName})}"
 					@change="${this._onChange}"
-				><span class="checkbox-text">${this.name}</span></d2l-input-checkbox>
+				></d2l-input-checkbox>
+				<span class="node-text" @click="${this._onArrowClick}" aria-hidden="true">${this.name}</span>
+				${this._renderOpenControl()}
 			</div>
 		`;
 	}
 
 	_renderOpenControl() {
 		// show the open/close arrow if this is not a leaf
-		if (this.isOpen || this.tree || this.getTree) {
+		if (this._isOpenable) {
 			return html`
 				<a href="#" class="open-control"
 					?open="${this.isOpen}"
@@ -226,7 +210,13 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		return this._domChildren[i] || x;
 	}
 
+	get _isOpenable() {
+		return this.isOpen || this.tree || this.getTree;
+	}
+
 	async _onArrowClick() {
+		if (!this._isOpenable) return;
+
 		this.isOpen = !this.isOpen;
 
 		// lazy load subtree if needed
