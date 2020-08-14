@@ -1,18 +1,14 @@
-import './simple-filter';
+import './dropdown-filter';
 
 import {html, LitElement} from 'lit-element';
+import FakeLms from '../model/fake-lms';
 import Lms from '../model/lms';
 import {Localizer} from '../locales/localizer';
 
-const demoData = [
-	{ Identifier: '500', DisplayName: 'Administrator' },
-	{ Identifier: '600', DisplayName: 'Instructor' },
-	{ Identifier: '700', DisplayName: 'Student' }
-];
-
 /**
  * @property {{id: string, displayName: string}[]} _filterData
- * @fires d2l-insights-role-filter-change - detail includes the list of selected role ids
+ * @fires d2l-insights-role-filter-change
+ * @fires d2l-insights-role-filter-close
  */
 class InsightsRoleFilter extends Localizer(LitElement) {
 
@@ -27,15 +23,18 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 		super();
 
 		this.isDemo = false;
-		this._roleData = [];
+		/** @type {{id: string, displayName: string}[]} */
 		this._filterData = [];
+	}
 
-		const lms = new Lms();
-		lms.fetchRoles().then(data => this._setRoleData(data));
+	async firstUpdated() {
+		this._lms = this.isDemo ? new FakeLms() : new Lms();
+		const data = await this._lms.fetchRoles();
+		this._setRoleData(data);
 	}
 
 	get selected() {
-		return this._roleData.filter(role => role.selected).map(role => role.Identifier);
+		return this.shadowRoot.querySelector('d2l-insights-dropdown-filter').selected;
 	}
 
 	_setRoleData(roleData) {
@@ -46,47 +45,40 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 				|| role1.Identifier.localeCompare(role2.Identifier);
 		});
 
-		this._roleData = roleData.map(obj => {
-			return {...obj, selected: false};
-		});
-		this._setFilterData(); // triggers re-render
+		this._setFilterData(roleData);
 	}
 
-	/**
-	 * @returns {{displayName: (string), id: (string)}[]}
-	 */
-	_setFilterData() {
-		this._filterData = this._roleData.map(obj => {
+	_setFilterData(roleData) {
+		this._filterData = roleData.map(obj => {
 			return {id: obj.Identifier, displayName: obj.DisplayName};
 		});
 	}
 
-	_setSelectedState(roleId, selected) {
-		this._roleData.find(role => role.Identifier === roleId).selected = selected;
-	}
-
-	firstUpdated() {
-		if (this.isDemo) {
-			this._setRoleData(demoData);
-		}
-	}
-
 	render() {
 		return html`
-			<d2l-simple-filter
-				@d2l-simple-filter-selected="${this._updateFilterSelections}"
+			<d2l-insights-dropdown-filter
+				disable-search
 				name="${this.localize('components.insights-role-filter.name')}"
-				.data="${this._filterData}">
-			</d2l-simple-filter>
+				.data="${this._filterData}"
+
+				@d2l-insights-dropdown-filter-selected="${this._updateFilterSelections}"
+				@d2l-insights-dropdown-filter-selection-cleared="${this._updateFilterSelections}"
+				@d2l-insights-dropdown-filter-close="${this._filterClose}"
+			>
+			</d2l-insights-dropdown-filter>
 		`;
 	}
 
-	_updateFilterSelections(event) {
-		this._setSelectedState(event.detail.itemId, event.detail.selected);
+	_updateFilterSelections() {
 		/**
 		 * @event d2l-insights-role-filter-change
 		 */
 		this.dispatchEvent(new Event('d2l-insights-role-filter-change'));
 	}
+
+	_filterClose() {
+		this.dispatchEvent(new Event('d2l-insights-role-filter-close'));
+	}
+
 }
 customElements.define('d2l-insights-role-filter', InsightsRoleFilter);

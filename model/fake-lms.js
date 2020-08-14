@@ -1,10 +1,15 @@
 class Lms {
+	/**
+	 * @returns {{Identifier: string, DisplayName: string, Code: string|null}[]}
+	 */
 	async fetchRoles() {
-		/**
-		 * Expected data format from Roles API
-		 * @type {{Identifier: string, DisplayName: string, Code: string|null}[]}
-		 */
-		return null;
+		const demoData = [
+			{ Identifier: '500', DisplayName: 'Administrator' },
+			{ Identifier: '600', DisplayName: 'Instructor' },
+			{ Identifier: '700', DisplayName: 'Student' }
+		];
+
+		return new Promise(resolve =>	setTimeout(() => resolve(demoData), 100));
 	}
 
 	/**
@@ -63,7 +68,7 @@ class Lms {
 		response.Items = response.Items.slice(0, pageSize);
 		response.PagingInfo.Bookmark = response.Items[response.Items.length - 1].index.toString();
 
-		return await new Promise(resolve =>	setTimeout(() => resolve(response), 100));
+		return new Promise(resolve =>	setTimeout(() => resolve(response), 100));
 	}
 }
 
