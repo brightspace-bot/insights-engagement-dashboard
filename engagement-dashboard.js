@@ -124,7 +124,11 @@ class EngagementDashboard extends Localizer(LitElement) {
 						@d2l-insights-semester-filter-close="${this._semesterFilterChange}"
 						>
 					</d2l-insights-semester-filter>
-					<d2l-insights-role-filter @d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}" ?demo="${this.useTestData}"></d2l-insights-role-filter>
+					<d2l-insights-role-filter
+						@d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}"
+						@d2l-insights-role-filter-close="${this._handleRoleSelectionsUpdated}"
+						?demo="${this.useTestData}"
+					></d2l-insights-role-filter>
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
