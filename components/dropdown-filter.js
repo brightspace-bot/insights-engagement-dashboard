@@ -26,7 +26,7 @@ class DropdownFilter extends Localizer(LitElement) {
 			data: {type: Array, attribute: false},
 			hasMore: {type: Boolean, attribute: 'more'},
 			disableSearch: {type: Boolean, attribute: 'disable-search'},
-			_selectedCount: {type: Number, attribute: true}
+			_selectedCount: {type: Number, attribute: false}
 		};
 	}
 
