@@ -37,6 +37,10 @@ class UsersTable extends Localizer(MobxLitElement) {
 					display: none;
 				}
 
+				d2l-labs-pagination {
+					margin: 30px 0;
+				}
+
 				.d2l-insights-users-table-controls {
 					display: flex;
 					margin: 30px 0;
@@ -48,11 +52,8 @@ class UsersTable extends Localizer(MobxLitElement) {
 				}
 
 				.table-total-users {
-					flex: 0 1 33%;
-				}
-
-				.table-page-controls {
-					flex: 0 1 67%;
+					width: 100%;
+					margin-bottom: 30px;
 				}
 			`
 		];
@@ -101,22 +102,18 @@ class UsersTable extends Localizer(MobxLitElement) {
 				.columns=${this.columns}
 				.data="${this._displayData}"></d2l-insights-table>
 
-			<div class="d2l-insights-users-table-controls">
-				<div class="d2l-insights-users-table-controls-item">
-					${this.localize('components.insights-users-table.totalUsers', { num: this._itemsCount })}
-				</div>
+			<d2l-labs-pagination
+				showItemCountSelect="true"
+				itemCountOptions="[10,20,50,100]"
+				pageNumber="${this._currentPage}"
+				maxPageNumber="${this._maxPages}"
+				selectedCountOption="${this._pageSize}"
+				@pagination-page-change="${this._handlePageChange}"
+				@pagination-item-counter-change="${this._handlePageSizeChange}"
+			></d2l-labs-pagination>
 
-				<div class="table-page-controls">
-					<d2l-labs-pagination
-						showItemCountSelect="true"
-						itemCountOptions="[10,20,50,100]"
-						pageNumber="${this._currentPage}"
-						maxPageNumber="${this._maxPages}"
-						selectedCountOption="${this._pageSize}"
-						@pagination-page-change="${this._handlePageChange}"
-						@pagination-item-counter-change="${this._handlePageSizeChange}"
-					></d2l-labs-pagination>
-				</div>
+			<div class="table-total-users">
+				${this.localize('components.insights-users-table.totalUsers', {num: this._itemsCount})}
 			</div>
 		`;
 	}
