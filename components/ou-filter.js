@@ -11,8 +11,6 @@ const PARENTS = 3;
 const CHILDREN = 4;
 const STATE = 5;
 
-const SEMESTER_TYPE = 5;
-
 /**
  * @property {Object} data - an instance of Data from model/data.js
  * @fires d2l-insights-ou-filter-change
@@ -65,7 +63,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 
 		return this._tree[id][CHILDREN]
 			.map(childId => this._tree[childId])
-			.filter(x => x[TYPE] !== SEMESTER_TYPE)
+			.filter(x => x[TYPE] !== this.data.serverData.semesterTypeId)
 			.map(x => ({
 				name: this.localize('components.org-unit-filter.org-unit-name', {orgUnitName: x[NAME], id: x[ID]}),
 				// pre-load down to any selected descendents: otherwise selecting then deselecting this node

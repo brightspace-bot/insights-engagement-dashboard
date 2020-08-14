@@ -15,11 +15,12 @@ describe('d2l-insights-ou-filter', () => {
 				[9, 'Faculty 2', 7, [6607]],
 				[8, 'Course 4', 3, [5]],
 				[7, 'Department 2', 2, [5]],
-				[4, 'Semester', 5, [6607]],
+				[4, 'Semester', 52, [6607]],
 				[5, 'Faculty 1', 7, [6607]],
 				[6607, 'Dev', 1, [0]]
 			],
 			users: [],
+			semesterTypeId: 52,
 			selectedOrgUnitIds: [2, 8]
 		}
 	};

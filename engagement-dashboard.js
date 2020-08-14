@@ -28,7 +28,7 @@ async function demoData() {
 					[8, 'ZCourse 4', 3, [5]],
 					[3, 'Department 1', 2, [5]],
 					[7, 'Department 2 has a longer name', 2, [5]],
-					[4, 'Semester', 5, [6606]],
+					[4, 'Semester', 25, [6606]],
 					[5, 'Faculty 1', 7, [6606]],
 					[9, 'Faculty 2', 7, [6606]],
 					[6606, 'Dev', 1, [0]]
@@ -37,6 +37,7 @@ async function demoData() {
 					[100, 'First', 'Last'],
 					[200, 'Test', 'Student']
 				],
+				semesterTypeId: 25,
 				selectedOrgUnitIds: [1, 2]
 			}),
 			100
