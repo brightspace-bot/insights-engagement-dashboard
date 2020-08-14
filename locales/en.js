@@ -8,7 +8,7 @@ export default {
 	"components.insights-role-filter.name": "Roles",
 
 	"components.semester-filter.name": "Semesters",
-	"components.semester-filter.semester-name": "{orgUnitName} (Id: {id})",
+	"components.semester-filter.semester-name": "{orgUnitName} (Id: {orgUnitId})",
 
 	"components.simple-filter.search-label": "Search",
 	"components.simple-filter.search-placeholder": "Search...",
