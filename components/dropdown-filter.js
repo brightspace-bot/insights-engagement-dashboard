@@ -12,6 +12,7 @@ import {repeat} from 'lit-html/directives/repeat.js';
  * @property {{id: string, displayName: string, _selected: boolean}[]} data
  * @property {boolean} more - shows Load More button if true
  * @property {string[]} selected - returns list of ids for selected items
+ * @property {boolean} disable-search
  * @fires d2l-insights-dropdown-filter-selected - event.detail contains {string} filterName, {string} id, and {boolean} selected
  * @fires d2l-insights-dropdown-filter-load-more-click
  * @fires d2l-insights-dropdown-filter-searched
@@ -25,6 +26,7 @@ class DropdownFilter extends Localizer(LitElement) {
 			name: {type: String, attribute: true},
 			data: {type: Array, attribute: false},
 			hasMore: {type: Boolean, attribute: 'more'},
+			disableSearch: {type: Boolean, attribute: 'disable-search'},
 			_selectedCount: {type: Number, attribute: true}
 		};
 	}
@@ -34,6 +36,10 @@ class DropdownFilter extends Localizer(LitElement) {
 			d2l-button-subtle {
 				margin: 0.25rem;
 				display: grid;
+			}
+
+			d2l-filter-dropdown-category[disable-search] {
+				padding-top: 0px;
 			}
 		`];
 	}
@@ -67,6 +73,7 @@ class DropdownFilter extends Localizer(LitElement) {
 				@d2l-dropdown-close="${this._filterClose}"
 				>
 				<d2l-filter-dropdown-category
+					?disable-search="${this.disableSearch}"
 					category-text="${this.name}"
 					@d2l-filter-dropdown-option-change="${this._handleElementSelected}"
 					@d2l-filter-dropdown-category-searched="${this._handleSearchedClick}" >
