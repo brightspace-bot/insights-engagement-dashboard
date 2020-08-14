@@ -95,8 +95,6 @@ class DropdownFilter extends Localizer(LitElement) {
 		if (!this.hasMore && this._loadMoreClickFlag) {
 			this._loadMoreClickFlag = false;
 
-			// move focus to the first filter item/option when the last page is loaded and Load More button is removed
-			await this.updateComplete;
 			this.shadowRoot.querySelector('d2l-filter-dropdown-option').focus();
 		}
 	}
