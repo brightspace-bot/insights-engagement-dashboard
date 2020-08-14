@@ -1,4 +1,3 @@
-import '@brightspace-ui/core/components/button/button-subtle.js';
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown.js';
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-category.js';
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-option.js';
@@ -27,12 +26,18 @@ class DropdownFilter extends Localizer(LitElement) {
 			data: {type: Array, attribute: false},
 			hasMore: {type: Boolean, attribute: 'more'},
 			disableSearch: {type: Boolean, attribute: 'disable-search'},
-			_selectedCount: {type: Number, attribute: true}
+			_selectedCount: {type: Number, attribute: false}
 		};
 	}
 
 	static get styles() {
 		return [css`
+			:host {
+				display: inline-block;
+			}
+			:host([hidden]) {
+				display: none;
+			}
 			d2l-button-subtle {
 				margin: 0.25rem;
 				display: grid;
@@ -63,12 +68,14 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	render() {
+		const openerSelectedText = this.localize('components.dropdown-filter.opener-text-multiple', {filterName: this.name, selectedCount: this._selectedCount});
+
 		return html`
 			<d2l-filter-dropdown
 				total-selected-option-count="${this._selectedCount}"
 				opener-text="${this.name}"
-				opener-text-single="${this.localize('components.dropdown-filter.opener-text-multiple', {filterName: this.name, selectedCount: this._selectedCount})}"
-				opener-text-multiple="${this.localize('components.dropdown-filter.opener-text-multiple', {filterName: this.name, selectedCount: this._selectedCount})}"
+				opener-text-single="${openerSelectedText}"
+				opener-text-multiple="${openerSelectedText}"
 				@d2l-filter-dropdown-cleared="${this._clearSelectionClick}"
 				@d2l-dropdown-close="${this._filterClose}"
 				>
@@ -90,12 +97,10 @@ class DropdownFilter extends Localizer(LitElement) {
 		`;
 	}
 
-	async updated() {
+	updated() {
 		if (!this.hasMore && this._loadMoreClickFlag) {
 			this._loadMoreClickFlag = false;
 
-			// move focus to the first filter item/option when the last page is loaded and Load More button is removed
-			await this.updateComplete;
 			this.shadowRoot.querySelector('d2l-filter-dropdown-option').focus();
 		}
 	}
