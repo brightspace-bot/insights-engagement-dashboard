@@ -80,6 +80,22 @@ describe('d2l-insights-dropdown-filter', () => {
 			const category = el.shadowRoot.querySelector('d2l-filter-dropdown-category');
 			expect(category.disableSearch).to.be.true;
 		});
+
+		it('should return only selected items when they are de/selected', async() => {
+			// everything should be deselected initially
+			expect(el.selected).to.deep.equal([]);
+
+			const checkboxes = Array.from(el.shadowRoot.querySelectorAll('d2l-filter-dropdown-option'));
+
+			checkboxes.find(checkbox => checkbox.value === '1').click();
+			checkboxes.find(checkbox => checkbox.value === '2').click();
+
+			expect(el.selected).to.deep.equal(['1', '2']);
+
+			checkboxes.find(checkbox => checkbox.value === '2').click();
+
+			expect(el.selected).to.deep.equal(['1']);
+		});
 	});
 
 	describe('eventing', () => {
