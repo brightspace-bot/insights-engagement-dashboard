@@ -5,7 +5,8 @@ class SummaryCard extends MobxLitElement {
 
 	static get properties() {
 		return {
-			data: { type: Object, attribute: false }
+			data: { type: Object, attribute: false },
+			dataRequestString: { type: String, attribute: 'data-request-string' }
 		};
 	}
 
@@ -48,6 +49,8 @@ class SummaryCard extends MobxLitElement {
 			.summary-card-title {
 				font-size: smaller;
 				font-weight: bold;
+				color: black;
+				text-indent: 3%;
 			}
 			
 			.summary-card-field {
@@ -58,14 +61,16 @@ class SummaryCard extends MobxLitElement {
 			
 			.summary-card-value {
 				font-size: 20px;
-				color: lightsteelblue;
+				color: black; /* should conditionally render this when adding more cards */
 				margin: 10px;
+				font-weight: bold;
 			}
 			
 			.summary-card-message {
-				max-width: 170px;
-				font-size: 15px;
+				max-width: 180px;
+				font-size: 14px;
 				line-height: 1rem;
+				color: black;
 				display: inline-block;
 			}
 		`;
@@ -73,6 +78,7 @@ class SummaryCard extends MobxLitElement {
 
 	render() {
 		console.log(`summary-card render ${this.data.id}`);
+		const _cardValue = this.getDataToDisplay(this.dataRequestString);
 
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -80,7 +86,7 @@ class SummaryCard extends MobxLitElement {
 			<div class="summary-card-title">${this.data.title}</div>
 			<div class="summary-card-body">
 				${(this.data.stats.delta !== undefined) ? html`<span class="summary-card-delta summary-card-field">${this.data.stats.delta}</span>` : ''}
-				<span class="summary-card-value summary-card-field">${this.data.stats.value}</span>
+				<span class="summary-card-value summary-card-field">${_cardValue}</span>
 				<span class="summary-card-message summary-card-field">${html`${this.data.message}`}</span>
 			</div>
 		</div>`;
@@ -89,5 +95,15 @@ class SummaryCard extends MobxLitElement {
 	firstUpdated() {
 		this.addEventListener('click', () => this.data.isApplied = !this.data.isApplied);
 	}
+
+	getDataToDisplay(dataRequestString) {
+		// Add other summary field values here
+		if (dataRequestString === 'userCount') {
+			return this.data.data.userDataForDisplay.length;
+		}
+
+		return 0;
+	}
+
 }
 customElements.define('d2l-labs-summary-card', SummaryCard);

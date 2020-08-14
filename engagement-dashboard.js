@@ -113,26 +113,8 @@ class EngagementDashboard extends Localizer(LitElement) {
 				{
 					id: 'd2l-insights-engagement-results',
 					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
-					countUniqueField: 'UserId',
+					dataRequestString: 'userCount',
 					messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
-				},
-				{
-					id: 'd2l-insights-engagement-results2',
-					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
-					countUniqueField: 'UserId',
-					messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
-				},
-				{
-					id: 'd2l-insights-engagement-results3',
-					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
-					countUniqueField: 'UserId',
-					messageProvider: () => 'Users currently have one or more overdue assignments.'
-				},
-				{
-					id: 'd2l-insights-engagement-results4',
-					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
-					countUniqueField: 'UserId',
-					messageProvider: () => 'Users have no system access in the last 14 days.'
 				}
 			]
 		});
@@ -148,7 +130,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="summary-container">
-					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
+					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}" data-request-string="${f.dataRequestString}"></d2l-labs-summary-card>`)}
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
