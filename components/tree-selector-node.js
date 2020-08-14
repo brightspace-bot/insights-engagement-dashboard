@@ -1,6 +1,9 @@
+import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/inputs/input-checkbox';
 
 import {css, html, LitElement} from 'lit-element/lit-element.js';
+import {Localizer} from '../locales/localizer';
+import {RtlMixin} from '@brightspace-ui/core/mixins/rtl-mixin.js';
 
 /**
  * @property {string} name
@@ -9,6 +12,7 @@ import {css, html, LitElement} from 'lit-element/lit-element.js';
  * @property {boolean} isOpen
  * @property {string} selectedState - may be "explicit", "implicit", "indeterminate", or "none"
  * @fires d2l-insights-tree-selector-change - value of this.selected has changed
+ * @fires d2l-insights-tree-selector-resize - rendered size may have changed
  *
  * Note on selected-state
  * - "none" is a node that is not selected and has no selected descendents
@@ -22,7 +26,7 @@ import {css, html, LitElement} from 'lit-element/lit-element.js';
  *      marked as explicitly selected. So if dept1 is selected and the user unchecks course1, then course2, course3,
  *      etc. are explicitly selected.
  */
-class TreeSelectorNode extends LitElement {
+class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 	static get properties() {
 		return {
 			name: { type: String },
@@ -30,7 +34,10 @@ class TreeSelectorNode extends LitElement {
 			getTree: { type: Object, attribute: false },
 			isOpen: { type: Boolean, reflect: true, attribute: 'open' },
 			selectedState: { type: String, reflect: true, attribute: 'selected-state' },
-			isRoot: { type: Boolean, reflect: true, attribute: 'root' }
+			isRoot: { type: Boolean, reflect: true, attribute: 'root' },
+			// for screen readers
+			indentLevel: { type: Number, attribute: 'indent-level' },
+			parentName: { type: String, attribute: 'parent-name' }
 		};
 	}
 
@@ -42,28 +49,55 @@ class TreeSelectorNode extends LitElement {
 			:host([hidden]) {
 				display: none;
 			}
-			
+
+			.node {
+				display: flex;
+				flex-wrap: nowrap;
+				margin-bottom: 16px;
+			}
+
 			d2l-input-checkbox {
 				display: inline-block;
 			}
-			.open-control:before {
-				content: "> "
-			}
-			.open-control[open]:before {
-				content: "v "
-			}
+
 			.open-control {
-				margin-left: 15px
+				cursor: default;
+				margin-top: -3px;
 			}
-			
+			.open-control .open {
+				display: none;
+			}
+			.open-control[open] .open {
+				display: inline-block;
+			}
+			.open-control[open] .closed {
+				display: none;
+			}
+
 			.subtree {
-				margin-left: 30px;
+				margin-left: 34px;
+				margin-right: 0px;
+			}
+			:host([dir="rtl"]) .subtree {
+				margin-left: 0px;
+				margin-right: 34px;
 			}
 			.subtree[root] {
 				margin-left: 0px;
 			}
+			:host([dir="rtl"]) .subtree[root] {
+				margin-right: 0px;
+			}
 			.subtree[hidden] {
 				display: none;
+			}
+
+			.node-text {
+				display: inline-block;
+				cursor: default;
+				width: 100%;
+				margin-left: 0.5rem;
+				margin-right: 0.5rem;
 			}
 		`;
 	}
@@ -73,6 +107,7 @@ class TreeSelectorNode extends LitElement {
 
 		this.isOpen = false;
 		this.selectedState = 'none';
+		this.indentLevel = 0;
 	}
 
 	get selected() {
@@ -96,18 +131,33 @@ class TreeSelectorNode extends LitElement {
 		}
 
 		return html`
-			${this._renderOpenControl()}
-			<d2l-input-checkbox
-				?checked="${this._showSelected}"
-				?indeterminate="${this._showIndeterminate}"
-				@change="${this._onChange}"
-			>${this.name}</d2l-input-checkbox>`;
+			<div class="node">
+				<d2l-input-checkbox
+					?checked="${this._showSelected}"
+					?indeterminate="${this._showIndeterminate}"
+					aria-label="${this.localize('components.tree-selector.node.aria-label', {name: this.name, parentName: this.parentName})}"
+					@change="${this._onChange}"
+				></d2l-input-checkbox>
+				<span class="node-text" @click="${this._onArrowClick}" aria-hidden="true">${this.name}</span>
+				${this._renderOpenControl()}
+			</div>
+		`;
 	}
 
 	_renderOpenControl() {
 		// show the open/close arrow if this is not a leaf
-		if (this.isOpen || this.tree || this.getTree) {
-			return html`<span class="open-control" ?open="${this.isOpen}" @click="${this._onArrowClick}"></span>`;
+		if (this._isOpenable) {
+			return html`
+				<a href="#" class="open-control"
+					?open="${this.isOpen}"
+				 	@click="${this._onArrowClick}"
+				 	aria-label="${this._arrowLabel}"
+				 	aria-expanded="${this.isOpen}"
+				 >
+					<d2l-icon class="closed" icon="tier1:arrow-expand"></d2l-icon>
+					<d2l-icon class="open" icon="tier1:arrow-collapse"></d2l-icon>
+				</a>
+			`;
 		} else {
 			return html`<span class="no-open-control"></span>`;
 		}
@@ -122,13 +172,25 @@ class TreeSelectorNode extends LitElement {
 					.tree="${x.tree}"
 					.getTree="${x.getTree}"
 					?open="${childState.isOpen}"
+					indent-level="${this.indentLevel + 1}"
+					parent-name="${this.name || this.localize('components.tree-selector.arrow-label.root')}"
 					selected-state="${this._getChildSelectedState(childState)}"
 					@d2l-insights-tree-selector-change="${this._onSubtreeChange}"
+					@d2l-insights-tree-selector-resize="${this._fireResize}"
 				></d2l-insights-tree-selector-node>`;
 			}) }</div>`;
 		} else {
 			return html``;
 		}
+	}
+
+	get _arrowLabel() {
+		return this.localize(
+			this.isOpen ?
+				'components.tree-selector.arrow-label.open' :
+				'components.tree-selector.arrow-label.closed',
+			{name: this.name, level: this.indentLevel, parentName: this.parentName }
+		);
 	}
 
 	get _domChildren() {
@@ -148,25 +210,27 @@ class TreeSelectorNode extends LitElement {
 		return this._domChildren[i] || x;
 	}
 
+	get _isOpenable() {
+		return this.isOpen || this.tree || this.getTree;
+	}
+
 	async _onArrowClick() {
+		if (!this._isOpenable) return;
+
 		this.isOpen = !this.isOpen;
 
 		// lazy load subtree if needed
 		if (this.isOpen && !this.tree && this.getTree) {
 			this.tree = await this.getTree();
 		}
+
+		// This is caught by tree-selector and used to force d2l-dropdown-content to resize
+		this._fireResize();
 	}
 
 	_onChange(e) {
 		this.selectedState = e.target.checked ? 'explicit' : 'none';
-
-		/**
-		 * @event d2l-insights-tree-selector-change
-		 */
-		this.dispatchEvent(new CustomEvent(
-			'd2l-insights-tree-selector-change',
-			{bubbles: true, composed: false}
-		));
+		this._fireChange();
 	}
 
 	_onSubtreeChange() {
@@ -195,13 +259,7 @@ class TreeSelectorNode extends LitElement {
 			}
 		}
 
-		/**
-		 * @event d2l-insights-tree-selector-change
-		 */
-		this.dispatchEvent(new CustomEvent(
-			'd2l-insights-tree-selector-change',
-			{bubbles: true, composed: false}
-		));
+		this._fireChange();
 	}
 
 	get _showIndeterminate() {
@@ -212,6 +270,26 @@ class TreeSelectorNode extends LitElement {
 	get _showSelected() {
 		// return this.isExplicitlySelected || this.isImplicitlySelected;
 		return this.selectedState === 'explicit' || this.selectedState === 'implicit';
+	}
+
+	_fireChange() {
+		/**
+		 * @event d2l-insights-tree-selector-change
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-selector-change',
+			{bubbles: true, composed: false}
+		));
+	}
+
+	_fireResize() {
+		/**
+		 * @event d2l-insights-tree-selector-resize
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-selector-resize',
+			{bubbles: true, composed: false}
+		));
 	}
 }
 customElements.define('d2l-insights-tree-selector-node', TreeSelectorNode);

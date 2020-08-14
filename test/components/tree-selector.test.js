@@ -40,6 +40,7 @@ describe('d2l-insights-tree-selector', () => {
 	describe('selection', () => {
 		it('should return selected nodes', async() => {
 			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" .tree="${tree}"></d2l-insights-tree-selector>`);
+			await el.shadowRoot.querySelector('d2l-insights-tree-selector-node').updateComplete;
 			expect(el.selected.map(x => x.name)).to.deep.equal(['child2']);
 		});
 	});
@@ -48,8 +49,11 @@ describe('d2l-insights-tree-selector', () => {
 		it('should fire d2l-insights-tree-selector-change on selection change', async() => {
 			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" .tree="${tree}"></d2l-insights-tree-selector>`);
 			const listener = oneEvent(el, 'd2l-insights-tree-selector-change');
-			const childCheckbox = el.shadowRoot.querySelector('d2l-insights-tree-selector-node')
-				.shadowRoot.querySelector('d2l-insights-tree-selector-node')
+			await el.shadowRoot.querySelector('d2l-insights-tree-selector-node').updateComplete;
+			const child = el.shadowRoot.querySelector('d2l-insights-tree-selector-node')
+				.shadowRoot.querySelector('d2l-insights-tree-selector-node');
+			await child.updateComplete;
+			const childCheckbox = child
 				.shadowRoot.querySelector('d2l-input-checkbox');
 			childCheckbox.simulateClick();
 			const event = await listener;
