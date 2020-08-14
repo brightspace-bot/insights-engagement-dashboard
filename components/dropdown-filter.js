@@ -1,4 +1,3 @@
-import '@brightspace-ui/core/components/button/button-subtle.js';
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown.js';
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-category.js';
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-option.js';
@@ -33,6 +32,12 @@ class DropdownFilter extends Localizer(LitElement) {
 
 	static get styles() {
 		return [css`
+			:host {
+				display: block;
+			}
+			:host([hidden]) {
+				display: none;
+			}
 			d2l-button-subtle {
 				margin: 0.25rem;
 				display: grid;
