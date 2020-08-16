@@ -49,7 +49,7 @@ class SummaryCard extends MobxLitElement {
 			.summary-card-title {
 				font-size: smaller;
 				font-weight: bold;
-				color: black;
+				color: var(--d2l-color-ferrite);
 				text-indent: 3%;
 			}
 			
@@ -61,7 +61,7 @@ class SummaryCard extends MobxLitElement {
 			
 			.summary-card-value {
 				font-size: 20px;
-				color: black; /* should conditionally render this when adding more cards */
+				color: var(--d2l-color-ferrite); /* should conditionally render this when adding more cards */
 				margin: 10px;
 				font-weight: bold;
 			}
@@ -70,7 +70,7 @@ class SummaryCard extends MobxLitElement {
 				max-width: 180px;
 				font-size: 14px;
 				line-height: 1rem;
-				color: black;
+				color: var(--d2l-color-ferrite);
 				display: inline-block;
 			}
 		`;
@@ -78,7 +78,7 @@ class SummaryCard extends MobxLitElement {
 
 	render() {
 		console.log(`summary-card render ${this.data.id}`);
-		const _cardValue = this.getDataToDisplay(this.dataRequestString);
+		const _cardValue = this._getDataToDisplay(this.dataRequestString);
 
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -96,7 +96,7 @@ class SummaryCard extends MobxLitElement {
 		this.addEventListener('click', () => this.data.isApplied = !this.data.isApplied);
 	}
 
-	getDataToDisplay(dataRequestString) {
+	_getDataToDisplay(dataRequestString) {
 		// Add other summary field values here
 		if (dataRequestString === 'userCount') {
 			return this.data.data.userDataForDisplay.length;
