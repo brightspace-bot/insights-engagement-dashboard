@@ -21,7 +21,7 @@ class TreeSelector extends Localizer(LitElement) {
 	static get properties() {
 		return {
 			name: { type: String },
-			tree: { type: Object, attribute: false }
+			tree: { type: Object, attribute: true, reflect: true }
 		};
 	}
 
