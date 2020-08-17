@@ -1,8 +1,8 @@
 import './simple-filter';
 
-import {html, LitElement} from 'lit-element';
+import { html, LitElement } from 'lit-element';
 import Lms from '../model/lms';
-import {Localizer} from '../locales/localizer';
+import { Localizer } from '../locales/localizer';
 
 const demoData = [
 	{ Identifier: '500', DisplayName: 'Administrator' },
@@ -47,7 +47,7 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 		});
 
 		this._roleData = roleData.map(obj => {
-			return {...obj, selected: false};
+			return { ...obj, selected: false };
 		});
 		this._setFilterData(); // triggers re-render
 	}
@@ -57,7 +57,7 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 	 */
 	_setFilterData() {
 		this._filterData = this._roleData.map(obj => {
-			return {id: obj.Identifier, displayName: obj.DisplayName};
+			return { id: obj.Identifier, displayName: obj.DisplayName };
 		});
 	}
 

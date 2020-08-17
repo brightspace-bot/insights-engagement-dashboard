@@ -4,9 +4,9 @@ import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/inputs/input-search.js';
 
-import {css, html, LitElement} from 'lit-element/lit-element.js';
-import {Localizer} from '../locales/localizer';
-import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-styles';
+import { css, html, LitElement } from 'lit-element/lit-element.js';
+import { Localizer } from '../locales/localizer';
+import { selectStyles } from '@brightspace-ui/core/components/inputs/input-select-styles';
 
 /**
  * @property {string} name
@@ -49,7 +49,7 @@ class TreeSelector extends Localizer(LitElement) {
 		return html`
 			<d2l-dropdown>
 				<button class="d2l-dropdown-opener d2l-input-select"
-					aria-label="${this.localize('components.tree-selector.dropdown-action', {name: this.name})}"
+					aria-label="${this.localize('components.tree-selector.dropdown-action', { name: this.name })}"
 				>${this.name}</button>
 					<d2l-dropdown-content align="start">
 						<div class="search" slot="header">
@@ -81,7 +81,7 @@ class TreeSelector extends Localizer(LitElement) {
 		 */
 		this.dispatchEvent(new CustomEvent(
 			'd2l-insights-tree-selector-change',
-			{bubbles: true, composed: false}
+			{ bubbles: true, composed: false }
 		));
 	}
 

@@ -1,8 +1,8 @@
 import './table.js';
 
-import {css, html} from 'lit-element';
-import {Localizer} from '../locales/localizer';
-import {MobxLitElement} from '@adobe/lit-mobx';
+import { css, html } from 'lit-element';
+import { Localizer } from '../locales/localizer';
+import { MobxLitElement } from '@adobe/lit-mobx';
 
 /**
  * At the moment the mobx data object is doing all the display logic,
@@ -14,7 +14,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 
 	static get properties() {
 		return {
-			data: {type: Object, attribute: false}
+			data: { type: Object, attribute: false }
 		};
 	}
 
@@ -59,7 +59,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 
 			<div class="table-controls">
 				<div class="table-controls-item">
-					${this.localize('components.insights-users-table.totalUsers', {num: _itemsCount})}
+					${this.localize('components.insights-users-table.totalUsers', { num: _itemsCount })}
 				</div>
 				<!-- other columns in the flex box are for paging controls -->
 			</div>

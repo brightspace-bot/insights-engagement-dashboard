@@ -1,7 +1,7 @@
 import '../../components/ou-filter.js';
 
-import {expect, fixture, html, oneEvent} from '@open-wc/testing';
-import {runConstructor} from '@brightspace-ui/core/tools/constructor-test-helper.js';
+import { expect, fixture, html, oneEvent } from '@open-wc/testing';
+import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-ou-filter', () => {
 	const data = {

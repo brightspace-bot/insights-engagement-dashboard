@@ -1,10 +1,10 @@
 import './simple-filter';
 
-import {html, LitElement} from 'lit-element';
+import { html, LitElement } from 'lit-element';
 import FakeLms from '../model/fake-lms';
-import {ifDefined} from 'lit-html/directives/if-defined.js';
+import { ifDefined } from 'lit-html/directives/if-defined.js';
 import Lms from '../model/lms';
-import {Localizer} from '../locales/localizer';
+import { Localizer } from '../locales/localizer';
 
 /**
  * @property {{id: string, displayName: string, selected: boolean}[]} _filterData
@@ -58,7 +58,7 @@ class SemesterFilter extends Localizer(LitElement) {
 
 		this._filterData = currentData.concat(data.Items.map(item => ({
 			id: item.orgUnitId.toString(),
-			displayName: this.localize('components.semester-filter.semester-name', {orgUnitName: item.orgUnitName, id: item.orgUnitId}),
+			displayName: this.localize('components.semester-filter.semester-name', { orgUnitName: item.orgUnitName, id: item.orgUnitId }),
 			selected: false
 		})));
 	}

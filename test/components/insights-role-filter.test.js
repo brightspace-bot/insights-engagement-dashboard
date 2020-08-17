@@ -1,6 +1,6 @@
 import '../../components/insights-role-filter';
 
-import {expect, fixture, html, oneEvent} from '@open-wc/testing';
+import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 

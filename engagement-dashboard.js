@@ -6,10 +6,10 @@ import './components/semester-filter.js';
 import './components/users-table.js';
 import './components/table.js';
 
-import {css, html, LitElement} from 'lit-element/lit-element.js';
-import {Data} from './model/data.js';
-import {heading3Styles} from '@brightspace-ui/core/components/typography/styles';
-import {Localizer} from './locales/localizer';
+import { css, html, LitElement } from 'lit-element/lit-element.js';
+import { Data } from './model/data.js';
+import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
+import { Localizer } from './locales/localizer';
 
 async function fetchData() {
 	const response = await fetch('/d2l/api/ap/unstable/insights/data/engagement');
@@ -20,7 +20,7 @@ async function demoData() {
 	return new Promise(resolve =>
 		setTimeout(
 			() => resolve({
-				records: [{UserId: 1, OrgUnitId: 1}, {UserId: 2, OrgUnitId: 1}, {UserId: 2, OrgUnitId: 2}],
+				records: [{ UserId: 1, OrgUnitId: 1 }, { UserId: 2, OrgUnitId: 1 }, { UserId: 2, OrgUnitId: 2 }],
 				orgUnits: [
 					[1, 'Course 1', 3, [3, 4]],
 					[2, 'Course 2', 3, [3, 4]],

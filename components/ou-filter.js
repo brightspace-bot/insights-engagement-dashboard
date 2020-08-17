@@ -1,6 +1,6 @@
 import './tree-selector.js';
-import {css, html} from 'lit-element/lit-element.js';
-import {Localizer} from '../locales/localizer';
+import { css, html } from 'lit-element/lit-element.js';
+import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
 // array indices
@@ -65,7 +65,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 			.map(childId => this._tree[childId])
 			.filter(x => x[TYPE] !== this.data.serverData.semesterTypeId)
 			.map(x => ({
-				name: this.localize('components.org-unit-filter.org-unit-name', {orgUnitName: x[NAME], id: x[ID]}),
+				name: this.localize('components.org-unit-filter.org-unit-name', { orgUnitName: x[NAME], id: x[ID] }),
 				// pre-load down to any selected descendents: otherwise selecting then deselecting this node
 				// before opening it won't deselect them
 				tree: (x[TYPE] !== 3 && x[STATE] !== 'none') ? this._getChildren(x[ID]) : null,
@@ -87,7 +87,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 		 */
 		this.dispatchEvent(new CustomEvent(
 			'd2l-insights-ou-filter-change',
-			{bubbles: true, composed: false}
+			{ bubbles: true, composed: false }
 		));
 	}
 

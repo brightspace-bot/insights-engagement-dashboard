@@ -1,5 +1,5 @@
-import {expect} from '@open-wc/testing';
-import {Localizer} from '../../locales/localizer';
+import { expect } from '@open-wc/testing';
+import { Localizer } from '../../locales/localizer';
 
 class MockLocalizedObjectSuperclass {}
 class MockLocalizedObject extends Localizer(MockLocalizedObjectSuperclass) {}

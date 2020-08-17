@@ -1,4 +1,4 @@
-import {css, html} from 'lit-element/lit-element.js';
+import { css, html } from 'lit-element/lit-element.js';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
 class SummaryCard extends MobxLitElement {

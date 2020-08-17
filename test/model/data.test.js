@@ -1,5 +1,5 @@
-import {Data} from '../../model/data.js';
-import {expect} from '@open-wc/testing';
+import { Data } from '../../model/data.js';
+import { expect } from '@open-wc/testing';
 
 describe('Data', () => {
 	const recordProvider = async() => {
@@ -26,7 +26,7 @@ describe('Data', () => {
 				['Starr, Ringo']
 			];
 
-			const sut = new Data({recordProvider, filters});
+			const sut = new Data({ recordProvider, filters });
 			await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
 			expect(sut.userDataForDisplay).to.deep.equal(expected);
 		});

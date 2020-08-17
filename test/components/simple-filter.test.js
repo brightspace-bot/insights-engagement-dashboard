@@ -1,6 +1,6 @@
 import '../../components/simple-filter';
 
-import {expect, fixture, html, oneEvent} from '@open-wc/testing';
+import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-simple-filter', () => {
