@@ -1,9 +1,9 @@
 import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/inputs/input-checkbox';
 
-import {css, html, LitElement} from 'lit-element/lit-element.js';
-import {Localizer} from '../locales/localizer';
-import {RtlMixin} from '@brightspace-ui/core/mixins/rtl-mixin.js';
+import { css, html, LitElement } from 'lit-element/lit-element.js';
+import { Localizer } from '../locales/localizer';
+import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin.js';
 
 /**
  * @property {string} name
@@ -135,7 +135,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 				<d2l-input-checkbox
 					?checked="${this._showSelected}"
 					?indeterminate="${this._showIndeterminate}"
-					aria-label="${this.localize('components.tree-selector.node.aria-label', {name: this.name, parentName: this.parentName})}"
+					aria-label="${this.localize('components.tree-selector.node.aria-label', { name: this.name, parentName: this.parentName })}"
 					@change="${this._onChange}"
 				></d2l-input-checkbox>
 				<span class="node-text" @click="${this._onArrowClick}" aria-hidden="true">${this.name}</span>
@@ -189,7 +189,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 			this.isOpen ?
 				'components.tree-selector.arrow-label.open' :
 				'components.tree-selector.arrow-label.closed',
-			{name: this.name, level: this.indentLevel, parentName: this.parentName }
+			{ name: this.name, level: this.indentLevel, parentName: this.parentName }
 		);
 	}
 
@@ -278,7 +278,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		 */
 		this.dispatchEvent(new CustomEvent(
 			'd2l-insights-tree-selector-change',
-			{bubbles: true, composed: false}
+			{ bubbles: true, composed: false }
 		));
 	}
 
@@ -288,7 +288,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		 */
 		this.dispatchEvent(new CustomEvent(
 			'd2l-insights-tree-selector-resize',
-			{bubbles: true, composed: false}
+			{ bubbles: true, composed: false }
 		));
 	}
 }

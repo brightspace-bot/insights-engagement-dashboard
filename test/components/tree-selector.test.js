@@ -1,7 +1,7 @@
 import '../../components/tree-selector.js';
 
-import {expect, fixture, html, oneEvent} from '@open-wc/testing';
-import {runConstructor} from '@brightspace-ui/core/tools/constructor-test-helper.js';
+import { expect, fixture, html, oneEvent } from '@open-wc/testing';
+import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 const tree = [
 	{ name: 'child1' },

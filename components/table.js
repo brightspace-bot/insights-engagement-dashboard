@@ -1,6 +1,6 @@
-import {css, html, LitElement} from 'lit-element';
-import {Localizer} from '../locales/localizer';
-import {RtlMixin} from '@brightspace-ui/core/mixins/rtl-mixin';
+import { css, html, LitElement } from 'lit-element';
+import { Localizer } from '../locales/localizer';
+import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
 /**
  * @property {String} title - for use by screen reader users
@@ -12,9 +12,9 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 
 	static get properties() {
 		return {
-			title: {type: String, attribute: true},
-			columns: {type: Array, attribute: false},
-			data: {type: Array, attribute: false}
+			title: { type: String, attribute: true },
+			columns: { type: Array, attribute: false },
+			data: { type: Array, attribute: false }
 		};
 	}
 

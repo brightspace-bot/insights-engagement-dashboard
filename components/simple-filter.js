@@ -6,9 +6,9 @@ import '@brightspace-ui/core/components/inputs/input-checkbox';
 import '@brightspace-ui/core/components/inputs/input-search';
 import '@brightspace-ui/core/components/button/button-subtle.js';
 
-import {css, html, LitElement} from 'lit-element';
-import {Localizer} from '../locales/localizer';
-import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-styles';
+import { css, html, LitElement } from 'lit-element';
+import { Localizer } from '../locales/localizer';
+import { selectStyles } from '@brightspace-ui/core/components/inputs/input-select-styles';
 
 /**
  * @property {string} name
@@ -21,10 +21,10 @@ class SimpleFilter extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
-			name: {type: String, attribute: true},
-			data: {type: Array, attribute: false},
-			loadMoreText: {type: String, attribute: 'load-more-text'},
-			searchable: {type: Boolean, attribute: true}
+			name: { type: String, attribute: true },
+			data: { type: Array, attribute: false },
+			loadMoreText: { type: String, attribute: 'load-more-text' },
+			searchable: { type: Boolean, attribute: true }
 		};
 	}
 
@@ -49,7 +49,7 @@ class SimpleFilter extends Localizer(LitElement) {
 	render() {
 		return html`
 			<d2l-dropdown>
-				<button class="d2l-dropdown-opener d2l-input-select" aria-label="${this.localize('components.simple-filter.dropdown-action', {name: this.name})}">
+				<button class="d2l-dropdown-opener d2l-input-select" aria-label="${this.localize('components.simple-filter.dropdown-action', { name: this.name })}">
 					${this.name}
 				</button>
 				<d2l-dropdown-content align="start">
