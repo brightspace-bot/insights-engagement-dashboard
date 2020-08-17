@@ -37,7 +37,6 @@ class SummaryCard extends MobxLitElement {
 
 			.summary-card-body {
 				display: flex;
-				flex-wrap: wrap;
 				height: 100%;
 				align-items: center;
 				margin-top: -15px;
@@ -57,7 +56,7 @@ class SummaryCard extends MobxLitElement {
 			}
 			
 			.summary-card-value {
-				font-size: 20px;
+				font-size: 22px;
 				color: var(--d2l-color-ferrite); /* should conditionally render this when adding more cards */
 				margin: 10px;
 				font-weight: bold;
@@ -68,7 +67,7 @@ class SummaryCard extends MobxLitElement {
 				font-size: 14px;
 				line-height: 1rem;
 				color: var(--d2l-color-ferrite);
-				display: inline-block;
+				display: flex;
 			}
 		`;
 	}
