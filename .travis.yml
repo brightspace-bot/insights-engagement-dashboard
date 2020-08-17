@@ -12,6 +12,7 @@ script:
     echo "Not a pull request and/or no secure environment variables, running headless tests...";
     npm run test:headless || travis_terminate 1;
   fi
+  npm run test:diff
 after_success:
 - frauci-update-version -d=skip && export TRAVIS_TAG=$(frauci-get-version)
 env:
