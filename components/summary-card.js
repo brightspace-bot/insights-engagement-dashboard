@@ -34,10 +34,7 @@ class SummaryCard extends MobxLitElement {
 			.summary-card[applied] {
 				border-color: darkseagreen;
 			}
-			.summary-card[loading] {
-				opacity: 30%;
-			}
-			
+
 			.summary-card-body {
 				display: flex;
 				flex-wrap: wrap;
