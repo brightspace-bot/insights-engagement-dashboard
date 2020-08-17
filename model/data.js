@@ -1,4 +1,4 @@
-import {action, autorun, computed, decorate, observable} from 'mobx';
+import { action, autorun, computed, decorate, observable } from 'mobx';
 
 function countUnique(records, field) {
 	return new Set(records.map(r => r[field])).size;
@@ -6,7 +6,7 @@ function countUnique(records, field) {
 
 // this is a potted example - various bar-charts will be slight variations on this
 export class Histogram {
-	constructor({id, title, field}, data) {
+	constructor({ id, title, field }, data) {
 		this.id = id;
 		this.title = title;
 		this.field = field;
@@ -52,7 +52,7 @@ export class Filter {
 }
 
 export class Data {
-	constructor({recordProvider, filters}) {
+	constructor({ recordProvider, filters }) {
 		this.isLoading = true;
 		this.filters = {};
 		this.serverData = {
@@ -119,7 +119,7 @@ export class Data {
 	_persist() {
 		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
 			Object.keys(this.filters)
-				.map(f => ({id: f, applied: this.filters[f].isApplied}))
+				.map(f => ({ id: f, applied: this.filters[f].isApplied }))
 		));
 	}
 

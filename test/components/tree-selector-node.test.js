@@ -1,7 +1,7 @@
 import '../../components/tree-selector-node.js';
 
-import {expect, fixture, html, oneEvent} from '@open-wc/testing';
-import {runConstructor} from '@brightspace-ui/core/tools/constructor-test-helper.js';
+import { expect, fixture, html, oneEvent } from '@open-wc/testing';
+import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 const tree = [
 	{ name: 'child1' },
@@ -206,6 +206,7 @@ describe('d2l-insights-tree-selector-node', () => {
 		it('should be marked indeterminate if some children are selected', async() => {
 			const el = await fixture(html`<d2l-insights-tree-selector-node name="node" .tree="${tree}"></d2l-insights-tree-selector-node>`);
 			const [...renderedChildren] = el.shadowRoot.querySelectorAll('d2l-insights-tree-selector-node');
+			await renderedChildren[0].updateComplete;
 			getCheckbox(renderedChildren[0]).simulateClick();
 			await el.updateComplete;
 			expect(getCheckbox(el).checked).to.be.false;
@@ -216,6 +217,8 @@ describe('d2l-insights-tree-selector-node', () => {
 		it('should select just this node if all children are selected', async() => {
 			const el = await fixture(html`<d2l-insights-tree-selector-node name="node" .tree="${tree}"></d2l-insights-tree-selector-node>`);
 			const [...renderedChildren] = el.shadowRoot.querySelectorAll('d2l-insights-tree-selector-node');
+			await renderedChildren[0].updateComplete;
+			await renderedChildren[2].updateComplete;
 			getCheckbox(renderedChildren[0]).simulateClick();
 			getCheckbox(renderedChildren[2]).simulateClick();
 			await el.updateComplete;
@@ -227,6 +230,7 @@ describe('d2l-insights-tree-selector-node', () => {
 		it('should select all other children if this node was selected and one child is deselected', async() => {
 			const el = await fixture(html`<d2l-insights-tree-selector-node name="node" .tree="${tree}" selected-state="explicit"></d2l-insights-tree-selector-node>`);
 			const [...renderedChildren] = el.shadowRoot.querySelectorAll('d2l-insights-tree-selector-node');
+			await renderedChildren[0].updateComplete;
 			getCheckbox(renderedChildren[0]).simulateClick();
 			await el.updateComplete;
 			expect(renderedChildren[0].selectedState).to.equal('none');

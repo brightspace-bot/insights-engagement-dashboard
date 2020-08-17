@@ -27,7 +27,7 @@
     "deepmerge": "^4",
     "es-dev-server": "^1.55.1",
     "eslint": "^7",
-    "eslint-config-brightspace": "^0.9.0",
+    "eslint-config-brightspace": "^0.10.0",
     "eslint-plugin-html": "^6",
     "eslint-plugin-json": "^2.1.1",
     "eslint-plugin-lit": "^1",
@@ -40,8 +40,9 @@
   },
   "dependencies": {
     "@adobe/lit-mobx": "0.0.4",
-    "@brightspace-ui/core": "^1.55.1",
+    "@brightspace-ui/core": "^1.69.0",
     "@webcomponents/webcomponentsjs": "^2",
+    "d2l-facet-filter-sort": "BrightspaceUI/facet-filter-sort#semver:^3",
     "highcharts": "^8.1.2",
     "lit-element": "^2",
     "mobx": "^5.15.4"

@@ -1,8 +1,8 @@
 import '../../components/semester-filter';
 
-import {expect, fixture, html, oneEvent} from '@open-wc/testing';
+import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
-import {runConstructor} from '@brightspace-ui/core/tools/constructor-test-helper.js';
+import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 const endpoint = new URL('/d2l/api/ap/unstable/insights/data/semesters?pageSize=3', location.href);
 
