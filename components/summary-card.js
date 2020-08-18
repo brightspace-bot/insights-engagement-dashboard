@@ -6,7 +6,7 @@ class SummaryCard extends MobxLitElement {
 	static get properties() {
 		return {
 			data: { type: Object, attribute: false },
-			cardTitle: {type: String, attribute: 'card-title'},
+			cardTitle: { type: String, attribute: 'card-title' },
 			cardValue: { type: String, attribute: 'card-value' },
 			cardMessage: { type: String, attribute: 'card-message' }
 		};
@@ -21,7 +21,7 @@ class SummaryCard extends MobxLitElement {
 				display: none;
 			}
 
-			.summary-card {
+			.d2l-insights-summary-card {
 				width: 280px;
 				height: 120px;
 				border-width: 1.5px;
@@ -34,27 +34,27 @@ class SummaryCard extends MobxLitElement {
 				margin-top: 10px;
 			}
 
-			.summary-card-body {
+			.d2l-insights-summary-card-body {
 				display: flex;
 				height: 100%;
 				align-items: center;
 				margin-top: -15px;
 			}
 
-			.summary-card-title {
+			.d2l-insights-summary-card-title {
 				font-size: smaller;
 				font-weight: bold;
 				color: var(--d2l-color-ferrite);
 				text-indent: 3%;
 			}
 
-			.summary-card-field {
+			.d2l-insights-summary-card-field {
 				display: inline-block;
 				margin: 10px;
 				vertical-align: middle;
 			}
 
-			.summary-card-value {
+			.d2l-insights-summary-card-value {
 				font-size: 22px;
 				color: var(--d2l-color-ferrite); /* should conditionally render this when adding more cards */
 				margin: 10px;
@@ -62,7 +62,7 @@ class SummaryCard extends MobxLitElement {
 				margin-inline-start: 30px;
 			}
 
-			.summary-card-message {
+			.d2l-insights-summary-card-message {
 				max-width: 180px;
 				font-size: 14px;
 				line-height: 1rem;
@@ -76,11 +76,11 @@ class SummaryCard extends MobxLitElement {
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
-		return html`<div class="summary-card" ?applied="${this.data.isApplied}" ?loading="${this.data.isLoading}">
-			<div class="summary-card-title">${this.cardTitle}</div>
-			<div class="summary-card-body">
-				<span class="summary-card-value summary-card-field">${this.cardValue}</span>
-				<span class="summary-card-message summary-card-field">${html`${this.cardMessage}`}</span>
+		return html`<div class="d2l-insights-summary-card" ?applied="${this.data.isApplied}" ?loading="${this.data.isLoading}">
+			<div class="d2l-insights-summary-card-title">${this.cardTitle}</div>
+			<div class="d2l-insights-summary-card-body">
+				<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.cardValue}</span>
+				<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${html`${this.cardMessage}`}</span>
 			</div>
 		</div>`;
 	}
