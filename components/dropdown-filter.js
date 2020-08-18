@@ -39,12 +39,12 @@ class DropdownFilter extends Localizer(LitElement) {
 				display: none;
 			}
 			d2l-button-subtle {
-				margin: 0.25rem;
 				display: grid;
+				margin: 0.25rem;
 			}
 
 			d2l-filter-dropdown-category[disable-search] {
-				padding-top: 0px;
+				padding-top: 0;
 			}
 		`];
 	}

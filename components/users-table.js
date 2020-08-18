@@ -21,13 +21,13 @@ class UsersTable extends Localizer(MobxLitElement) {
 	static get styles() {
 		return [
 			css`
-				.table-controls {
-					margin: 30px 0;
+				.d2l-insights-users-table-controls {
 					display: flex;
+					margin: 30px 0;
 					width: 100%;
 				}
 
-				.table-controls-item {
+				.d2l-insights-users-table-controls-item {
 					flex: 1 1 33%;
 				}
 			`
@@ -57,8 +57,8 @@ class UsersTable extends Localizer(MobxLitElement) {
 				.columns=${this.columns}
 				.data="${_displayData}"></d2l-insights-table>
 
-			<div class="table-controls">
-				<div class="table-controls-item">
+			<div class="d2l-insights-users-table-controls">
+				<div class="d2l-insights-users-table-controls-item">
 					${this.localize('components.insights-users-table.totalUsers', { num: _itemsCount })}
 				</div>
 				<!-- other columns in the flex box are for paging controls -->

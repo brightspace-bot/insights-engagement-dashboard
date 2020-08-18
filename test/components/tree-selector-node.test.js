@@ -10,7 +10,7 @@ const tree = [
 ];
 
 function getOpenControl(el) {
-	return el.shadowRoot.querySelector('.open-control');
+	return el.shadowRoot.querySelector('.d2l-insights-tree-selector-node-open-control');
 }
 
 function getCheckbox(el) {
@@ -18,7 +18,7 @@ function getCheckbox(el) {
 }
 
 function getSubtree(el) {
-	return el.shadowRoot.querySelector('.subtree');
+	return el.shadowRoot.querySelector('.d2l-insights-tree-selector-node-subtree');
 }
 
 describe('d2l-insights-tree-selector-node', () => {
