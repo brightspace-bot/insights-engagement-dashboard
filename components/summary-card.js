@@ -22,29 +22,29 @@ class SummaryCard extends MobxLitElement {
 			}
 
 			.d2l-insights-summary-card {
-				width: 280px;
-				height: 120px;
-				border-width: 1.5px;
 				border-color: var(--d2l-color-mica);
-				border-style: solid;
-				padding: 10px;
 				border-radius: 15px;
+				border-style: solid;
+				border-width: 1.5px;
 				display: inline-block;
+				height: 120px;
 				margin-right: 10px;
 				margin-top: 10px;
+				padding: 10px;
+				width: 280px;
 			}
 
 			.d2l-insights-summary-card-body {
+				align-items: center;
 				display: flex;
 				height: 100%;
-				align-items: center;
 				margin-top: -15px;
 			}
 
 			.d2l-insights-summary-card-title {
+				color: var(--d2l-color-ferrite);
 				font-size: smaller;
 				font-weight: bold;
-				color: var(--d2l-color-ferrite);
 				text-indent: 3%;
 			}
 
@@ -55,20 +55,20 @@ class SummaryCard extends MobxLitElement {
 			}
 
 			.d2l-insights-summary-card-value {
-				font-size: 22px;
 				color: var(--d2l-color-ferrite); /* should conditionally render this when adding more cards */
-				margin: 10px;
+				font-size: 22px;
 				font-weight: bold;
+				margin: 10px;
 				margin-inline-start: 30px;
 			}
 
 			.d2l-insights-summary-card-message {
-				max-width: 180px;
-				font-size: 14px;
-				line-height: 1rem;
 				color: var(--d2l-color-ferrite);
 				display: flex-wrap;
+				font-size: 14px;
+				line-height: 1rem;
 				margin-inline-start: 2%;
+				max-width: 180px;
 			}
 		`;
 	}
