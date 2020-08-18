@@ -7,7 +7,7 @@ export default {
 
 	"components.insights-role-filter.name": "Roles",
 
-	"components.org-unit-filter.name": "Org Unit",
+	"components.org-unit-filter.name": "Org Units",
 	"components.org-unit-filter.org-unit-name": "{orgUnitName} (Id: {id})",
 
 	"components.semester-filter.name": "Semesters",
