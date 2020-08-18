@@ -1,6 +1,6 @@
 import '../../components/dropdown-filter';
 
-import {expect, fixture, html, oneEvent} from '@open-wc/testing';
+import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-dropdown-filter', () => {
@@ -148,7 +148,7 @@ describe('d2l-insights-dropdown-filter', () => {
 
 		it('should fire a `searched` event when d2l-filter-dropdown-category-searched is handled', async() => {
 			const listener = oneEvent(el, 'd2l-insights-dropdown-filter-searched');
-			const dropdownCategorySearchedEvent = {detail: {value: 'search string'}};
+			const dropdownCategorySearchedEvent = { detail: { value: 'search string' } };
 
 			el._handleSearchedClick(dropdownCategorySearchedEvent);
 

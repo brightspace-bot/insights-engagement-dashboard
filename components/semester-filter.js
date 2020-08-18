@@ -1,9 +1,9 @@
 import './dropdown-filter';
 
-import {html, LitElement} from 'lit-element';
+import { html, LitElement } from 'lit-element';
 import FakeLms from '../model/fake-lms';
 import Lms from '../model/lms';
-import {Localizer} from '../locales/localizer';
+import { Localizer } from '../locales/localizer';
 
 /**
  * @property {{id: string, displayName: string, selected: boolean}[]} _filterData

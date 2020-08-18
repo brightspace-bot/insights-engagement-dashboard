@@ -2,9 +2,9 @@ import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-category.js';
 import 'd2l-facet-filter-sort/components/d2l-filter-dropdown/d2l-filter-dropdown-option.js';
 
-import {css, html, LitElement} from 'lit-element';
-import {Localizer} from '../locales/localizer';
-import {repeat} from 'lit-html/directives/repeat.js';
+import { css, html, LitElement } from 'lit-element';
+import { Localizer } from '../locales/localizer';
+import { repeat } from 'lit-html/directives/repeat.js';
 
 /**
  * @property {string} name
@@ -22,11 +22,11 @@ class DropdownFilter extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
-			name: {type: String, attribute: true},
-			data: {type: Array, attribute: false},
-			hasMore: {type: Boolean, attribute: 'more'},
-			disableSearch: {type: Boolean, attribute: 'disable-search'},
-			_selectedCount: {type: Number, attribute: false}
+			name: { type: String, attribute: true },
+			data: { type: Array, attribute: false },
+			hasMore: { type: Boolean, attribute: 'more' },
+			disableSearch: { type: Boolean, attribute: 'disable-search' },
+			_selectedCount: { type: Number, attribute: false }
 		};
 	}
 
@@ -68,7 +68,7 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	render() {
-		const openerSelectedText = this.localize('components.dropdown-filter.opener-text-multiple', {filterName: this.name, selectedCount: this._selectedCount});
+		const openerSelectedText = this.localize('components.dropdown-filter.opener-text-multiple', { filterName: this.name, selectedCount: this._selectedCount });
 
 		return html`
 			<d2l-filter-dropdown

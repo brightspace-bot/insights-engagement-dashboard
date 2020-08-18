@@ -1,4 +1,4 @@
-import {expect} from '@open-wc/testing';
+import { expect } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
 import Lms from '../../model/lms';
 

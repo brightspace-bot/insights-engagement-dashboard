@@ -1,9 +1,9 @@
 import './dropdown-filter';
 
-import {html, LitElement} from 'lit-element';
+import { html, LitElement } from 'lit-element';
 import FakeLms from '../model/fake-lms';
 import Lms from '../model/lms';
-import {Localizer} from '../locales/localizer';
+import { Localizer } from '../locales/localizer';
 
 /**
  * @property {{id: string, displayName: string}[]} _filterData
@@ -50,7 +50,7 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 
 	_setFilterData(roleData) {
 		this._filterData = roleData.map(obj => {
-			return {id: obj.Identifier, displayName: obj.DisplayName};
+			return { id: obj.Identifier, displayName: obj.DisplayName };
 		});
 	}
 
