@@ -20,6 +20,7 @@ class SummaryCard extends MobxLitElement {
 			:host([hidden]) {
 				display: none;
 			}
+<<<<<<< HEAD
 			
 			.summary-card {
 				width: 280px;
@@ -28,30 +29,38 @@ class SummaryCard extends MobxLitElement {
 				border-color: var(--d2l-color-mica);
 				border-style: solid;
 				padding: 10px;
+=======
+
+			.d2l-insights-summary-card {
+				border-color: aliceblue;
+>>>>>>> b5dd979bb988ea2fa955087c874507e0af9be7f5
 				border-radius: 15px;
+				border-style: solid;
+				border-width: 4px;
 				display: inline-block;
 				margin-right: 10px;
 				margin-top: 10px;
+				padding: 10px;
+				width: fit-content;
 			}
-			.summary-card[applied] {
+			.d2l-insights-summary-card[applied] {
 				border-color: darkseagreen;
 			}
 
 			.summary-card-body {
 				display: flex;
 				height: 100%;
-				align-items: center;
 				margin-top: -15px;
 			}
-			
-			.summary-card-title {
+
+			.d2l-insights-summary-card-title {
 				font-size: smaller;
 				font-weight: bold;
 				color: var(--d2l-color-ferrite);
 				text-indent: 3%;
 			}
-			
-			.summary-card-field {
+
+			.d2l-insights-summary-card-field {
 				display: inline-block;
 				margin: 10px;
 				vertical-align: middle;

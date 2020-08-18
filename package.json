@@ -5,9 +5,10 @@
   "repository": "https://github.com/Brightspace/insights-engagement-dashboard.git",
   "private": true,
   "scripts": {
-    "lint": "npm run lint:eslint && npm run lint:lit",
+    "lint": "npm run lint:eslint && npm run lint:lit && npm run lint:style",
     "lint:eslint": "eslint . --ext .js,.html",
     "lint:lit": "lit-analyzer engagement-dashboard.js demo test components",
+    "lint:style": "stylelint \"**/*.js\"",
     "start": "es-dev-server --app-index demo/index.html --node-resolve --dedupe --open --watch",
     "test": "npm run lint && npm run test:headless && npm run test:diff",
     "test:diff": "mocha ./**/*.visual-diff.js -t 40000",
@@ -20,6 +21,7 @@
   "author": "D2L Corporation",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@brightspace-ui/stylelint-config": "0.0.1",
     "@brightspace-ui/visual-diff": "^1.4.1",
     "@open-wc/testing": "^2",
     "@open-wc/testing-karma": "^4.0.1",
@@ -36,7 +38,8 @@
     "frau-ci": "^1",
     "karma-sauce-launcher": "^4",
     "lit-analyzer": "^1.2.0",
-    "puppeteer": "^5"
+    "puppeteer": "^5",
+    "stylelint": "^13.6.1"
   },
   "dependencies": {
     "@adobe/lit-mobx": "0.0.4",

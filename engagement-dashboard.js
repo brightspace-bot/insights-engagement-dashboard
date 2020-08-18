@@ -69,11 +69,11 @@ class EngagementDashboard extends Localizer(LitElement) {
 				}
 
 				/* NB: this layout css doesn't quite work; do not ship */
-				.summary-container {
-					margin-top: 10px;
-					margin-bottom: 25px;
+				.d2l-insights-summary-container {
 					display: flex;
 					flex-wrap: wrap;
+					margin-bottom: 25px;
+					margin-top: 10px;
 				}
 
 				h1.d2l-heading-1 {

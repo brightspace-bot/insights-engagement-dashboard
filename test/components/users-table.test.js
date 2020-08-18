@@ -29,7 +29,7 @@ describe('d2l-insights-users-table', () => {
 	describe('render', () => {
 		it('should calculate and display the correct number of users', async() => {
 			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
-			const totalUsersText = el.shadowRoot.querySelectorAll('.table-controls-item')[0];
+			const totalUsersText = el.shadowRoot.querySelectorAll('.d2l-insights-users-table-controls-item')[0];
 			expect(totalUsersText.innerText).to.equal('Total Users: 4');
 		});
 	});
