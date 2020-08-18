@@ -13,6 +13,7 @@ class Lms {
 	}
 
 	/**
+	 * @param pageSize
 	 * @param {string|null} bookmark - can be null
 	 * @param {string|null} search - can be null
 	 * @returns {{PagingInfo:{Bookmark: string, HasMoreItems: boolean}, Items: {orgUnitId: number, orgUnitName: string}[]}}
@@ -55,7 +56,7 @@ class Lms {
 			]
 		};
 
-		response.Items = response.Items.map((item, index) => Object.assign(item, {index}));
+		response.Items = response.Items.map((item, index) => Object.assign(item, { index }));
 
 		const index = parseInt(bookmark || '-1');
 		response.Items = response.Items.slice(index + 1);
