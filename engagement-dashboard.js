@@ -69,11 +69,11 @@ class EngagementDashboard extends Localizer(LitElement) {
 				}
 
 				/* NB: this layout css doesn't quite work; do not ship */
-				.summary-container {
-					margin-top: 10px;
-					margin-bottom: 25px;
+				.d2l-insights-summary-container {
 					display: flex;
 					flex-wrap: wrap;
+					margin-bottom: 25px;
+					margin-top: 10px;
 				}
 
 				h1.d2l-heading-1 {
@@ -123,7 +123,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
-				<div class="summary-container">
+				<div class="d2l-insights-summary-container">
 					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
 				</div>
 

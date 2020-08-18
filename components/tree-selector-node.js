@@ -50,7 +50,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 				display: none;
 			}
 
-			.node {
+			.d2l-insights-tree-selector-node {
 				display: flex;
 				flex-wrap: nowrap;
 				margin-bottom: 16px;
@@ -60,44 +60,44 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 				display: inline-block;
 			}
 
-			.open-control {
+			.d2l-insights-tree-selector-node-open-control {
 				cursor: default;
 				margin-top: -3px;
 			}
-			.open-control .open {
+			.d2l-insights-tree-selector-node-open-control .d2l-insights-tree-selector-node-open {
 				display: none;
 			}
-			.open-control[open] .open {
+			.d2l-insights-tree-selector-node-open-control[open] .d2l-insights-tree-selector-node-open {
 				display: inline-block;
 			}
-			.open-control[open] .closed {
+			.d2l-insights-tree-selector-node-open-control[open] .d2l-insights-tree-selector-node-closed {
 				display: none;
 			}
 
-			.subtree {
+			.d2l-insights-tree-selector-node-subtree {
 				margin-left: 34px;
-				margin-right: 0px;
+				margin-right: 0;
 			}
-			:host([dir="rtl"]) .subtree {
-				margin-left: 0px;
+			:host([dir="rtl"]) .d2l-insights-tree-selector-node-subtree {
+				margin-left: 0;
 				margin-right: 34px;
 			}
-			.subtree[root] {
-				margin-left: 0px;
+			.d2l-insights-tree-selector-node-subtree[root] {
+				margin-left: 0;
 			}
-			:host([dir="rtl"]) .subtree[root] {
-				margin-right: 0px;
+			:host([dir="rtl"]) .d2l-insights-tree-selector-node-subtree[root] {
+				margin-right: 0;
 			}
-			.subtree[hidden] {
+			.d2l-insights-tree-selector-node-subtree[hidden] {
 				display: none;
 			}
 
-			.node-text {
-				display: inline-block;
+			.d2l-insights-tree-selector-node-text {
 				cursor: default;
-				width: 100%;
+				display: inline-block;
 				margin-left: 0.5rem;
 				margin-right: 0.5rem;
+				width: 100%;
 			}
 		`;
 	}
@@ -131,14 +131,14 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		}
 
 		return html`
-			<div class="node">
+			<div class="d2l-insights-tree-selector-node">
 				<d2l-input-checkbox
 					?checked="${this._showSelected}"
 					?indeterminate="${this._showIndeterminate}"
 					aria-label="${this.localize('components.tree-selector.node.aria-label', { name: this.name, parentName: this.parentName })}"
 					@change="${this._onChange}"
 				></d2l-input-checkbox>
-				<span class="node-text" @click="${this._onArrowClick}" aria-hidden="true">${this.name}</span>
+				<span class="d2l-insights-tree-selector-node-text" @click="${this._onArrowClick}" aria-hidden="true">${this.name}</span>
 				${this._renderOpenControl()}
 			</div>
 		`;
@@ -148,14 +148,14 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		// show the open/close arrow if this is not a leaf
 		if (this._isOpenable) {
 			return html`
-				<a href="#" class="open-control"
+				<a href="#" class="d2l-insights-tree-selector-node-open-control"
 					?open="${this.isOpen}"
 				 	@click="${this._onArrowClick}"
 				 	aria-label="${this._arrowLabel}"
 				 	aria-expanded="${this.isOpen}"
 				 >
-					<d2l-icon class="closed" icon="tier1:arrow-expand"></d2l-icon>
-					<d2l-icon class="open" icon="tier1:arrow-collapse"></d2l-icon>
+					<d2l-icon class="d2l-insights-tree-selector-node-closed" icon="tier1:arrow-expand"></d2l-icon>
+					<d2l-icon class="d2l-insights-tree-selector-node-open" icon="tier1:arrow-collapse"></d2l-icon>
 				</a>
 			`;
 		} else {
@@ -165,7 +165,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 
 	_renderSubtree() {
 		if (this.tree) {
-			return html`<div class="subtree" ?hidden="${!this.isRoot && !this.isOpen}" id="subtree" ?root="${this.isRoot}">${this.tree.map((x, i) => {
+			return html`<div class="d2l-insights-tree-selector-node-subtree" ?hidden="${!this.isRoot && !this.isOpen}" id="subtree" ?root="${this.isRoot}">${this.tree.map((x, i) => {
 				const childState = this._getChildState(x, i);
 				return html`<d2l-insights-tree-selector-node
 					name="${x.name}"
