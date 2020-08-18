@@ -20,11 +20,11 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 
 	static get styles() {
 		return css`
-			:host([dir="rtl"]) .d2l-insights-table {
+			:host([dir="rtl"]) .d2l-insights-table-table {
 				text-align: right;
 			}
 
-			.d2l-insights-table {
+			.d2l-insights-table-table {
 				background-color: #ffffff;
 				border-collapse: separate;
 				border-spacing: 0;
@@ -51,65 +51,65 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 			}
 
 			/* Table cell borders - to get exactly 1px inner borders in all cells */
-			.d2l-insights-table .d2l-insights-table-row-first > th {
+			.d2l-insights-table-table .d2l-insights-table-row-first > th {
 				border-top: 1px solid var(--d2l-color-mica);
 			}
 
-			.d2l-insights-table .d2l-insights-table-cell {
+			.d2l-insights-table-table .d2l-insights-table-cell {
 				border-right: 1px solid var(--d2l-color-mica);
 			}
 
-			.d2l-insights-table .d2l-insights-table-cell-first,
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-cell-last {
+			.d2l-insights-table-table .d2l-insights-table-cell-first,
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-cell-last {
 				border-left: 1px solid var(--d2l-color-mica);
 			}
 
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-cell-first:not(.d2l-insights-table-cell-last) {
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-cell-first:not(.d2l-insights-table-cell-last) {
 				border-left: 0;
 			}
 
 			/* Table cell radii - to round all 4 corners */
 			/* top row, first child */
-			.d2l-insights-table .d2l-insights-table-row-first > .d2l-insights-table-cell-first {
+			.d2l-insights-table-table .d2l-insights-table-row-first > .d2l-insights-table-cell-first {
 				border-top-left-radius: 8px;
 			}
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-row-first > .d2l-insights-table-cell-first:not(.d2l-insights-table-cell-last) {
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-first > .d2l-insights-table-cell-first:not(.d2l-insights-table-cell-last) {
 				border-top-left-radius: 0;
 			}
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-row-first > .d2l-insights-table-cell-first {
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-first > .d2l-insights-table-cell-first {
 				border-top-right-radius: 8px;
 			}
 
 			/* top row, last child */
-			.d2l-insights-table .d2l-insights-table-row-first > .d2l-insights-table-cell-last {
+			.d2l-insights-table-table .d2l-insights-table-row-first > .d2l-insights-table-cell-last {
 				border-top-right-radius: 8px;
 			}
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-row-first > .d2l-insights-table-cell-last:not(.d2l-insights-table-cell-first) {
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-first > .d2l-insights-table-cell-last:not(.d2l-insights-table-cell-first) {
 				border-top-right-radius: 0;
 			}
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-row-first > .d2l-insights-table-cell-last {
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-first > .d2l-insights-table-cell-last {
 				border-top-left-radius: 8px;
 			}
 
 			/* bottom row, first child */
-			.d2l-insights-table .d2l-insights-table-row-last > .d2l-insights-table-cell-first {
+			.d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-first {
 				border-bottom-left-radius: 8px;
 			}
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-row-last > .d2l-insights-table-cell-first:not(.d2l-insights-table-cell-last) {
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-first:not(.d2l-insights-table-cell-last) {
 				border-bottom-left-radius: 0;
 			}
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-row-last > .d2l-insights-table-cell-first {
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-first {
 				border-bottom-right-radius: 8px;
 			}
 
 			/* bottom row, last child */
-			.d2l-insights-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
+			.d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-right-radius: 8px;
 			}
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last:not(.d2l-insights-table-cell-first) {
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last:not(.d2l-insights-table-cell-first) {
 				border-bottom-right-radius: 0;
 			}
-			:host([dir="rtl"]) .d2l-insights-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
+			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-left-radius: 8px;
 			}
 		`;
@@ -124,7 +124,7 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 
 	render() {
 		return html`
-			<table class="d2l-insights-table" aria-label="${this.title}">
+			<table class="d2l-insights-table-table" aria-label="${this.title}">
 				${this._renderThead()}
 				${this._renderTbody()}
 			</table>

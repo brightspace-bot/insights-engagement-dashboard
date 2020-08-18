@@ -50,7 +50,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 				display: none;
 			}
 
-			.d2l-insights-tree-selector-node {
+			.d2l-insights-tree-selector-node-node {
 				display: flex;
 				flex-wrap: nowrap;
 				margin-bottom: 16px;
@@ -131,7 +131,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		}
 
 		return html`
-			<div class="d2l-insights-tree-selector-node">
+			<div class="d2l-insights-tree-selector-node-node">
 				<d2l-input-checkbox
 					?checked="${this._showSelected}"
 					?indeterminate="${this._showIndeterminate}"
