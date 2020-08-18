@@ -1,6 +1,6 @@
 import './components/histogram-card.js';
 import './components/ou-filter.js';
-import './components/summary-card.js';
+import './components/results-card.js';
 import './components/insights-role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
@@ -74,7 +74,6 @@ class EngagementDashboard extends Localizer(LitElement) {
 					margin-bottom: 25px;
 					display: flex;
 					flex-wrap: wrap;
-					width: 50%;
 				}
 
 				h1.d2l-heading-1 {
@@ -111,12 +110,6 @@ class EngagementDashboard extends Localizer(LitElement) {
 				// 	countUniqueField: 'UserId',
 				// 	messageProvider: () => 'users'
 				// }
-				{
-					id: 'd2l-insights-engagement-results',
-					title: this.localize('components.insights-engagement-dashboard.resultsHeading'),
-					dataRequestString: 'userCount',
-					messageProvider: () => this.localize('components.insights-engagement-dashboard.resultsReturned')
-				}
 			]
 		});
 
@@ -131,7 +124,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="summary-container">
-					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}" data-request-string="${f.dataRequestString}"></d2l-labs-summary-card>`)}
+					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>

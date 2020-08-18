@@ -25,7 +25,7 @@ export class Histogram {
 }
 
 export class Filter {
-	constructor({ id, messageProvider, title, field, deltaField, threshold, countUniqueField, dataRequestString, isApplied = false }, data) {
+	constructor({ id, messageProvider, title, field, deltaField, threshold, countUniqueField, isApplied = false }, data) {
 		this.id = id;
 		this.messageProvider = messageProvider;
 		this.title = title;
@@ -34,7 +34,6 @@ export class Filter {
 		this.threshold = threshold;
 		this.countUniqueField = countUniqueField;
 		this.data = data;
-		this.dataRequestString = dataRequestString;
 		this.isApplied = isApplied;
 	}
 
@@ -145,7 +144,6 @@ decorate(Filter, {
 	deltaField: observable,
 	threshold: observable,
 	countUniqueField: observable,
-	dataRequestString: observable,
 	isApplied: observable,
 	message: computed,
 	stats: computed
