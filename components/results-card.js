@@ -17,21 +17,21 @@ class ResultsCard extends Localizer(MobxLitElement) {
 		this.data = {};
 	}
 
-	get cardMessage() {
+	get _cardMessage() {
 		return this.localize('components.insights-engagement-dashboard.resultsReturned');
 	}
 
-	get cardTitle() {
+	get _cardTitle() {
 		return this.localize('components.insights-engagement-dashboard.resultsHeading');
 	}
 
-	get cardValue() {
+	get _cardValue() {
 		return this.data.userDataForDisplay.length;
 	}
 
 	render() {
 		return html`
-			<d2l-labs-summary-card id="d2l-insights-engagement-results" .data="${this.data}" card-title="${this.cardTitle}" card-value="${this.cardValue}" card-message="${this.cardMessage}"></d2l-labs-summary-card>
+			<d2l-labs-summary-card id="d2l-insights-engagement-results" .data="${this.data}" card-title="${this._cardTitle}" card-value="${this._cardValue}" card-message="${this._cardMessage}"></d2l-labs-summary-card>
 		`;
 	}
 }

@@ -1,14 +1,12 @@
-import { css, html } from 'lit-element/lit-element.js';
-import { MobxLitElement } from '@adobe/lit-mobx';
+import { css, html, LitElement } from 'lit-element/lit-element.js';
 
-class SummaryCard extends MobxLitElement {
+class SummaryCard extends LitElement {
 
 	static get properties() {
 		return {
-			data: { type: Object, attribute: false },
-			cardTitle: { type: String, attribute: 'card-title' },
-			cardValue: { type: String, attribute: 'card-value' },
-			cardMessage: { type: String, attribute: 'card-message' }
+			title: { type: String, attribute: 'card-title' },
+			value: { type: String, attribute: 'card-value' },
+			message: { type: String, attribute: 'card-message' }
 		};
 	}
 
@@ -55,7 +53,7 @@ class SummaryCard extends MobxLitElement {
 			}
 
 			.d2l-insights-summary-card-value {
-				color: var(--d2l-color-ferrite); /* should conditionally render this when adding more cards */
+				color: var(--d2l-color-ferrite);
 				font-size: 22px;
 				font-weight: bold;
 				margin: 10px;
@@ -76,17 +74,13 @@ class SummaryCard extends MobxLitElement {
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
-		return html`<div class="d2l-insights-summary-card" ?applied="${this.data.isApplied}" ?loading="${this.data.isLoading}">
-			<div class="d2l-insights-summary-card-title">${this.cardTitle}</div>
+		return html`<div class="d2l-insights-summary-card">
+			<div class="d2l-insights-summary-card-title">${this.title}</div>
 			<div class="d2l-insights-summary-card-body">
-				<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.cardValue}</span>
-				<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${html`${this.cardMessage}`}</span>
+				<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>
+				<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${html`${this.message}`}</span>
 			</div>
 		</div>`;
-	}
-
-	firstUpdated() {
-		this.addEventListener('click', () => this.data.isApplied = !this.data.isApplied);
 	}
 
 }
