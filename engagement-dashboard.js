@@ -1,6 +1,6 @@
 import './components/histogram-card.js';
 import './components/ou-filter.js';
-import './components/summary-card.js';
+import './components/results-card.js';
 import './components/insights-role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
@@ -124,7 +124,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container">
-					${Object.values(this._data.filters).map(f => html`<d2l-labs-summary-card id="${f.id}" .data="${f}"></d2l-labs-summary-card>`)}
+					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
