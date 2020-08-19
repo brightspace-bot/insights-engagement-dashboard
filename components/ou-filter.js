@@ -41,6 +41,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 			<d2l-insights-tree-selector id="ou-tree-selector"
 				name="${this.localize('components.org-unit-filter.name')}"
 				.tree="${this._getChildren()}"
+				.search="${this._search}"
 				@d2l-insights-tree-selector-change="${this._onChange}"
 			></d2l-insights-tree-selector>
 		</div>`;
@@ -73,6 +74,12 @@ class OuFilter extends Localizer(MobxLitElement) {
 				selectedState: x[STATE]
 			}))
 			.sort((a, b) => a.name.localeCompare(b.name));
+	}
+
+	_search(filterString) {
+		console.log(`search: ${filterString}`);
+
+		return [];
 	}
 
 	_markSelected(id, isExplicit) {

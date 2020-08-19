@@ -14,6 +14,7 @@ import { selectStyles } from '@brightspace-ui/core/components/inputs/input-selec
  * tree - an array of the same form
  * getTree - is async callback which should return the tree (provide either tree or getTree for each node)
  * selectedState - may be "explicit", "implicit", "indeterminate", or "none"
+ * @property {Function} search - called with search string to get matching items
  * @fires d2l-insights-tree-selector-change - value of this.selected has changed
  */
 class TreeSelector extends Localizer(LitElement) {
@@ -21,7 +22,9 @@ class TreeSelector extends Localizer(LitElement) {
 	static get properties() {
 		return {
 			name: { type: String },
-			tree: { type: Object, attribute: false }
+			tree: { type: Object, attribute: false },
+			search: { type: Object, attribute: false },
+			_searchResults: { type: Object, attribute: false }
 		};
 	}
 
@@ -45,6 +48,12 @@ class TreeSelector extends Localizer(LitElement) {
 		];
 	}
 
+	constructor() {
+		super();
+
+		this._searchResults = null;
+	}
+
 	render() {
 		return html`
 			<d2l-dropdown>
@@ -63,6 +72,7 @@ class TreeSelector extends Localizer(LitElement) {
 							id="tree-selector-root-node"
 							.tree="${this.tree}"
 							root
+							?hidden="${this._isInSearchMode}"
 							@d2l-insights-tree-selector-change="${this._onChange}"
 							@d2l-insights-tree-selector-resize="${this._onResize}"
 						></d2l-insights-tree-selector-node>
@@ -75,6 +85,10 @@ class TreeSelector extends Localizer(LitElement) {
 		return this.shadowRoot.getElementById('tree-selector-root-node').selected;
 	}
 
+	get _isInSearchMode() {
+		return this._searchResults !== null;
+	}
+
 	_onChange() {
 		/**
 		 * @event d2l-insights-tree-selector-change
@@ -85,8 +99,14 @@ class TreeSelector extends Localizer(LitElement) {
 		));
 	}
 
-	_onSearch() {
-		// coming soon
+	_onSearch(event) {
+		const filterString = event.detail.value;
+		if (filterString && filterString.length > 0) {
+			this._searchResults = this.search(filterString);
+			console.log(`found ${JSON.stringify(this._searchResults)}`);
+		} else {
+			this._searchResults = null;
+		}
 	}
 
 	async _onResize() {
