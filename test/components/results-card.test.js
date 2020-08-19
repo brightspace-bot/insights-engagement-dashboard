@@ -31,6 +31,8 @@ describe('d2l-insights-users-table', () => {
 			const el = await fixture(html`<d2l-insights-results-card .data="${data}"></d2l-insights-results-card>`);
 			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').value).to.deep.equal('4');
+			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').title).to.deep.equal('Results');
+			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').message).to.deep.equal('Users returned within results.');
 		});
 	});
 });
