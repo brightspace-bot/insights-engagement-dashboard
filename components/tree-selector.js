@@ -65,7 +65,7 @@ class TreeSelector extends Localizer(LitElement) {
 							@d2l-insights-tree-selector-resize="${this._onResize}"
 						></d2l-insights-tree-selector-node>
 					</d2l-dropdown-content>
-					</d2l-dropdown-button-subtle>
+				</d2l-dropdown-button-subtle>
 			</d2l-dropdown>
 		`;
 	}
