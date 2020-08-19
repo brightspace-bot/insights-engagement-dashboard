@@ -2,11 +2,9 @@ import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
 
-import {css, html} from 'lit-element';
-import {inputStyles} from '@brightspace-ui/core/components/inputs/input-styles';
-import {Localizer} from '../locales/localizer';
-import {MobxLitElement} from '@adobe/lit-mobx';
-import {selectStyles} from '@brightspace-ui/core/components/inputs/input-select-styles';
+import { css, html } from 'lit-element';
+import { Localizer } from '../locales/localizer';
+import { MobxLitElement } from '@adobe/lit-mobx';
 
 /**
  * At the moment the mobx data object is doing sorting / filtering logic
@@ -19,16 +17,14 @@ class UsersTable extends Localizer(MobxLitElement) {
 
 	static get properties() {
 		return {
-			data: {type: Object, attribute: false},
-			_currentPage: {type: Number, attribute: false},
-			_pageSize: {type: Number, attribute: false}
+			data: { type: Object, attribute: false },
+			_currentPage: { type: Number, attribute: false },
+			_pageSize: { type: Number, attribute: false }
 		};
 	}
 
 	static get styles() {
 		return [
-			inputStyles,
-			selectStyles,
 			css`
 				:host {
 					display: block;
@@ -38,22 +34,12 @@ class UsersTable extends Localizer(MobxLitElement) {
 				}
 
 				d2l-labs-pagination {
-					margin: 30px 0;
+					margin: 15px 0;
 				}
 
-				.d2l-insights-users-table-controls {
-					display: flex;
-					margin: 30px 0;
-					width: 100%;
-				}
-
-				.d2l-insights-users-table-controls-item {
-					flex: 1 1 33%;
-				}
-
-				.table-total-users {
-					width: 100%;
+				.d2l-insights-users-table-total-users {
 					margin-bottom: 30px;
+					width: 100%;
 				}
 			`
 		];
@@ -69,7 +55,6 @@ class UsersTable extends Localizer(MobxLitElement) {
 	}
 
 	get _itemsCount() {
-		// this might recalculate userDataForDisplay every time it's accessed, which could make perf bad
 		return this.data.userDataForDisplay.length;
 	}
 
@@ -103,17 +88,17 @@ class UsersTable extends Localizer(MobxLitElement) {
 				.data="${this._displayData}"></d2l-insights-table>
 
 			<d2l-labs-pagination
-				showItemCountSelect="true"
-				itemCountOptions="[10,20,50,100]"
-				pageNumber="${this._currentPage}"
-				maxPageNumber="${this._maxPages}"
-				selectedCountOption="${this._pageSize}"
+				show-item-count-select
+				item-count-options="[10,20,50,100]"
+				page-number="${this._currentPage}"
+				max-page-number="${this._maxPages}"
+				selected-count-option="${this._pageSize}"
 				@pagination-page-change="${this._handlePageChange}"
 				@pagination-item-counter-change="${this._handlePageSizeChange}"
 			></d2l-labs-pagination>
 
-			<div class="table-total-users">
-				${this.localize('components.insights-users-table.totalUsers', {num: this._itemsCount})}
+			<div class="d2l-insights-users-table-total-users">
+				${this.localize('components.insights-users-table.totalUsers', { num: this._itemsCount })}
 			</div>
 		`;
 	}

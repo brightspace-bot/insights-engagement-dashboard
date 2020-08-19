@@ -5,31 +5,8 @@ import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-help
 
 describe('d2l-insights-users-table', () => {
 	const data = {
-		userDataForDisplay: [
-			['01Last, 01First'],
-			['02Last, 02First'],
-			['03Last, 03First'],
-			['04Last, 04First'],
-			['05Last, 05First'],
-			['06Last, 06First'],
-			['07Last, 07First'],
-			['08Last, 08First'],
-			['09Last, 09First'],
-			['10Last, 10First'],
-			['11Last, 11First'],
-			['12Last, 12First'],
-			['13Last, 13First'],
-			['14Last, 14First'],
-			['15Last, 15First'],
-			['16Last, 16First'],
-			['17Last, 17First'],
-			['18Last, 18First'],
-			['19Last, 19First'],
-			['20Last, 20First'],
-			['21Last, 21First'],
-			['22Last, 22First'],
-			['23Last, 23First']
-		]
+		// returns [ ['0First', '0Last'], ['1First', '1Last'], ..., ['22First', '22Last'] ]
+		userDataForDisplay: Array.from({ length: 23 }, (val, idx) => [`${idx}First`, `${idx}Last`])
 	};
 
 	describe('constructor', () => {
@@ -52,7 +29,7 @@ describe('d2l-insights-users-table', () => {
 	describe('render', () => {
 		it('should display the correct total users count', async() => {
 			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
-			const totalUsersText = el.shadowRoot.querySelectorAll('.table-total-users')[0];
+			const totalUsersText = el.shadowRoot.querySelectorAll('.d2l-insights-users-table-total-users')[0];
 			expect(totalUsersText.innerText).to.equal('Total Users: 23');
 		});
 	});
