@@ -78,7 +78,7 @@ class SummaryCard extends LitElement {
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
 			<div class="d2l-insights-summary-card-body">
 				<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>
-				<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${html`${this.message}`}</span>
+				<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${this.message}</span>
 			</div>
 		</div>`;
 	}

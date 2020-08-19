@@ -123,7 +123,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
-				<div class="summary-container">
+				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
 				</div>
 
