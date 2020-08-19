@@ -57,7 +57,6 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 	render() {
 		return html`
 			<d2l-insights-dropdown-filter
-				disable-search
 				name="${this.localize('components.insights-role-filter.name')}"
 				.data="${this._filterData}"
 
@@ -77,6 +76,9 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 	}
 
 	_filterClose() {
+		/**
+		 * @event d2l-insights-role-filter-close
+		 */
 		this.dispatchEvent(new Event('d2l-insights-role-filter-close'));
 	}
 

@@ -33,47 +33,22 @@ class SemesterFilter extends Localizer(LitElement) {
 		this.pageSize = 3;
 	}
 
-	async firstUpdated() {
-		this._lms = this.isDemo ? new FakeLms() : new Lms();
-		await this._loadData();
-	}
-
 	get selected() {
 		return this.shadowRoot.querySelector('d2l-insights-dropdown-filter').selected;
 	}
 
-	async _loadData(clear) {
-		let currentData = this._filterData;
-
-		if (clear) {
-			this._bookmark = null;
-			currentData = [];
-		}
-
-		const data = await this._lms.fetchSemesters(this.pageSize, this._bookmark, this._search);
-
-		this._saveBookmark(data.PagingInfo);
-
-		this._filterData = currentData.concat(data.Items.map(item => ({
-			id: item.orgUnitId.toString(),
-			displayName: this.localize('components.semester-filter.semester-name', item)
-		})));
-	}
-
-	_saveBookmark(pagingInfo) {
-		this._bookmark = pagingInfo.HasMoreItems ? pagingInfo.Bookmark : null;
+	async firstUpdated() {
+		this._lms = this.isDemo ? new FakeLms() : new Lms();
+		await this._loadData();
 	}
 
 	render() {
 		return html`
 			<d2l-insights-dropdown-filter
 				name="${this.localize('components.semester-filter.name')}"
-				?more="${!!this._bookmark}"
 				.data="${this._filterData}"
 
 				@d2l-insights-dropdown-filter-selected="${this._updateFilterSelections}"
-				@d2l-insights-dropdown-filter-load-more-click="${this._loadMoreClick}"
-				@d2l-insights-dropdown-filter-searched="${this._searchClick}"
 				@d2l-insights-dropdown-filter-selection-cleared="${this._updateFilterSelections}"
 				@d2l-insights-dropdown-filter-close="${this._filterClose}"
 			>
@@ -81,21 +56,27 @@ class SemesterFilter extends Localizer(LitElement) {
 		`;
 	}
 
+	async _loadData() {
+		const data = await this._lms.fetchSemesters(this.pageSize);
+
+		this._filterData = data.Items.map(item => ({
+			id: item.orgUnitId.toString(),
+			displayName: this.localize('components.semester-filter.semester-name', item)
+		}));
+	}
+
 	_updateFilterSelections() {
+		/**
+		 * @event d2l-insights-semester-filter-change
+		 */
 		this.dispatchEvent(new Event('d2l-insights-semester-filter-change'));
 	}
 
 	_filterClose() {
+		/**
+		 * @event d2l-insights-semester-filter-close
+		 */
 		this.dispatchEvent(new Event('d2l-insights-semester-filter-close'));
-	}
-
-	async _searchClick(event) {
-		this._search = event.detail.value;
-		await this._loadData(true);
-	}
-
-	async _loadMoreClick() {
-		await this._loadData();
 	}
 }
 customElements.define('d2l-insights-semester-filter', SemesterFilter);

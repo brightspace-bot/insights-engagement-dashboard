@@ -53,21 +53,7 @@ describe('d2l-insights-dropdown-filter', () => {
 			});
 		});
 
-		it('should render Load More button when `more`-attribute is specified', () => {
-			const button = el.shadowRoot.querySelector('d2l-button-subtle');
-			expect(button.text).to.equal('Load More');
-		});
-
-		it('should not render Load More button when no `more`-attribute', async() => {
-			el = await fixture(html`<d2l-insights-dropdown-filter name="${name}" .data="${testData}"></d2l-insights-dropdown-filter>`);
-			await new Promise(resolve => setTimeout(resolve, 0)); // allow fetch to run
-			await el.updateComplete;
-
-			const button = el.shadowRoot.querySelector('d2l-button-subtle');
-			expect(button).to.be.null;
-		});
-
-		it('should render search pannel', () => {
+		it('should render search panel', () => {
 			const category = el.shadowRoot.querySelector('d2l-filter-dropdown-category');
 			expect(category.disableSearch).to.be.false;
 		});
@@ -95,6 +81,38 @@ describe('d2l-insights-dropdown-filter', () => {
 			checkboxes.find(checkbox => checkbox.value === '2').click();
 
 			expect(el.selected).to.deep.equal(['1']);
+		});
+	});
+
+	describe('search', () => {
+		it('should filter the items when d2l-filter-dropdown-category-searched is handled', async() => {
+			const dropdownCategorySearchedEvent = { detail: { value: '2' } };
+
+			el._handleSearchedClick(dropdownCategorySearchedEvent);
+			await el.updateComplete;
+
+			const checkboxList = [...el.shadowRoot.querySelectorAll('d2l-filter-dropdown-option')];
+			expect(checkboxList[0].hidden).to.be.true;
+			expect(checkboxList[1].hidden).to.be.not.true;
+		});
+
+		it('should maintain selected state across searches', async() => {
+			const checkboxList = [...el.shadowRoot.querySelectorAll('d2l-filter-dropdown-option')];
+
+			el._handleSearchedClick({ detail: { value: '2' } });
+			await el.updateComplete;
+			expect(checkboxList[0].selected).to.be.false;
+			expect(checkboxList[1].selected).to.be.false;
+
+			checkboxList[1].click();
+			await el.updateComplete;
+			expect(checkboxList[0].selected).to.be.false;
+			expect(checkboxList[1].selected).to.be.true;
+
+			el._handleSearchedClick({ detail: { value: '' } });
+			await el.updateComplete;
+			expect(checkboxList[0].selected).to.be.false;
+			expect(checkboxList[1].selected).to.be.true;
 		});
 	});
 
@@ -135,26 +153,6 @@ describe('d2l-insights-dropdown-filter', () => {
 			expect(filter.openerText).to.equal(name);
 			expect(filter.openerTextSingle).to.equal(`${name}: 0 selected`);
 			expect(filter.openerTextMultiple).to.equal(`${name}: 0 selected`);
-		});
-
-		it('should fire a `load-more-click` event when `Load More`-button is clicked', async() => {
-			const listener = oneEvent(el, 'd2l-insights-dropdown-filter-load-more-click');
-			const button = el.shadowRoot.querySelector('d2l-button-subtle');
-
-			button.click();
-			const event = await listener;
-			expect(event.type).to.equal('d2l-insights-dropdown-filter-load-more-click');
-		});
-
-		it('should fire a `searched` event when d2l-filter-dropdown-category-searched is handled', async() => {
-			const listener = oneEvent(el, 'd2l-insights-dropdown-filter-searched');
-			const dropdownCategorySearchedEvent = { detail: { value: 'search string' } };
-
-			el._handleSearchedClick(dropdownCategorySearchedEvent);
-
-			const event = await listener;
-			expect(event.type).to.equal('d2l-insights-dropdown-filter-searched');
-			expect(event.detail).to.deep.equal({ value: 'search string' });
 		});
 
 		it('should fire a `cleared` event when d2l-insights-dropdown-filter-selection-cleared is handled', async() => {

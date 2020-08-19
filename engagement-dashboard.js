@@ -119,7 +119,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
 					<d2l-insights-semester-filter
-						page-size="3"
+						page-size="10000"
 						?demo="${this.isDemo}"
 						@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
 						@d2l-insights-semester-filter-close="${this._semesterFilterChange}"
