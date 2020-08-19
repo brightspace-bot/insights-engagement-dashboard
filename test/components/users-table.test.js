@@ -64,8 +64,12 @@ describe('d2l-insights-users-table', () => {
 			});
 
 			it('should show the correct number of users on the last page', async() => {
-				pageSelector.shadowRoot.querySelector('d2l-button-icon[text="Next page"]').click();
+				pageSelector
+					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
+					.shadowRoot.querySelector('button')
+					.click();
 				await innerTable.updateComplete;
+				await pageSelector.updateComplete;
 
 				expect(pageSelector.pageNumber).to.equal(2);
 
@@ -80,6 +84,7 @@ describe('d2l-insights-users-table', () => {
 				pageSizeSelector.value = '10';
 				pageSizeSelector.dispatchEvent(new Event('change'));
 				await innerTable.updateComplete;
+				await pageSelector.updateComplete;
 
 				expect(pageSelector.selectedCountOption).to.equal(10);
 				expect(pageSelector.maxPageNumber).to.equal(3);
@@ -91,8 +96,12 @@ describe('d2l-insights-users-table', () => {
 					expect(user.innerText).to.equal(data.userDataForDisplay[idx][0]);
 				});
 
-				pageSelector.shadowRoot.querySelector('d2l-button-icon[text="Next page"]').click();
+				pageSelector
+					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
+					.shadowRoot.querySelector('button')
+					.click();
 				await innerTable.updateComplete;
+				await pageSelector.updateComplete;
 
 				expect(pageSelector.pageNumber).to.equal(2);
 
@@ -102,8 +111,12 @@ describe('d2l-insights-users-table', () => {
 					expect(user.innerText).to.equal(data.userDataForDisplay[idx + 10][0]);
 				});
 
-				pageSelector.shadowRoot.querySelector('d2l-button-icon[text="Next page"]').click();
+				pageSelector
+					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
+					.shadowRoot.querySelector('button')
+					.click();
 				await innerTable.updateComplete;
+				await pageSelector.updateComplete;
 
 				expect(pageSelector.pageNumber).to.equal(3);
 
@@ -118,6 +131,7 @@ describe('d2l-insights-users-table', () => {
 				pageSizeSelector.value = '50';
 				pageSizeSelector.dispatchEvent(new Event('change'));
 				await innerTable.updateComplete;
+				await pageSelector.updateComplete;
 
 				expect(pageSelector.selectedCountOption).to.equal(50);
 				expect(pageSelector.maxPageNumber).to.equal(1);
@@ -134,6 +148,7 @@ describe('d2l-insights-users-table', () => {
 			it('should show zero pages if there are no users to display', async() => {
 				el.data = { userDataForDisplay: [] };
 				await innerTable.updateComplete;
+				await pageSelector.updateComplete;
 
 				expect(pageSelector.selectedCountOption).to.equal(50);
 				expect(pageSelector.maxPageNumber).to.equal(0);
