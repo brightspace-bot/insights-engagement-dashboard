@@ -84,7 +84,7 @@ class DropdownFilter extends Localizer(LitElement) {
  						text="${item.displayName}"
  						value="${item.id}"
  						?selected="${item._selected}"
- 						?hidden="${!!this.filter && !item.displayName.includes(this.filter)}"
+ 						?hidden="${!!this.filter && !item.displayName.toLowerCase().includes(this.filter.toLowerCase())}"
  					></d2l-filter-dropdown-option>`)}
 
 				</d2l-filter-dropdown-category>
