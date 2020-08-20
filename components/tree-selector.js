@@ -14,7 +14,7 @@ import { selectStyles } from '@brightspace-ui/core/components/inputs/input-selec
  * tree - an array of the same form
  * getTree - is async callback which should return the tree (provide either tree or getTree for each node)
  * selectedState - may be "explicit", "implicit", "indeterminate", or "none"
- * @property {Function} search - called with search string to get matching items
+ * @property {Function} search - called with search string to get matching items (they will be marked selected as necessary)
  * @fires d2l-insights-tree-selector-change - value of this.selected has changed
  */
 class TreeSelector extends Localizer(LitElement) {

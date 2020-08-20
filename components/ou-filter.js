@@ -62,11 +62,15 @@ class OuFilter extends Localizer(MobxLitElement) {
 			return [];
 		}
 
-		return this._tree[id][CHILDREN]
-			.map(childId => this._tree[childId])
+		const children = this._tree[id][CHILDREN].map(childId => this._tree[childId]);
+		return this._formatNodes(children);
+	}
+
+	_formatNodes(children) {
+		return children
 			.filter(x => x[TYPE] !== this.data.serverData.semesterTypeId)
 			.map(x => ({
-				name: this.localize('components.org-unit-filter.org-unit-name', { orgUnitName: x[NAME], id: x[ID] }),
+				name: this.localize('components.org-unit-filter.org-unit-name', {orgUnitName: x[NAME], id: x[ID]}),
 				// pre-load down to any selected descendents: otherwise selecting then deselecting this node
 				// before opening it won't deselect them
 				tree: (x[TYPE] !== 3 && x[STATE] !== 'none') ? this._getChildren(x[ID]) : null,
@@ -79,7 +83,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 	_search(filterString) {
 		console.log(`search: ${filterString}`);
 
-		return [];
+		return this._tree.filter(x => x.);
 	}
 
 	_markSelected(id, isExplicit) {
