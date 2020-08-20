@@ -1,6 +1,9 @@
 const rolesEndpoint = '/d2l/api/lp/1.23/roles/';
 
 class Lms {
+	/**
+	 * @returns {{Identifier: string, DisplayName: string, Code: string|null}[]}
+	 */
 	async fetchRoles() {
 		const response = await fetch(rolesEndpoint);
 

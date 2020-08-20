@@ -33,7 +33,7 @@ describe('d2l-insights-tree-selector', () => {
 
 		it('should render a dropbdown with the given name', async() => {
 			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" .tree="${tree}"></d2l-insights-tree-selector>`);
-			expect(el.shadowRoot.querySelector('.d2l-dropdown-opener').textContent).to.equal('choose!');
+			expect(el.shadowRoot.querySelector('d2l-dropdown-button-subtle').text).to.equal('choose!');
 		});
 	});
 

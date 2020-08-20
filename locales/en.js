@@ -5,13 +5,13 @@ export default {
 	"components.insights-engagement-dashboard.summaryHeading": "Summary View",
 	"components.insights-engagement-dashboard.resultsHeading": "Results",
 
-	"components.insights-role-filter.name": "Roles",
+	"components.insights-role-filter.name": "Role",
 
 	"components.org-unit-filter.name": "Org Unit",
 	"components.org-unit-filter.org-unit-name": "{orgUnitName} (Id: {id})",
 
-	"components.semester-filter.name": "Semesters",
-	"components.semester-filter.semester-name": "{orgUnitName} (Id: {id})",
+	"components.semester-filter.name": "Semester",
+	"components.semester-filter.semester-name": "{orgUnitName} (Id: {orgUnitId})",
 
 	"components.simple-filter.search-label": "Search",
 	"components.simple-filter.search-placeholder": "Search...",

@@ -48,9 +48,7 @@ class TreeSelector extends Localizer(LitElement) {
 	render() {
 		return html`
 			<d2l-dropdown>
-				<button class="d2l-dropdown-opener d2l-input-select"
-					aria-label="${this.localize('components.tree-selector.dropdown-action', { name: this.name })}"
-				>${this.name}</button>
+				<d2l-dropdown-button-subtle text="${this.name}">
 					<d2l-dropdown-content align="start">
 						<div class="d2l-insights-tree-selector-search" slot="header">
 							<d2l-input-search
@@ -67,6 +65,7 @@ class TreeSelector extends Localizer(LitElement) {
 							@d2l-insights-tree-selector-resize="${this._onResize}"
 						></d2l-insights-tree-selector-node>
 					</d2l-dropdown-content>
+				</d2l-dropdown-button-subtle>
 			</d2l-dropdown>
 		`;
 	}

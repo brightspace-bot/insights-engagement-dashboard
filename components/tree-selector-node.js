@@ -45,6 +45,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		return css`
 			:host {
 				display: block;
+				font-size: 0.8rem;
 			}
 			:host([hidden]) {
 				display: none;

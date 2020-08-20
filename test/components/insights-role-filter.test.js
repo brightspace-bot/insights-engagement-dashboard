@@ -83,11 +83,11 @@ describe('d2l-insights-role-filter', () => {
 			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run. Add 200 ms for Firefox on OSX
 			await el.updateComplete;
 
-			expect(el.shadowRoot.querySelector('d2l-simple-filter').data).to.deep.equal(expectedFilterData);
+			expect(el.shadowRoot.querySelector('d2l-insights-dropdown-filter').data).to.deep.equal(expectedFilterData);
 		});
 	});
 
-	describe('item selection', () => {
+	describe('eventing', () => {
 		let el;
 
 		beforeEach(async() => {
@@ -96,34 +96,16 @@ describe('d2l-insights-role-filter', () => {
 			await el.updateComplete;
 		});
 
-		it('should return only selected items when they are de/selected', async() => {
-
-			// everything should be deselected initially
-			expect(el.selected).to.deep.equal([]);
-
-			const checkboxes = Array.from(
-				el.shadowRoot.querySelector('d2l-simple-filter').shadowRoot.querySelectorAll('d2l-input-checkbox')
-			);
-
-			checkboxes.find(checkbox => checkbox.value === '2').simulateClick();
-			checkboxes.find(checkbox => checkbox.value === '3').simulateClick();
-
-			expect(el.selected).to.deep.equal(['2', '3']);
-
-			checkboxes.find(checkbox => checkbox.value === '2').simulateClick();
-
-			expect(el.selected).to.deep.equal(['3']);
-
-		});
-
 		it('should fire a d2l-insights-role-filter-change event when an item is selected', async() => {
 			const listener = oneEvent(el, 'd2l-insights-role-filter-change');
 
 			const checkboxes = Array.from(
-				el.shadowRoot.querySelector('d2l-simple-filter').shadowRoot.querySelectorAll('d2l-input-checkbox')
+				el
+					.shadowRoot.querySelector('d2l-insights-dropdown-filter')
+					.shadowRoot.querySelectorAll('d2l-filter-dropdown-option')
 			);
 
-			checkboxes.find(checkbox => checkbox.value === '1').simulateClick();
+			checkboxes.find(checkbox => checkbox.value === '1').click();
 
 			const event = await listener; // if no event is fired, this will time out after 2 seconds
 			expect(event.type).to.equal('d2l-insights-role-filter-change');
