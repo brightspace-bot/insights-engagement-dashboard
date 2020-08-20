@@ -34,6 +34,13 @@ class OuFilter extends Localizer(MobxLitElement) {
 		`;
 	}
 
+	constructor() {
+		super();
+
+		// pre-bind for use as a property of tree-selector
+		this._search = this._search.bind(this);
+	}
+
 	render() {
 		this._prepareData();
 
@@ -83,7 +90,8 @@ class OuFilter extends Localizer(MobxLitElement) {
 	_search(filterString) {
 		console.log(`search: ${filterString}`);
 
-		return this._tree.filter(x => x.);
+		const matches = Object.values(this._tree).filter(x => x[NAME].toLowerCase().includes(filterString.toLowerCase()));
+		return this._formatNodes(matches);
 	}
 
 	_markSelected(id, isExplicit) {
