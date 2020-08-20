@@ -14,7 +14,8 @@ import { selectStyles } from '@brightspace-ui/core/components/inputs/input-selec
  * tree - an array of the same form
  * getTree - is async callback which should return the tree (provide either tree or getTree for each node)
  * selectedState - may be "explicit", "implicit", "indeterminate", or "none"
- * @property {Function} search - called with search string to get matching items (they will be marked selected as necessary)
+ * @property {Function} search - called with search string to get matching items, which are the same as tree items except they must include
+ * a parents field, which itself a list of tree items
  * @fires d2l-insights-tree-selector-change - value of this.selected has changed
  */
 class TreeSelector extends Localizer(LitElement) {
@@ -104,6 +105,16 @@ class TreeSelector extends Localizer(LitElement) {
 		if (filterString && filterString.length > 0) {
 			this._searchResults = this.search(filterString);
 			console.log(`found ${JSON.stringify(this._searchResults)}`);
+			// todo: mark selected
+			// todo: note connection to tree, and perform selection activities on the tree nodes
+			// observe: this all works like magic if we just show the nodes themselves, without removing them from the tree
+			// need one thing regardless, it seems: ancestors of the search results (complication: to really work well, we also want siblings; could use ancestor's tree or getTree)
+			// could add results to tree (if needed), and selectively hide the rest along with some formatting to remove indentation if desired
+			// imagine if the tree were already fully in the DOM: it's just the second part (hide & format)
+			// so operation is: 1) fill out tree as necessary; 2) adjust styles
+			// required data: list of hits, each with a parent which is itself a full tree node (including tree or getTree, parent, etc.)
+			// can ignore selected state of these nodes, though: if they're already selected, they're already marked on this side, but
+			// possibly not in the original data
 		} else {
 			this._searchResults = null;
 		}
