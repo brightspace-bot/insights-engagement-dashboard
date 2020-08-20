@@ -114,6 +114,17 @@ describe('d2l-insights-dropdown-filter', () => {
 			expect(checkboxList[0].selected).to.be.false;
 			expect(checkboxList[1].selected).to.be.true;
 		});
+
+		it('should be case-insensitive', async() => {
+			const dropdownCategorySearchedEvent = { detail: { value: 'nAMe 2' } };
+
+			el._handleSearchedClick(dropdownCategorySearchedEvent);
+			await el.updateComplete;
+
+			const checkboxList = [...el.shadowRoot.querySelectorAll('d2l-filter-dropdown-option')];
+			expect(checkboxList[0].hidden).to.be.true;
+			expect(checkboxList[1].hidden).to.be.not.true;
+		});
 	});
 
 	describe('eventing', () => {
