@@ -146,7 +146,6 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
 					<d2l-insights-debug-card .data="${this._data}" metric-to-display="recordsLength" title="Records" message="number of records within filter parameters"></d2l-insights-debug-card>
-					<d2l-insights-debug-card .data="${this._data}" metric-to-display="orgUnitsLegngth" title="OrgUnits" message="number of orgUnits within filter parameters"></d2l-insights-debug-card>
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>

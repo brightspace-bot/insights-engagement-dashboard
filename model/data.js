@@ -1,5 +1,5 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
-import OrgUnitDescendants from './orgUnitDescendants';
+import OrgUnitAncestors from './orgUnitAncestors.js';
 
 const RECORD = {
 	ORG_UNIT_ID: 0,
@@ -11,13 +11,6 @@ const USER = {
 	ID: 0,
 	FIRST_NAME: 1,
 	LAST_NAME: 2
-};
-
-const ORG_UNIT = {
-	ID: 0,
-	NAME: 1,
-	TYPE: 2,
-	ANCESTORS: 3
 };
 
 function countUnique(records, field) {
@@ -103,7 +96,7 @@ export class Data {
 		recordProvider().then(data => {
 			this.serverData = data;
 			this.isLoading = false;
-			this.orgUnitDescendants = new OrgUnitDescendants(data.orgUnits);
+			this.orgUnitAncestors = new OrgUnitAncestors(data.orgUnits);
 		});
 	}
 
@@ -120,35 +113,32 @@ export class Data {
 		this.selectorFilters.semesterIds = semesterIds;
 	}
 
-	get orgUnits() {
-		if (this.selectorFilters.orgUnitIds.length || this.selectorFilters.semesterIds.length) {
-			const filterSet = this.orgUnitDescendants.getOrgUnitIdsInView(
-				this.selectorFilters.orgUnitIds,
-				this.selectorFilters.semesterIds
-			);
-
-			return this.serverData.orgUnits.filter(orgUnit => filterSet.has(orgUnit[ORG_UNIT.ID]));
-		}
-
-		// if no filters were applied, return all orgUnits
-		return this.serverData.orgUnits;
-	}
-
 	// the reason for separating this from getRecordsInView is to try not to reapply the top level filters if
 	// we don't need to.
 	get records() {
 		let records = this.serverData.records;
 
-		if (this.selectorFilters.roleIds.length) {
-			records = records.filter(record => {
-				return this.selectorFilters.roleIds.includes(record[RECORD.ROLE_ID]);
-			});
-		}
+		const roleFilterApplied = this.selectorFilters.roleIds.length;
+		const orgUnitFilterApplied = this.selectorFilters.orgUnitIds.length;
+		const semesterFilterApplied = this.selectorFilters.semesterIds.length;
 
-		if (this.selectorFilters.orgUnitIds.length || this.selectorFilters.semesterIds.length) {
-			const orgUnitIds = this.orgUnits.map(orgUnit => orgUnit[ORG_UNIT.ID]);
+		if (roleFilterApplied || orgUnitFilterApplied || semesterFilterApplied) {
 			records = records.filter(record => {
-				return orgUnitIds.includes(record[RECORD.ORG_UNIT_ID]);
+				let ancestors;
+				if (orgUnitFilterApplied || semesterFilterApplied) {
+					ancestors = this.orgUnitAncestors.getAncestorsFor(record[RECORD.ORG_UNIT_ID]);
+				}
+
+				const roleCriterion = !roleFilterApplied
+					|| this.selectorFilters.roleIds.includes(record[RECORD.ROLE_ID]);
+
+				const orgUnitCriterion = !orgUnitFilterApplied
+					|| this.selectorFilters.orgUnitIds.some(selectedId => ancestors.has(selectedId));
+
+				const semesterCriterion = !semesterFilterApplied
+					|| this.selectorFilters.semesterIds.some(selectedId => ancestors.has(selectedId));
+
+				return roleCriterion && orgUnitCriterion && semesterCriterion;
 			});
 		}
 
@@ -158,7 +148,11 @@ export class Data {
 	get users() {
 		let users = this.serverData.users;
 
-		if (this.selectorFilters.roleIds.length || this.selectorFilters.semesterIds.length || this.selectorFilters.orgUnitIds.length) {
+		const roleFilterApplied = this.selectorFilters.roleIds.length;
+		const orgUnitFilterApplied = this.selectorFilters.orgUnitIds.length;
+		const semesterFilterApplied = this.selectorFilters.semesterIds.length;
+
+		if (roleFilterApplied || orgUnitFilterApplied || semesterFilterApplied) {
 			const userIdsInView = this.records.map(record => record[RECORD.USER_ID]);
 			users = users.filter(user => userIdsInView.includes(user[USER.ID]));
 		}
@@ -245,7 +239,6 @@ decorate(Filter, {
 decorate(Data, {
 	serverData: observable,
 	records: computed,
-	orgUnits: computed,
 	users: computed,
 	userDataForDisplay: computed,
 	selectorFilters: observable,

@@ -113,50 +113,6 @@ describe('Data', () => {
 		await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
 	});
 
-	describe('get orgUnits', () => {
-		it('should return all org units when no filters are applied', async() => {
-			expect(sut.orgUnits).to.deep.equal(serverData.orgUnits);
-		});
-
-		it('should return all descendant OUs when OU filter is applied', async() => {
-			const orgUnitFilters = [1002, 2, 113];
-			const expectedOrgUnits = serverData.orgUnits.filter(orgUnit => {
-				const orgUnitId = orgUnit[0];
-				return [1002, 3, 311, 313, 2, 212, 113].includes(orgUnitId);
-			});
-
-			sut.applyOrgUnitFilters(orgUnitFilters);
-
-			expect(sut.orgUnits).to.deep.equal(expectedOrgUnits);
-		});
-
-		it('should return all descendant OUs when semester filter is applied', async() => {
-			const semesterFilters = [12];
-			const expectedOrgUnits = serverData.orgUnits.filter(orgUnit => {
-				const orgUnitId = orgUnit[0];
-				return [12, 112, 212].includes(orgUnitId);
-			});
-
-			sut.applySemesterFilters(semesterFilters);
-
-			expect(sut.orgUnits).to.deep.equal(expectedOrgUnits);
-		});
-
-		it('should return intersection of descendants when both filters are applied', async() => {
-			const orgUnitFilters = [1002, 2, 113];
-			const semesterFilters = [12];
-			const expectedOrgUnits = serverData.orgUnits.filter(orgUnit => {
-				const orgUnitId = orgUnit[0];
-				return [212].includes(orgUnitId);
-			});
-
-			sut.applyOrgUnitFilters(orgUnitFilters);
-			sut.applySemesterFilters(semesterFilters);
-
-			expect(sut.orgUnits).to.deep.equal(expectedOrgUnits);
-		});
-	});
-
 	describe('get records', () => {
 		it('should return all records when no filters are applied', async() => {
 			expect(sut.records).to.deep.equal(serverData.records);
