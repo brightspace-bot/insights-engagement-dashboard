@@ -148,7 +148,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 	}
 
 	_onOuFilterChange(e) {
-		console.log(`got ou filter change with selected nodes ${JSON.stringify(e.target.selected.map(x => x.name))}`);
+		console.log(`got ou filter change with selected ids ${JSON.stringify(e.target.selected)}`);
 	}
 
 	_semesterFilterChange(event) {

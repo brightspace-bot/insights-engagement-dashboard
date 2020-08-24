@@ -7,37 +7,27 @@ import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin.js';
 
 /**
  * @property {string} name
- * @property {{name: string, tree:{}[], getTree: function, isOpen: boolean, selectedState: string}[]} tree - used to initialize, but will not be updated
- * @property {function} getTree - async callback which should return the tree (provide either tree or getTree)
- * @property {boolean} isOpen
- * @property {string} selectedState - may be "explicit", "implicit", "indeterminate", or "none"
- * @fires d2l-insights-tree-selector-change - value of this.selected has changed
- * @fires d2l-insights-tree-selector-resize - rendered size may have changed
+ * @property {Number} dataId - returned in event.detail; caller should use this to update its model
+ * @property {boolean} isOpen - whether the node is expanded (i.e. children are hidden unless true)
+ * @property {string} selectedState - checkbox state: may be "explicit", "indeterminate", or "none"
+ * @fires d2l-insights-tree-selector-node-select - user is requesting that this node be selected or deselected
+ * @fires d2l-insights-tree-selector-node-open - user has requested that this node be expanded or collapsed
  *
- * Note on selected-state
- * - "none" is a node that is not selected and has no selected descendents
- * - "indeterminate" is a node that has some selected descendants, but not all of them
- * - "implicit" is a node that is selected only because it has an ancestor that is selected
- * - "explicit" is a node that will be returned by the this.selected; it is selected for one of three reasons:
- *   1. The user clicked on it to select it.
- *   2. The user selected all of its descendants. So if all courses in dept1 are selected, the tree-selector
- *      marks them all as implicit and marks dept1 as explicitly selected.
- *   3. When a node was explicitly selected, the user clicked to deselect one of its children; all siblings are then
- *      marked as explicitly selected. So if dept1 is selected and the user unchecks course1, then course2, course3,
- *      etc. are explicitly selected.
  */
 class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 	static get properties() {
 		return {
 			name: { type: String },
-			tree: { type: Object, attribute: false },
-			getTree: { type: Object, attribute: false },
+			dataId: { type: Number, attribute: 'data-id' },
 			isOpen: { type: Boolean, reflect: true, attribute: 'open' },
 			selectedState: { type: String, reflect: true, attribute: 'selected-state' },
-			isRoot: { type: Boolean, reflect: true, attribute: 'root' },
+			isOpenable: { type: Boolean, reflect: true, attribute: 'openable' },
 			// for screen readers
 			indentLevel: { type: Number, attribute: 'indent-level' },
-			parentName: { type: String, attribute: 'parent-name' }
+			parentName: { type: String, attribute: 'parent-name' },
+			// for search: if isSearch, only search-result nodes are shown; the caller should ensure their ancestors are open
+			isSearch: { type: Boolean, reflect: true, attribute: 'search' },
+			isSearchResult: { type: Boolean, reflect: true, attribute: 'search-result' }
 		};
 	}
 
@@ -82,12 +72,6 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 				margin-left: 0;
 				margin-right: 34px;
 			}
-			.d2l-insights-tree-selector-node-subtree[root] {
-				margin-left: 0;
-			}
-			:host([dir="rtl"]) .d2l-insights-tree-selector-node-subtree[root] {
-				margin-right: 0;
-			}
 			.d2l-insights-tree-selector-node-subtree[hidden] {
 				display: none;
 			}
@@ -110,12 +94,11 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		this.indentLevel = 0;
 	}
 
-	get selected() {
-		if (this.selectedState === 'explicit') {
-			return [this];
-		}
-
-		return this._domChildren.flatMap(x => x.selected);
+	/**
+	 * @returns {Promise} - resolves when all tree-selector-nodes in slots, recursively, have finished updating
+	 */
+	get treeUpdateComplete() {
+		return this._waitForTreeUpdateComplete();
 	}
 
 	render() {
@@ -126,16 +109,16 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 	}
 
 	_renderNode() {
-		if (this.isRoot) {
-			return html``;
-		}
+		const label = this.parentName ?
+			this.localize('components.tree-selector.node.aria-label', { name: this.name, parentName: this.parentName }) :
+			this.name;
 
 		return html`
-			<div class="d2l-insights-tree-selector-node-node">
+			<div class="d2l-insights-tree-selector-node-node" ?search="${this.isSearch}" ?search-result="${this.isSearchResult}">
 				<d2l-input-checkbox
 					?checked="${this._showSelected}"
 					?indeterminate="${this._showIndeterminate}"
-					aria-label="${this.localize('components.tree-selector.node.aria-label', { name: this.name, parentName: this.parentName })}"
+					aria-label="${label}"
 					@change="${this._onChange}"
 				></d2l-input-checkbox>
 				<span class="d2l-insights-tree-selector-node-text" @click="${this._onArrowClick}" aria-hidden="true">${this.name}</span>
@@ -145,8 +128,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 	}
 
 	_renderOpenControl() {
-		// show the open/close arrow if this is not a leaf
-		if (this._isOpenable) {
+		if (this.isOpenable) {
 			return html`
 				<a href="#" class="d2l-insights-tree-selector-node-open-control"
 					?open="${this.isOpen}"
@@ -164,21 +146,13 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 	}
 
 	_renderSubtree() {
-		if (this.tree) {
-			return html`<div class="d2l-insights-tree-selector-node-subtree" ?hidden="${!this.isRoot && !this.isOpen}" id="subtree" ?root="${this.isRoot}">${this.tree.map((x, i) => {
-				const childState = this._getChildState(x, i);
-				return html`<d2l-insights-tree-selector-node
-					name="${x.name}"
-					.tree="${x.tree}"
-					.getTree="${x.getTree}"
-					?open="${childState.isOpen}"
-					indent-level="${this.indentLevel + 1}"
-					parent-name="${this.name || this.localize('components.tree-selector.arrow-label.root')}"
-					selected-state="${this._getChildSelectedState(childState)}"
-					@d2l-insights-tree-selector-change="${this._onSubtreeChange}"
-					@d2l-insights-tree-selector-resize="${this._fireResize}"
-				></d2l-insights-tree-selector-node>`;
-			}) }</div>`;
+		if (this.isOpenable) {
+			return html`<div class="d2l-insights-tree-selector-node-subtree"
+				?hidden="${!this.isOpen}"
+				id="subtree"
+			>
+				<slot name="tree"></slot>
+			</div>`;
 		} else {
 			return html``;
 		}
@@ -193,103 +167,59 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		);
 	}
 
-	get _domChildren() {
-		const subtree_ = this.shadowRoot.getElementById('subtree');
-		return subtree_ ? [...subtree_.children] : [];
-	}
-
-	_getChildSelectedState(childState) {
-		if (this._showSelected) return 'implicit';
-
-		const currentState = childState.selectedState || 'none';
-		return currentState === 'implicit' ? 'none' : currentState;
-	}
-
-	_getChildState(x, i) {
-		// take defaults from x, the provided init data
-		return this._domChildren[i] || x;
-	}
-
-	get _isOpenable() {
-		return this.isOpen || this.tree || this.getTree;
-	}
-
 	async _onArrowClick() {
-		if (!this._isOpenable) return;
+		if (!this.isOpenable) return;
 
-		this.isOpen = !this.isOpen;
-
-		// lazy load subtree if needed
-		if (this.isOpen && !this.tree && this.getTree) {
-			this.tree = await this.getTree();
-		}
-
-		// This is caught by tree-selector and used to force d2l-dropdown-content to resize
-		this._fireResize();
+		/**
+		 * @event d2l-insights-tree-selector-node-open
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-selector-node-open',
+			{
+				bubbles: true,
+				composed: false,
+				detail: {
+					id: this.dataId,
+					isOpen: !this.isOpen
+				}
+			}
+		));
 	}
 
 	_onChange(e) {
-		this.selectedState = e.target.checked ? 'explicit' : 'none';
-		this._fireChange();
-	}
-
-	_onSubtreeChange() {
-		if (!this.isRoot) {
-			const children = this._domChildren;
-
-			// if children were implicitly selected (i.e. this node was shown selected), and
-			// a node has been deselected, explicitly select the other children so just the
-			// one gets unchecked
-			if (this._showSelected) {
-				children.forEach(x => {
-					if (x.selectedState === 'implicit') {
-						x.selectedState = 'explicit';
-					}
-				});
+		/**
+		 * @event d2l-insights-tree-selector-node-select
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-selector-node-select',
+			{
+				bubbles: true,
+				composed: false,
+				detail: {
+					id: this.dataId,
+					isSelected: e.target.checked
+				}
 			}
-
-			// update selected state of this node based on that of its children
-			// if (children.every(x => x.isExplicitlySelected)) {
-			if (children.every(x => x.selectedState === 'explicit')) {
-				this.selectedState = 'explicit';
-			} else if (children.some(x => x.selectedState === 'explicit' || x.selectedState === 'indeterminate')) {
-				this.selectedState = 'indeterminate';
-			} else {
-				this.selectedState = 'none';
-			}
-		}
-
-		this._fireChange();
+		));
 	}
 
 	get _showIndeterminate() {
-		// return this.isIndeterminate && !this.showSelected;
 		return this.selectedState === 'indeterminate';
 	}
 
 	get _showSelected() {
-		// return this.isExplicitlySelected || this.isImplicitlySelected;
-		return this.selectedState === 'explicit' || this.selectedState === 'implicit';
+		return this.selectedState === 'explicit';
 	}
 
-	_fireChange() {
-		/**
-		 * @event d2l-insights-tree-selector-change
-		 */
-		this.dispatchEvent(new CustomEvent(
-			'd2l-insights-tree-selector-change',
-			{ bubbles: true, composed: false }
-		));
-	}
-
-	_fireResize() {
-		/**
-		 * @event d2l-insights-tree-selector-resize
-		 */
-		this.dispatchEvent(new CustomEvent(
-			'd2l-insights-tree-selector-resize',
-			{ bubbles: true, composed: false }
-		));
+	async _waitForTreeUpdateComplete() {
+		await this.updateComplete;
+		const slot = this.shadowRoot.querySelector('slot');
+		// to be sure all child nodes have been added, instead of using flatten,
+		// we recursively walk down the tree, waiting for each node's update to complete
+		if (slot) {
+			const childNodes = slot.assignedNodes({ flatten: false });
+			return Promise.all(childNodes.map(node => node.treeUpdateComplete));
+		}
 	}
 }
 customElements.define('d2l-insights-tree-selector-node', TreeSelectorNode);
