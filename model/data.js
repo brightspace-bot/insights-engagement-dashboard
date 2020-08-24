@@ -1,4 +1,5 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
+import { CardFilter } from './cardFilter.js';
 import OrgUnitAncestors from './orgUnitAncestors.js';
 
 const RECORD = {
@@ -13,54 +14,12 @@ const USER = {
 	LAST_NAME: 2
 };
 
+function unique(array) {
+	return [...new Set(array)];
+}
+
 function countUnique(records, field) {
 	return new Set(records.map(r => r[field])).size;
-}
-
-// this is a potted example - various bar-charts will be slight variations on this
-export class Histogram {
-	constructor({ id, title, field }, data) {
-		this.id = id;
-		this.title = title;
-		this.field = field;
-		this.data = data;
-	}
-
-	get isLoading() {
-		return this.data.isLoading;
-	}
-
-	get series() {
-		const dataByU = {};
-		this.data.getRecordsInView(this.id).forEach(r => dataByU[r[this.field]] = [...dataByU[r[this.field]] || [], r]);
-		return Object.keys(dataByU).sort().map(k => dataByU[k].length);
-	}
-}
-
-export class Filter {
-	constructor({ id, messageProvider, title, field, deltaField, threshold, countUniqueField, isApplied = false }, data) {
-		this.id = id;
-		this.messageProvider = messageProvider;
-		this.title = title;
-		this.field = field;
-		this.deltaField = deltaField;
-		this.threshold = threshold;
-		this.countUniqueField = countUniqueField;
-		this.data = data;
-		this.isApplied = isApplied;
-	}
-
-	get isLoading() {
-		return this.data.isLoading;
-	}
-
-	get message() {
-		return this.messageProvider(this);
-	}
-
-	get stats() {
-		return this.data.getStats(this.id);
-	}
 }
 
 export class Data {
@@ -81,11 +40,12 @@ export class Data {
 			selectedOrgUnitIds: []
 		};
 
-		this.orgUnitDescendants = null;
+		this._orgUnitAncestors = null;
+		this._userDictionary = null;
 
 		this.cardFilters = {};
 		cardFilters
-			.map(params => new Filter(params, this))
+			.map(params => new CardFilter(params, this))
 			.forEach(f => this.cardFilters[f.id] = f);
 
 		this._restore();
@@ -94,9 +54,10 @@ export class Data {
 		autorun(() => this._persist());
 
 		recordProvider().then(data => {
-			this.serverData = data;
+			this._orgUnitAncestors = new OrgUnitAncestors(data.orgUnits);
+			this._userDictionary = new Map(data.users.map(user => [user[USER.ID], user]));
 			this.isLoading = false;
-			this.orgUnitAncestors = new OrgUnitAncestors(data.orgUnits);
+			this.serverData = data;
 		});
 	}
 
@@ -116,48 +77,25 @@ export class Data {
 	// the reason for separating this from getRecordsInView is to try not to reapply the top level filters if
 	// we don't need to.
 	get records() {
-		let records = this.serverData.records;
+		return this.serverData.records.filter(record => {
+			const ancestors = this._orgUnitAncestors.getAncestorsFor(record[RECORD.ORG_UNIT_ID]);
 
-		const roleFilterApplied = this.selectorFilters.roleIds.length;
-		const orgUnitFilterApplied = this.selectorFilters.orgUnitIds.length;
-		const semesterFilterApplied = this.selectorFilters.semesterIds.length;
+			const roleCriterion = !this.selectorFilters.roleIds.length
+				|| this.selectorFilters.roleIds.includes(record[RECORD.ROLE_ID]);
 
-		if (roleFilterApplied || orgUnitFilterApplied || semesterFilterApplied) {
-			records = records.filter(record => {
-				let ancestors;
-				if (orgUnitFilterApplied || semesterFilterApplied) {
-					ancestors = this.orgUnitAncestors.getAncestorsFor(record[RECORD.ORG_UNIT_ID]);
-				}
+			const orgUnitCriterion = !this.selectorFilters.orgUnitIds.length
+				|| this.selectorFilters.orgUnitIds.some(selectedId => ancestors.has(selectedId));
 
-				const roleCriterion = !roleFilterApplied
-					|| this.selectorFilters.roleIds.includes(record[RECORD.ROLE_ID]);
+			const semesterCriterion = !this.selectorFilters.semesterIds.length
+				|| this.selectorFilters.semesterIds.some(selectedId => ancestors.has(selectedId));
 
-				const orgUnitCriterion = !orgUnitFilterApplied
-					|| this.selectorFilters.orgUnitIds.some(selectedId => ancestors.has(selectedId));
-
-				const semesterCriterion = !semesterFilterApplied
-					|| this.selectorFilters.semesterIds.some(selectedId => ancestors.has(selectedId));
-
-				return roleCriterion && orgUnitCriterion && semesterCriterion;
-			});
-		}
-
-		return records;
+			return roleCriterion && orgUnitCriterion && semesterCriterion;
+		});
 	}
 
 	get users() {
-		let users = this.serverData.users;
-
-		const roleFilterApplied = this.selectorFilters.roleIds.length;
-		const orgUnitFilterApplied = this.selectorFilters.orgUnitIds.length;
-		const semesterFilterApplied = this.selectorFilters.semesterIds.length;
-
-		if (roleFilterApplied || orgUnitFilterApplied || semesterFilterApplied) {
-			const userIdsInView = this.records.map(record => record[RECORD.USER_ID]);
-			users = users.filter(user => userIdsInView.includes(user[USER.ID]));
-		}
-
-		return users;
+		const userIdsInView = unique(this.records.map(record => record[RECORD.USER_ID]));
+		return userIdsInView.map(userId => this._userDictionary.get(userId));
 	}
 
 	get userDataForDisplay() {
@@ -215,26 +153,6 @@ export class Data {
 		state.forEach(filterState => this.setApplied(filterState.id, filterState.applied));
 	}
 }
-
-decorate(Histogram, {
-	id: observable,
-	title: observable,
-	field: observable,
-	series: computed
-});
-
-decorate(Filter, {
-	id: observable,
-	messageProvider: observable,
-	title: observable,
-	field: observable,
-	deltaField: observable,
-	threshold: observable,
-	countUniqueField: observable,
-	isApplied: observable,
-	message: computed,
-	stats: computed
-});
 
 decorate(Data, {
 	serverData: observable,

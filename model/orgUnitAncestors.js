@@ -10,7 +10,6 @@ class OrgUnitAncestors {
 	 * @param orgUnitData - the same orgUnit format that we get from the server
 	 */
 	constructor(orgUnitData) {
-
 		const parentsMap = new Map();
 		orgUnitData.forEach(orgUnit => {
 			parentsMap.set(orgUnit[ORG_UNIT.ID], orgUnit[ORG_UNIT.ANCESTORS]);
@@ -26,23 +25,26 @@ class OrgUnitAncestors {
 		});
 	}
 
+	/**
+	 * @param {Number} orgUnitId
+	 * @param {Map<Number, Array<Number>>} parentsMap
+	 * @returns {Iterable}
+	 * @private
+	 */
 	_addOrgUnitToAncestorsMap(orgUnitId, parentsMap) {
+		if (orgUnitId === 0) {
+			return [];
+		}
+
 		if (this.ancestorsMap.has(orgUnitId)) {
 			return this.ancestorsMap.get(orgUnitId);
 		}
 
-		const parents = parentsMap.get(orgUnitId);
 		const ancestorsSet = new Set([orgUnitId]);
-
-		if (parents.length && parents[0] !== 0) {
-			// this isn't the top level - recursively add ancestors
-			parents.forEach(parent => {
-				ancestorsSet.add(parent);
-				const ancestorsOfParent = this._addOrgUnitToAncestorsMap(parent, parentsMap);
-				ancestorsOfParent.forEach(ancestor => ancestorsSet.add(ancestor));
-			});
-		}
-		// else, this is the top level, so we don't need to add any ancestors to the set
+		parentsMap.get(orgUnitId).forEach(parent => {
+			const ancestorsOfParent = this._addOrgUnitToAncestorsMap(parent, parentsMap);
+			ancestorsOfParent.forEach(ancestor => ancestorsSet.add(ancestor));
+		});
 
 		this.ancestorsMap.set(orgUnitId, ancestorsSet);
 		return ancestorsSet;
