@@ -70,24 +70,23 @@ class TreeSelector extends Localizer(LitElement) {
 	render() {
 		return html`
 			<d2l-dropdown>
-				<button class="d2l-dropdown-opener d2l-input-select"
-					aria-label="${this.localize('components.tree-selector.dropdown-action', { name: this.name })}"
-				>${this.name}</button>
-				<d2l-dropdown-content align="start">
-					<div class="d2l-insights-tree-selector-search" slot="header">
-						<d2l-input-search
-							label="${this.localize('components.tree-selector.search-label')}"
-							placeholder="${this.localize('components.tree-selector.search-placeholder')}"
-							@d2l-input-search-searched="${this._onSearch}"
-						></d2l-input-search>
-					</div>
-					<div class="d2l-insights-tree-selector-search-results">
-						<slot name="search-results"></slot>
-					</div>
-					<div class="d2l-insights-tree-selector-tree">
-						<slot name="tree"></slot>
-					</div>
-				</d2l-dropdown-content>
+				<d2l-dropdown-button-subtle text="${this.name}">
+					<d2l-dropdown-content align="start">
+						<div class="d2l-insights-tree-selector-search" slot="header">
+							<d2l-input-search
+								label="${this.localize('components.tree-selector.search-label')}"
+								placeholder="${this.localize('components.tree-selector.search-placeholder')}"
+								@d2l-input-search-searched="${this._onSearch}"
+							></d2l-input-search>
+						</div>
+						<div class="d2l-insights-tree-selector-search-results">
+							<slot name="search-results"></slot>
+						</div>
+						<div class="d2l-insights-tree-selector-tree">
+							<slot name="tree"></slot>
+						</div>
+					</d2l-dropdown-content>
+				</d2l-dropdown-button-subtle>
 			</d2l-dropdown>
 		`;
 	}
