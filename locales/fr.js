@@ -28,7 +28,7 @@ export default {
 	"components.dropdown-filter.load-more": "En voir plus",
 	"components.dropdown-filter.opener-text-multiple": "{filterName}: {selectedCount} sélectionné(s)",
 
-	"components.insights-users-table.title": "Information détaillée sur l\'utilisateur",
+	"components.insights-users-table.title": "Information détaillée sur l'utilisateur",
 	"components.insights-users-table.lastFirstName": "Nom de famille, prénom",
 	"components.insights-users-table.totalUsers": "Total des utilisateurs : {num}",
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results."
