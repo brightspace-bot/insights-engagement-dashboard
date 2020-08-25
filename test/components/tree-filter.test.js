@@ -136,6 +136,39 @@ describe('d2l-insights-tree-filter', () => {
 		});
 	});
 
+	describe('search', () => {
+		it('should render search results', async() => {
+			el.searchString = '1'; // matches Course 1, Department 1, and Faculty 1 - as well as Faculty 2 (Id: 10)
+			await el.treeUpdateComplete;
+			const selector = el.shadowRoot.querySelector('d2l-insights-tree-selector');
+			expect(selector.isSearch).to.be.true;
+
+			const resultNodes = el.shadowRoot.querySelectorAll('d2l-insights-tree-selector-node[slot="search-results"]');
+			expect(resultNodes.length).to.equal(4);
+			expect([...resultNodes].map(x => x.dataId).sort()).to.deep.equal([1, 10, 3, 5]);
+		});
+
+		it('should clear search results', async() => {
+			el.searchString = '1';
+			await el.treeUpdateComplete;
+			el.searchString = '';
+			await el.treeUpdateComplete;
+
+			const selector = el.shadowRoot.querySelector('d2l-insights-tree-selector');
+			expect(selector.isSearch).to.be.false;
+
+			const resultNodes = el.shadowRoot.querySelectorAll('d2l-insights-tree-selector-node[slot="search-results"]');
+			expect(resultNodes.length).to.equal(0);
+		});
+
+		it('should handle a search event', async() => {
+			const selector = el.shadowRoot.querySelector('d2l-insights-tree-selector');
+			selector.simulateSearch('forastring');
+			await el.treeUpdateComplete;
+			expect(el.searchString).to.equal('forastring');
+		});
+	});
+
 	describe('events', () => {
 		async function expectEvent(id) {
 			const listener = oneEvent(el, 'd2l-insights-tree-filter-select');

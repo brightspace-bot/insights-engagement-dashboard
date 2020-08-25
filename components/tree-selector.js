@@ -92,6 +92,14 @@ class TreeSelector extends Localizer(LitElement) {
 		`;
 	}
 
+	simulateSearch(searchString) {
+		this._onSearch({
+			detail: {
+				value: searchString
+			}
+		});
+	}
+
 	async resize() {
 		await this.treeUpdateComplete;
 		const content = this.shadowRoot.querySelector('d2l-dropdown-content');

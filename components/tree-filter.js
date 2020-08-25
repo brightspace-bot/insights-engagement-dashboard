@@ -195,16 +195,16 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	}
 
 	_renderChildren(id, parentName, indentLevel = 0) {
-		parentName = parentName || this.localize('components.tree-selector.arrow-label.root');
+		parentName = parentName || this.localize('components.tree-filter.node-name.root');
 		return this.tree
 			.getChildren(id)
 			.map(x => this._renderNode(x, parentName, indentLevel + 1));
 	}
 
 	_renderNode(x, parentName, indentLevel) {
-		const isOpen = x[OPEN];// || this.tree.searchTree.has(x[ID]);
+		const isOpen = x[OPEN];
 		return html`<d2l-insights-tree-selector-node slot="tree"
-					name="${this.localize('components.org-unit-filter.org-unit-name', { orgUnitName: x[NAME], id: x[ID] })}"
+					name="${this.localize('components.tree-filter.node-name', { orgUnitName: x[NAME], id: x[ID] })}"
 					data-id="${x[ID]}"
 					?openable="${!this.tree.leafTypes.includes(x[TYPE])}"
 					?open="${isOpen}"
@@ -224,7 +224,7 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		return this.tree
 			.getMatching(this.searchString)
 			.map(x => html`<d2l-insights-tree-selector-node slot="search-results"
-				name="${this.localize('components.org-unit-filter.org-unit-name', { orgUnitName: x[NAME], id: x[ID] })}"
+				name="${this.localize('components.tree-filter.node-name', { orgUnitName: x[NAME], id: x[ID] })}"
 				data-id="${x[ID]}"
 				selected-state="${x[STATE]}"
 				@d2l-insights-tree-selector-node-select="${this._onSelect}"

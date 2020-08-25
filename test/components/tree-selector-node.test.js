@@ -42,14 +42,14 @@ describe('d2l-insights-tree-selector-node', () => {
 					data-id="2345"
 					indent-level="2"
 					parent-name="top"
-				>
+				></d2l-insights-tree-selector-node>
 				<d2l-insights-tree-selector-node
 					name="child2"
 					data-id="3456"
 					openable
 					indent-level="2"
 					parent-name="top"
-				>
+				></d2l-insights-tree-selector-node>
 			</d2l-insights-tree-selector-node>`);
 			await expect(el).to.be.accessible();
 		});
