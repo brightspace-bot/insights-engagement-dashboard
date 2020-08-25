@@ -1,6 +1,7 @@
 import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/results-card.js';
+import './components/overdueAssignments-card';
 import './components/insights-role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
@@ -20,7 +21,7 @@ async function demoData() {
 	return new Promise(resolve =>
 		setTimeout(
 			() => resolve({
-				records: [{ UserId: 1, OrgUnitId: 1 }, { UserId: 2, OrgUnitId: 1 }, { UserId: 2, OrgUnitId: 2 }],
+				records: [[1, 1, 1, 1], [1, 2, 1, 1], [2, 2, 1, 1]],
 				orgUnits: [
 					[1, 'Course 1', 3, [3, 4]],
 					[2, 'Course 2', 3, [3, 4]],
@@ -144,6 +145,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
+					<d2l-insights-overdueassignments-card .data="${this._data}"></d2l-insights-overdueassignments-card>
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>

@@ -89,6 +89,26 @@ export class Data {
 			});
 	}
 
+	get usersNumWithOverdueAssignments() {
+		const groupOverdueAssignmentsByUserIds = this.serverData.records
+			.reduce((acc, item) => {
+				if (!acc[item[1]]) acc[item[1]] = [];
+				acc[item[1]].push(item[3]);
+				return acc;
+			}, {});
+
+		// eslint-disable-next-line prefer-const
+		let numOverdueAssignmentsByUserIds = {};
+		for (const userId in groupOverdueAssignmentsByUserIds) {
+			if (!numOverdueAssignmentsByUserIds[userId]) numOverdueAssignmentsByUserIds[userId] = 0;
+			groupOverdueAssignmentsByUserIds[userId].forEach(oa => { numOverdueAssignmentsByUserIds[userId] += oa; });
+		}
+
+		return  Object.values(numOverdueAssignmentsByUserIds).filter((number) => {
+			return number > 0;
+		}).length;
+	}
+
 	getStats(id) {
 		const recordsInView = this.getRecordsInView(id);
 
