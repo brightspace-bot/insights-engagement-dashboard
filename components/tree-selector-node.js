@@ -108,6 +108,14 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		`;
 	}
 
+	simulateArrowClick() {
+		this._onArrowClick();
+	}
+
+	simulateCheckboxClick() {
+		this.shadowRoot.querySelector('d2l-input-checkbox').simulateClick();
+	}
+
 	_renderNode() {
 		const label = this.parentName ?
 			this.localize('components.tree-selector.node.aria-label', { name: this.name, parentName: this.parentName }) :
@@ -167,7 +175,7 @@ class TreeSelectorNode extends Localizer(RtlMixin(LitElement)) {
 		);
 	}
 
-	async _onArrowClick() {
+	_onArrowClick() {
 		if (!this.isOpenable) return;
 
 		/**

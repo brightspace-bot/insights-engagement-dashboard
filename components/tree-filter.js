@@ -16,7 +16,7 @@ export const OPEN = 6;
 
 export class Tree {
 	/**
-	 * @param tree - a map from ids to arrays, each of which has fields defined by the above constants
+	 * @param tree - a map from ids to arrays, each of which has fields defined by the above constants; may be modified at any time
 	 * @param selectedIds - array of ids which are selected initially (won't be modified)
 	 * @param leafTypes - array of values in the TYPE column; nodes of these types cannot be expanded
 	 */
@@ -156,6 +156,13 @@ class TreeFilter extends Localizer(MobxLitElement) {
 
 	get selected() {
 		return this.tree.selected;
+	}
+
+	/**
+	 * @returns {Promise} - resolves when all tree-selector-nodes, recursively, have finished updating
+	 */
+	get treeUpdateComplete() {
+		return this.updateComplete.then(() => this.shadowRoot.querySelector('d2l-insights-tree-selector').treeUpdateComplete);
 	}
 
 	render() {
