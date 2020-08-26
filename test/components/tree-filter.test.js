@@ -29,6 +29,12 @@ describe('d2l-insights-tree-filter', () => {
 		it('should construct', () => {
 			runConstructor('d2l-insights-tree-selector-node');
 		});
+
+		describe('Tree', () => {
+			it('should accept null selectedIds', () => {
+				new Tree({ '10': [10, 'Faculty 2', 7, [6607], [], 'none', false] }, null, [3]);
+			});
+		});
 	});
 
 	describe('accessibility', () => {
