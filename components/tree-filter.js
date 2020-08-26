@@ -102,9 +102,9 @@ export class Tree {
 
 		node[STATE] = node[CHILDREN].every(childId => this.tree[childId][STATE] === 'explicit')
 			? 'explicit'
-			: node[CHILDREN].some(childId => this.tree[childId][STATE] !== 'none')
-				? 'indeterminate'
-				: 'none' ;
+			: node[CHILDREN].every(childId => this.tree[childId][STATE] === 'none')
+				? 'none'
+				: 'indeterminate' ;
 
 		node[PARENTS].forEach(parentId => this._updateSelected(parentId));
 	}

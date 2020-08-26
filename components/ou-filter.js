@@ -57,6 +57,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 	get _tree() {
 		// index by id
 		// every object gets an additional three fields: an array of children, a selectedState, and an isOpen boolean
+		// the children array is so we can look up both parents (provided by the server) and children directly
 		const tree = {};
 		this.data.serverData.orgUnits
 			.filter(x => x[TYPE] !== this.data.serverData.semesterTypeId)
@@ -64,10 +65,17 @@ class OuFilter extends Localizer(MobxLitElement) {
 				tree[x[ID]] = [...x, [], 'none', false];
 			});
 
-		// fill in arrays of children, so we can look up both parents and children directly
-		Object.values(tree).forEach(x => x[PARENTS].forEach(y => tree[y] && tree[y][CHILDREN].push(x[ID])));
+		this._fillChildrenArrays(tree);
 
 		return new Tree(tree, this.data.serverData.selectedOrgUnitIds, [COURSE_OFFERING]);
+	}
+
+	_fillChildrenArrays(tree) {
+		Object.values(tree).forEach(node => this._addIdToParents(node, tree));
+	}
+
+	_addIdToParents(child, tree) {
+		child[PARENTS].forEach(parentId => tree[parentId] && tree[parentId][CHILDREN].push(child[ID]));
 	}
 }
 customElements.define('d2l-insights-ou-filter', OuFilter);
