@@ -1,7 +1,6 @@
 import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/inputs/input-checkbox';
 
-import 'array-flat-polyfill';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin.js';
