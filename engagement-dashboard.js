@@ -1,6 +1,7 @@
 import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/results-card.js';
+import './components/debug-card.js';
 import './components/insights-role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
@@ -112,7 +113,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 	render() {
 		this._data = new Data({
 			recordProvider: this.isDemo ? demoData : fetchData,
-			filters: [
+			cardFilters: [
 				// {
 				// 	id: 'd2l-insights-engagement-summary',
 				// 	title: 'Summary',
@@ -144,6 +145,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
+					<d2l-insights-debug-card .data="${this._data}" metric-to-display="recordsLength" title="Records" message="number of records within filter parameters"></d2l-insights-debug-card>
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
@@ -153,18 +155,21 @@ class EngagementDashboard extends Localizer(LitElement) {
 
 	_handleRoleSelectionsUpdated(event) {
 		event.stopPropagation();
-		// event.target should be d2l-insights-role-filter
+
 		console.log(`List of selected role ids: ${event.target.selected}`);
+		this._data.applyRoleFilters(event.target.selected.map(roleId => Number(roleId)));
 	}
 
 	_onOuFilterChange(e) {
 		console.log(`got ou filter change with selected ids ${JSON.stringify(e.target.selected)}`);
+		this._data.applyOrgUnitFilters(e.target.selected);
 	}
 
 	_semesterFilterChange(event) {
 		event.stopPropagation();
 
 		console.log(`List of selected semesters: ${event.target.selected}`);
+		this._data.applySemesterFilters(event.target.selected.map(semesterId => Number(semesterId)));
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);
