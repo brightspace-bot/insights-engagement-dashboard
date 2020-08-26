@@ -1,5 +1,5 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
-import { filter, groupBy, map, reduce } from 'underscore';
+import { filter, groupBy, map, reduce, transform } from 'lodash-es';
 
 function countUnique(records, field) {
 	return new Set(records.map(r => r[field])).size;
@@ -91,9 +91,9 @@ export class Data {
 	}
 
 	get usersNumWithOverdueAssignments() {
-		return filter(map(
+		return filter(transform(
 			groupBy(this.serverData.records, record => record[1]),
-			(record) => reduce(map(record, record => record[3]), (sum, n) => sum + n, 0)),
+			(acc, value, key) => acc[key] = reduce(map(value, record => record[3]), (sum, n) => sum + n, 0), {}),
 		(num) => { return num > 0; }
 		).length;
 	}
