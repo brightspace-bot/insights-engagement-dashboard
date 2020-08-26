@@ -24,7 +24,9 @@ export class Tree {
 	constructor(tree, selectedIds, leafTypes) {
 		this.tree = tree;
 		this.leafTypes = leafTypes;
-		selectedIds.forEach(x => this.setSelected(x, true));
+		if (selectedIds) {
+			selectedIds.forEach(x => this.setSelected(x, true));
+		}
 	}
 
 	get rootId() {
