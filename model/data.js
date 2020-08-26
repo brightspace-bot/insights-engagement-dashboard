@@ -1,4 +1,5 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
+import { filter, groupBy, map, reduce } from 'underscore';
 
 function countUnique(records, field) {
 	return new Set(records.map(r => r[field])).size;
@@ -90,23 +91,11 @@ export class Data {
 	}
 
 	get usersNumWithOverdueAssignments() {
-		const groupOverdueAssignmentsByUserIds = this.serverData.records
-			.reduce((acc, item) => {
-				if (!acc[item[1]]) acc[item[1]] = [];
-				acc[item[1]].push(item[3]);
-				return acc;
-			}, {});
-
-		// eslint-disable-next-line prefer-const
-		let numOverdueAssignmentsByUserIds = {};
-		for (const userId in groupOverdueAssignmentsByUserIds) {
-			if (!numOverdueAssignmentsByUserIds[userId]) numOverdueAssignmentsByUserIds[userId] = 0;
-			groupOverdueAssignmentsByUserIds[userId].forEach(oa => { numOverdueAssignmentsByUserIds[userId] += oa; });
-		}
-
-		return  Object.values(numOverdueAssignmentsByUserIds).filter((number) => {
-			return number > 0;
-		}).length;
+		return filter(map(
+			groupBy(this.serverData.records, record => record[1]),
+			(record) => reduce(map(record, record => record[3]), (sum, n) => sum + n, 0)),
+		(num) => { return num > 0; }
+		).length;
 	}
 
 	getStats(id) {

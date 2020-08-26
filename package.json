@@ -49,6 +49,7 @@
     "d2l-facet-filter-sort": "BrightspaceUI/facet-filter-sort#semver:^3",
     "highcharts": "^8.1.2",
     "lit-element": "^2",
-    "mobx": "^5.15.4"
+    "mobx": "^5.15.4",
+    "underscore": "^1.10.2"
   }
 }
