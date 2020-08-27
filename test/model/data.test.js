@@ -61,15 +61,15 @@ describe('Data', () => {
 			[1001, 200, mockRoleIds.student, 0],
 			[1001, 300, mockRoleIds.student, 0],
 			// courses
-			[1, 100, mockRoleIds.admin, 1],
+			[1, 100, mockRoleIds.admin, 0],
 			[1, 200, mockRoleIds.instructor, 0],
-			[1, 300, mockRoleIds.student, 0],
+			[1, 300, mockRoleIds.student, 1],
 			[2, 100, mockRoleIds.admin, 0],
 			[2, 200, mockRoleIds.student, 0],
-			[2, 300, mockRoleIds.student, 0],
+			[2, 300, mockRoleIds.student, 1],
 			// course 1 offerings
 			[111, 100, mockRoleIds.admin, 0],
-			[111, 200, mockRoleIds.student, 0],
+			[111, 200, mockRoleIds.student, 1],
 			[112, 100, mockRoleIds.admin, 0],
 			[112, 200, mockRoleIds.instructor, 0], // this person was promoted from student to instructor
 			[113, 100, mockRoleIds.admin, 0],
@@ -216,7 +216,7 @@ describe('Data', () => {
 
 	describe('overdueAssignments', () => {
 		it('should return a number of users with overdue assignments', async() => {
-			const expected = 1;
+			const expected = 2;
 			expect(sut.usersNumWithOverdueAssignments).to.deep.equal(expected);
 		});
 	});

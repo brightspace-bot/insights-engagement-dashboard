@@ -1,5 +1,4 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
-import { filter, groupBy, map, reduce, transform } from 'lodash-es';
 import { CardFilter } from './cardFilter.js';
 import OrgUnitAncestors from './orgUnitAncestors.js';
 
@@ -110,11 +109,16 @@ export class Data {
 	}
 
 	get usersNumWithOverdueAssignments() {
-		return filter(transform(
-			groupBy(this.serverData.records, record => record[1]),
-			(acc, value, key) => acc[key] = reduce(map(value, record => record[3]), (sum, n) => sum + n, 0), {}),
-		(num) => {return num > 0;}
-		).length;
+		const groupOverdueAssignmentsByUserIds = this.serverData.records
+			.reduce((array, record) => {
+				if (!array[record[1]]) array[record[1]] = [];
+				if (record[3] !== 0) array[record[1]].push(record[3]);
+				return array;
+			}, {});
+
+		return Object.values(groupOverdueAssignmentsByUserIds).filter((num) => {
+			return num.length > 0;
+		}).length;
 	}
 
 	getRecordsInView(id) {
