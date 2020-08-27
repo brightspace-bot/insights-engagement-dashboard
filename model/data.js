@@ -89,6 +89,10 @@ export class Data {
 			});
 	}
 
+	get currentFinalGrades() {
+		return this.serverData.users.map(user => user[3]);
+	}
+
 	getStats(id) {
 		const recordsInView = this.getRecordsInView(id);
 

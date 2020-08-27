@@ -5,6 +5,7 @@ import './components/insights-role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
 import './components/table.js';
+import './components/current-final-grade-card.js';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data } from './model/data.js';
@@ -34,17 +35,18 @@ async function demoData() {
 					[6606, 'Dev', 1, [0]]
 				],
 				users: [ // some of which are out of order
-					[100,  'ATest', 'AStudent'],
-					[300,  'CTest', 'CStudent'],
-					[200,  'BTest', 'BStudent'],
-					[400,  'DTest', 'DStudent'],
-					[500,  'ETest', 'EStudent'],
-					[600,  'GTest', 'GStudent'],
-					[700,  'FTest', 'FStudent'],
-					[800,  'HTest', 'HStudent'],
-					[900,  'ITest', 'IStudent'],
-					[1000, 'KTest', 'KStudent'],
-					[1100, 'JTest', 'JStudent']
+					// UserId, First name, Last name, current final grade
+					[100,  'ATest', 'AStudent', 100],
+					[300,  'CTest', 'CStudent', 80],
+					[200,  'BTest', 'BStudent', 67],
+					[400,  'DTest', 'DStudent', 2],
+					[500,  'ETest', 'EStudent', 55],
+					[600,  'GTest', 'GStudent', 44],
+					[700,  'FTest', 'FStudent', 77],
+					[800,  'HTest', 'HStudent', 22],
+					[900,  'ITest', 'IStudent', 44],
+					[1000, 'KTest', 'KStudent', 77],
+					[1100, 'JTest', 'JStudent', 98]
 				],
 				semesterTypeId: 25,
 				selectedOrgUnitIds: [1, 2]
@@ -144,6 +146,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
+					<d2l-insights-current-final-grade-card .data="${this._data}"></d2l-labs-histogram-card>
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
