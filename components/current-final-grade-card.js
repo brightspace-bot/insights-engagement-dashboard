@@ -72,13 +72,15 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			chart: {
 				height: 230
 			},
+			tooltip: { enabled: false },
 			title: {
-				text: '' //override default title
+				text: '' // override default title
 			},
 			xAxis: {
-				title: { text: '' }, //override default title
+				title: { text: '' }, // override default title
 				allowDecimals: false,
 				alignTicks: false,
+				tickWidth: 0, // remove tick marks
 				tickPositions: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
 				floor: 0,
 				ceiling: 100,
@@ -87,14 +89,27 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			yAxis: {
 				tickAmount: 4,
 				tickColor: 'var(--d2l-color-ferrite)',
-				title: { text: this._numberOfStudentsText },
-				allowDecimals: false,
+				title: {
+					text: this._numberOfStudentsText,
+					style: {
+						color: 'var(--d2l-color-ferrite)',
+						fontSize: '10px',
+						fontWeight: 'bold'
+					}
+				},
+				allowDecimals: false
 			},
 			credits: {
 				enabled: false,
 			},
 			legend: {
 				enabled: false,
+			},
+			plotOptions: {
+				series: {
+					minPointLength: 2, // visualize 0 points
+					pointStart: 0
+				}
 			},
 			series: [{
 				type: 'histogram',
