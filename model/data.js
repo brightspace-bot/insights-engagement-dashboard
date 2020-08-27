@@ -54,7 +54,7 @@ export class Data {
 		// mobx will run _persist() whenever relevant state changes
 		autorun(() => this._persist());
 
-		recordProvider().then(data => {
+		recordProvider(this.selectorFilters).then(data => {
 			this._orgUnitAncestors = new OrgUnitAncestors(data.orgUnits);
 			this._userDictionary = new Map(data.users.map(user => [user[USER.ID], user]));
 			this.isLoading = false;

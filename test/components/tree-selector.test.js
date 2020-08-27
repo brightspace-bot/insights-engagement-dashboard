@@ -3,11 +3,9 @@ import '../../components/tree-selector.js';
 import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
-const tree = [
-	{ name: 'child1' },
-	{ name: 'child2', tree:[{ name: 'c2child1' }], selectedState: 'explicit' },
-	{ name: 'child3', getTree: async() => [], isOpen: true }
-];
+function isVisible(searchResults) {
+	return window.getComputedStyle(searchResults).getPropertyValue('display') !== 'none';
+}
 
 describe('d2l-insights-tree-selector', () => {
 	describe('constructor', () => {
@@ -18,47 +16,58 @@ describe('d2l-insights-tree-selector', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async() => {
-			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" .tree="${tree}"></d2l-insights-tree-selector>`);
+			const el = await fixture(html`<d2l-insights-tree-selector name="choose!"></d2l-insights-tree-selector>`);
 			await expect(el).to.be.accessible();
 		});
 	});
 
 	describe('render', () => {
-		it('should render a node with the given tree', async() => {
-			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" .tree="${tree}"></d2l-insights-tree-selector>`);
-			const node = el.shadowRoot.querySelector('d2l-insights-tree-selector-node');
-			expect(node.tree).to.deep.equal(tree);
-			expect(node.isRoot).to.be.true;
-		});
-
 		it('should render a dropbdown with the given name', async() => {
-			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" .tree="${tree}"></d2l-insights-tree-selector>`);
+			const el = await fixture(html`<d2l-insights-tree-selector name="choose!"></d2l-insights-tree-selector>`);
 			expect(el.shadowRoot.querySelector('d2l-dropdown-button-subtle').text).to.equal('choose!');
 		});
-	});
 
-	describe('selection', () => {
-		it('should return selected nodes', async() => {
-			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" .tree="${tree}"></d2l-insights-tree-selector>`);
-			await el.shadowRoot.querySelector('d2l-insights-tree-selector-node').updateComplete;
-			expect(el.selected.map(x => x.name)).to.deep.equal(['child2']);
+		it('should have slots for tree and search-results', async() => {
+			const el = await fixture(html`<d2l-insights-tree-selector name="choose!">
+					<d2l-insights-tree-selector-node name="shown" slot="tree"></d2l-insights-tree-selector-node>
+					<d2l-insights-tree-selector-node name="found" slot="search-results"></d2l-insights-tree-selector-node>
+				</d2l-insights-tree-selector>`);
+			const treeSlot = el.shadowRoot.querySelector('slot[name=tree]');
+			expect(treeSlot.assignedNodes({ flatten: false }).map(x => x.name)).to.deep.equal(['shown']);
+			const searchSlot = el.shadowRoot.querySelector('slot[name=search-results]');
+			expect(searchSlot.assignedNodes({ flatten: false }).map(x => x.name)).to.deep.equal(['found']);
+		});
+
+		it('should show tree and hide search results by default', async() => {
+			const el = await fixture(html`<d2l-insights-tree-selector name="choose!"></d2l-insights-tree-selector>`);
+			const searchResults = el.shadowRoot.querySelector('.d2l-insights-tree-selector-search-results');
+			expect(isVisible(searchResults)).to.be.false;
+			const tree = el.shadowRoot.querySelector('.d2l-insights-tree-selector-tree');
+			expect(isVisible(tree)).to.be.true;
+		});
+
+		it('should show tree and hide search results when searching', async() => {
+			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" search></d2l-insights-tree-selector>`);
+			const searchResults = el.shadowRoot.querySelector('.d2l-insights-tree-selector-search-results');
+			expect(isVisible(searchResults)).to.be.true;
+			const tree = el.shadowRoot.querySelector('.d2l-insights-tree-selector-tree');
+			expect(isVisible(tree)).to.be.false;
 		});
 	});
 
 	describe('events', () => {
-		it('should fire d2l-insights-tree-selector-change on selection change', async() => {
-			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" .tree="${tree}"></d2l-insights-tree-selector>`);
-			const listener = oneEvent(el, 'd2l-insights-tree-selector-change');
-			await el.shadowRoot.querySelector('d2l-insights-tree-selector-node').updateComplete;
-			const child = el.shadowRoot.querySelector('d2l-insights-tree-selector-node')
-				.shadowRoot.querySelector('d2l-insights-tree-selector-node');
-			await child.updateComplete;
-			const childCheckbox = child
-				.shadowRoot.querySelector('d2l-input-checkbox');
-			childCheckbox.simulateClick();
+		it('should fire d2l-insights-tree-selector-search on search input', async() => {
+			const el = await fixture(html`<d2l-insights-tree-selector name="choose!"></d2l-insights-tree-selector>`);
+			const listener = oneEvent(el, 'd2l-insights-tree-selector-search');
+			const search = el.shadowRoot.querySelector('d2l-input-search');
+			search.value = 'asdf';
+			search.search();
 			const event = await listener;
-			expect(event.type).to.equal('d2l-insights-tree-selector-change');
+			expect(event.type).to.equal('d2l-insights-tree-selector-search');
 			expect(event.target).to.equal(el);
+			expect(event.detail).to.deep.equal({
+				value: 'asdf'
+			});
 		});
 	});
 });

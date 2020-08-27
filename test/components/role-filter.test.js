@@ -1,4 +1,4 @@
-import '../../components/insights-role-filter';
+import '../../components/role-filter';
 
 import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';

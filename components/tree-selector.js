@@ -9,19 +9,16 @@ import { Localizer } from '../locales/localizer';
 import { selectStyles } from '@brightspace-ui/core/components/inputs/input-select-styles';
 
 /**
- * @property {string} name
- * @property {{name: string, tree:{}[], getTree: function, isOpen: boolean, selectedState: string}[]} tree - used to initialize, but will not be updated
- * tree - an array of the same form
- * getTree - is async callback which should return the tree (provide either tree or getTree for each node)
- * selectedState - may be "explicit", "implicit", "indeterminate", or "none"
- * @fires d2l-insights-tree-selector-change - value of this.selected has changed
+ * @property {String} name
+ * @property {Boolean} isSearch - if true, show "search-results" slot instead of "tree" slot
+ * @fires d2l-insights-tree-selector-search - user requested or cleared a search; search string is event.detail.value
  */
 class TreeSelector extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
 			name: { type: String },
-			tree: { type: Object, attribute: false }
+			isSearch: { type: Boolean, attribute: 'search', reflect: true }
 		};
 	}
 
@@ -41,8 +38,33 @@ class TreeSelector extends Localizer(LitElement) {
 					flex-wrap: nowrap;
 					width: 334px;
 				}
+
+				:host([search]) d2l-dropdown d2l-dropdown-content .d2l-insights-tree-selector-tree {
+					display: none;
+				}
+
+				.d2l-insights-tree-selector-search-results {
+					display: none;
+				}
+				:host([search]) d2l-dropdown d2l-dropdown-content .d2l-insights-tree-selector-search-results {
+					display: block;
+				}
 			`
 		];
+	}
+
+	constructor() {
+		super();
+
+		this.name = 'SPECIFY NAME ATTRIBUTE';
+		this._isSearch = false;
+	}
+
+	/**
+	 * @returns {Promise} - resolves when all tree-selector-nodes in slots, recursively, have finished updating
+	 */
+	get treeUpdateComplete() {
+		return this._waitForTreeUpdateComplete();
 	}
 
 	render() {
@@ -57,39 +79,55 @@ class TreeSelector extends Localizer(LitElement) {
 								@d2l-input-search-searched="${this._onSearch}"
 							></d2l-input-search>
 						</div>
-						<d2l-insights-tree-selector-node
-							id="tree-selector-root-node"
-							.tree="${this.tree}"
-							root
-							@d2l-insights-tree-selector-change="${this._onChange}"
-							@d2l-insights-tree-selector-resize="${this._onResize}"
-						></d2l-insights-tree-selector-node>
+						<div class="d2l-insights-tree-selector-search-results">
+							<slot name="search-results"></slot>
+						</div>
+						<div class="d2l-insights-tree-selector-tree">
+							<slot name="tree"></slot>
+						</div>
 					</d2l-dropdown-content>
 				</d2l-dropdown-button-subtle>
 			</d2l-dropdown>
 		`;
 	}
 
-	get selected() {
-		return this.shadowRoot.getElementById('tree-selector-root-node').selected;
+	simulateSearch(searchString) {
+		this._onSearch({
+			detail: {
+				value: searchString
+			}
+		});
 	}
 
-	_onChange() {
+	async resize() {
+		await this.treeUpdateComplete;
+		const content = this.shadowRoot.querySelector('d2l-dropdown-content');
+		content && await content.resize();
+	}
+
+	_onSearch(event) {
 		/**
-		 * @event d2l-insights-tree-selector-change
+		 * @event d2l-insights-tree-selector-search
 		 */
 		this.dispatchEvent(new CustomEvent(
-			'd2l-insights-tree-selector-change',
-			{ bubbles: true, composed: false }
+			'd2l-insights-tree-selector-search',
+			{
+				bubbles: true,
+				composed: false,
+				detail: event.detail
+			}
 		));
 	}
 
-	_onSearch() {
-		// coming soon
-	}
-
-	async _onResize() {
-		await this.shadowRoot.querySelector('d2l-dropdown-content').resize();
+	async _waitForTreeUpdateComplete() {
+		await this.updateComplete;
+		const slots = [...this.shadowRoot.querySelectorAll('slot')];
+		// to be sure all child nodes have been added, instead of using flatten,
+		// we recursively walk down the tree, waiting for each node's update to complete
+		return Promise.all(slots.map(slot => {
+			const childNodes = slot.assignedNodes({ flatten: false });
+			return Promise.all(childNodes.map(node => node.treeUpdateComplete));
+		}));
 	}
 }
 customElements.define('d2l-insights-tree-selector', TreeSelector);
