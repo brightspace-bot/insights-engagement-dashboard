@@ -21,7 +21,16 @@ async function demoData() {
 	return new Promise(resolve =>
 		setTimeout(
 			() => resolve({
-				records: [{ UserId: 1, OrgUnitId: 1 }, { UserId: 2, OrgUnitId: 1 }, { UserId: 2, OrgUnitId: 2 }],
+				records: [
+					[1, 100, 500],
+					[1, 200, 600],
+					[2, 200, 700],
+					[2, 300, 700],
+					[2, 400, 700],
+					[2, 500, 700],
+					[8, 200, 700],
+					[6, 600, 700]
+				],
 				orgUnits: [
 					[1, 'Course 1', 3, [3, 4]],
 					[2, 'Course 2', 3, [3, 4]],
