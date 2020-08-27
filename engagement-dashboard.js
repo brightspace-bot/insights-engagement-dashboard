@@ -170,15 +170,8 @@ class EngagementDashboard extends Localizer(LitElement) {
 	}
 
 	_onOuFilterChange(e) {
-		console.log(`got ou filter change with selected nodes ${JSON.stringify(e.target.selected.map(x => x.name))}`);
-		// this could be optimized - would be nice to get the id directly instead of parsing the string every time
-		const filtersToApply = e.target.selected.map(x => {
-			const orgUnitText = x.name;
-			// localization note: the following line only works for English
-			const orgUnitId = orgUnitText.split('(Id: ')[1].split(')')[0];
-			return Number(orgUnitId);
-		});
-		this._data.applyOrgUnitFilters(filtersToApply);
+		console.log(`got ou filter change with selected ids ${JSON.stringify(e.target.selected)}`);
+		this._data.applyOrgUnitFilters(e.target.selected);
 	}
 
 	_semesterFilterChange(event) {
