@@ -39,37 +39,31 @@ describe('d2l-insights-ou-filter', () => {
 	});
 
 	describe('render', () => {
-		it('should render a tree-selector with the correct data including lazy-loading', async() => {
+		it('should render a tree-filter with the correct data including lazy-loading', async() => {
 			const el = await fixture(html`<d2l-insights-ou-filter .data="${data}"></d2l-insights-ou-filter>`);
-			const selector = el.shadowRoot.querySelector('d2l-insights-tree-selector');
-			expect(selector.tree).to.have.length(2);
-
-			expect(selector.tree[1]).to.include({ name: 'Faculty 2 (Id: 9)', selectedState: 'none', tree: null });
-			expect(selector.tree[1]).to.have.property('getTree');
-			expect(await selector.tree[1].getTree()).to.deep.equal([]);
-
-			expect(selector.tree[0]).to.include({ name: 'Faculty 1 (Id: 5)', selectedState: 'indeterminate', getTree: null });
-			const subtree = selector.tree[0].tree;
-			expect(subtree).to.exist;
-			expect(subtree).to.have.length(3);
-			expect(subtree[0]).to.deep.equal({ name: 'Course 4 (Id: 8)', selectedState: 'explicit', tree: null, getTree: null });
-			expect(subtree[2]).to.include({ name: 'Department 2 (Id: 7)', selectedState: 'none', tree: null });
-			expect(subtree[2]).to.have.property('getTree');
-			expect(await subtree[2].getTree()).to.deep.equal([{ name: 'Course 3 (Id: 6)', selectedState: 'none', tree: null, getTree: null }]);
-
-			expect(subtree[1]).to.deep.equal({ name: 'Department 1 (Id: 3)', selectedState: 'indeterminate', getTree: null, tree: [
-				{ name: 'Course 1 (Id: 1)', selectedState: 'none', tree: null, getTree: null },
-				{ name: 'Course 2 (Id: 2)', selectedState: 'explicit', tree: null, getTree: null }]
+			const selector = el.shadowRoot.querySelector('d2l-insights-tree-filter');
+			expect(selector.tree.tree).to.deep.equal({
+				'1': [1, 'Course 1', 3, [3, 4], [], 'none', false],
+				'2': [2, 'Course 2', 3, [3, 4], [], 'explicit', false],
+				'3': [3, 'Department 1', 2, [5], [1, 2], 'indeterminate', false],
+				// semester is omitted
+				'5': [5, 'Faculty 1', 7, [6607], [3, 7, 8], 'indeterminate', false],
+				'6': [6, 'Course 3', 3, [7, 4], [], 'none', false],
+				'7': [7, 'Department 2', 2, [5], [6], 'none', false],
+				'8': [8, 'Course 4', 3, [5], [], 'explicit', false],
+				'9': [9, 'Faculty 2', 7, [6607], [], 'none', false],
+				'6607': [6607, 'Dev', 1, [0], [5, 9], 'none', false]
 			});
+			expect(selector.tree.leafTypes).to.deep.equal([3]);
 		});
 	});
 
 	describe('selection', () => {
 		it('should return selected nodes', async() => {
 			const el = await fixture(html`<d2l-insights-ou-filter .data="${data}"></d2l-insights-ou-filter>`);
-			// on Safari only, the children don't finish rendering during the above await
-			await new Promise(resolve => setTimeout(resolve, 500));
-			expect(el.selected.map(x => x.name)).to.deep.equal(['Course 4 (Id: 8)', 'Course 2 (Id: 2)']);
+			const selector = el.shadowRoot.querySelector('d2l-insights-tree-filter');
+			await selector.treeUpdateComplete;
+			expect(el.selected).to.deep.equal([2, 8]);
 		});
 	});
 
@@ -79,9 +73,8 @@ describe('d2l-insights-ou-filter', () => {
 			// on Safari only, the children don't finish rendering during the above await
 			await new Promise(resolve => setTimeout(resolve, 500));
 			const listener = oneEvent(el, 'd2l-insights-ou-filter-change');
-			const childCheckbox = el.shadowRoot.querySelector('d2l-insights-tree-selector')
-				.shadowRoot.querySelector('d2l-insights-tree-selector-node') // hidden root node
-				.shadowRoot.querySelector('d2l-insights-tree-selector-node') // first child
+			const childCheckbox = el.shadowRoot.querySelector('d2l-insights-tree-filter')
+				.shadowRoot.querySelectorAll('d2l-insights-tree-selector-node')[1] // a child node
 				.shadowRoot.querySelector('d2l-input-checkbox');
 			childCheckbox.simulateClick();
 			const event = await listener;
