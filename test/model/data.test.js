@@ -217,9 +217,7 @@ describe('Data', () => {
 	describe('overdueAssignments', () => {
 		it('should return a number of users with overdue assignments', async() => {
 			const expected = 1;
-			const num = sut.usersNumWithOverdueAssignments;
-			await new Promise(resolve => setTimeout(resolve, 100));
-			expect(num).to.deep.equal(expected);
+			expect(sut.usersNumWithOverdueAssignments).to.deep.equal(expected);
 		});
 	});
 });
