@@ -35,62 +35,62 @@ describe('Data', () => {
 			[313, 'Course 3 / Semester 3', mockOuTypes.courseOffering, [3, 13]]
 		],
 		records: [
-			[6606, 100, mockRoleIds.student], // this user has a cascading admin role on dept and sem levels
-			[6606, 200, mockRoleIds.student],
-			[6606, 300, mockRoleIds.student],
-			[6606, 400, mockRoleIds.student], // this user has a cascading admin role on dept and sem levels
+			[6606, 100, mockRoleIds.student, 0], // this user has a cascading admin role on dept and sem levels
+			[6606, 200, mockRoleIds.student, 0],
+			[6606, 300, mockRoleIds.student, 0],
+			[6606, 400, mockRoleIds.student, 0], // this user has a cascading admin role on dept and sem levels
 
 			// semesters
-			[11, 100, mockRoleIds.admin],
-			[12, 100, mockRoleIds.admin],
-			[13, 100, mockRoleIds.admin],
+			[11, 100, mockRoleIds.admin, 0],
+			[12, 100, mockRoleIds.admin, 0],
+			[13, 100, mockRoleIds.admin, 0],
 
-			[11, 200, mockRoleIds.student],
-			[12, 200, mockRoleIds.instructor],
+			[11, 200, mockRoleIds.student, 0],
+			[12, 200, mockRoleIds.instructor, 0],
 
-			[11, 300, mockRoleIds.student],
-			[12, 300, mockRoleIds.student],
-			[13, 300, mockRoleIds.student],
+			[11, 300, mockRoleIds.student, 0],
+			[12, 300, mockRoleIds.student, 0],
+			[13, 300, mockRoleIds.student, 0],
 
-			[11, 400, mockRoleIds.admin],
-			[12, 400, mockRoleIds.admin],
-			[13, 400, mockRoleIds.admin],
+			[11, 400, mockRoleIds.admin, 0],
+			[12, 400, mockRoleIds.admin, 0],
+			[13, 400, mockRoleIds.admin, 0],
 
 			// dept 1
-			[1001, 100, mockRoleIds.admin],
-			[1001, 200, mockRoleIds.student],
-			[1001, 300, mockRoleIds.student],
+			[1001, 100, mockRoleIds.admin, 0],
+			[1001, 200, mockRoleIds.student, 0],
+			[1001, 300, mockRoleIds.student, 0],
 			// courses
-			[1, 100, mockRoleIds.admin],
-			[1, 200, mockRoleIds.instructor],
-			[1, 300, mockRoleIds.student],
-			[2, 100, mockRoleIds.admin],
-			[2, 200, mockRoleIds.student],
-			[2, 300, mockRoleIds.student],
+			[1, 100, mockRoleIds.admin, 0],
+			[1, 200, mockRoleIds.instructor, 0],
+			[1, 300, mockRoleIds.student, 1],
+			[2, 100, mockRoleIds.admin, 0],
+			[2, 200, mockRoleIds.student, 1],
+			[2, 300, mockRoleIds.student, 1],
 			// course 1 offerings
-			[111, 100, mockRoleIds.admin],
-			[111, 200, mockRoleIds.student],
-			[112, 100, mockRoleIds.admin],
-			[112, 200, mockRoleIds.instructor], // this person was promoted from student to instructor
-			[113, 100, mockRoleIds.admin],
-			[113, 300, mockRoleIds.student],
+			[111, 100, mockRoleIds.admin, 0],
+			[111, 200, mockRoleIds.student, 0],
+			[112, 100, mockRoleIds.admin, 0],
+			[112, 200, mockRoleIds.instructor, 0], // this person was promoted from student to instructor
+			[113, 100, mockRoleIds.admin, 0],
+			[113, 300, mockRoleIds.student, 0],
 			// course 2 offerings
-			[212, 100, mockRoleIds.admin],
-			[212, 200, mockRoleIds.student],
-			[212, 300, mockRoleIds.instructor],
+			[212, 100, mockRoleIds.admin, 0],
+			[212, 200, mockRoleIds.student, 0],
+			[212, 300, mockRoleIds.instructor, 0],
 
 			// dept 2
-			[1002, 200, mockRoleIds.student],
-			[1002, 300, mockRoleIds.student],
-			[1002, 400, mockRoleIds.admin],
-			[3, 200, mockRoleIds.student],
-			[3, 300, mockRoleIds.student],
-			[3, 400, mockRoleIds.admin],
-			[311, 200, mockRoleIds.student],
-			[311, 300, mockRoleIds.student],
-			[311, 400, mockRoleIds.admin],
-			[313, 300, mockRoleIds.student],
-			[313, 400, mockRoleIds.admin],
+			[1002, 200, mockRoleIds.student, 0],
+			[1002, 300, mockRoleIds.student, 0],
+			[1002, 400, mockRoleIds.admin, 0],
+			[3, 200, mockRoleIds.student, 0],
+			[3, 300, mockRoleIds.student, 0],
+			[3, 400, mockRoleIds.admin, 0],
+			[311, 200, mockRoleIds.student, 0],
+			[311, 300, mockRoleIds.student, 0],
+			[311, 400, mockRoleIds.admin, 0],
+			[313, 300, mockRoleIds.student, 0],
+			[313, 400, mockRoleIds.admin, 0],
 		],
 		users: [
 			[100, 'John', 'Lennon'],
@@ -216,7 +216,7 @@ describe('Data', () => {
 
 	describe('overdueAssignments', () => {
 		it('should return a number of users with overdue assignments', async() => {
-			const expected = 0;
+			const expected = 2;
 
 			expect(sut.usersNumWithOverdueAssignments).to.deep.equal(expected);
 		});
