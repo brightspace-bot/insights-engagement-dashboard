@@ -1,8 +1,8 @@
 import './dropdown-filter';
 
 import { html, LitElement } from 'lit-element';
-import FakeLms from '../model/fake-lms';
-import Lms from '../model/lms';
+import { fetchRoles as fetchDemoRoles } from '../model/fake-lms';
+import { fetchRoles } from '../model/lms';
 import { Localizer } from '../locales/localizer';
 
 /**
@@ -10,7 +10,7 @@ import { Localizer } from '../locales/localizer';
  * @fires d2l-insights-role-filter-change
  * @fires d2l-insights-role-filter-close
  */
-class InsightsRoleFilter extends Localizer(LitElement) {
+class RoleFilter extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
@@ -28,8 +28,8 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 	}
 
 	async firstUpdated() {
-		this._lms = this.isDemo ? new FakeLms() : new Lms();
-		const data = await this._lms.fetchRoles();
+		const dataProvider = this.isDemo ? fetchDemoRoles : fetchRoles;
+		const data = await dataProvider();
 		this._setRoleData(data);
 	}
 
@@ -83,4 +83,4 @@ class InsightsRoleFilter extends Localizer(LitElement) {
 	}
 
 }
-customElements.define('d2l-insights-role-filter', InsightsRoleFilter);
+customElements.define('d2l-insights-role-filter', RoleFilter);

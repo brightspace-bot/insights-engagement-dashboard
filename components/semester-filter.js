@@ -1,8 +1,8 @@
 import './dropdown-filter';
 
 import { html, LitElement } from 'lit-element';
-import FakeLms from '../model/fake-lms';
-import Lms from '../model/lms';
+import { fetchSemesters as fetchDemoSemesters } from '../model/fake-lms';
+import { fetchSemesters } from '../model/lms';
 import { Localizer } from '../locales/localizer';
 
 /**
@@ -38,7 +38,7 @@ class SemesterFilter extends Localizer(LitElement) {
 	}
 
 	async firstUpdated() {
-		this._lms = this.isDemo ? new FakeLms() : new Lms();
+		this.dataProvider = this.isDemo ? fetchDemoSemesters : fetchSemesters;
 		await this._loadData();
 	}
 
@@ -57,7 +57,7 @@ class SemesterFilter extends Localizer(LitElement) {
 	}
 
 	async _loadData() {
-		const data = await this._lms.fetchSemesters(this.pageSize);
+		const data = await this.dataProvider(this.pageSize);
 
 		this._filterData = data.Items.map(item => ({
 			id: item.orgUnitId.toString(),
