@@ -86,19 +86,13 @@ class SummaryCard extends LitElement {
 		`;
 	}
 
-	_getUsers() {
-		console.log('click'); // out of scope
-	}
-
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
 			<div class="d2l-insights-summary-card-body">
-			${!this.isValueClickable ?
-			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" @click=${this._getUsers}>${this.value}</span>` :
-			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>` }
+			<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>
 			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${this.message}</span>
 			</div>
 		</div>`;
