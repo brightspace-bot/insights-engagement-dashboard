@@ -5,7 +5,7 @@ import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-help
 
 describe('d2l-insights-overdue-assignments-card', () => {
 	const data = {
-		usersNumWithOverdueAssignments: 2
+		usersCountsWithOverdueAssignments: 2
 	};
 
 	describe('constructor', () => {

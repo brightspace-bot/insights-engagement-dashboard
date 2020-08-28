@@ -217,7 +217,7 @@ describe('Data', () => {
 	describe('overdueAssignments', () => {
 		it('should return a number of users with overdue assignments', async() => {
 			const expected = 2;
-			expect(sut.usersNumWithOverdueAssignments).to.deep.equal(expected);
+			expect(sut.usersCountsWithOverdueAssignments).to.deep.equal(expected);
 		});
 	});
 });

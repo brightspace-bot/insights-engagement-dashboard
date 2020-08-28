@@ -5,7 +5,8 @@ import OrgUnitAncestors from './orgUnitAncestors.js';
 const RECORD = {
 	ORG_UNIT_ID: 0,
 	USER_ID: 1,
-	ROLE_ID: 2
+	ROLE_ID: 2,
+	OVERDUE: 3
 };
 
 const USER = {
@@ -108,17 +109,14 @@ export class Data {
 			});
 	}
 
-	get usersNumWithOverdueAssignments() {
-		const groupOverdueAssignmentsByUserIds = this.serverData.records
-			.reduce((array, record) => {
-				if (!array[record[1]]) array[record[1]] = [];
-				if (record[3] !== 0) array[record[1]].push(record[3]);
-				return array;
-			}, {});
-
-		return Object.values(groupOverdueAssignmentsByUserIds).filter((num) => {
-			return num.length > 0;
-		}).length;
+	get usersCountsWithOverdueAssignments() {
+		return this.getRecordsInView()
+			.reduce((acc, record) => {
+				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
+					acc.add(record[RECORD.USER_ID]);
+				}
+				return acc;
+			}, 	new Set()).size;
 	}
 
 	getRecordsInView(id) {
@@ -172,6 +170,7 @@ decorate(Data, {
 	records: computed,
 	users: computed,
 	userDataForDisplay: computed,
+	usersCountsWithOverdueAssignments: computed,
 	selectorFilters: observable,
 	cardFilters: observable,
 	isLoading: observable,

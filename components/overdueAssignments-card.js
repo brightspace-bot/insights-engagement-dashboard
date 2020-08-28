@@ -26,7 +26,7 @@ class OverdueAssignmentsCard extends Localizer(MobxLitElement) {
 	}
 
 	get _cardValue() {
-		return this.data.usersNumWithOverdueAssignments;
+		return this.data.usersCountsWithOverdueAssignments;
 	}
 
 	render() {
