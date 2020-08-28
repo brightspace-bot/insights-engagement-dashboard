@@ -82,4 +82,26 @@ describe('orgUnitAncestors', () => {
 			expect(sut.getAncestorsFor(12345)).to.be.undefined;
 		});
 	});
+
+	describe('hasAncestorsInList', () => {
+		it('returns false if passed in orgUnit is not in the ancestors list', () => {
+			expect(sut.hasAncestorsInList(12345, [6606])).to.be.false;
+		});
+
+		it('returns false if orgUnit is not in the list to check', () => {
+			expect(sut.hasAncestorsInList(1001, [1002, 1003])).to.be.false;
+		});
+
+		it('returns false if orgUnit has no ancestors in the list to check', () => {
+			expect(sut.hasAncestorsInList(1, [1002, 1003])).to.be.false;
+		});
+
+		it('returns true if orgUnit is in the list to check', () => {
+			expect(sut.hasAncestorsInList(1001, [1001, 1002])).to.be.true;
+		});
+
+		it('returns true if orgUnit has ancestors in the list to check', () => {
+			expect(sut.hasAncestorsInList(1, [1001, 1002])).to.be.true;
+		});
+	});
 });

@@ -101,12 +101,22 @@ describe('Data', () => {
 			[200, 'Paul', 'McCartney'],
 			[300, 'George', 'Harrison'],
 			[400, 'Ringo', 'Starr']
-		]
+		],
+		selectedRolesIds: null,
+		selectedSemestersIds: null,
+		selectedOrgUnitIds: null,
+		isRecordsTruncated: false,
+		isOrgUnitsTruncated: false
 	};
 
-	const recordProvider = async() => {
+	const recordProvider = async({ roleIds = null, semesterIds = null, orgUnitIds = null }) => {
 		return new Promise((resolve) => {
-			resolve(serverData);
+			resolve({
+				...serverData,
+				selectedRolesIds: roleIds,
+				selectedSemestersIds: semesterIds,
+				selectedOrgUnitIds: orgUnitIds
+			});
 		});
 	};
 
@@ -130,6 +140,7 @@ describe('Data', () => {
 			});
 
 			sut.applyOrgUnitFilters(orgUnitFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -142,20 +153,37 @@ describe('Data', () => {
 			});
 
 			sut.applySemesterFilters(semesterFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
 
-		it('should return filtered records when both filters are applied', async() => {
-			const orgUnitFilters = [1002, 2, 113];
-			const semesterFilters = [12];
+		it('should return filtered records when role filter is applied', async() => {
+			const roleFilters = [mockRoleIds.instructor];
 			const expectedRecords = serverData.records.filter(record => {
-				const recordOrgUnitId = record[0];
-				return [212].includes(recordOrgUnitId);
+				return roleFilters.includes(record[2]);
 			});
 
+			sut.applyRoleFilters(roleFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
+
+			expect(sut.records).to.deep.equal(expectedRecords);
+		});
+
+		it('should return filtered records when all filters are applied', async() => {
+			const orgUnitFilters = [1002, 2, 113];
+			const semesterFilters = [12];
+			const roleFilters = [mockRoleIds.instructor];
+			const expectedRecords = serverData.records.filter(record =>
+				record[0] === 212 && record[1] === 300
+			);
+
 			sut.applyOrgUnitFilters(orgUnitFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 			sut.applySemesterFilters(semesterFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
+			sut.applyRoleFilters(roleFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -174,6 +202,7 @@ describe('Data', () => {
 			});
 
 			sut.applyOrgUnitFilters(orgUnitFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -186,20 +215,39 @@ describe('Data', () => {
 			});
 
 			sut.applySemesterFilters(semesterFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
 
-		it('should return filtered users when both filters are applied', async() => {
-			const orgUnitFilters = [112, 113];
-			const semesterFilters = [13];
+		it('should return filtered users when role filter is applied', async() => {
+			const roleFilters = [mockRoleIds.admin];
 			const expectedUsers = serverData.users.filter(user => {
 				const userId = user[0];
-				return [100, 300].includes(userId);
+				return [100, 400].includes(userId);
+			});
+
+			sut.applyRoleFilters(roleFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
+
+			expect(sut.users).to.deep.equal(expectedUsers);
+		});
+
+		it('should return filtered users when all filters are applied', async() => {
+			const orgUnitFilters = [112, 113];
+			const semesterFilters = [13];
+			const roleFilters = [mockRoleIds.admin];
+			const expectedUsers = serverData.users.filter(user => {
+				const userId = user[0];
+				return [100].includes(userId);
 			});
 
 			sut.applyOrgUnitFilters(orgUnitFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 			sut.applySemesterFilters(semesterFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
+			sut.applyRoleFilters(roleFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -215,6 +263,19 @@ describe('Data', () => {
 			];
 
 			expect(sut.userDataForDisplay).to.deep.equal(expected);
+		});
+
+		it('should only display users in view', async() => {
+			const roleFilters = [mockRoleIds.instructor];
+			const expectedUsers = [
+				['Harrison, George'],
+				['McCartney, Paul']
+			];
+
+			sut.applyRoleFilters(roleFilters);
+			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
+
+			expect(sut.userDataForDisplay).to.deep.equal(expectedUsers);
 		});
 	});
 
