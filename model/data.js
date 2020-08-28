@@ -5,7 +5,8 @@ import OrgUnitAncestors from './orgUnitAncestors.js';
 const RECORD = {
 	ORG_UNIT_ID: 0,
 	USER_ID: 1,
-	ROLE_ID: 2
+	ROLE_ID: 2,
+	CURRENT_FINAL_GRADE: 3
 };
 
 const USER = {
@@ -109,7 +110,7 @@ export class Data {
 	}
 
 	get currentFinalGrades() {
-		return this.serverData.users.map(user => user[3]);
+		return this.serverData.records.map(record => record[3]);
 	}
 
 	getRecordsInView(id) {

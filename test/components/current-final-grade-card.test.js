@@ -5,24 +5,32 @@ import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-help
 
 describe('d2l-insights-current-final-grade-card', () => {
 	const data = {
-		userDataForDisplay: [
-			'Lennon, John',
-			'McCartney, Paul',
-			'Harrison, George',
-			'Starr, Ringo'
-		]
+		currentFinalGrades: [2, 4, 12, 31, 43, 40, 55, null, 88]
 	};
+
+	const filteredFinalGrades =  [2, 4, 12, 31, 43, 40, 55, 88];
 
 	describe('constructor', () => {
 		it('should construct', () => {
-			runConstructor('d2l-insights-results-card');
+			runConstructor('d2l-insights-current-final-grade-card');
 		});
 	});
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async() => {
-			const el = await fixture(html`<d2l-insights-results-card .data="${data}"></d2l-insights-results-card>`);
+			const el = await fixture(html`<d2l-insights-current-final-grade-card .data="${data}"></d2l-insights-current-final-grade-card>`);
 			await expect(el).to.be.accessible();
 		});
 	});
+
+	describe('render', () => {
+		it('should render as expected', async() => {
+			const el = await fixture(html`<d2l-insights-current-final-grade-card .data="${data}"></d2l-insights-current-final-grade-card>`);
+			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run
+			const title = (el.shadowRoot.querySelectorAll('div.d2l-insights-current-final-grade-title'));
+			expect(title[0].innerText).to.equal('Current Final Grade');
+			expect(el._preparedHistogramData.toString()).to.equal(filteredFinalGrades.toString());
+		});
+	});
+
 });

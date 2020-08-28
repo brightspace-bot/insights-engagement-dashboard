@@ -23,14 +23,14 @@ async function demoData() {
 		setTimeout(
 			() => resolve({
 				records: [
-					[1, 100, 500],
-					[1, 200, 600],
-					[2, 200, 700],
-					[2, 300, 700],
-					[2, 400, 700],
-					[2, 500, 700],
-					[8, 200, 700],
-					[6, 600, 700]
+					[1, 100, 500, 8],
+					[1, 200, 600, 20],
+					[2, 200, 700, 30],
+					[2, 300, 700, 1],
+					[2, 400, 700, 100],
+					[2, 500, 700, 44],
+					[8, 200, 700, 66],
+					[6, 600, 700, null]
 				],
 				orgUnits: [
 					[1, 'Course 1', 3, [3, 4]],
@@ -46,17 +46,17 @@ async function demoData() {
 				],
 				users: [ // some of which are out of order
 					// UserId, First name, Last name, current final grade
-					[100,  'ATest', 'AStudent', 100],
-					[300,  'CTest', 'CStudent', 80],
-					[200,  'BTest', 'BStudent', 67],
-					[400,  'DTest', 'DStudent', 2],
-					[500,  'ETest', 'EStudent', 55],
-					[600,  'GTest', 'GStudent', 44],
-					[700,  'FTest', 'FStudent', 77],
-					[800,  'HTest', 'HStudent', 22],
-					[900,  'ITest', 'IStudent', 44],
-					[1000, 'KTest', 'KStudent', 77],
-					[1100, 'JTest', 'JStudent', 98]
+					[100,  'ATest', 'AStudent'],
+					[300,  'CTest', 'CStudent'],
+					[200,  'BTest', 'BStudent'],
+					[400,  'DTest', 'DStudent'],
+					[500,  'ETest', 'EStudent'],
+					[600,  'GTest', 'GStudent'],
+					[700,  'FTest', 'FStudent'],
+					[800,  'HTest', 'HStudent'],
+					[900,  'ITest', 'IStudent'],
+					[1000, 'KTest', 'KStudent'],
+					[1100, 'JTest', 'JStudent']
 				],
 				semesterTypeId: 25,
 				selectedOrgUnitIds: [1, 2]
@@ -156,7 +156,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
-					<d2l-insights-current-final-grade-card .data="${this._data}"></d2l-labs-histogram-card>
+					<d2l-insights-current-final-grade-card .data="${this._data}"></d2l-insights-current-final-grade-card>
 					<d2l-insights-debug-card .data="${this._data}" metric-to-display="recordsLength" title="Records" message="number of records within filter parameters"></d2l-insights-debug-card>
 				</div>
 

@@ -57,8 +57,14 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		return this.localize('components.insights-current-final-grade-card.numberOfStudents');
 	}
 
+	get _preparedHistogramData() {
+		const filteredGrades = this.data.currentFinalGrades.filter((el) => {
+			return el !== null;
+		});
+		return filteredGrades;
+	}
+
 	render() {
-		console.log(this.data.currentFinalGrades);
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-final-grade-container">
@@ -72,6 +78,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			chart: {
 				height: 230
 			},
+			animation: false,
 			tooltip: { enabled: false },
 			title: {
 				text: '' // override default title
@@ -88,13 +95,13 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			},
 			yAxis: {
 				tickAmount: 4,
-				tickColor: 'var(--d2l-color-ferrite)',
 				title: {
 					text: this._numberOfStudentsText,
 					style: {
 						color: 'var(--d2l-color-ferrite)',
 						fontSize: '10px',
-						fontWeight: 'bold'
+						fontWeight: 'bold',
+						fontFamily: 'Lato'
 					}
 				},
 				allowDecimals: false
@@ -108,26 +115,24 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			plotOptions: {
 				series: {
 					minPointLength: 2, // visualize 0 points
-					pointStart: 0
-				}
+					pointStart: 0,
+					animation: false,
+					pointWidth: 25
+				},
 			},
 			series: [{
 				type: 'histogram',
 				color: 'var(--d2l-color-amethyst)',
-				binWidth: 10,
-				pointPadding: 0.1,
+				pointPadding: 0.15,
+				centerInCategory: true,
 				animation: false,
 				lineWidth: 1,
 				baseSeries: 1,
 				shadow: false,
-				states: {
-					hover: {
-						lineWidth: 1
-					}
-				},
+				binWidth: 10
 			},
 			{
-				data: this.data.currentFinalGrades,
+				data: this._preparedHistogramData,
 				visible: false
 			}],
 		};
