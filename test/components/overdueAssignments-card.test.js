@@ -24,11 +24,10 @@ describe('d2l-insights-overdue-assignments-card', () => {
 	describe('render', () => {
 		it('should render the proper number of users with overdue assignments', async() => {
 			const el = await fixture(html`<d2l-insights-overdue-assignments-card .data="${data}"></d2l-insights-overdue-assignments-card>`);
-			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').value).to.deep.equal('2');
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').title).to.deep.equal('Overdue Assignments');
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').message).to.deep.equal('Users currently have one or more overdue assignments.');
-			expect(el.hasAttribute('isvalueclickable'));
+			expect(el.hasAttribute('is-value-clickable'));
 		});
 	});
 });

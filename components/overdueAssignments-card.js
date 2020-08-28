@@ -31,7 +31,7 @@ class OverdueAssignmentsCard extends Localizer(MobxLitElement) {
 
 	render() {
 		return html`
-			<d2l-labs-summary-card isvalueclickable id="d2l-insights-engagement-overdue-assignments" .data="${this.data}" card-title="${this._cardTitle}" card-value="${this._cardValue}" card-message="${this._cardMessage}"></d2l-labs-summary-card>
+			<d2l-labs-summary-card is-value-clickable id="d2l-insights-engagement-overdue-assignments" .data="${this.data}" card-title="${this._cardTitle}" card-value="${this._cardValue}" card-message="${this._cardMessage}"></d2l-labs-summary-card>
 		`;
 	}
 }

@@ -6,23 +6,8 @@ class SummaryCard extends LitElement {
 			title: { type: String, attribute: 'card-title' },
 			value: { type: String, attribute: 'card-value' },
 			message: { type: String, attribute: 'card-message' },
-			isValueClickable: { type: Boolean }
+			isvalueclickable: { type: Boolean, attribute: 'is-value-clickable' }
 		};
-	}
-	constructor() {
-		super();
-		this.title = '';
-		this.value = '';
-		this.message = '';
-		this.isValueClickable = false;
-	}
-
-	set isValueClickable(value) {
-		if (value) {
-			this.style.setProperty('--is-value-clickable', 'var(--d2l-color-celestine)');
-		} else {
-			this.style.setProperty('--is-value-clickable', 'var(--d2l-color-ferrite)');
-		}
 	}
 
 	static get styles() {
@@ -68,11 +53,19 @@ class SummaryCard extends LitElement {
 			}
 
 			.d2l-insights-summary-card-value {
-				color: var(--is-value-clickable);
+				color: var(--d2l-color-ferrite);
 				font-size: 22px;
 				font-weight: bold;
 				margin: 10px;
 				margin-inline-start: 30px;
+			}
+			.d2l-insights-summary-card-value[is-value-clickable] {
+				color: var(--d2l-color-celestine);
+				font-size: 22px;
+				font-weight: bold;
+				margin: 10px;
+				margin-inline-start: 30px;
+				cursor: pointer;
 			}
 
 			.d2l-insights-summary-card-message {
@@ -86,17 +79,22 @@ class SummaryCard extends LitElement {
 		`;
 	}
 
+	_getUsers() {
+		console.log('click'); // out of scope
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
 			<div class="d2l-insights-summary-card-body">
-			<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>
+			${this.isvalueclickable ?
+			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isvalueclickable} @click=${this._getUsers}>${this.value}</span>` :
+			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
 			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${this.message}</span>
 			</div>
 		</div>`;
 	}
-
 }
 customElements.define('d2l-labs-summary-card', SummaryCard);
