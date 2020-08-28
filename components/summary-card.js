@@ -59,13 +59,14 @@ class SummaryCard extends LitElement {
 				margin: 10px;
 				margin-inline-start: 30px;
 			}
+
 			.d2l-insights-summary-card-value[is-value-clickable] {
 				color: var(--d2l-color-celestine);
 				cursor: pointer;
 				font-size: 22px;
 				font-weight: bold;
 				margin: 10px;
-				margin-inline-start: 30px;				
+				margin-inline-start: 30px;
 			}
 
 			.d2l-insights-summary-card-message {
