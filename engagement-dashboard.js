@@ -2,7 +2,7 @@ import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/results-card.js';
 import './components/debug-card.js';
-import './components/insights-role-filter.js';
+import './components/role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
 import './components/table.js';
@@ -10,61 +10,10 @@ import './components/current-final-grade-card.js';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data } from './model/data.js';
+import { fetchData } from './model/lms.js';
+import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
 import { Localizer } from './locales/localizer';
-
-async function fetchData() {
-	const response = await fetch('/d2l/api/ap/unstable/insights/data/engagement');
-	return await response.json();
-}
-
-async function demoData() {
-	return new Promise(resolve =>
-		setTimeout(
-			() => resolve({
-				records: [
-					[1, 100, 500, 8],
-					[1, 200, 600, 20],
-					[2, 200, 700, 30],
-					[2, 300, 700, 1],
-					[2, 400, 700, 100],
-					[2, 500, 700, 44],
-					[8, 200, 700, 66],
-					[6, 600, 700, null]
-				],
-				orgUnits: [
-					[1, 'Course 1', 3, [3, 4]],
-					[2, 'Course 2', 3, [3, 4]],
-					[6, 'Course 3 has a surprisingly long name, but nonetheless this kind of thing is bound to happen sometimes and we do need to design for it. Is that not so?', 3, [7, 4]],
-					[8, 'ZCourse 4', 3, [5]],
-					[3, 'Department 1', 2, [5]],
-					[7, 'Department 2 has a longer name', 2, [5]],
-					[4, 'Semester', 25, [6606]],
-					[5, 'Faculty 1', 7, [6606]],
-					[9, 'Faculty 2', 7, [6606]],
-					[6606, 'Dev', 1, [0]]
-				],
-				users: [ // some of which are out of order
-					// UserId, First name, Last name, current final grade
-					[100,  'ATest', 'AStudent'],
-					[300,  'CTest', 'CStudent'],
-					[200,  'BTest', 'BStudent'],
-					[400,  'DTest', 'DStudent'],
-					[500,  'ETest', 'EStudent'],
-					[600,  'GTest', 'GStudent'],
-					[700,  'FTest', 'FStudent'],
-					[800,  'HTest', 'HStudent'],
-					[900,  'ITest', 'IStudent'],
-					[1000, 'KTest', 'KStudent'],
-					[1100, 'JTest', 'JStudent']
-				],
-				semesterTypeId: 25,
-				selectedOrgUnitIds: [1, 2]
-			}),
-			100
-		)
-	);
-}
 
 /**
  * @property {Boolean} useTestData - if true, use canned data; otherwise call the LMS
@@ -123,7 +72,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 
 	render() {
 		this._data = new Data({
-			recordProvider: this.isDemo ? demoData : fetchData,
+			recordProvider: this.isDemo ? fetchDemoData : fetchData,
 			cardFilters: [
 				// {
 				// 	id: 'd2l-insights-engagement-summary',

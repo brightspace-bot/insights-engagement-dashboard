@@ -1,6 +1,6 @@
 import { expect } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
-import Lms from '../../model/lms';
+import { fetchRoles } from '../../model/lms';
 
 const rolesEndpoint = '/d2l/api/lp/1.23/roles/';
 
@@ -28,8 +28,7 @@ describe('Lms', () => {
 			fetchMock.reset();
 			fetchMock.get(rolesEndpoint, mockLmsResponseData);
 
-			const sut = new Lms();
-			expect(await sut.fetchRoles()).to.deep.equal(mockLmsResponseData);
+			expect(await fetchRoles()).to.deep.equal(mockLmsResponseData);
 		});
 	});
 
