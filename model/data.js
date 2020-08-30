@@ -102,6 +102,7 @@ export class Data {
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as the lastFirstName
 		// then sort by lastFirstName
+
 		return this.users
 			.map(user => [`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`])
 			.sort((user1, user2) => {
@@ -110,7 +111,16 @@ export class Data {
 	}
 
 	get currentFinalGrades() {
-		return this.serverData.records.map(record => record[3]);
+		// Each user should show up only once per bucket, but can show up in multiple buckets
+		const baseSet = [];
+		const baseMap = this.getRecordsInView().map(record => [record[1], record[3]]);
+		baseMap.forEach(el => {
+			if (el[1] !== null) {
+				baseSet.push([el[0], Math.floor(el[1] / 10) * 10]);
+			}
+		});
+		const filteredUserArray = Array.from(new Set(baseSet.map(JSON.stringify)), JSON.parse);
+		return filteredUserArray.map(el => el[1]);
 	}
 
 	getRecordsInView(id) {

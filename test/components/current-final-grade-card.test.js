@@ -8,8 +8,6 @@ describe('d2l-insights-current-final-grade-card', () => {
 		currentFinalGrades: [2, 4, 12, 31, 43, 40, 55, null, 88]
 	};
 
-	const filteredFinalGrades =  [2, 4, 12, 31, 43, 40, 55, 88];
-
 	describe('constructor', () => {
 		it('should construct', () => {
 			runConstructor('d2l-insights-current-final-grade-card');
@@ -29,7 +27,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run
 			const title = (el.shadowRoot.querySelectorAll('div.d2l-insights-current-final-grade-title'));
 			expect(title[0].innerText).to.equal('Current Final Grade');
-			expect(el._preparedHistogramData.toString()).to.equal(filteredFinalGrades.toString());
+			expect(el._preparedHistogramData.toString()).to.equal(data.currentFinalGrades.toString());
 		});
 	});
 

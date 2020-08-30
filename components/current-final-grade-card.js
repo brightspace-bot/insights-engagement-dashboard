@@ -1,6 +1,7 @@
 import 'highcharts';
 import './chart/chart';
 import 'highcharts/modules/histogram-bellcurve';
+import 'highcharts/modules/accessibility';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -37,7 +38,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				margin-right: 10px;
 				margin-top: 10px;
 				padding: 10px;
-				width: 400px;
+				width: 500px;
 			}
 
 			.d2l-insights-current-final-grade-title {
@@ -57,14 +58,16 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		return this.localize('components.insights-current-final-grade-card.numberOfStudents');
 	}
 
+	get _chartDescriptionTextLabel() {
+		return this.localize('components.insights-current-final-grade-card.textLabel');
+	}
+
 	get _preparedHistogramData() {
-		const filteredGrades = this.data.currentFinalGrades.filter((el) => {
-			return el !== null;
-		});
-		return filteredGrades;
+		return this.data.currentFinalGrades;
 	}
 
 	render() {
+		console.log(this._preparedHistogramData);
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-final-grade-container">
@@ -91,7 +94,11 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				tickPositions: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
 				floor: 0,
 				ceiling: 100,
-				endOnTick: true
+				endOnTick: true,
+				labels: {
+					align: 'center',
+					reserveSpace: true
+				}
 			},
 			yAxis: {
 				tickAmount: 4,
@@ -117,14 +124,21 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 					minPointLength: 2, // visualize 0 points
 					pointStart: 0,
 					animation: false,
-					pointWidth: 25
+					pointWidth: 30,
+					pointPadding: 0.1,
+					accessibility: {
+						description: this._chartDescriptionTextLabel,
+						pointDescriptionFormatter: function(point) {
+							const ix = (point.index + 1) * 10,
+								val = point.y;
+							return `${ix - 10} to ${ix}, ${val}.`;
+						}
+					}
 				},
 			},
 			series: [{
 				type: 'histogram',
 				color: 'var(--d2l-color-amethyst)',
-				pointPadding: 0.15,
-				centerInCategory: true,
 				animation: false,
 				lineWidth: 1,
 				baseSeries: 1,

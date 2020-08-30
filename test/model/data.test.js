@@ -35,62 +35,62 @@ describe('Data', () => {
 			[313, 'Course 3 / Semester 3', mockOuTypes.courseOffering, [3, 13]]
 		],
 		records: [
-			[6606, 100, mockRoleIds.student], // this user has a cascading admin role on dept and sem levels
-			[6606, 200, mockRoleIds.student],
-			[6606, 300, mockRoleIds.student],
-			[6606, 400, mockRoleIds.student], // this user has a cascading admin role on dept and sem levels
+			[6606, 100, mockRoleIds.student, 22], // this user has a cascading admin role on dept and sem levels
+			[6606, 200, mockRoleIds.student, 33],
+			[6606, 300, mockRoleIds.student, 44],
+			[6606, 400, mockRoleIds.student, 55], // this user has a cascading admin role on dept and sem levels
 
 			// semesters
-			[11, 100, mockRoleIds.admin],
-			[12, 100, mockRoleIds.admin],
-			[13, 100, mockRoleIds.admin],
+			[11, 100, mockRoleIds.admin, null],
+			[12, 100, mockRoleIds.admin, null],
+			[13, 100, mockRoleIds.admin, null],
 
-			[11, 200, mockRoleIds.student],
-			[12, 200, mockRoleIds.instructor],
+			[11, 200, mockRoleIds.student, 33],
+			[12, 200, mockRoleIds.instructor, null],
 
-			[11, 300, mockRoleIds.student],
-			[12, 300, mockRoleIds.student],
-			[13, 300, mockRoleIds.student],
+			[11, 300, mockRoleIds.student, 100],
+			[12, 300, mockRoleIds.student, 100],
+			[13, 300, mockRoleIds.student, 100],
 
-			[11, 400, mockRoleIds.admin],
-			[12, 400, mockRoleIds.admin],
-			[13, 400, mockRoleIds.admin],
+			[11, 400, mockRoleIds.admin, null],
+			[12, 400, mockRoleIds.admin, null],
+			[13, 400, mockRoleIds.admin, null],
 
 			// dept 1
-			[1001, 100, mockRoleIds.admin],
-			[1001, 200, mockRoleIds.student],
-			[1001, 300, mockRoleIds.student],
+			[1001, 100, mockRoleIds.admin, null],
+			[1001, 200, mockRoleIds.student, 73],
+			[1001, 300, mockRoleIds.student, 73],
 			// courses
-			[1, 100, mockRoleIds.admin],
-			[1, 200, mockRoleIds.instructor],
-			[1, 300, mockRoleIds.student],
-			[2, 100, mockRoleIds.admin],
-			[2, 200, mockRoleIds.student],
-			[2, 300, mockRoleIds.student],
+			[1, 100, mockRoleIds.admin, null],
+			[1, 200, mockRoleIds.instructor, null],
+			[1, 300, mockRoleIds.student, 41],
+			[2, 100, mockRoleIds.admin, null],
+			[2, 200, mockRoleIds.student, 55],
+			[2, 300, mockRoleIds.student, 39],
 			// course 1 offerings
-			[111, 100, mockRoleIds.admin],
-			[111, 200, mockRoleIds.student],
-			[112, 100, mockRoleIds.admin],
-			[112, 200, mockRoleIds.instructor], // this person was promoted from student to instructor
-			[113, 100, mockRoleIds.admin],
-			[113, 300, mockRoleIds.student],
+			[111, 100, mockRoleIds.admin, null],
+			[111, 200, mockRoleIds.student, 93],
+			[112, 100, mockRoleIds.admin, null],
+			[112, 200, mockRoleIds.instructor, null], // this person was promoted from student to instructor
+			[113, 100, mockRoleIds.admin, null],
+			[113, 300, mockRoleIds.student, 75],
 			// course 2 offerings
-			[212, 100, mockRoleIds.admin],
-			[212, 200, mockRoleIds.student],
-			[212, 300, mockRoleIds.instructor],
+			[212, 100, mockRoleIds.admin, null],
+			[212, 200, mockRoleIds.student, 84],
+			[212, 300, mockRoleIds.instructor, null],
 
 			// dept 2
-			[1002, 200, mockRoleIds.student],
-			[1002, 300, mockRoleIds.student],
-			[1002, 400, mockRoleIds.admin],
-			[3, 200, mockRoleIds.student],
-			[3, 300, mockRoleIds.student],
-			[3, 400, mockRoleIds.admin],
-			[311, 200, mockRoleIds.student],
-			[311, 300, mockRoleIds.student],
-			[311, 400, mockRoleIds.admin],
-			[313, 300, mockRoleIds.student],
-			[313, 400, mockRoleIds.admin],
+			[1002, 200, mockRoleIds.student, 98],
+			[1002, 300, mockRoleIds.student, 89],
+			[1002, 400, mockRoleIds.admin, null],
+			[3, 200, mockRoleIds.student, 98],
+			[3, 300, mockRoleIds.student, 88],
+			[3, 400, mockRoleIds.admin, null],
+			[311, 200, mockRoleIds.student, 99],
+			[311, 300, mockRoleIds.student, 42],
+			[311, 400, mockRoleIds.admin, null],
+			[313, 300, mockRoleIds.student, 66],
+			[313, 400, mockRoleIds.admin, null],
 		],
 		users: [
 			[100, 'John', 'Lennon'],
@@ -211,6 +211,13 @@ describe('Data', () => {
 			];
 
 			expect(sut.userDataForDisplay).to.deep.equal(expected);
+		});
+	});
+
+	describe('currentFinalGrades', () => {
+		it('should limit to one user per bucket', async() => {
+			const expected = [20, 30, 40, 50, 100, 70, 70, 50, 30, 90, 80, 80, 60];
+			expect(sut.currentFinalGrades.toString()).to.deep.equal(expected.toString());
 		});
 	});
 });

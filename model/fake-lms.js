@@ -4,7 +4,7 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds }) {
 	const demoData = {
 		records: [
 			[1, 100, 500, 33],
-			[1, 200, 600, 44],
+			[1, 200, 600, 33],
 			[2, 200, 700, 42],
 			[2, 300, 700, 3],
 			[2, 400, 700, 100],
