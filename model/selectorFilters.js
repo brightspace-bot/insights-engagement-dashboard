@@ -12,12 +12,12 @@ function isFilterCleared(oldSelectedIds, newSelectedIds) {
 export class RoleSelectorFilter {
 	constructor({ selectedRolesIds, isRecordsTruncated }) {
 		this._latestServerQuery = selectedRolesIds || [];
-		this.roleIds = selectedRolesIds || [];
+		this.selected = selectedRolesIds || [];
 		this._isRecordsTruncated = isRecordsTruncated;
 	}
 
 	shouldInclude(record) {
-		return !hasSelections(this.roleIds) || this.roleIds.includes(record[RECORD.ROLE_ID]);
+		return !hasSelections(this.selected) || this.selected.includes(record[RECORD.ROLE_ID]);
 	}
 
 	shouldReloadFromServer(newRoleIds) {
@@ -33,18 +33,18 @@ export class RoleSelectorFilter {
 export class SemesterSelectorFilter {
 	constructor({ selectedSemestersIds, isRecordsTruncated, isOrgUnitsTruncated }, orgUnitAncestors) {
 		this._latestServerQuery = selectedSemestersIds || [];
-		this.semesterIds = selectedSemestersIds || [];
+		this.selected = selectedSemestersIds || [];
 		this._isRecordsTruncated = isRecordsTruncated;
 		this._isOrgUnitsTruncated = isOrgUnitsTruncated;
 		this._orgUnitAncestors = orgUnitAncestors;
 	}
 
 	shouldInclude(record) {
-		if (!hasSelections(this.semesterIds) || !this._orgUnitAncestors) {
+		if (!hasSelections(this.selected) || !this._orgUnitAncestors) {
 			return true;
 		}
 
-		return this._orgUnitAncestors.hasAncestorsInList(record[RECORD.ORG_UNIT_ID], this.semesterIds);
+		return this._orgUnitAncestors.hasAncestorsInList(record[RECORD.ORG_UNIT_ID], this.selected);
 	}
 
 	shouldReloadFromServer(newSemesterIds) {
@@ -63,17 +63,17 @@ export class SemesterSelectorFilter {
 export class OrgUnitSelectorFilter {
 	constructor({ selectedOrgUnitIds, isRecordsTruncated }, orgUnitAncestors) {
 		this._latestServerQuery = selectedOrgUnitIds || [];
-		this.orgUnitIds = selectedOrgUnitIds || [];
+		this.selected = selectedOrgUnitIds || [];
 		this._isRecordsTruncated = isRecordsTruncated;
 		this._orgUnitAncestors = orgUnitAncestors;
 	}
 
 	shouldInclude(record) {
-		if (!hasSelections(this.orgUnitIds) || !this._orgUnitAncestors) {
+		if (!hasSelections(this.selected) || !this._orgUnitAncestors) {
 			return true;
 		}
 
-		return this._orgUnitAncestors.hasAncestorsInList(record[RECORD.ORG_UNIT_ID], this.orgUnitIds);
+		return this._orgUnitAncestors.hasAncestorsInList(record[RECORD.ORG_UNIT_ID], this.selected);
 	}
 
 	shouldReloadFromServer(newOrgUnitIds) {
@@ -88,13 +88,13 @@ export class OrgUnitSelectorFilter {
 }
 
 decorate(RoleSelectorFilter, {
-	roleIds: observable
+	selected: observable
 });
 
 decorate(SemesterSelectorFilter, {
-	semesterIds: observable
+	selected: observable
 });
 
 decorate(OrgUnitSelectorFilter, {
-	orgUnitIds: observable
+	selected: observable
 });

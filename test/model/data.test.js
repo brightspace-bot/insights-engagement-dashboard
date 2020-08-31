@@ -1,5 +1,7 @@
+import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from '../../model/selectorFilters';
 import { Data } from '../../model/data.js';
 import { expect } from '@open-wc/testing';
+import sinon from 'sinon/pkg/sinon-esm.js';
 
 const mockOuTypes = {
 	organization: 0,
@@ -127,6 +129,102 @@ describe('Data', () => {
 		await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
 	});
 
+	describe('applyRoleFilter', () => {
+		it('should cause a reload from server if filter says it should reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to true to force a reload
+			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: true });
+			sut.applyRoleFilters([mockRoleIds.student]);
+
+			sinon.assert.calledWithMatch(recordProvider, sinon.match({
+				roleIds: [mockRoleIds.student],
+				semesterIds: [],
+				orgUnitIds: []
+			}));
+		});
+
+		it('should not cause a reload from server if filter says it should not reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
+			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: false });
+			sut.applyRoleFilters([mockRoleIds.student]);
+
+			sinon.assert.notCalled(recordProvider);
+		});
+	});
+
+	describe('applySemesterFilter', () => {
+		it('should cause a reload from server if filter says it should reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to true to force a reload
+			sut._selectorFilters.semester = new SemesterSelectorFilter({
+				selectedSemestersIds: null,
+				isRecordsTruncated: true
+			}, null);
+			sut.applySemesterFilters([11]);
+
+			sinon.assert.calledWithMatch(recordProvider, sinon.match({
+				roleIds: [],
+				semesterIds: [11],
+				orgUnitIds: []
+			}));
+		});
+
+		it('should not cause a reload from server if filter says it should not reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
+			sut._selectorFilters.semester = new SemesterSelectorFilter({
+				selectedSemestersIds: null,
+				isRecordsTruncated: false
+			}, null);
+			sut.applySemesterFilters([mockRoleIds.student]);
+
+			sinon.assert.notCalled(recordProvider);
+		});
+	});
+
+	describe('applyOrgUnitFilter', () => {
+		it('should cause a reload from server if filter says it should reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to true to force a reload
+			sut._selectorFilters.orgUnit = new OrgUnitSelectorFilter({
+				selectedOrgUnitIds: null,
+				isRecordsTruncated: true
+			}, null);
+			sut.applyOrgUnitFilters([1001]);
+
+			sinon.assert.calledWithMatch(recordProvider, sinon.match({
+				roleIds: [],
+				semesterIds: [],
+				orgUnitIds: [1001]
+			}));
+		});
+
+		it('should not cause a reload from server if filter says it should not reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
+			sut._selectorFilters.orgUnit = new OrgUnitSelectorFilter({
+				selectedSemestersIds: null,
+				isRecordsTruncated: false
+			}, null);
+			sut.applyOrgUnitFilters([1001]);
+
+			sinon.assert.notCalled(recordProvider);
+		});
+	});
+
 	describe('get records', () => {
 		it('should return all records when no filters are applied', async() => {
 			expect(sut.records).to.deep.equal(serverData.records);
@@ -140,7 +238,6 @@ describe('Data', () => {
 			});
 
 			sut.applyOrgUnitFilters(orgUnitFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -153,7 +250,6 @@ describe('Data', () => {
 			});
 
 			sut.applySemesterFilters(semesterFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -165,7 +261,6 @@ describe('Data', () => {
 			});
 
 			sut.applyRoleFilters(roleFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -179,11 +274,8 @@ describe('Data', () => {
 			);
 
 			sut.applyOrgUnitFilters(orgUnitFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 			sut.applySemesterFilters(semesterFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 			sut.applyRoleFilters(roleFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -202,7 +294,6 @@ describe('Data', () => {
 			});
 
 			sut.applyOrgUnitFilters(orgUnitFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -215,7 +306,6 @@ describe('Data', () => {
 			});
 
 			sut.applySemesterFilters(semesterFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -228,7 +318,6 @@ describe('Data', () => {
 			});
 
 			sut.applyRoleFilters(roleFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -243,11 +332,8 @@ describe('Data', () => {
 			});
 
 			sut.applyOrgUnitFilters(orgUnitFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 			sut.applySemesterFilters(semesterFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 			sut.applyRoleFilters(roleFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -273,7 +359,6 @@ describe('Data', () => {
 			];
 
 			sut.applyRoleFilters(roleFilters);
-			await new Promise(resolve => setTimeout(resolve, 0)); // wait for it to "reload data from server"
 
 			expect(sut.userDataForDisplay).to.deep.equal(expectedUsers);
 		});

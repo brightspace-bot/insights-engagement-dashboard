@@ -53,9 +53,11 @@ export class Data {
 			selectedSemestersIds: []
 		};
 
-		this.roleFilter = new RoleSelectorFilter(this.serverData);
-		this.semesterFilter = new SemesterSelectorFilter(this.serverData, null);
-		this.orgUnitFilter = new OrgUnitSelectorFilter(this.serverData, null);
+		this._selectorFilters = {
+			role: new RoleSelectorFilter(this.serverData),
+			semester: new SemesterSelectorFilter(this.serverData, this._orgUnitAncestors),
+			orgUnit: new OrgUnitSelectorFilter(this.serverData, this._orgUnitAncestors)
+		};
 
 		this.cardFilters = {};
 
@@ -74,9 +76,9 @@ export class Data {
 
 	loadData({ newRoleIds = null, newSemesterIds = null, newOrgUnitIds = null }) {
 		const filters = {
-			roleIds: newRoleIds || this.roleFilter.roleIds,
-			semesterIds: newSemesterIds || this.semesterFilter.semesterIds,
-			orgUnitIds: newOrgUnitIds || this.orgUnitFilter.orgUnitIds
+			roleIds: newRoleIds || this._selectorFilters.role.selected,
+			semesterIds: newSemesterIds || this._selectorFilters.semester.selected,
+			orgUnitIds: newOrgUnitIds || this._selectorFilters.orgUnit.selected
 		};
 		this.recordProvider(filters).then(data => this.onServerDataReload(data));
 	}
@@ -88,41 +90,41 @@ export class Data {
 		this.isLoading = false;
 		this.serverData = newServerData;
 
-		this.roleFilter = new RoleSelectorFilter(newServerData);
-		this.semesterFilter = new SemesterSelectorFilter(newServerData, this._orgUnitAncestors);
-		this.orgUnitFilter = new OrgUnitSelectorFilter(newServerData, this._orgUnitAncestors);
+		this._selectorFilters = {
+			role: new RoleSelectorFilter(this.serverData),
+			semester: new SemesterSelectorFilter(this.serverData, this._orgUnitAncestors),
+			orgUnit: new OrgUnitSelectorFilter(this.serverData, this._orgUnitAncestors)
+		};
 	}
 
 	applyRoleFilters(newRoleIds) {
-		if (this.roleFilter.shouldReloadFromServer(newRoleIds)) {
+		if (this._selectorFilters.role.shouldReloadFromServer(newRoleIds)) {
 			this.loadData({ newRoleIds });
 		} else {
-			this.roleFilter.roleIds = newRoleIds;
+			this._selectorFilters.role.selected = newRoleIds;
 		}
 	}
 
 	applySemesterFilters(newSemesterIds) {
-		if (this.semesterFilter.shouldReloadFromServer(newSemesterIds)) {
+		if (this._selectorFilters.semester.shouldReloadFromServer(newSemesterIds)) {
 			this.loadData({ newSemesterIds });
 		} else {
-			this.semesterFilter.semesterIds = newSemesterIds;
+			this._selectorFilters.semester.selected = newSemesterIds;
 		}
 	}
 
 	applyOrgUnitFilters(newOrgUnitIds) {
-		if (this.orgUnitFilter.shouldReloadFromServer(newOrgUnitIds)) {
+		if (this._selectorFilters.orgUnit.shouldReloadFromServer(newOrgUnitIds)) {
 			this.loadData({ newOrgUnitIds });
 		} else {
-			this.orgUnitFilter.orgUnitIds = newOrgUnitIds;
+			this._selectorFilters.orgUnit.selected = newOrgUnitIds;
 		}
 	}
 
 	// @computed
 	get records() {
 		return this.serverData.records.filter(record => {
-			return this.roleFilter.shouldInclude(record)
-				&& this.semesterFilter.shouldInclude(record)
-				&& this.orgUnitFilter.shouldInclude(record);
+			return Object.values(this._selectorFilters).every(filter => filter.shouldInclude(record));
 		});
 	}
 

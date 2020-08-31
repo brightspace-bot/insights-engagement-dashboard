@@ -49,7 +49,7 @@ describe('selectorFilters', () => {
 				expect(sut.shouldReloadFromServer(newRoleIds)).to.be.false;
 
 				// apply local changes - make sure it won't reload from server if it doesn't need to
-				sut.roleIds = [1, 3, 5];
+				sut.selected = [1, 3, 5];
 				expect(sut.shouldReloadFromServer([1, 3, 5])).to.be.false;
 				expect(sut.shouldReloadFromServer([1, 3, 5, 7])).to.be.false;
 				expect(sut.shouldReloadFromServer([])).to.be.false;
@@ -72,7 +72,7 @@ describe('selectorFilters', () => {
 				const sut = new RoleSelectorFilter({ selectedRolesIds: [1, 3, 5], isRecordsTruncated: false });
 
 				// apply local changes
-				sut.roleIds = [1, 3];
+				sut.selected = [1, 3];
 				expect(sut.shouldReloadFromServer([1, 3])).to.be.false;
 				// if it were using the newly applied local selection, this next line would be true
 				expect(sut.shouldReloadFromServer([1, 3, 5])).to.be.false;
@@ -174,7 +174,7 @@ describe('selectorFilters', () => {
 				expect(sut.shouldReloadFromServer(newSemesterIds)).to.be.false;
 
 				// apply local changes - make sure it won't reload from server if it doesn't need to
-				sut.semesterIds = [1, 3, 5];
+				sut.selected = [1, 3, 5];
 				expect(sut.shouldReloadFromServer([1, 3, 5])).to.be.false;
 				expect(sut.shouldReloadFromServer([1, 3, 5, 7])).to.be.false;
 				expect(sut.shouldReloadFromServer([])).to.be.false;
@@ -209,7 +209,7 @@ describe('selectorFilters', () => {
 				}, null);
 
 				// apply local changes
-				sut.semesterIds = [1, 3];
+				sut.selected = [1, 3];
 				expect(sut.shouldReloadFromServer([1, 3])).to.be.false;
 				// if it were using the newly applied local selection, this next line would be true
 				expect(sut.shouldReloadFromServer([1, 3, 5])).to.be.false;
@@ -299,7 +299,7 @@ describe('selectorFilters', () => {
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.false;
 
 				// apply local changes - make sure it won't reload from server if it doesn't need to
-				sut.orgUnitIds = [1, 3, 5];
+				sut.selected = [1, 3, 5];
 				expect(sut.shouldReloadFromServer([1, 3, 5])).to.be.false;
 				expect(sut.shouldReloadFromServer([1, 3, 5, 7])).to.be.false;
 				expect(sut.shouldReloadFromServer([])).to.be.false;
@@ -329,7 +329,7 @@ describe('selectorFilters', () => {
 				}, mockOrgUnitAncestors);
 
 				// apply local changes
-				sut.orgUnitIds = [1, 3];
+				sut.selected = [1, 3];
 				expect(sut.shouldReloadFromServer([1, 3])).to.be.false;
 				// if it were using the newly applied local selection, this next line would be true
 				expect(sut.shouldReloadFromServer([1, 3, 5])).to.be.false;
