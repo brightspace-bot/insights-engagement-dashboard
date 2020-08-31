@@ -4,6 +4,7 @@ export default {
 	"components.insights-engagement-dashboard.title": "Engagement Dashboard",
 	"components.insights-engagement-dashboard.summaryHeading": "Summary View",
 	"components.insights-engagement-dashboard.resultsHeading": "Results",
+	"components.insights-engagement-dashboard.overdueAssignmentsHeading": "Overdue Assignments",
 
 	"components.insights-role-filter.name": "Role",
 
@@ -35,6 +36,7 @@ export default {
 
 	"components.insights-current-final-grade-card.currentGrade": "Current Grade",
 	"components.insights-current-final-grade-card.numberOfStudents": "Number of Students",
-	"components.insights-current-final-grade-card.textLabel": "This chart displays the current final grade for each user per course"
+	"components.insights-current-final-grade-card.textLabel": "This chart displays the current final grade for each user per course",
 
+	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments."
 };

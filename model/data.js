@@ -6,7 +6,8 @@ const RECORD = {
 	ORG_UNIT_ID: 0,
 	USER_ID: 1,
 	ROLE_ID: 2,
-	CURRENT_FINAL_GRADE: 3
+	OVERDUE: 3,
+	CURRENT_FINAL_GRADE: 4
 };
 
 const USER = {
@@ -113,7 +114,7 @@ export class Data {
 	get currentFinalGrades() {
 		// Each user should show up only once per bucket, but can show up in multiple buckets
 		const baseSet = [];
-		const baseMap = this.getRecordsInView().map(record => [record[1], record[3]]);
+		const baseMap = this.getRecordsInView().map(record => [record[RECORD.USER_ID], record[RECORD.CURRENT_FINAL_GRADE]]);
 		baseMap.forEach(el => {
 			if (el[1] !== null) {
 				baseSet.push([el[0], Math.floor(el[1] / 10) * 10]);
@@ -121,6 +122,16 @@ export class Data {
 		});
 		const filteredUserArray = Array.from(new Set(baseSet.map(JSON.stringify)), JSON.parse);
 		return filteredUserArray.map(el => el[1]);
+	}
+
+	get usersCountsWithOverdueAssignments() {
+		return this.getRecordsInView()
+			.reduce((acc, record) => {
+				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
+					acc.add(record[RECORD.USER_ID]);
+				}
+				return acc;
+			}, 	new Set()).size;
 	}
 
 	getRecordsInView(id) {
@@ -174,6 +185,7 @@ decorate(Data, {
 	records: computed,
 	users: computed,
 	userDataForDisplay: computed,
+	usersCountsWithOverdueAssignments: computed,
 	selectorFilters: observable,
 	cardFilters: observable,
 	isLoading: observable,
