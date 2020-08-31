@@ -220,7 +220,7 @@ describe('Data', () => {
 
 	describe('currentFinalGrades', () => {
 		it('should limit to one user per bucket', async() => {
-			const expected = [20, 30, 40, 50, 100, 70, 70, 0, 50, 30, 90, 80, 80, 60];
+			const expected = [20, 30, 40, 50, 30, 100, 100, 100, 70, 70, 0, 50, 30, 90, 70, 80, 90, 80, 90, 80, 90, 40, 60];
 			expect(sut.currentFinalGrades.toString()).to.deep.equal(expected.toString());
 		});
 	});

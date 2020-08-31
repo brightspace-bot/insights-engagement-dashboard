@@ -112,14 +112,9 @@ export class Data {
 	}
 
 	get currentFinalGrades() {
-		// Each user should show up only once per bucket, but can show up in multiple buckets
-		const baseSet = [];
-		this.getRecordsInView().forEach(el => {
-			if (el[RECORD.CURRENT_FINAL_GRADE] !== null) {
-				baseSet.push([el[RECORD.USER_ID], Math.floor(el[RECORD.CURRENT_FINAL_GRADE] / 10) * 10]);
-			}
-		});
-		return Array.from(new Set(baseSet.map(JSON.stringify)), JSON.parse).map(el => el[1]);
+		return this.getRecordsInView()
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null)
+			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
 	}
 
 	get usersCountsWithOverdueAssignments() {
