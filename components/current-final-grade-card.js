@@ -91,14 +91,15 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				allowDecimals: false,
 				alignTicks: false,
 				tickWidth: 0, // remove tick marks
-				tickPositions: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				tickPositions: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
 				floor: 0,
 				ceiling: 100,
 				endOnTick: true,
 				labels: {
 					align: 'center',
 					reserveSpace: true
-				}
+				},
+				width: '108%',
 			},
 			yAxis: {
 				tickAmount: 4,
@@ -124,8 +125,8 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 					minPointLength: 2, // visualize 0 points
 					pointStart: 0,
 					animation: false,
-					pointWidth: 30,
-					pointPadding: 0.1,
+					pointWidth: 37,
+					pointPadding: 0.60,
 					accessibility: {
 						description: this._chartDescriptionTextLabel,
 						pointDescriptionFormatter: function(point) {
