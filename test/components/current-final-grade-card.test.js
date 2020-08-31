@@ -26,7 +26,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 			const el = await fixture(html`<d2l-insights-current-final-grade-card .data="${data}"></d2l-insights-current-final-grade-card>`);
 			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run
 			const title = (el.shadowRoot.querySelectorAll('div.d2l-insights-current-final-grade-title'));
-			expect(title[0].innerText).to.equal('Current Final Grade');
+			expect(title[0].innerText).to.equal('Current Grade');
 			expect(el._preparedHistogramData.toString()).to.equal(data.currentFinalGrades.toString());
 		});
 	});

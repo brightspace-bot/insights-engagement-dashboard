@@ -33,7 +33,7 @@ export default {
 	"components.insights-users-table.totalUsers": "Total Users: {num}",
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
 
-	"components.insights-current-final-grade-card.currentFinalGrade": "Current Final Grade",
+	"components.insights-current-final-grade-card.currentGrade": "Current Grade",
 	"components.insights-current-final-grade-card.numberOfStudents": "Number of Students",
 	"components.insights-current-final-grade-card.textLabel": "This chart displays the current final grade for each user per course"
 

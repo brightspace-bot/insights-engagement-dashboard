@@ -51,7 +51,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get _cardTitle() {
-		return this.localize('components.insights-current-final-grade-card.currentFinalGrade');
+		return this.localize('components.insights-current-final-grade-card.currentGrade');
 	}
 
 	get _numberOfStudentsText() {
