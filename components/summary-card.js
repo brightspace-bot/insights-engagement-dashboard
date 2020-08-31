@@ -1,12 +1,12 @@
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 
 class SummaryCard extends LitElement {
-
 	static get properties() {
 		return {
 			title: { type: String, attribute: 'card-title' },
 			value: { type: String, attribute: 'card-value' },
-			message: { type: String, attribute: 'card-message' }
+			message: { type: String, attribute: 'card-message' },
+			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' }
 		};
 	}
 
@@ -60,6 +60,15 @@ class SummaryCard extends LitElement {
 				margin-inline-start: 30px;
 			}
 
+			.d2l-insights-summary-card-value[is-value-clickable] {
+				color: var(--d2l-color-celestine);
+				cursor: pointer;
+				font-size: 22px;
+				font-weight: bold;
+				margin: 10px;
+				margin-inline-start: 30px;
+			}
+
 			.d2l-insights-summary-card-message {
 				color: var(--d2l-color-ferrite);
 				display: flex-wrap;
@@ -71,17 +80,22 @@ class SummaryCard extends LitElement {
 		`;
 	}
 
+	_getUsers() {
+		console.log('click'); // out of scope
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
 			<div class="d2l-insights-summary-card-body">
-				<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>
-				<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${this.message}</span>
+			${this.isValueClickable ?
+			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._getUsers}>${this.value}</span>` :
+			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
+			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${this.message}</span>
 			</div>
 		</div>`;
 	}
-
 }
 customElements.define('d2l-labs-summary-card', SummaryCard);
