@@ -6,7 +6,7 @@ class SummaryCard extends LitElement {
 			title: { type: String, attribute: 'card-title' },
 			value: { type: String, attribute: 'card-value' },
 			message: { type: String, attribute: 'card-message' },
-			isvalueclickable: { type: Boolean, attribute: 'is-value-clickable' }
+			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' }
 		};
 	}
 
@@ -90,8 +90,8 @@ class SummaryCard extends LitElement {
 		return html`<div class="d2l-insights-summary-card">
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
 			<div class="d2l-insights-summary-card-body">
-			${this.isvalueclickable ?
-			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isvalueclickable} @click=${this._getUsers}>${this.value}</span>` :
+			${this.isValueClickable ?
+			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._getUsers}>${this.value}</span>` :
 			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
 			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${this.message}</span>
 			</div>

@@ -27,7 +27,7 @@ describe('d2l-insights-overdue-assignments-card', () => {
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').value).to.deep.equal('2');
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').title).to.deep.equal('Overdue Assignments');
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').message).to.deep.equal('Users currently have one or more overdue assignments.');
-			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').isvalueclickable).to.deep.equal(true);
+			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').isValueClickable).to.deep.equal(true);
 		});
 	});
 });
