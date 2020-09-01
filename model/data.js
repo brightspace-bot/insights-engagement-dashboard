@@ -76,8 +76,6 @@ export class Data {
 		this.selectorFilters.semesterIds = semesterIds;
 	}
 
-	// the reason for separating this from getRecordsInView is to try not to reapply the top level filters if
-	// we don't need to.
 	get records() {
 		return this.serverData.records.filter(record => {
 			const ancestors = this._orgUnitAncestors.getAncestorsFor(record[RECORD.ORG_UNIT_ID]);
@@ -130,7 +128,7 @@ export class Data {
 	getRecordsInView(id) {
 		// if id is omitted, all applied filters will be used
 		const otherFilters = Object.values(this.cardFilters).filter(f => f.isApplied && f.id !== id);
-		return this.serverData.records.filter(r => otherFilters.every(f => r[f.field] < f.threshold));
+		return this.records.filter(r => otherFilters.every(f => r[f.field] < f.threshold));
 	}
 
 	getStats(id) {
