@@ -1,7 +1,4 @@
-import 'highcharts';
 import './chart/chart';
-import 'highcharts/modules/histogram-bellcurve';
-import 'highcharts/modules/accessibility';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -67,7 +64,6 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	render() {
-		console.log(this._preparedHistogramData);
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-final-grade-container">
