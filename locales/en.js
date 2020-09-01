@@ -33,5 +33,9 @@ export default {
 	"components.insights-users-table.lastFirstName": "Last Name, First Name",
 	"components.insights-users-table.totalUsers": "Total Users: {num}",
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
-	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments."
+	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
+
+	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
+	"components.insights-time-in-content-vs-grade-card.currentFinalGrade": "Current Final Grade (%)",
+	"components.insights-time-in-content-vs-grade-card.timeInContent": "Time in Content (mins)"
 };
