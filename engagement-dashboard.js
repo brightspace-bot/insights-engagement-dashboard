@@ -7,6 +7,7 @@ import './components/role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
 import './components/table.js';
+import './components/current-final-grade-card.js';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { Data } from './model/data.js';
@@ -105,6 +106,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
+					<d2l-insights-current-final-grade-card .data="${this._data}"></d2l-insights-current-final-grade-card>
 					<d2l-insights-overdue-assignments-card .data="${this._data}"></d2l-insights-overdue-assignments-card>
 					<d2l-insights-debug-card .data="${this._data}" metric-to-display="recordsLength" title="Records" message="number of records within filter parameters"></d2l-insights-debug-card>
 				</div>

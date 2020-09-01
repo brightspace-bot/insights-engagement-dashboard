@@ -1,4 +1,7 @@
 import 'highcharts';
+import 'highcharts/modules/histogram-bellcurve';
+import 'highcharts/modules/accessibility';
+
 import { html, LitElement } from 'lit-element';
 /**
  * based on highcharts-webcomponent (npm) - main modifications: convert to plain .js, fix import, fix typing,

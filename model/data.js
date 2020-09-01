@@ -6,7 +6,8 @@ const RECORD = {
 	ORG_UNIT_ID: 0,
 	USER_ID: 1,
 	ROLE_ID: 2,
-	OVERDUE: 3
+	OVERDUE: 3,
+	CURRENT_FINAL_GRADE: 4
 };
 
 const USER = {
@@ -102,11 +103,18 @@ export class Data {
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as the lastFirstName
 		// then sort by lastFirstName
+
 		return this.users
 			.map(user => [`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`])
 			.sort((user1, user2) => {
 				return user1[0].localeCompare(user2[0]);
 			});
+	}
+
+	get currentFinalGrades() {
+		return this.getRecordsInView()
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null)
+			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
 	}
 
 	get usersCountsWithOverdueAssignments() {
