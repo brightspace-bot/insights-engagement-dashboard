@@ -1,4 +1,3 @@
-
 import { CHILDREN, ID, PARENTS, Tree, TYPE } from './tree-filter.js';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
@@ -33,7 +32,8 @@ class OuFilter extends Localizer(MobxLitElement) {
 		return html`<div class="ou-filter" ?loading="${this.data.isLoading}">
 			<d2l-insights-tree-filter
 				.tree="${this._tree}"
-				name="${this.localize('components.org-unit-filter.name')}"
+				opener-text="${this.localize('components.org-unit-filter.name-all-selected')}"
+				opener-text-selected="${this.localize('components.org-unit-filter.name-some-selected')}"
 				@d2l-insights-tree-filter-select="${this._onChange}"
 			>
 			</d2l-insights-tree-filter>

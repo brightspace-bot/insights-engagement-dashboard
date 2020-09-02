@@ -8,7 +8,8 @@ export default {
 
 	"components.insights-role-filter.name": "Role",
 
-	"components.org-unit-filter.name": "Org Unit",
+	"components.org-unit-filter.name-all-selected": "Org Unit: All",
+	"components.org-unit-filter.name-some-selected": "Org Unit: Selections Applied",
 
 	"components.semester-filter.name": "Semester",
 	"components.semester-filter.semester-name": "{orgUnitName} (Id: {orgUnitId})",
