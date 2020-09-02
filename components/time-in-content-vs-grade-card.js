@@ -20,7 +20,6 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	static get styles() {
 		return css`
 			:host {
-				display: inline-block;
 				border-color: var(--d2l-color-mica);
 				border-radius: 15px;
 				border-style: solid;
