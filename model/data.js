@@ -7,7 +7,8 @@ const RECORD = {
 	USER_ID: 1,
 	ROLE_ID: 2,
 	OVERDUE: 3,
-	CURRENT_FINAL_GRADE: 4
+	CURRENT_FINAL_GRADE: 4,
+	TIME_IN_CONTENT: 5
 };
 
 const USER = {
@@ -113,6 +114,12 @@ export class Data {
 		return this.getRecordsInView()
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null)
 			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
+	}
+
+	get currentFinalGradesVsTimeInContent() {
+		return  this.getRecordsInView()
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.TIME_IN_CONTENT] !== 0)
+			.map(record => [record[RECORD.CURRENT_FINAL_GRADE], Math.floor(record[RECORD.TIME_IN_CONTENT] / 60)]); // we get time from the server in sec
 	}
 
 	get usersCountsWithOverdueAssignments() {

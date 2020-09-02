@@ -1,6 +1,5 @@
 import 'highcharts';
 import './chart/chart';
-import 'highcharts/modules/accessibility';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -60,11 +59,10 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get _preparedPlotData() {
-		return  [[30, 30], [60, 75], [90, 50], [120, 80]]; //test data TODO;
+		return this.data.currentFinalGradesVsTimeInContent;
 	}
 
 	render() {
-		console.log(this._preparedPlotData);
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-time-in-content-vs-grade-container">
@@ -142,6 +140,11 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				data: this._preparedPlotData,
 				marker: {
 					radius: 5
+				},
+				accessibility: {
+					pointDescriptionFormatter: function(point) {
+						return `Grade ${point.y}% for time in content ${point.x} mins.`;
+					}
 				}
 			}]
 		};
