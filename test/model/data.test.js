@@ -1,5 +1,7 @@
+import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from '../../model/selectorFilters';
 import { Data } from '../../model/data.js';
 import { expect } from '@open-wc/testing';
+import sinon from 'sinon/pkg/sinon-esm.js';
 
 const mockOuTypes = {
 	organization: 0,
@@ -101,12 +103,22 @@ describe('Data', () => {
 			[200, 'Paul', 'McCartney'],
 			[300, 'George', 'Harrison'],
 			[400, 'Ringo', 'Starr']
-		]
+		],
+		selectedRolesIds: null,
+		selectedSemestersIds: null,
+		selectedOrgUnitIds: null,
+		isRecordsTruncated: false,
+		isOrgUnitsTruncated: false
 	};
 
-	const recordProvider = async() => {
+	const recordProvider = async({ roleIds = null, semesterIds = null, orgUnitIds = null }) => {
 		return new Promise((resolve) => {
-			resolve(serverData);
+			resolve({
+				...serverData,
+				selectedRolesIds: roleIds,
+				selectedSemestersIds: semesterIds,
+				selectedOrgUnitIds: orgUnitIds
+			});
 		});
 	};
 
@@ -115,6 +127,102 @@ describe('Data', () => {
 	beforeEach(async() => {
 		sut = new Data({ recordProvider, cardFilters });
 		await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+	});
+
+	describe('applyRoleFilter', () => {
+		it('should cause a reload from server if filter says it should reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to true to force a reload
+			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: true });
+			sut.applyRoleFilters([mockRoleIds.student]);
+
+			sinon.assert.calledWithMatch(recordProvider, sinon.match({
+				roleIds: [mockRoleIds.student],
+				semesterIds: [],
+				orgUnitIds: []
+			}));
+		});
+
+		it('should not cause a reload from server if filter says it should not reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
+			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: false });
+			sut.applyRoleFilters([mockRoleIds.student]);
+
+			sinon.assert.notCalled(recordProvider);
+		});
+	});
+
+	describe('applySemesterFilter', () => {
+		it('should cause a reload from server if filter says it should reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to true to force a reload
+			sut._selectorFilters.semester = new SemesterSelectorFilter({
+				selectedSemestersIds: null,
+				isRecordsTruncated: true
+			}, null);
+			sut.applySemesterFilters([11]);
+
+			sinon.assert.calledWithMatch(recordProvider, sinon.match({
+				roleIds: [],
+				semesterIds: [11],
+				orgUnitIds: []
+			}));
+		});
+
+		it('should not cause a reload from server if filter says it should not reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
+			sut._selectorFilters.semester = new SemesterSelectorFilter({
+				selectedSemestersIds: null,
+				isRecordsTruncated: false
+			}, null);
+			sut.applySemesterFilters([mockRoleIds.student]);
+
+			sinon.assert.notCalled(recordProvider);
+		});
+	});
+
+	describe('applyOrgUnitFilter', () => {
+		it('should cause a reload from server if filter says it should reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to true to force a reload
+			sut._selectorFilters.orgUnit = new OrgUnitSelectorFilter({
+				selectedOrgUnitIds: null,
+				isRecordsTruncated: true
+			}, null);
+			sut.applyOrgUnitFilters([1001]);
+
+			sinon.assert.calledWithMatch(recordProvider, sinon.match({
+				roleIds: [],
+				semesterIds: [],
+				orgUnitIds: [1001]
+			}));
+		});
+
+		it('should not cause a reload from server if filter says it should not reload', () => {
+			const recordProvider = sinon.stub().resolves(serverData);
+			sut.recordProvider = recordProvider;
+
+			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
+			sut._selectorFilters.orgUnit = new OrgUnitSelectorFilter({
+				selectedSemestersIds: null,
+				isRecordsTruncated: false
+			}, null);
+			sut.applyOrgUnitFilters([1001]);
+
+			sinon.assert.notCalled(recordProvider);
+		});
 	});
 
 	describe('get records', () => {
@@ -146,16 +254,28 @@ describe('Data', () => {
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
 
-		it('should return filtered records when both filters are applied', async() => {
+		it('should return filtered records when role filter is applied', async() => {
+			const roleFilters = [mockRoleIds.instructor];
+			const expectedRecords = serverData.records.filter(record => {
+				return roleFilters.includes(record[2]);
+			});
+
+			sut.applyRoleFilters(roleFilters);
+
+			expect(sut.records).to.deep.equal(expectedRecords);
+		});
+
+		it('should return filtered records when all filters are applied', async() => {
 			const orgUnitFilters = [1002, 2, 113];
 			const semesterFilters = [12];
-			const expectedRecords = serverData.records.filter(record => {
-				const recordOrgUnitId = record[0];
-				return [212].includes(recordOrgUnitId);
-			});
+			const roleFilters = [mockRoleIds.instructor];
+			const expectedRecords = serverData.records.filter(record =>
+				record[0] === 212 && record[1] === 300
+			);
 
 			sut.applyOrgUnitFilters(orgUnitFilters);
 			sut.applySemesterFilters(semesterFilters);
+			sut.applyRoleFilters(roleFilters);
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -190,16 +310,30 @@ describe('Data', () => {
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
 
-		it('should return filtered users when both filters are applied', async() => {
-			const orgUnitFilters = [112, 113];
-			const semesterFilters = [13];
+		it('should return filtered users when role filter is applied', async() => {
+			const roleFilters = [mockRoleIds.admin];
 			const expectedUsers = serverData.users.filter(user => {
 				const userId = user[0];
-				return [100, 300].includes(userId);
+				return [100, 400].includes(userId);
+			});
+
+			sut.applyRoleFilters(roleFilters);
+
+			expect(sut.users).to.deep.equal(expectedUsers);
+		});
+
+		it('should return filtered users when all filters are applied', async() => {
+			const orgUnitFilters = [112, 113];
+			const semesterFilters = [13];
+			const roleFilters = [mockRoleIds.admin];
+			const expectedUsers = serverData.users.filter(user => {
+				const userId = user[0];
+				return [100].includes(userId);
 			});
 
 			sut.applyOrgUnitFilters(orgUnitFilters);
 			sut.applySemesterFilters(semesterFilters);
+			sut.applyRoleFilters(roleFilters);
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -215,6 +349,18 @@ describe('Data', () => {
 			];
 
 			expect(sut.userDataForDisplay).to.deep.equal(expected);
+		});
+
+		it('should only display users in view', async() => {
+			const roleFilters = [mockRoleIds.instructor];
+			const expectedUsers = [
+				['Harrison, George'],
+				['McCartney, Paul']
+			];
+
+			sut.applyRoleFilters(roleFilters);
+
+			expect(sut.userDataForDisplay).to.deep.equal(expectedUsers);
 		});
 	});
 

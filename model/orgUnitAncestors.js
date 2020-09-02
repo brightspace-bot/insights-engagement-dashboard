@@ -1,9 +1,4 @@
-const ORG_UNIT = {
-	ID: 0,
-	NAME: 1,
-	TYPE: 2,
-	ANCESTORS: 3
-};
+import { ORG_UNIT } from './data';
 
 class OrgUnitAncestors {
 	/**
@@ -56,6 +51,22 @@ class OrgUnitAncestors {
 	 */
 	getAncestorsFor(orgUnitId) {
 		return this.ancestorsMap.get(orgUnitId);
+	}
+
+	/**
+	 * Checks if an orgUnit has ancestors in a given list.
+	 * NOTE: returns true if the orgUnit itself is in the list.
+	 * @param {Number} orgUnitId - the orgUnit whose ancestors we want to check
+	 * @param {[Number]} listToCheck - an array of orgUnitIds which potentially has ancestors in it
+	 * @returns {boolean}
+	 */
+	hasAncestorsInList(orgUnitId, listToCheck) {
+		const ancestorsSet = this.getAncestorsFor(orgUnitId);
+		if (!ancestorsSet) {
+			return false;
+		}
+
+		return listToCheck.some(potentialAncestor => ancestorsSet.has(potentialAncestor));
 	}
 }
 export default OrgUnitAncestors;
