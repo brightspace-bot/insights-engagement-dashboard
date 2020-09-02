@@ -51,6 +51,10 @@ class DropdownFilter extends Localizer(LitElement) {
 			.map(item => item.id);
 	}
 
+	get _selectedData() {
+		return this.data.filter(item => item._selected);
+	}
+
 	constructor() {
 		super();
 
@@ -61,13 +65,24 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	render() {
-		const selectedCount = this._selectedCount;
-		const openerSelectedText = this.localize('components.dropdown-filter.opener-text-multiple', { filterName: this.name, selectedCount: selectedCount });
+		const selected = this._selectedData;
+		const selectedCount = selected.length;
+
+		let openerSelectedText;
+		if (selectedCount === 1) {
+			// use name instead of displayName here to avoid showing semester ids in the main selector text
+			openerSelectedText = `${this.name}: ${this._selectedData[0].name}`;
+		} else {
+			openerSelectedText = this.localize('components.dropdown-filter.opener-text-multiple', {
+				filterName: this.name,
+				selectedCount: selectedCount
+			});
+		}
 
 		return html`
 			<d2l-filter-dropdown
 				total-selected-option-count="${selectedCount}"
-				opener-text="${this.name}"
+				opener-text="${this.localize('components.dropdown-filter.opener-text-all', { filterName: this.name })}"
 				opener-text-single="${openerSelectedText}"
 				opener-text-multiple="${openerSelectedText}"
 				header-text=""
@@ -90,10 +105,6 @@ class DropdownFilter extends Localizer(LitElement) {
 				</d2l-filter-dropdown-category>
 			</d2l-filter-dropdown>
 		`;
-	}
-
-	get _selectedCount() {
-		return this.data.filter(item => item._selected).length;
 	}
 
 	_handleElementSelected(event) {

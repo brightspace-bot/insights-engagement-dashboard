@@ -27,6 +27,7 @@ export default {
 	"components.tree-selector.node.aria-label": "{name}, child of {parentName},",
 
 	"components.dropdown-filter.load-more": "Load More",
+	"components.dropdown-filter.opener-text-all": "{filterName}: All",
 	"components.dropdown-filter.opener-text-multiple": "{filterName}: {selectedCount} selected",
 
 	"components.insights-users-table.title": "User Details",
