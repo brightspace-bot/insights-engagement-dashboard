@@ -21,11 +21,6 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		return css`
 			:host {
 				display: inline-block;
-			}
-			:host([hidden]) {
-				display: none;
-			}
-			.d2l-insights-time-in-content-vs-grade-container {
 				border-color: var(--d2l-color-mica);
 				border-radius: 15px;
 				border-style: solid;
@@ -36,6 +31,9 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				margin-top: 10px;
 				padding: 10px;
 				width: 590px;
+			}
+			:host([hidden]) {
+				display: none;
 			}
 			.d2l-insights-time-in-content-vs-grade-title {
 				color: var(--d2l-color-ferrite);
@@ -65,10 +63,8 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
-		return html`<div class="d2l-insights-time-in-content-vs-grade-container">
-		<div class="d2l-insights-time-in-content-vs-grade-title">${this._cardTitle}</div>
-		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}"></d2l-labs-chart>
-		</div>`;
+		return html`<div class="d2l-insights-time-in-content-vs-grade-title">${this._cardTitle}</div>
+		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}"></d2l-labs-chart>`;
 	}
 
 	get chartOptions() {
@@ -102,6 +98,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				tickInterval: 30,
 				startOnTick: true,
 				gridLineWidth: 1,
+				gridLineColor: 'var(--d2l-color-mica)',
 				tickLength: 5,
 				labels: {
 					style: {
@@ -126,6 +123,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				startOnTick: true,
 				endOnTick: true,
 				gridLineWidth: 1,
+				gridLineColor: 'var(--d2l-color-mica)',
 				tickLength: 5,
 				tickWidth: 1,
 				labels: {
