@@ -6,7 +6,8 @@ const RECORD = {
 	ORG_UNIT_ID: 0,
 	USER_ID: 1,
 	ROLE_ID: 2,
-	OVERDUE: 3
+	OVERDUE: 3,
+	CURRENT_FINAL_GRADE: 4
 };
 
 const USER = {
@@ -75,8 +76,6 @@ export class Data {
 		this.selectorFilters.semesterIds = semesterIds;
 	}
 
-	// the reason for separating this from getRecordsInView is to try not to reapply the top level filters if
-	// we don't need to.
 	get records() {
 		return this.serverData.records.filter(record => {
 			const ancestors = this._orgUnitAncestors.getAncestorsFor(record[RECORD.ORG_UNIT_ID]);
@@ -102,11 +101,18 @@ export class Data {
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as the lastFirstName
 		// then sort by lastFirstName
+
 		return this.users
 			.map(user => [`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`])
 			.sort((user1, user2) => {
 				return user1[0].localeCompare(user2[0]);
 			});
+	}
+
+	get currentFinalGrades() {
+		return this.getRecordsInView()
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null)
+			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
 	}
 
 	get usersCountsWithOverdueAssignments() {
@@ -122,7 +128,7 @@ export class Data {
 	getRecordsInView(id) {
 		// if id is omitted, all applied filters will be used
 		const otherFilters = Object.values(this.cardFilters).filter(f => f.isApplied && f.id !== id);
-		return this.serverData.records.filter(r => otherFilters.every(f => r[f.field] < f.threshold));
+		return this.records.filter(r => otherFilters.every(f => r[f.field] < f.threshold));
 	}
 
 	getStats(id) {
