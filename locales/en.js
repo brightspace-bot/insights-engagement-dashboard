@@ -29,6 +29,7 @@ export default {
 	"components.dropdown-filter.load-more": "Load More",
 	"components.dropdown-filter.opener-text-all": "{filterName}: All",
 	"components.dropdown-filter.opener-text-multiple": "{filterName}: {selectedCount} selected",
+	"components.dropdown-filter.opener-text-single": '{filterName}: {selectedItemName}',
 
 	"components.insights-users-table.title": "User Details",
 	"components.insights-users-table.lastFirstName": "Last Name, First Name",

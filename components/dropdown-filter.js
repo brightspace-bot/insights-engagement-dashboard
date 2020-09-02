@@ -71,7 +71,10 @@ class DropdownFilter extends Localizer(LitElement) {
 		let openerSelectedText;
 		if (selectedCount === 1) {
 			// use name instead of displayName here to avoid showing semester ids in the main selector text
-			openerSelectedText = `${this.name}: ${this._selectedData[0].name}`;
+			openerSelectedText = this.localize('components.dropdown-filter.opener-text-single', {
+				filterName: this.name,
+				selectedItemName: this._selectedData[0].name
+			});
 		} else {
 			openerSelectedText = this.localize('components.dropdown-filter.opener-text-multiple', {
 				filterName: this.name,
