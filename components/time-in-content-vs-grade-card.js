@@ -140,7 +140,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				},
 				accessibility: {
 					pointDescriptionFormatter: function(point) {
-						return `${point.y}% - ${point.x}`;
+						return `${point.y},% - ${point.x},mins`;
 					}
 				}
 			}]
