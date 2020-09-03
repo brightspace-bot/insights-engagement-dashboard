@@ -41,7 +41,9 @@ describe('d2l-insights-users-table', () => {
 			let pageSelector;
 			let innerTable;
 
-			before(async() => {
+			before(async function() {
+				this.timeout(10000);
+
 				el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
 				innerTable = el.shadowRoot.querySelector('d2l-insights-table');
 				await new Promise(resolve => setTimeout(resolve, 200));
@@ -51,6 +53,9 @@ describe('d2l-insights-users-table', () => {
 				pageSizeSelector = pageSelector.shadowRoot.querySelector('select');
 			});
 
+			// this test is randomly very flaky. When testing locally, I was able to reproduce the error by
+			// minimizing my browser, so I think the browsers are also being minimized on the Sauce servers.
+			// I don't see any options to force maximized windows though, so I'm increasing timeout in before instead
 			it('should show the first 20 users in order on the first page, if there are more than 20 users', () => {
 				// the default page size is 20
 				expect(pageSelector.selectedCountOption).to.equal(20);

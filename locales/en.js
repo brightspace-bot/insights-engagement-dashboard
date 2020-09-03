@@ -8,7 +8,8 @@ export default {
 
 	"components.insights-role-filter.name": "Role",
 
-	"components.org-unit-filter.name": "Org Unit",
+	"components.org-unit-filter.name-all-selected": "Org Unit: All",
+	"components.org-unit-filter.name-some-selected": "Org Unit: Selections Applied",
 
 	"components.semester-filter.name": "Semester",
 	"components.semester-filter.semester-name": "{orgUnitName} (Id: {orgUnitId})",
@@ -27,7 +28,9 @@ export default {
 	"components.tree-selector.node.aria-label": "{name}, child of {parentName},",
 
 	"components.dropdown-filter.load-more": "Load More",
+	"components.dropdown-filter.opener-text-all": "{filterName}: All",
 	"components.dropdown-filter.opener-text-multiple": "{filterName}: {selectedCount} selected",
+	"components.dropdown-filter.opener-text-single": '{filterName}: {selectedItemName}',
 
 	"components.insights-users-table.title": "User Details",
 	"components.insights-users-table.lastFirstName": "Last Name, First Name",

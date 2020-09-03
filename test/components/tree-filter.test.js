@@ -21,7 +21,13 @@ describe('d2l-insights-tree-filter', () => {
 			'6607': [6607, 'Dev', 1, [0], [5, 10], 'none', false]
 		}, [1, 2, 7], [3]);
 
-		el = await fixture(html`<d2l-insights-tree-filter name="filter" .tree="${tree}"></d2l-insights-tree-filter>`);
+		el = await fixture(
+			html`<d2l-insights-tree-filter
+				opener-text="filter"
+				opener-text-selected="filter with selections"
+				.tree="${tree}"
+			></d2l-insights-tree-filter>`
+		);
 		await el.treeUpdateComplete;
 	});
 
@@ -44,6 +50,44 @@ describe('d2l-insights-tree-filter', () => {
 	});
 
 	describe('render', () => {
+		it('should render with opener-text if no items are selected', async() => {
+			const treeWithNoSelections = new Tree({
+				'1': [1, 'Course 1', 3, [3], [], 'none', false],
+				'3': [3, 'Department 1', 2, [5], [1], 'none', false],
+				'5': [5, 'Faculty 1', 7, [6607], [3], 'none', false],
+				'6607': [6607, 'Dev', 1, [0], [5], 'none', false]
+			}, [], [3]);
+
+			el = await fixture(
+				html`<d2l-insights-tree-filter
+				opener-text="filter"
+				opener-text-selected="filter with selections"
+				.tree="${treeWithNoSelections}"
+			></d2l-insights-tree-filter>`
+			);
+			await el.treeUpdateComplete;
+
+			const treeSelector = el.shadowRoot.querySelector('d2l-insights-tree-selector');
+			expect(treeSelector.name).to.equal('filter');
+		});
+
+		it('should render with opener-text-selected if any items are selected', () => {
+			const treeSelector = el.shadowRoot.querySelector('d2l-insights-tree-selector');
+			expect(treeSelector.name).to.equal('filter with selections');
+		});
+
+		it('should render with opener-text-selected if all items are deselected but initial selections are not reset', async() => {
+			const treeSelector = el.shadowRoot.querySelector('d2l-insights-tree-selector');
+			node(3).simulateCheckboxClick();
+			await el.treeUpdateComplete;
+
+			node(7).simulateCheckboxClick();
+			await el.treeUpdateComplete;
+
+			expect(el.selected).to.deep.equal([]);
+			expect(treeSelector.name).to.equal('filter with selections');
+		});
+
 		// NB: visual diffs should be the main check on the expected layout
 		it('should render nodes closed by default', async() => {
 			expect(node(3).isOpen).to.be.false;
