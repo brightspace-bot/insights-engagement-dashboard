@@ -9,11 +9,13 @@ describe('d2l-insights-dropdown-filter', () => {
 	const testData = [
 		{
 			id: '1',
-			displayName: 'name 1'
+			name: 'name 1',
+			displayName: 'name 1 id 1'
 		},
 		{
 			id: '2',
-			displayName: 'name 2'
+			name: 'name 2',
+			displayName: 'name 2 id 2'
 		},
 	];
 
@@ -36,11 +38,40 @@ describe('d2l-insights-dropdown-filter', () => {
 	});
 
 	describe('render', () => {
-		it('should render the dropdown opener with the correct name', async() => {
+		it('should render the dropdown opener with the correct name if none are selected', async() => {
 			const filter = el.shadowRoot.querySelector('d2l-filter-dropdown');
-			expect(filter.openerText).to.equal(name);
+			expect(filter.openerText).to.equal(`${name}: All`);
 			expect(filter.openerTextSingle).to.equal(`${name}: 0 selected`);
 			expect(filter.openerTextMultiple).to.equal(`${name}: 0 selected`);
+		});
+
+		it('should render the dropdown opener with the correct name if one is selected', async() => {
+			const data = JSON.parse(JSON.stringify(testData)); // deep copy
+			data[0]._selected = true;
+
+			el = await fixture(html`<d2l-insights-dropdown-filter name="${name}" more .data="${data}"></d2l-insights-dropdown-filter>`);
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow fetch to run
+			await el.updateComplete;
+
+			const filter = el.shadowRoot.querySelector('d2l-filter-dropdown');
+			expect(filter.openerText).to.equal(`${name}: All`);
+			expect(filter.openerTextSingle).to.equal(`${name}: ${data[0].name}`);
+			expect(filter.openerTextMultiple).to.equal(`${name}: ${data[0].name}`);
+		});
+
+		it('should render the dropdown opener with the correct name if multiple are selected', async() => {
+			const data = JSON.parse(JSON.stringify(testData)); // deep copy
+			data[0]._selected = true;
+			data[1]._selected = true;
+
+			el = await fixture(html`<d2l-insights-dropdown-filter name="${name}" more .data="${data}"></d2l-insights-dropdown-filter>`);
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow fetch to run
+			await el.updateComplete;
+
+			const filter = el.shadowRoot.querySelector('d2l-filter-dropdown');
+			expect(filter.openerText).to.equal(`${name}: All`);
+			expect(filter.openerTextSingle).to.equal(`${name}: 2 selected`);
+			expect(filter.openerTextMultiple).to.equal(`${name}: 2 selected`);
 		});
 
 		it('should render with the correct checkbox elements', () => {
@@ -144,9 +175,9 @@ describe('d2l-insights-dropdown-filter', () => {
 
 			//  verify opener textes are changed
 			let filter = el.shadowRoot.querySelector('d2l-filter-dropdown');
-			expect(filter.openerText).to.equal(name);
-			expect(filter.openerTextSingle).to.equal(`${name}: 1 selected`);
-			expect(filter.openerTextMultiple).to.equal(`${name}: 1 selected`);
+			expect(filter.openerText).to.equal(`${name}: All`);
+			expect(filter.openerTextSingle).to.equal(`${name}: ${testData[0].name}`);
+			expect(filter.openerTextMultiple).to.equal(`${name}: ${testData[0].name}`);
 
 			listener = oneEvent(el, 'd2l-insights-dropdown-filter-selected');
 
@@ -159,9 +190,9 @@ describe('d2l-insights-dropdown-filter', () => {
 			// verify `selected` property changed
 			expect(el.selected.length).to.equal(0);
 
-			// verify opener textes are changed
+			// verify opener texts are changed
 			filter = el.shadowRoot.querySelector('d2l-filter-dropdown');
-			expect(filter.openerText).to.equal(name);
+			expect(filter.openerText).to.equal(`${name}: All`);
 			expect(filter.openerTextSingle).to.equal(`${name}: 0 selected`);
 			expect(filter.openerTextMultiple).to.equal(`${name}: 0 selected`);
 		});

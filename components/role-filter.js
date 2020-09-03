@@ -50,7 +50,7 @@ class RoleFilter extends Localizer(LitElement) {
 
 	_setFilterData(roleData) {
 		this._filterData = roleData.map(obj => {
-			return { id: obj.Identifier, displayName: obj.DisplayName };
+			return { id: obj.Identifier, name: obj.DisplayName, displayName: obj.DisplayName };
 		});
 	}
 

@@ -61,6 +61,7 @@ class SemesterFilter extends Localizer(LitElement) {
 
 		this._filterData = data.Items.map(item => ({
 			id: item.orgUnitId.toString(),
+			name: item.orgUnitName,
 			displayName: this.localize('components.semester-filter.semester-name', item)
 		}));
 	}
