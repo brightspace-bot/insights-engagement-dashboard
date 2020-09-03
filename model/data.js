@@ -155,7 +155,7 @@ export class Data {
 
 	get currentFinalGradesVsTimeInContent() {
 		return  this.getRecordsInView()
-			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.TIME_IN_CONTENT] !== 0)
+			.filter(record => record[RECORD.TIME_IN_CONTENT] && record[RECORD.CURRENT_FINAL_GRADE])
 			.map(record => [record[RECORD.CURRENT_FINAL_GRADE], Math.floor(record[RECORD.TIME_IN_CONTENT] / 60)]); // we get time from the server in sec
 	}
 
@@ -222,6 +222,8 @@ decorate(Data, {
 	users: computed,
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
+	currentFinalGradesVsTimeInContent: computed,
+	currentFinalGrades: computed,
 	cardFilters: observable,
 	isLoading: observable,
 	onServerDataReload: action,

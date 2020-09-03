@@ -47,8 +47,8 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		return this.localize('components.insights-time-in-content-vs-grade-card.timeInContentVsGrade');
 	}
 
-	get _currentFinalGradeText() {
-		return this.localize('components.insights-time-in-content-vs-grade-card.currentFinalGrade');
+	get _currentGradeText() {
+		return this.localize('components.insights-time-in-content-vs-grade-card.currentGrade');
 	}
 
 	get _timeInContentText() {
@@ -109,7 +109,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 			},
 			yAxis: {
 				title: {
-					text: this._currentFinalGradeText,
+					text: this._currentGradeText,
 					style: {
 						color: 'var(--d2l-color-ferrite)',
 						fontSize: '10px',
@@ -140,7 +140,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				},
 				accessibility: {
 					pointDescriptionFormatter: function(point) {
-						return `Grade ${point.y}% for time in content ${point.x} mins.`;
+						return `${point.y}% - ${point.x}`;
 					}
 				}
 			}]

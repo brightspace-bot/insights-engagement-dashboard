@@ -35,7 +35,7 @@ export default {
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
 
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
-	"components.insights-time-in-content-vs-grade-card.currentFinalGrade": "Current Grade (%)",
+	"components.insights-time-in-content-vs-grade-card.currentGrade": "Current Grade (%)",
 	"components.insights-time-in-content-vs-grade-card.timeInContent": "Time in Content (mins)",
 
 	"components.insights-current-final-grade-card.currentGrade": "Current Grade",
