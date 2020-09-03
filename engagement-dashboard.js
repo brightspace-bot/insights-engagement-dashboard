@@ -89,17 +89,17 @@ class EngagementDashboard extends Localizer(LitElement) {
 				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
 
 				<div class="view-filters-container">
-					<d2l-insights-ou-filter .data="${this._data}" @d2l-insights-ou-filter-change="${this._onOuFilterChange}"></d2l-insights-ou-filter>
+					<d2l-insights-ou-filter
+						.data="${this._data}"
+						@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
+					></d2l-insights-ou-filter>
 					<d2l-insights-semester-filter
 						page-size="10000"
 						?demo="${this.isDemo}"
 						@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
-						@d2l-insights-semester-filter-close="${this._semesterFilterChange}"
-						>
-					</d2l-insights-semester-filter>
+					></d2l-insights-semester-filter>
 					<d2l-insights-role-filter
-						@d2l-insights-role-filter-change="${this._handleRoleSelectionsUpdated}"
-						@d2l-insights-role-filter-close="${this._handleRoleSelectionsUpdated}"
+						@d2l-insights-role-filter-change="${this._roleFilterChange}"
 						?demo="${this.isDemo}"
 					></d2l-insights-role-filter>
 				</div>
@@ -118,22 +118,18 @@ class EngagementDashboard extends Localizer(LitElement) {
 		`;
 	}
 
-	_handleRoleSelectionsUpdated(event) {
+	_roleFilterChange(event) {
 		event.stopPropagation();
-
-		console.log(`List of selected role ids: ${event.target.selected}`);
 		this._data.applyRoleFilters(event.target.selected.map(roleId => Number(roleId)));
 	}
 
-	_onOuFilterChange(e) {
-		console.log(`got ou filter change with selected ids ${JSON.stringify(e.target.selected)}`);
-		this._data.applyOrgUnitFilters(e.target.selected);
+	_orgUnitFilterChange(event) {
+		event.stopPropagation();
+		this._data.applyOrgUnitFilters(event.target.selected);
 	}
 
 	_semesterFilterChange(event) {
 		event.stopPropagation();
-
-		console.log(`List of selected semesters: ${event.target.selected}`);
 		this._data.applySemesterFilters(event.target.selected.map(semesterId => Number(semesterId)));
 	}
 }

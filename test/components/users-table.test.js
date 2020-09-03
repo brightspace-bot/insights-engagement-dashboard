@@ -44,8 +44,10 @@ describe('d2l-insights-users-table', () => {
 			before(async() => {
 				el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
 				innerTable = el.shadowRoot.querySelector('d2l-insights-table');
+				await new Promise(resolve => setTimeout(resolve, 200));
 				await innerTable.updateComplete;
 				pageSelector = el.shadowRoot.querySelector('d2l-labs-pagination');
+				await pageSelector.updateComplete;
 				pageSizeSelector = pageSelector.shadowRoot.querySelector('select');
 			});
 
@@ -68,6 +70,7 @@ describe('d2l-insights-users-table', () => {
 					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
 					.shadowRoot.querySelector('button')
 					.click();
+				await new Promise(resolve => setTimeout(resolve, 200));
 				await innerTable.updateComplete;
 				await pageSelector.updateComplete;
 
@@ -83,6 +86,7 @@ describe('d2l-insights-users-table', () => {
 			it('should change number of users shown and total number of pages if the page size changes', async() => {
 				pageSizeSelector.value = '10';
 				pageSizeSelector.dispatchEvent(new Event('change'));
+				await new Promise(resolve => setTimeout(resolve, 200));
 				await innerTable.updateComplete;
 				await pageSelector.updateComplete;
 
@@ -100,6 +104,7 @@ describe('d2l-insights-users-table', () => {
 					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
 					.shadowRoot.querySelector('button')
 					.click();
+				await new Promise(resolve => setTimeout(resolve, 200));
 				await innerTable.updateComplete;
 				await pageSelector.updateComplete;
 
@@ -115,6 +120,7 @@ describe('d2l-insights-users-table', () => {
 					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
 					.shadowRoot.querySelector('button')
 					.click();
+				await new Promise(resolve => setTimeout(resolve, 200));
 				await innerTable.updateComplete;
 				await pageSelector.updateComplete;
 
@@ -130,6 +136,7 @@ describe('d2l-insights-users-table', () => {
 			it('should show all users on a single page if there are fewer users than the page size', async() => {
 				pageSizeSelector.value = '50';
 				pageSizeSelector.dispatchEvent(new Event('change'));
+				await new Promise(resolve => setTimeout(resolve, 200));
 				await innerTable.updateComplete;
 				await pageSelector.updateComplete;
 
@@ -147,6 +154,7 @@ describe('d2l-insights-users-table', () => {
 
 			it('should show zero pages if there are no users to display', async() => {
 				el.data = { userDataForDisplay: [] };
+				await new Promise(resolve => setTimeout(resolve, 200));
 				await innerTable.updateComplete;
 				await pageSelector.updateComplete;
 
@@ -158,6 +166,5 @@ describe('d2l-insights-users-table', () => {
 				expect(displayedUsers.length).to.equal(0);
 			});
 		});
-
 	});
 });

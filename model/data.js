@@ -1,8 +1,10 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
-import { CardFilter } from './cardFilter.js';
-import OrgUnitAncestors from './orgUnitAncestors.js';
+import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 
-const RECORD = {
+import { CardFilter } from './cardFilter.js';
+import OrgUnitAncestors from './orgUnitAncestors';
+
+export const RECORD = {
 	ORG_UNIT_ID: 0,
 	USER_ID: 1,
 	ROLE_ID: 2,
@@ -11,10 +13,17 @@ const RECORD = {
 	TIME_IN_CONTENT: 5
 };
 
-const USER = {
+export const USER = {
 	ID: 0,
 	FIRST_NAME: 1,
 	LAST_NAME: 2
+};
+
+export const ORG_UNIT = {
+	ID: 0,
+	NAME: 1,
+	TYPE: 2,
+	ANCESTORS: 3
 };
 
 function unique(array) {
@@ -27,26 +36,33 @@ function countUnique(records, field) {
 
 export class Data {
 	constructor({ recordProvider, cardFilters }) {
+		this.recordProvider = recordProvider;
+		this._orgUnitAncestors = null;
+		this._userDictionary = null;
+
+		// @observables
 		this.isLoading = true;
-
-		// for the purposes of these top level filters, "empty filters" is equivalent to "no filter applied"
-		this.selectorFilters = {
-			roleIds: [],
-			orgUnitIds: [],
-			semesterIds: []
-		};
-
 		this.serverData = {
 			records: [],
 			orgUnits: [],
 			users: [],
-			selectedOrgUnitIds: []
+			isRecordsTruncated: false,
+			isOrgUnitsTruncated: false,
+			semesterTypeId: null,
+			selectedOrgUnitIds: [],
+			selectedRolesIds: [],
+			selectedSemestersIds: []
 		};
 
-		this._orgUnitAncestors = null;
-		this._userDictionary = null;
+		this._selectorFilters = {
+			role: new RoleSelectorFilter(this.serverData),
+			semester: new SemesterSelectorFilter(this.serverData, this._orgUnitAncestors),
+			orgUnit: new OrgUnitSelectorFilter(this.serverData, this._orgUnitAncestors)
+		};
 
 		this.cardFilters = {};
+
+		// additional setup
 		cardFilters
 			.map(params => new CardFilter(params, this))
 			.forEach(f => this.cardFilters[f.id] = f);
@@ -56,49 +72,70 @@ export class Data {
 		// mobx will run _persist() whenever relevant state changes
 		autorun(() => this._persist());
 
-		recordProvider(this.selectorFilters).then(data => {
-			this._orgUnitAncestors = new OrgUnitAncestors(data.orgUnits);
-			this._userDictionary = new Map(data.users.map(user => [user[USER.ID], user]));
-			this.isLoading = false;
-			this.serverData = data;
-		});
+		this.loadData({});
 	}
 
-	applyRoleFilters(roleIds) {
-		// future work: reload data from server if necessary
-		this.selectorFilters.roleIds = roleIds;
+	loadData({ newRoleIds = null, newSemesterIds = null, newOrgUnitIds = null }) {
+		const filters = {
+			roleIds: newRoleIds || this._selectorFilters.role.selected,
+			semesterIds: newSemesterIds || this._selectorFilters.semester.selected,
+			orgUnitIds: newOrgUnitIds || this._selectorFilters.orgUnit.selected
+		};
+		this.recordProvider(filters).then(data => this.onServerDataReload(data));
 	}
 
-	applyOrgUnitFilters(orgUnitIds) {
-		this.selectorFilters.orgUnitIds = orgUnitIds;
+	// @action
+	onServerDataReload(newServerData) {
+		this._orgUnitAncestors = new OrgUnitAncestors(newServerData.orgUnits);
+		this._userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
+		this.isLoading = false;
+		this.serverData = newServerData;
+
+		this._selectorFilters = {
+			role: new RoleSelectorFilter(this.serverData),
+			semester: new SemesterSelectorFilter(this.serverData, this._orgUnitAncestors),
+			orgUnit: new OrgUnitSelectorFilter(this.serverData, this._orgUnitAncestors)
+		};
 	}
 
-	applySemesterFilters(semesterIds) {
-		this.selectorFilters.semesterIds = semesterIds;
+	applyRoleFilters(newRoleIds) {
+		if (this._selectorFilters.role.shouldReloadFromServer(newRoleIds)) {
+			this.loadData({ newRoleIds });
+		} else {
+			this._selectorFilters.role.selected = newRoleIds;
+		}
 	}
 
+	applySemesterFilters(newSemesterIds) {
+		if (this._selectorFilters.semester.shouldReloadFromServer(newSemesterIds)) {
+			this.loadData({ newSemesterIds });
+		} else {
+			this._selectorFilters.semester.selected = newSemesterIds;
+		}
+	}
+
+	applyOrgUnitFilters(newOrgUnitIds) {
+		if (this._selectorFilters.orgUnit.shouldReloadFromServer(newOrgUnitIds)) {
+			this.loadData({ newOrgUnitIds });
+		} else {
+			this._selectorFilters.orgUnit.selected = newOrgUnitIds;
+		}
+	}
+
+	// @computed
 	get records() {
 		return this.serverData.records.filter(record => {
-			const ancestors = this._orgUnitAncestors.getAncestorsFor(record[RECORD.ORG_UNIT_ID]);
-
-			const roleCriterion = !this.selectorFilters.roleIds.length
-				|| this.selectorFilters.roleIds.includes(record[RECORD.ROLE_ID]);
-
-			const orgUnitCriterion = !this.selectorFilters.orgUnitIds.length
-				|| this.selectorFilters.orgUnitIds.some(selectedId => ancestors.has(selectedId));
-
-			const semesterCriterion = !this.selectorFilters.semesterIds.length
-				|| this.selectorFilters.semesterIds.some(selectedId => ancestors.has(selectedId));
-
-			return roleCriterion && orgUnitCriterion && semesterCriterion;
+			return Object.values(this._selectorFilters).every(filter => filter.shouldInclude(record));
 		});
 	}
 
+	// @computed
 	get users() {
 		const userIdsInView = unique(this.records.map(record => record[RECORD.USER_ID]));
 		return userIdsInView.map(userId => this._userDictionary.get(userId));
 	}
 
+	// @computed
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as the lastFirstName
 		// then sort by lastFirstName
@@ -160,6 +197,7 @@ export class Data {
 		};
 	}
 
+	// @action
 	setApplied(id, isApplied) {
 		if (this.cardFilters[id]) this.cardFilters[id].isApplied = isApplied;
 	}
@@ -184,8 +222,8 @@ decorate(Data, {
 	users: computed,
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
-	selectorFilters: observable,
 	cardFilters: observable,
 	isLoading: observable,
+	onServerDataReload: action,
 	setApplied: action
 });
