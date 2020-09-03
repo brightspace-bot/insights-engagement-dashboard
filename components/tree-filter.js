@@ -24,6 +24,7 @@ export class Tree {
 	constructor(tree, selectedIds, leafTypes) {
 		this.tree = tree;
 		this.leafTypes = leafTypes;
+		this.initialSelectedIds = selectedIds;
 		if (selectedIds) {
 			selectedIds.forEach(x => this.setSelected(x, true));
 		}
@@ -124,7 +125,8 @@ decorate(Tree, {
  * This is an opinionated wrapper around d2l-insights-tree-selector which maintains state
  * in the above Tree class.
  * @property {Object} tree - a Tree (defined above)
- * @property {String} name - appears on the dropdown opener
+ * @property {String} openerText - appears on the dropdown opener if no items are selected
+ * @property {String} openerTextSelected - appears on the dropdown opener if one or more items are selected
  * @fires d2l-insights-tree-filter-select - selection has changed; selected property of this element is the list of selected ids
  */
 class TreeFilter extends Localizer(MobxLitElement) {
@@ -132,7 +134,8 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	static get properties() {
 		return {
 			tree: { type: Object, attribute: false },
-			name: { type: String },
+			openerText: { type: String, attribute: 'opener-text' },
+			openerTextSelected: { type: String, attribute: 'opener-text-selected' },
 			searchString: { type: String, attribute: 'search-string', reflect: true }
 		};
 	}
@@ -151,7 +154,8 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	constructor() {
 		super();
 
-		this.name = 'MISSING NAME';
+		this.openerText = 'MISSING NAME';
+		this.openerTextSelected = 'MISSING NAME';
 		this.searchString = '';
 
 		this._needResize = false;
@@ -169,8 +173,15 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	}
 
 	render() {
+		// if selections are applied when loading from server but the selected ids were truncated out of the results,
+		// the visible selections in the UI (this.tree.selected) could be empty even though selections are applied.
+		// In that case, we should indicate to the user that selections are applied, even if they can't see them.
+		const openerText = (this.tree.selected.length || (this.tree.initialSelectedIds && this.tree.initialSelectedIds.length))
+			? this.openerTextSelected
+			: this.openerText;
+
 		return html`<d2l-insights-tree-selector
-				name="${this.name}"
+				name="${openerText}"
 				?search="${this._isSearch}"
 				@d2l-insights-tree-selector-search="${this._onSearch}"
 			>
