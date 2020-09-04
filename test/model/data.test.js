@@ -85,10 +85,10 @@ describe('Data', () => {
 			[1002, 200, mockRoleIds.student, 0, 98, 0],
 			[1002, 300, mockRoleIds.student, 0, 89, 0],
 			[1002, 400, mockRoleIds.admin, 0, null, 0],
-			[3, 200, mockRoleIds.student, 0, 98, 0, 0],
-			[3, 300, mockRoleIds.student, 0, 88, 0, 0],
-			[3, 400, mockRoleIds.admin, 0, null, 0, 0],
-			[311, 200, mockRoleIds.student, 0, 99, 0, 0],
+			[3, 200, mockRoleIds.student, 0, 98, 0],
+			[3, 300, mockRoleIds.student, 0, 88, 0],
+			[3, 400, mockRoleIds.admin, 0, null, 0],
+			[311, 200, mockRoleIds.student, 0, 99, 0],
 			[311, 300, mockRoleIds.student, 0, 42, 0],
 			[311, 400, mockRoleIds.admin, 0, null, 0],
 			[313, 300, mockRoleIds.student, 0, 66, 0],
@@ -373,7 +373,7 @@ describe('Data', () => {
 
 	describe('currentFinalGradesVsTimeInContent', () => {
 		it('should return the array of tuples: current final grade vs time in content, mins', async() => {
-			const expected = [[22, 33], [33, 41], [44, 66], [55, 75], [41, 58], [55, 83], [39, 50], [93, 116], [75, 100], [84, 66]];
+			const expected = [[33, 22], [41, 33], [66, 44], [75, 55], [0, 33], [0, 100], [0, 100], [0, 100], [0, 73], [0, 73], [58, 41], [83, 55], [50, 39], [116, 93], [100, 75], [66, 84], [0, 98], [0, 89], [0, 98], [0, 88], [0, 99], [0, 42], [0, 66]];
 			expect(sut.currentFinalGradesVsTimeInContent).to.deep.equal(expected);
 		});
 	});

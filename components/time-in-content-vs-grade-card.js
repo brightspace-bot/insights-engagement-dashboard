@@ -67,6 +67,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get chartOptions() {
+		const that = this;
 		return {
 			colors: ['var(--d2l-color-amethyst-plus-1)'],
 			chart: {
@@ -94,6 +95,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						fontFamily: 'Lato'
 					}
 				},
+				min: 0,
 				tickInterval: 30,
 				startOnTick: true,
 				gridLineWidth: 1,
@@ -140,7 +142,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				},
 				accessibility: {
 					pointDescriptionFormatter: function(point) {
-						return `${point.y},% - ${point.x},mins`;
+						return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
 					}
 				}
 			}]

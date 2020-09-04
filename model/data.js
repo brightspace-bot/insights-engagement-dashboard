@@ -155,8 +155,9 @@ export class Data {
 
 	get currentFinalGradesVsTimeInContent() {
 		return  this.getRecordsInView()
-			.filter(record => record[RECORD.TIME_IN_CONTENT] && record[RECORD.CURRENT_FINAL_GRADE])
-			.map(record => [record[RECORD.CURRENT_FINAL_GRADE], Math.floor(record[RECORD.TIME_IN_CONTENT] / 60)]); // we get time from the server in sec
+			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
+			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]) //keep in count students either without grade or without time in content
+			.filter(item => item[0] || item[1]);
 	}
 
 	get usersCountsWithOverdueAssignments() {
