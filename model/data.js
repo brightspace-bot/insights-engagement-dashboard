@@ -9,7 +9,8 @@ export const RECORD = {
 	USER_ID: 1,
 	ROLE_ID: 2,
 	OVERDUE: 3,
-	CURRENT_FINAL_GRADE: 4
+	CURRENT_FINAL_GRADE: 4,
+	TIME_IN_CONTENT: 5
 };
 
 export const USER = {
@@ -152,6 +153,13 @@ export class Data {
 			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
 	}
 
+	get currentFinalGradesVsTimeInContent() {
+		return  this.getRecordsInView()
+			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
+			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]) //keep in count students either without grade or without time in content
+			.filter(item => item[0] || item[1]);
+	}
+
 	get usersCountsWithOverdueAssignments() {
 		return this.getRecordsInView()
 			.reduce((acc, record) => {
@@ -215,6 +223,8 @@ decorate(Data, {
 	users: computed,
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
+	currentFinalGradesVsTimeInContent: computed,
+	currentFinalGrades: computed,
 	cardFilters: observable,
 	isLoading: observable,
 	onServerDataReload: action,
