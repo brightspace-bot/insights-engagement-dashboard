@@ -59,6 +59,19 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		return this.data.currentFinalGradesVsTimeInContent;
 	}
 
+	get _avgGrade() {
+		const arrayOfGrades = this._preparedPlotData.map(item => item[1]);
+		return arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length;
+	}
+
+	get _avgTimeInContent() {
+		const arrayOfTimeInContent =  this._preparedPlotData.map(item => item[0]);
+		return arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length;
+	}
+	_filterByQuadrants(x, y) {
+		console.log(`x: ${x}y: ${y}`); //out of scope - returning data for respective plot quadrant clicked by user
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -72,7 +85,12 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 			colors: ['var(--d2l-color-amethyst-plus-1)'],
 			chart: {
 				type: 'scatter',
-				height: 250
+				height: 250,
+				events: {
+					click: function(event) {
+						that._filterByQuadrants(event.xAxis[0].value, event.yAxis[0].value);
+					}
+				}
 			},
 			animation: false,
 			tooltip: { enabled: false },
@@ -107,7 +125,13 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						color: 'var(--d2l-color-ferrite)',
 						fontFamily: 'Lato'
 					}
-				}
+				},
+				plotLines: [{
+					color: 'var(--d2l-color-celestine)',
+					dashStyle: 'Dash',
+					value: this._avgTimeInContent,
+					width: 1.5
+				}]
 			},
 			yAxis: {
 				title: {
@@ -133,12 +157,23 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						color: 'var(--d2l-color-ferrite)',
 						fontFamily: 'Lato'
 					}
-				}
+				},
+				plotLines: [{
+					color: 'var(--d2l-color-celestine)',
+					dashStyle: 'Dash',
+					value: this._avgGrade,
+					width: 1.5
+				}]
 			},
 			series: [{
 				data: this._preparedPlotData,
 				marker: {
 					radius: 5
+				},
+				states: {
+					hover: {
+						enabled: false
+					}
 				},
 				accessibility: {
 					pointDescriptionFormatter: function(point) {
