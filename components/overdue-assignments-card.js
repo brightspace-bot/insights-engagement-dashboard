@@ -31,8 +31,24 @@ class OverdueAssignmentsCard extends Localizer(MobxLitElement) {
 
 	render() {
 		return html`
-			<d2l-labs-summary-card is-value-clickable id="d2l-insights-engagement-overdue-assignments" .data="${this.data}" card-title="${this._cardTitle}" card-value="${this._cardValue}" card-message="${this._cardMessage}"></d2l-labs-summary-card>
+			<d2l-labs-summary-card
+				is-value-clickable id="d2l-insights-engagement-overdue-assignments"
+				.data="${this.data}"
+				card-title="${this._cardTitle}"
+				card-value="${this._cardValue}"
+				card-message="${this._cardMessage}"
+				@d2l-labs-summary-card-value-click=${this._valueClickHandler}
+			></d2l-labs-summary-card>
 		`;
+	}
+
+	_valueClickHandler() {
+		// Temp code to toggle filter
+		const isApplied = this.data.cardFilters['d2l-insights-overdue-assignments-card'].isApplied;
+		console.log(`Is applied: ${isApplied}.`);
+		this.data.setApplied('d2l-insights-overdue-assignments-card', !isApplied);
+
+		//this.data.setApplied('d2l-insights-overdue-assignments-card', true); // production code
 	}
 }
 customElements.define('d2l-insights-overdue-assignments-card', OverdueAssignmentsCard);

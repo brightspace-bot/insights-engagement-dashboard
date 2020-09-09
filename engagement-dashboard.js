@@ -11,7 +11,7 @@ import './components/time-in-content-vs-grade-card';
 import './components/current-final-grade-card.js';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
-import { Data } from './model/data.js';
+import { Data, RECORD } from './model/data.js';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
@@ -82,6 +82,11 @@ class EngagementDashboard extends Localizer(LitElement) {
 				// 	countUniqueField: 'UserId',
 				// 	messageProvider: () => 'users'
 				// }
+				{
+					id: 'd2l-insights-overdue-assignments-card',
+					title: 'Overdue Assignments',
+					filter: (record) => record[RECORD.OVERDUE] > 0
+				}
 			]
 		});
 
@@ -109,7 +114,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
 					<d2l-insights-current-final-grade-card .data="${this._data}"></d2l-insights-current-final-grade-card>
 					<d2l-insights-overdue-assignments-card .data="${this._data}"></d2l-insights-overdue-assignments-card>
-					<d2l-insights-debug-card .data="${this._data}" metric-to-display="recordsLength" title="Records" message="number of records within filter parameters"></d2l-insights-debug-card>
+					<d2l-insights-debug-card .data="${this._data}" metric-to-display="filteredRecordsLength" title="Records" message="number of records within filter parameters"></d2l-insights-debug-card>
 					<d2l-insights-time-in-content-vs-grade-card .data="${this._data}"></d2l-insights-time-in-content-vs-grade-card>
 				</div>
 

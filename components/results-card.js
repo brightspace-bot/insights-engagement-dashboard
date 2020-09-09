@@ -26,7 +26,7 @@ class ResultsCard extends Localizer(MobxLitElement) {
 	}
 
 	get _cardValue() {
-		return this.data.userDataForDisplay.length;
+		return this.data.records.length;
 	}
 
 	render() {
