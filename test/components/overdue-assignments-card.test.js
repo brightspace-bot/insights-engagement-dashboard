@@ -1,4 +1,4 @@
-import '../../components/overdueAssignments-card';
+import '../../components/overdue-assignments-card';
 
 import { expect, fixture, html } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';

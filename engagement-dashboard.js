@@ -1,7 +1,7 @@
 import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/results-card.js';
-import './components/overdueAssignments-card';
+import './components/overdue-assignments-card';
 import './components/debug-card.js';
 import './components/role-filter.js';
 import './components/semester-filter.js';
