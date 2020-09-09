@@ -1,5 +1,11 @@
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 
+/**
+ * @property {string} title
+ * @property {string} value
+ * @property {string} message
+ * @fires d2l-labs-summary-card-value-click
+ */
 class SummaryCard extends LitElement {
 	static get properties() {
 		return {
@@ -80,8 +86,11 @@ class SummaryCard extends LitElement {
 		`;
 	}
 
-	_getUsers() {
-		console.log('click'); // out of scope
+	_valueClickHandler() {
+		/**
+		 * @event d2l-labs-summary-card-value-click
+		 */
+		this.dispatchEvent(new CustomEvent('d2l-labs-summary-card-value-click'));
 	}
 
 	render() {
@@ -91,7 +100,7 @@ class SummaryCard extends LitElement {
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
 			<div class="d2l-insights-summary-card-body">
 			${this.isValueClickable ?
-			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._getUsers}>${this.value}</span>` :
+			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
 			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
 			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${this.message}</span>
 			</div>
