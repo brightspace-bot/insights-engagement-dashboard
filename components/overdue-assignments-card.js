@@ -43,12 +43,7 @@ class OverdueAssignmentsCard extends Localizer(MobxLitElement) {
 	}
 
 	_valueClickHandler() {
-		// Temp code to toggle filter
-		const isApplied = this.data.cardFilters['d2l-insights-overdue-assignments-card'].isApplied;
-		console.log(`Is applied: ${isApplied}.`);
-		this.data.setApplied('d2l-insights-overdue-assignments-card', !isApplied);
-
-		//this.data.setApplied('d2l-insights-overdue-assignments-card', true); // production code
+		this.data.setApplied('d2l-insights-overdue-assignments-card', true);
 	}
 }
 customElements.define('d2l-insights-overdue-assignments-card', OverdueAssignmentsCard);
