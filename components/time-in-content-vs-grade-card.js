@@ -61,12 +61,12 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 
 	get _avgGrade() {
 		const arrayOfGrades = this._preparedPlotData.map(item => item[1]);
-		return arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length;
+		return arrayOfGrades.length ? arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length : 0;
 	}
 
 	get _avgTimeInContent() {
 		const arrayOfTimeInContent =  this._preparedPlotData.map(item => item[0]);
-		return arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length;
+		return arrayOfTimeInContent.length ? arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length : 0;
 	}
 	_filterByQuadrants(x, y) {
 		console.log(`x: ${x}y: ${y}`); //out of scope - returning data for respective plot quadrant clicked by user
