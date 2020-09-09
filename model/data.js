@@ -160,6 +160,16 @@ export class Data {
 			.filter(item => item[0] || item[1]);
 	}
 
+	get avgTimeInContent() {
+		const arrayOfTimeInContent =  this.currentFinalGradesVsTimeInContent.map(item => item[0]);
+		return arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
+	}
+
+	get avgGrade() {
+		const arrayOfGrades = this.currentFinalGradesVsTimeInContent.map(item => item[1]);
+		return arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
+	}
+
 	get usersCountsWithOverdueAssignments() {
 		return this.getRecordsInView()
 			.reduce((acc, record) => {

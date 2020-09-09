@@ -384,4 +384,18 @@ describe('Data', () => {
 			expect(sut.usersCountsWithOverdueAssignments).to.deep.equal(expected);
 		});
 	});
+
+	describe('avgTimeInContent', () => {
+		it('should return a average time in content', async() => {
+			const expected = 29;
+			expect(sut.avgTimeInContent).to.deep.equal(expected);
+		});
+	});
+
+	describe('avgGrade', () => {
+		it('should return a average current grade', async() => {
+			const expected = 69;
+			expect(sut.avgGrade).to.deep.equal(expected);
+		});
+	});
 });
