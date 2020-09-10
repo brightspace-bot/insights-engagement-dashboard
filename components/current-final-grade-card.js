@@ -31,11 +31,11 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				border-style: solid;
 				border-width: 1.5px;
 				display: inline-block;
-				height: 250px;
+				height: 275px;
 				margin-right: 10px;
-				margin-top: 10px;
-				padding: 10px;
-				width: 500px;
+				margin-top: 19.5px;
+				padding: 15px;
+				width: 602px;
 			}
 
 			.d2l-insights-current-final-grade-title {
@@ -43,15 +43,6 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				font-size: smaller;
 				font-weight: bold;
 				text-indent: 3%;
-			}
-
-			.d2l-insights-empty-chart-message {
-				color: var(--d2l-color-ferrite);
-				display: flex-wrap;
-				font-size: 14px;
-				line-height: 1rem;
-				margin: 3%;
-				vertical-align: middle;
 			}
 		`;
 	}
