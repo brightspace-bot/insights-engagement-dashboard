@@ -41,17 +41,15 @@ class EngagementDashboard extends Localizer(LitElement) {
 					display: none;
 				}
 
-				.d2l-insights-data-wrapper {
+				.d2l-insights-chart-container {
 					display: flex;
 					flex-wrap: wrap;
+					margin-top: -10px;
 				}
 
 				.d2l-insights-summary-container {
-					display: grid;
+					display: flex;
 					flex-wrap: wrap;
-					grid-template-columns: max-content max-content;
-					margin-bottom: 5px;
-					margin-top: 10px;
 				}
 
 				.d2l-insights-summary-container-applied-filters {
@@ -112,17 +110,16 @@ class EngagementDashboard extends Localizer(LitElement) {
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
-				<div class="d2l-insights-data-wrapper">
-					<div class="d2l-insights-summary-container-applied-filters">
-						<d2l-insights-applied-filters .data="${this._data}"></d2l-insights-applied-filters>
-					</div>
-					<div class="d2l-insights-summary-container">
-						<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
-						<d2l-insights-overdue-assignments-card .data="${this._data}"></d2l-insights-overdue-assignments-card>
-					</div>
+				<div class="d2l-insights-summary-container-applied-filters">
+					<d2l-insights-applied-filters .data="${this._data}"></d2l-insights-applied-filters>
+				</div>
+				<div class="d2l-insights-summary-container">
+					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
+					<d2l-insights-overdue-assignments-card .data="${this._data}"></d2l-insights-overdue-assignments-card>
+				</div>
+				<div class="d2l-insights-chart-container">
 					<div><d2l-insights-current-final-grade-card .data="${this._data}"></d2l-insights-current-final-grade-card></div>
 					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}"></d2l-insights-time-in-content-vs-grade-card></div>
-					<div></div><!--Empty div for course last access chart-->
 				</div>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 				<d2l-insights-users-table .data="${this._data}"></d2l-insights-users-table>

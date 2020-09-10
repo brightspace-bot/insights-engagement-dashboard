@@ -34,7 +34,7 @@ class SummaryCard extends LitElement {
 				height: 121px;
 				margin-right: 10px;
 				margin-top: 10px;
-				padding: 10px;
+				padding: 15px;
 				width: 280px;
 			}
 
