@@ -1,7 +1,6 @@
 import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/results-card.js';
-import './components/overdue-assignments-card';
 import './components/debug-card.js';
 import './components/role-filter.js';
 import './components/semester-filter.js';
@@ -12,11 +11,12 @@ import './components/current-final-grade-card.js';
 import './components/applied-filters';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
-import { Data, RECORD } from './model/data.js';
+import { Data } from './model/data.js';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
 import { Localizer } from './locales/localizer';
+import { OverdueAssignmentsCardFilter } from './components/overdue-assignments-card';
 
 /**
  * @property {Boolean} useTestData - if true, use canned data; otherwise call the LMS
@@ -78,21 +78,13 @@ class EngagementDashboard extends Localizer(LitElement) {
 	}
 
 	render() {
+		const cardFilters = [
+			OverdueAssignmentsCardFilter
+		].map(filter => ({ ...filter, title: this.localize(filter.title) }));
+
 		this._data = new Data({
 			recordProvider: this.isDemo ? fetchDemoData : fetchData,
-			cardFilters: [
-				// {
-				// 	id: 'd2l-insights-engagement-summary',
-				// 	title: 'Summary',
-				// 	countUniqueField: 'UserId',
-				// 	messageProvider: () => 'users'
-				// }
-				{
-					id: 'd2l-insights-overdue-assignments-card',
-					title: 'Overdue Assignments',
-					filter: (record) => record[RECORD.OVERDUE] > 0
-				}
-			]
+			cardFilters: cardFilters
 		});
 
 		return html`
