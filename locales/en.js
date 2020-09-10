@@ -45,5 +45,7 @@ export default {
 	"components.insights-current-final-grade-card.numberOfStudents": "Number of Students",
 	"components.insights-current-final-grade-card.textLabel": "This chart displays the current final grade for each user per course",
 
-	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments."
+	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
+
+	"components.insights-applied-filters.clear-all": "Clear all"
 };
