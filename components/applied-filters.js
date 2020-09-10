@@ -65,9 +65,7 @@ class AppliedFilters extends Localizer(MobxLitElement) {
 	_filterChangeHandler(event) {
 		if (event.detail.menuItemKey === clearAllOptionId) {
 			Object.keys(this.data.cardFilters)
-				.map(k => this.data.cardFilters[k])
-				.filter(f => f.isApplied)
-				.forEach(f => f.isApplied = false);
+				.forEach(f => this.data.setApplied(f, false));
 			return;
 		}
 
