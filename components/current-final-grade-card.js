@@ -44,6 +44,15 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
+
+			.d2l-insights-empty-chart-message {
+				color: var(--d2l-color-ferrite);
+				display: flex-wrap;
+				font-size: 14px;
+				line-height: 1rem;
+				margin: 3%;
+				vertical-align: middle;
+			}
 		`;
 	}
 
@@ -66,10 +75,22 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
-		return html`<div class="d2l-insights-final-grade-container">
-		<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
-		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}"></d2l-labs-chart>
-		</div>`;
+		const options = this.chartOptions;
+		if (!options.series[1].data.length) {
+			return html`<div class="d2l-insights-final-grade-container">
+				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
+				<div class="d2l-insights-summary-card-body">
+					<span class="d2l-insights-empty-chart-message">
+						${this.localize('components.insights-current-final-grade-card.emptyMessage')}
+					</span>
+				</div>
+			</div>`;
+		} else {
+			return html`<div class="d2l-insights-final-grade-container">
+				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
+				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}"></d2l-labs-chart>
+			</div>`;
+		}
 	}
 
 	get chartOptions() {
