@@ -11,7 +11,7 @@ export class CardFilter {
 		this.countUniqueField = countUniqueField;
 		this.data = data;
 		this.isApplied = isApplied;
-		this.filter = filter || this._defaultFilter;
+		this.filter = filter;
 	}
 
 	get isLoading() {
