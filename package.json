@@ -1,6 +1,6 @@
 {
   "name": "d2l-engagement-dashboard",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "D2L Insights Engagement Dashboard",
   "repository": "https://github.com/Brightspace/insights-engagement-dashboard.git",
   "private": true,

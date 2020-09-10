@@ -51,8 +51,8 @@ describe('d2l-insights-applied-filters', () => {
 
 			const filters = appliedFilters.shadowRoot.querySelectorAll('d2l-labs-multi-select-list-item');
 			expect(filters.length).to.equal(2);
-			expect(filters[0].text).to.equal('Clear all');
-			expect(filters[1].text).to.equal('filter 2');
+			expect(filters[0].text).to.equal('filter 2');
+			expect(filters[1].text).to.equal('Clear all');
 		});
 
 		it('should clear all card filters if click on Clear All button', async() => {
@@ -65,7 +65,7 @@ describe('d2l-insights-applied-filters', () => {
 			expect(appliedFilters).to.exist;
 
 			const filters = appliedFilters.shadowRoot.querySelectorAll('d2l-labs-multi-select-list-item');
-			filters[0].shadowRoot.querySelector('.d2l-labs-multi-select-delete-icon').click();
+			filters[1].shadowRoot.querySelector('.d2l-labs-multi-select-delete-icon').click();
 			expect(Object.entries(data.cardFilters).filter(f => f.isApplied)).to.be.empty;
 		});
 
@@ -79,7 +79,7 @@ describe('d2l-insights-applied-filters', () => {
 			expect(appliedFilters).to.exist;
 
 			const filters = appliedFilters.shadowRoot.querySelectorAll('d2l-labs-multi-select-list-item');
-			filters[1].shadowRoot.querySelector('.d2l-labs-multi-select-delete-icon').click();
+			filters[0].shadowRoot.querySelector('.d2l-labs-multi-select-delete-icon').click();
 			const clearedFilters = Object.keys(data.cardFilters)
 				.map(key => data.cardFilters[key])
 				.filter(f => !f.isApplied);
