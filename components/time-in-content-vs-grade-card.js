@@ -25,11 +25,11 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				border-style: solid;
 				border-width: 1.5px;
 				display: inline-block;
-				height: 270px;
+				height: 275px;
 				margin-right: 10px;
-				margin-top: 10px;
+				margin-top: 19.5px;
 				padding: 10px;
-				width: 590px;
+				width: 592px;
 			}
 			:host([hidden]) {
 				display: none;

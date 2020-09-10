@@ -40,11 +40,16 @@ class EngagementDashboard extends Localizer(LitElement) {
 					display: none;
 				}
 
-				/* NB: this layout css doesn't quite work; do not ship */
-				.d2l-insights-summary-container {
+				.data-wrapper {
 					display: flex;
 					flex-wrap: wrap;
-					margin-bottom: 25px;
+				}
+
+				.d2l-insights-summary-container {
+					display: grid;
+					grid-template-columns: max-content max-content;
+					flex-wrap: wrap;
+					margin-bottom: 5px;
 					margin-top: 10px;
 				}
 
@@ -105,14 +110,17 @@ class EngagementDashboard extends Localizer(LitElement) {
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
-				<div class="d2l-insights-summary-container">
-					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
-					<d2l-insights-current-final-grade-card .data="${this._data}"></d2l-insights-current-final-grade-card>
-					<d2l-insights-overdue-assignments-card .data="${this._data}"></d2l-insights-overdue-assignments-card>
-					<d2l-insights-debug-card .data="${this._data}" metric-to-display="recordsLength" title="Records" message="number of records within filter parameters"></d2l-insights-debug-card>
-					<d2l-insights-time-in-content-vs-grade-card .data="${this._data}"></d2l-insights-time-in-content-vs-grade-card>
+				<div class="data-wrapper">
+					<div class="d2l-insights-summary-container">
+						<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
+						<d2l-insights-overdue-assignments-card .data="${this._data}"></d2l-insights-overdue-assignments-card>
+						<d2l-insights-debug-card .data="${this._data}" metric-to-display="recordsLength" title="Records" message="number of records within filter parameters"></d2l-insights-debug-card>
+						<d2l-insights-debug-card .data="${this._data}" metric-to-display="recordsLength" title="Records" message="number of records within filter parameters"></d2l-insights-debug-card>
+					</div>
+					<div><d2l-insights-current-final-grade-card .data="${this._data}"></d2l-insights-current-final-grade-card></div>
+					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}"></d2l-insights-time-in-content-vs-grade-card></div>
+					<div></div><!--Empty div for course last access chart-->
 				</div>
-
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 				<d2l-insights-users-table .data="${this._data}"></d2l-insights-users-table>
 		`;
