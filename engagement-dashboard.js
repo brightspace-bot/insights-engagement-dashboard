@@ -41,15 +41,15 @@ class EngagementDashboard extends Localizer(LitElement) {
 					display: none;
 				}
 
-				.data-wrapper {
+				.d2l-insights-data-wrapper {
 					display: flex;
 					flex-wrap: wrap;
 				}
 
 				.d2l-insights-summary-container {
 					display: grid;
-					grid-template-columns: max-content max-content;
 					flex-wrap: wrap;
+					grid-template-columns: max-content max-content;
 					margin-bottom: 5px;
 					margin-top: 10px;
 				}
@@ -112,7 +112,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
-				<div class="data-wrapper">
+				<div class="d2l-insights-data-wrapper">
 					<div class="d2l-insights-summary-container-applied-filters">
 						<d2l-insights-applied-filters .data="${this._data}"></d2l-insights-applied-filters>
 					</div>
@@ -137,14 +137,6 @@ class EngagementDashboard extends Localizer(LitElement) {
 	_orgUnitFilterChange(event) {
 		event.stopPropagation();
 		this._data.applyOrgUnitFilters(event.target.selected);
-		// <div class="d2l-insights-summary-container">
-		// <div class="d2l-insights-summary-container-applied-filters">
-		// 	<d2l-insights-applied-filters .data="${this._data}"></d2l-insights-applied-filters>
-		// </div>
-		// <d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
-		// <d2l-insights-current-final-grade-card .data="${this._data}"></d2l-insights-current-final-grade-card>
-		// <d2l-insights-overdue-assignments-card .data="${this._data}"></d2l-insights-overdue-assignments-card>
-		// <d2l-insights-time-in-content-vs-grade-card .data="${this._data}"></d2l-insights-time-in-content-vs-grade-card>
 	}
 
 	_semesterFilterChange(event) {
