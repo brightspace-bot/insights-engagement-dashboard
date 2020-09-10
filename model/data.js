@@ -131,7 +131,7 @@ export class Data {
 
 	// @computed
 	get users() {
-		const userIdsInView = unique(this.records.map(record => record[RECORD.USER_ID]));
+		const userIdsInView = unique(this.getRecordsInView().map(record => record[RECORD.USER_ID]));
 		return userIdsInView.map(userId => this._userDictionary.get(userId));
 	}
 
@@ -183,7 +183,7 @@ export class Data {
 	getRecordsInView(id) {
 		// if id is omitted, all applied filters will be used
 		const otherFilters = Object.values(this.cardFilters).filter(f => f.isApplied && f.id !== id);
-		return this.records.filter(r => otherFilters.every(f => r[f.field] < f.threshold));
+		return this.records.filter(r => otherFilters.every(f => f.shouldInclude(r)));
 	}
 
 	getStats(id) {
@@ -192,7 +192,7 @@ export class Data {
 		const filter = this.cardFilters[id];
 
 		// NB: due to compact API response, we'll need to map field names to array indices
-		const matchingRecords = recordsInView.filter(r => !filter.field || (r[filter.field] < filter.threshold));
+		const matchingRecords = recordsInView.filter(r => !filter.filter || filter.shouldInclude(r));
 		const value = countUnique(matchingRecords, filter.countUniqueField);
 
 		let delta = null;

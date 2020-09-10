@@ -35,6 +35,10 @@ class DebugCard extends Localizer(MobxLitElement) {
 		if (this.metricToDisplay === 'recordsLength') {
 			return this.data.records.length;
 		}
+		if (this.metricToDisplay === 'filteredRecordsLength') {
+			return this.data.getRecordsInView().length;
+		}
+
 		return this.data.orgUnits.length;
 	}
 

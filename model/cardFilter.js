@@ -1,7 +1,7 @@
 import { computed, decorate, observable } from 'mobx';
 
 export class CardFilter {
-	constructor({ id, messageProvider, title, field, deltaField, threshold, countUniqueField, isApplied = false }, data) {
+	constructor({ id, messageProvider, title, field, deltaField, threshold, countUniqueField, isApplied = false, filter }, data) {
 		this.id = id;
 		this.messageProvider = messageProvider;
 		this.title = title;
@@ -11,6 +11,7 @@ export class CardFilter {
 		this.countUniqueField = countUniqueField;
 		this.data = data;
 		this.isApplied = isApplied;
+		this.filter = filter;
 	}
 
 	get isLoading() {
@@ -23,6 +24,10 @@ export class CardFilter {
 
 	get stats() {
 		return this.data.getStats(this.id);
+	}
+
+	shouldInclude(record) {
+		return this.filter(record);
 	}
 }
 
