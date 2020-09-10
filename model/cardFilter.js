@@ -29,10 +29,6 @@ export class CardFilter {
 	shouldInclude(record) {
 		return this.filter(record);
 	}
-
-	_defaultFilter(record) {
-		return record[this.field] < this.threshold;
-	}
 }
 
 decorate(CardFilter, {
