@@ -182,7 +182,7 @@ export class Data {
 		const filter = this.cardFilters[id];
 
 		// NB: due to compact API response, we'll need to map field names to array indices
-		const matchingRecords = recordsInView.filter(r => !filter.field || (r[filter.field] < filter.threshold));
+		const matchingRecords = recordsInView.filter(r => !filter.filter || filter.shouldInclude(r));
 		const value = countUnique(matchingRecords, filter.countUniqueField);
 
 		let delta = null;

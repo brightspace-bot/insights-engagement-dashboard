@@ -32,7 +32,8 @@ class OverdueAssignmentsCard extends Localizer(MobxLitElement) {
 	render() {
 		return html`
 			<d2l-labs-summary-card
-				is-value-clickable id="d2l-insights-engagement-overdue-assignments"
+				id="d2l-insights-engagement-overdue-assignments"
+				is-value-clickable
 				.data="${this.data}"
 				card-title="${this._cardTitle}"
 				card-value="${this._cardValue}"
