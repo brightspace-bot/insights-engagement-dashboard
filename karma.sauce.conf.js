@@ -42,10 +42,7 @@ module.exports = config => {
 				nodeResolve: true,
 			},
 			sauceLabs: {
-				testName: 'Unit Tests',
-				connectOptions: {
-					doctor: true
-				}
+				testName: 'Unit Tests'
 			},
 			customLaunchers: customLaunchers,
 			browsers: Object.keys(customLaunchers),
