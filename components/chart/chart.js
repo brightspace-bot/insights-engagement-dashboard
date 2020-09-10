@@ -62,11 +62,9 @@ class Chart extends LitElement {
 
 	updated() {
 		if (!this.immutable && this.chart) {
-			console.log('update chart');
 			this.chart.update(this.options, ...(this.updateArgs || [true, true]));
 		}
 		else {
-			console.log('create chart');
 			this.createChart();
 		}
 	}
