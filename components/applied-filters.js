@@ -35,7 +35,7 @@ class AppliedFilters extends Localizer(MobxLitElement) {
 			return  html``;
 		}
 
-		filters.unshift({
+		filters.push({
 			id: clearAllOptionId,
 			title: this.localize('components.insights-applied-filters.clear-all'),
 			isApplied: true
