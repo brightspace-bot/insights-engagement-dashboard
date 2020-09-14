@@ -36,7 +36,8 @@ class OrgUnitAncestors {
 		}
 
 		const ancestorsSet = new Set([orgUnitId]);
-		parentsMap.get(orgUnitId).forEach(parent => {
+		const parentIds = parentsMap.get(orgUnitId) || [];
+		parentIds.forEach(parent => {
 			const ancestorsOfParent = this._addOrgUnitToAncestorsMap(parent, parentsMap);
 			ancestorsOfParent.forEach(ancestor => ancestorsSet.add(ancestor));
 		});
