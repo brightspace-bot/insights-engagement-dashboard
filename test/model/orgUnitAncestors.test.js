@@ -78,6 +78,14 @@ describe('orgUnitAncestors', () => {
 			});
 		});
 
+		it('should not throw if an org unit has no parents', () => {
+			new OrgUnitAncestors([
+				[6606, 'Org', mockOuTypes.organization, [0]],
+				[1001, 'Department 1', mockOuTypes.department, null],
+				[1002, 'Department 2', mockOuTypes.department, [6606]]
+			]);
+		});
+
 		it('returns undefined if an orgUnit was not in the map', () => {
 			expect(sut.getAncestorsFor(12345)).to.be.undefined;
 		});
