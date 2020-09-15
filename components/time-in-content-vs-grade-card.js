@@ -60,6 +60,22 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		return this.data.currentFinalGradesVsTimeInContent;
 	}
 
+	get _plotDataForLeftBottomQuadrant() {
+		return this._preparedPlotData.filter(i => i[0] <= this._avgTimeInContent && i[1] <= this._avgGrade);
+	}
+
+	get _plotDataForLeftTopQuadrant() {
+		return this._preparedPlotData.filter(i => i[0] < this._avgTimeInContent && i[1] > this._avgGrade);
+	}
+
+	get _plotDataForRightTopQuadrant() {
+		return this._preparedPlotData.filter(i => i[0] >= this._avgTimeInContent && i[1] >= this._avgGrade);
+	}
+
+	get _plotDataForRightBottomQuadrant() {
+		return this._preparedPlotData.filter(i => i[0] > this._avgTimeInContent && i[1] < this._avgGrade);
+	}
+
 	get _avgGrade() {
 		return this.data.avgGrade;
 	}
@@ -68,7 +84,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		return this.data.avgTimeInContent;
 	}
 	_filterByQuadrants(x, y) {
-		console.log(`x: ${x}y: ${y}`); //out of scope - returning data for respective plot quadrant clicked by user
+		console.log(`x: ${x}y: ${y}`);
 	}
 
 	render() {
@@ -81,13 +97,32 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	get chartOptions() {
 		const that = this;
 		return {
-			colors: ['var(--d2l-color-amethyst-plus-1)'],
 			chart: {
 				type: 'scatter',
 				height: 250,
 				events: {
 					click: function(event) {
 						that._filterByQuadrants(event.xAxis[0].value, event.yAxis[0].value);
+						const x = Math.floor(event.xAxis[0].value);
+						const y = Math.floor(event.yAxis[0].value);
+
+						let n;
+						if (x <= that._avgTimeInContent && y <= that._avgGrade) n = 0;
+						else if (x < that._avgTimeInContent && y > that._avgGrade) n = 1;
+						else if (x >= that._avgTimeInContent && y >= that._avgGrade) n = 2;
+						else n = 3;
+
+						for (let i = 0; i < this.series[n].data.length; i++) {
+							this.series[n].data[i].update({
+								marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' }
+							});
+						}
+					},
+					redraw: function() {
+						console.log('redraw');
+					},
+					update: function() {
+						console.log('update');
 					}
 				}
 			},
@@ -164,21 +199,40 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 					width: 1.5
 				}]
 			},
-			series: [{
-				data: this._preparedPlotData,
-				marker: {
-					radius: 5
-				},
-				states: {
-					hover: {
-						enabled: false
-					}
-				},
-				accessibility: {
-					pointDescriptionFormatter: function(point) {
-						return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
+			plotOptions: {
+				series: {
+					marker: {
+						radius: 5,
+						fillColor: 'var(--d2l-color-amethyst-plus-1)',
+						symbol: 'circle'
+					},
+					states: {
+						hover: {
+							enabled: false
+						}
+					},
+					accessibility: {
+						pointDescriptionFormatter: function(point) {
+							return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
+						}
 					}
 				}
+			},
+			series: [{
+				name: 'LeftBottomQuadrant',
+				data: this._plotDataForLeftBottomQuadrant
+			},
+			{
+				name: 'LeftTopQuadrant',
+				data: this._plotDataForLeftTopQuadrant
+			},
+			{
+				name: 'RightTopQuadrant',
+				data: this._plotDataForRightTopQuadrant
+			},
+			{
+				name: 'RightBottomQuadrant',
+				data: this._plotDataForRightBottomQuadrant
 			}]
 		};
 	}
