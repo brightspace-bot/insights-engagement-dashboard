@@ -32,20 +32,21 @@ class SummaryCard extends LitElement {
 				border-radius: 15px;
 				border-style: solid;
 				border-width: 1.5px;
-				display: inline-block;
 				height: 121px;
 				margin-right: 10px;
 				margin-top: 10px;
 				padding: 15px;
 				width: 280px;
-				position: relative;
+				display: flex;
+   				flex-direction: column;
 			}
 
 			.d2l-insights-summary-card-body {
 				align-items: center;
 				display: flex;
 				height: 100%;
-				margin-top: -15px;
+				position: relative;
+
 			}
 
 			.d2l-insights-summary-card-title {
@@ -100,9 +101,9 @@ class SummaryCard extends LitElement {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
-			<d2l-insights-overlay spinner-size="100" ?loading="${this.isLoading}"></d2l-insights-overlay>
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
 			<div class="d2l-insights-summary-card-body">
+			<d2l-insights-overlay spinner-size="100" ?loading="${this.isLoading}"></d2l-insights-overlay>
 			${this.isValueClickable ?
 			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
 			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
