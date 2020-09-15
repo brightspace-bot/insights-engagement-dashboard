@@ -1,3 +1,4 @@
+import './overlay';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 
 /**
@@ -12,7 +13,8 @@ class SummaryCard extends LitElement {
 			title: { type: String, attribute: 'card-title' },
 			value: { type: String, attribute: 'card-value' },
 			message: { type: String, attribute: 'card-message' },
-			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' }
+			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' },
+			isLoading: { type: Boolean, attribute: 'loading' }
 		};
 	}
 
@@ -36,6 +38,7 @@ class SummaryCard extends LitElement {
 				margin-top: 10px;
 				padding: 15px;
 				width: 280px;
+				position: relative;
 			}
 
 			.d2l-insights-summary-card-body {
@@ -97,6 +100,7 @@ class SummaryCard extends LitElement {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
+			<d2l-insights-overlay spinner-size="100" ?loading="${this.isLoading}"></d2l-insights-overlay>
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
 			<div class="d2l-insights-summary-card-body">
 			${this.isValueClickable ?
