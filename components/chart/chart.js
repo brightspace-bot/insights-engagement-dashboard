@@ -54,8 +54,6 @@ class Chart extends LitElement {
 			true,
 			true
 		];
-
-		this.isLoading = true;
 	}
 
 	static get styles() {
