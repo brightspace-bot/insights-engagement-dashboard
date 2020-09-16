@@ -102,7 +102,7 @@ class SummaryCard extends LitElement {
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
-			<div class="d2l-insights-summary-card-body">
+			<div class="d2l-insights-summary-card-body" aria-hidden="${this.isLoading}">
 			<d2l-insights-overlay spinner-size="100" ?loading="${this.isLoading}"></d2l-insights-overlay>
 			${this.isValueClickable ?
 			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
