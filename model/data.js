@@ -39,6 +39,7 @@ export class Data {
 		this.recordProvider = recordProvider;
 		this._orgUnitAncestors = null;
 		this._userDictionary = null;
+		this._TiCVsGradeSelected = false;
 
 		// @observables
 		this.isLoading = true;
@@ -153,8 +154,12 @@ export class Data {
 			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
 	}
 
+	setTiCVsGradeCardSelection(boolValue) {
+		this._TiCVsGradeSelected = boolValue;
+	}
+
 	get currentFinalGradesVsTimeInContent() {
-		return  this.getRecordsInView()
+		return this.getRecordsInView('d2l-insights-time-in-content-vs-grade-card')
 			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
 			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]) //keep in count students either without grade or without time in content
 			.filter(item => item[0] || item[1]);
@@ -171,7 +176,7 @@ export class Data {
 	}
 
 	get usersCountsWithOverdueAssignments() {
-		return this.getRecordsInView()
+		return this.getRecordsInView('d2l-insights-overdue-assignments-card')
 			.reduce((acc, record) => {
 				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
 					acc.add(record[RECORD.USER_ID]);
@@ -234,6 +239,8 @@ decorate(Data, {
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
 	currentFinalGradesVsTimeInContent: computed,
+	avgTimeInContent: computed,
+	avgGrade: computed,
 	currentFinalGrades: computed,
 	cardFilters: observable,
 	isLoading: observable,

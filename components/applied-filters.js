@@ -66,10 +66,12 @@ class AppliedFilters extends Localizer(MobxLitElement) {
 		if (event.detail.menuItemKey === clearAllOptionId) {
 			Object.keys(this.data.cardFilters)
 				.forEach(f => this.data.setApplied(f, false));
+			this.data.setTiCVsGradeCardSelection(false);
 			return;
 		}
 
 		this.data.setApplied(event.detail.menuItemKey, event.detail.selected);
+		this.data.setTiCVsGradeCardSelection(false);
 	}
 }
 customElements.define('d2l-insights-applied-filters', AppliedFilters);

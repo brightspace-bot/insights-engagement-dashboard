@@ -3,6 +3,20 @@ import './chart/chart';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../model/data.js';
+
+export const QUADRANT = {
+	LEFT_BOTTOM: 0,
+	LEFT_TOP: 1,
+	RIGHT_TOP: 2,
+	RIGHT_BOTTOM: 3
+};
+
+export const TimeInContentVsGradeCardFilter  = {
+	id: 'd2l-insights-time-in-content-vs-grade-card',
+	title: 'components.insights-time-in-content-vs-grade-card.timeInContentVsGrade',
+	filter: (record) => record[RECORD.TIME_IN_CONTENT] > 2000  //TODO
+};
 
 class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 
@@ -60,6 +74,22 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		return this.data.currentFinalGradesVsTimeInContent;
 	}
 
+	get _plotDataForLeftBottomQuadrant() {
+		return this._preparedPlotData.filter(i => i[0] <= this._avgTimeInContent && i[1] <= this._avgGrade);
+	}
+
+	get _plotDataForLeftTopQuadrant() {
+		return this._preparedPlotData.filter(i => i[0] < this._avgTimeInContent && i[1] > this._avgGrade);
+	}
+
+	get _plotDataForRightTopQuadrant() {
+		return this._preparedPlotData.filter(i => i[0] >= this._avgTimeInContent && i[1] >= this._avgGrade);
+	}
+
+	get _plotDataForRightBottomQuadrant() {
+		return this._preparedPlotData.filter(i => i[0] > this._avgTimeInContent && i[1] < this._avgGrade);
+	}
+
 	get _avgGrade() {
 		return this.data.avgGrade;
 	}
@@ -67,8 +97,17 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	get _avgTimeInContent() {
 		return this.data.avgTimeInContent;
 	}
-	_filterByQuadrants(x, y) {
-		console.log(`x: ${x}y: ${y}`); //out of scope - returning data for respective plot quadrant clicked by user
+
+	_setSelected() {
+		this.data.setTiCVsGradeCardSelection(true);
+	}
+
+	get isSelected() {
+		return this.data._TiCVsGradeSelected;
+	}
+
+	_valueClickHandler() {
+		this.data.setApplied('d2l-insights-time-in-content-vs-grade-card', true);
 	}
 
 	render() {
@@ -80,14 +119,56 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 
 	get chartOptions() {
 		const that = this;
+
 		return {
-			colors: ['var(--d2l-color-amethyst-plus-1)'],
 			chart: {
 				type: 'scatter',
 				height: 250,
 				events: {
 					click: function(event) {
-						that._filterByQuadrants(event.xAxis[0].value, event.yAxis[0].value);
+						//coloring  all point in blue
+						for (let q = 0; q < 4; q++) {
+							for (let i = 0; i < this.series[q].data.length; i++) {
+								this.series[q].data[i].update({
+									marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
+								});
+							}
+						}
+
+						const x = Math.floor(event.xAxis[0].value);
+						const y = Math.floor(event.yAxis[0].value);
+
+						let quadNum;
+						if (x <= that._avgTimeInContent && y <= that._avgGrade) quadNum = QUADRANT.LEFT_BOTTOM;
+						else if (x < that._avgTimeInContent && y > that._avgGrade) quadNum = QUADRANT.LEFT_TOP;
+						else if (x >= that._avgTimeInContent && y >= that._avgGrade) quadNum = QUADRANT.RIGHT_TOP;
+						else quadNum = QUADRANT.RIGHT_BOTTOM;
+
+						const quadArray = Object.values(QUADRANT);
+						quadArray.splice(quadNum, 1);
+
+						//coloring all non selected point in grey after selection
+						for (let q = 0; q < quadArray.length; q++) {
+							for (let i = 0; i < this.series[quadArray[q]].data.length; i++) {
+								this.series[quadArray[q]].data[i].update({
+									marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' }
+								});
+							}
+						}
+						that._setSelected();
+						that._valueClickHandler();
+					},
+					update: function() {
+						//coloring  all point in blue
+						if (!that.isSelected) {
+							for (let q = 0; q < 4; q++) {
+								for (let i = 0; i < this.series[q].data.length; i++) {
+									this.series[q].data[i].update({
+										marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
+									});
+								}
+							}
+						}
 					}
 				}
 			},
@@ -164,21 +245,40 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 					width: 1.5
 				}]
 			},
-			series: [{
-				data: this._preparedPlotData,
-				marker: {
-					radius: 5
-				},
-				states: {
-					hover: {
-						enabled: false
-					}
-				},
-				accessibility: {
-					pointDescriptionFormatter: function(point) {
-						return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
+			plotOptions: {
+				series: {
+					marker: {
+						radius: 5,
+						fillColor: 'var(--d2l-color-amethyst-plus-1)',
+						symbol: 'circle'
+					},
+					states: {
+						hover: {
+							enabled: false
+						}
+					},
+					accessibility: {
+						pointDescriptionFormatter: function(point) {
+							return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
+						}
 					}
 				}
+			},
+			series: [{
+				name: 'LeftBottomQuadrant',
+				data: this._plotDataForLeftBottomQuadrant
+			},
+			{
+				name: 'LeftTopQuadrant',
+				data: this._plotDataForLeftTopQuadrant
+			},
+			{
+				name: 'RightTopQuadrant',
+				data: this._plotDataForRightTopQuadrant
+			},
+			{
+				name: 'RightBottomQuadrant',
+				data: this._plotDataForRightBottomQuadrant
 			}]
 		};
 	}
