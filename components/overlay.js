@@ -20,10 +20,12 @@ class Overlay extends LitElement {
 		return css`
 			:host {
 				display: block;
-				height: 100%;
 				left: 0;
 				position: absolute;
 				top: 0;
+			}
+			:host([loading]) {
+				height: 100%;
 				width: 100%;
 				z-index: 1;
 			}
