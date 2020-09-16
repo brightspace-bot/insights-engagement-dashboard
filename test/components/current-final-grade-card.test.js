@@ -16,7 +16,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async function() {
-			this.timeout(4000);
+			this.timeout(3000);
 
 			const el = await fixture(html`<d2l-insights-current-final-grade-card .data="${data}"></d2l-insights-current-final-grade-card>`);
 			await expect(el).to.be.accessible();
