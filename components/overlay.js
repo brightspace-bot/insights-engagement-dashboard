@@ -20,10 +20,10 @@ class Overlay extends LitElement {
 		return css`
 			:host {
 				display: block;
+				height: 100%;
+				left: 0;
 				position: absolute;
 				top: 0;
-				left: 0;
-				height: 100%;
 				width: 100%;
 				z-index: 1;
 			}
@@ -32,14 +32,14 @@ class Overlay extends LitElement {
 			}
 
 			.d2l-insights-overlay {
-				background-color: white;
-				height: 100%;
-				width: 100%;
-				border-radius: 15px;
-				margin: 1 1 1 1;
-				display: flex;
 				align-items: center;
-    			justify-content: center;
+				background-color: white;
+				border-radius: 15px;
+				display: flex;
+				height: 100%;
+				justify-content: center;
+				margin: 1 1 1 1;
+				width: 100%;
 			}
 		`;
 	}

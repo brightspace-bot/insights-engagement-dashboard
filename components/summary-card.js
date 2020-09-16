@@ -32,13 +32,13 @@ class SummaryCard extends LitElement {
 				border-radius: 15px;
 				border-style: solid;
 				border-width: 1.5px;
+				display: flex;
+				flex-direction: column;
 				height: 121px;
 				margin-right: 10px;
 				margin-top: 10px;
 				padding: 15px;
 				width: 280px;
-				display: flex;
-   				flex-direction: column;
 			}
 
 			.d2l-insights-summary-card-body {
