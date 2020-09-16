@@ -71,7 +71,7 @@ class Chart extends LitElement {
 	render() {
 		return html`
 			<d2l-insights-overlay spinner-size="200" ?loading="${this.isLoading}"></d2l-insights-overlay>
-			<div id="chart-container"></div>
+			<div id="chart-container" aria-hidden="${this.isLoading}" tabindex="${this.isLoading ? -1 : 0}"></div>
       	`;
 	}
 
