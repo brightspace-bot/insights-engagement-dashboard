@@ -2,13 +2,6 @@ import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
-
-/**
- * Requires that parent element has non-static position property. For instance, position: relative;
- *
- * @property {Number} spinner-size
- * @property {Boolean} loading
- */
 class AriaLoadingProgress extends Localizer(MobxLitElement) {
 	static get properties() {
 		return {
