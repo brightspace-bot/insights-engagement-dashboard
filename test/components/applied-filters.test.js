@@ -2,9 +2,12 @@ import '../../components/applied-filters';
 
 import { expect, fixture, html } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
+import sinon from 'sinon/pkg/sinon-esm.js';
 
 describe('d2l-insights-applied-filters', () => {
-	const data = {};
+	const data = {
+		setTiCVsGradeCardSelection : sinon.stub().resolves(false)
+	};
 
 	beforeEach(() => {
 		data.cardFilters = {};
