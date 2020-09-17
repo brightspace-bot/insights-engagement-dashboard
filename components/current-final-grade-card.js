@@ -136,7 +136,6 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 					pointWidth: 37,
 					pointPadding: 0.60,
 					accessibility: {
-						chartContainerLabel: this._cardTitle,
 						description: this._chartDescriptionTextLabel,
 						pointDescriptionFormatter: function(point) {
 							const ix = (point.index + 1) * 10,

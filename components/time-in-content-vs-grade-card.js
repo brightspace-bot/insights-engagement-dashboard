@@ -175,7 +175,6 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 					}
 				},
 				accessibility: {
-					chartContainerLabel: this._cardTitle,
 					pointDescriptionFormatter: function(point) {
 						return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
 					}
