@@ -40,6 +40,7 @@ decorate(CardFilter, {
 	threshold: observable,
 	countUniqueField: observable,
 	isApplied: observable,
+	filter: observable,
 	message: computed,
 	stats: computed
 });

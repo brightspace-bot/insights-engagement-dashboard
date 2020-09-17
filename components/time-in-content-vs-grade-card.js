@@ -3,7 +3,6 @@ import './chart/chart';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { RECORD } from '../model/data.js';
 
 export const QUADRANT = {
 	LEFT_BOTTOM: 0,
@@ -15,7 +14,7 @@ export const QUADRANT = {
 export const TimeInContentVsGradeCardFilter  = {
 	id: 'd2l-insights-time-in-content-vs-grade-card',
 	title: 'components.insights-time-in-content-vs-grade-card.timeInContentVsGrade',
-	filter: (record) => record[RECORD.TIME_IN_CONTENT] > 2000  //TODO
+	filter: (record) => !record
 };
 
 class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
@@ -75,19 +74,19 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get _plotDataForLeftBottomQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] <= this._avgTimeInContent && i[1] <= this._avgGrade);
+		return this._preparedPlotData.filter(i => i[0] < this._avgTimeInContent && i[1] < this._avgGrade);
 	}
 
 	get _plotDataForLeftTopQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] < this._avgTimeInContent && i[1] > this._avgGrade);
+		return this._preparedPlotData.filter(i => i[0] <= this._avgTimeInContent && i[1] >= this._avgGrade);
 	}
 
 	get _plotDataForRightTopQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] >= this._avgTimeInContent && i[1] >= this._avgGrade);
+		return this._preparedPlotData.filter(i => i[0] > this._avgTimeInContent && i[1] > this._avgGrade);
 	}
 
 	get _plotDataForRightBottomQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] > this._avgTimeInContent && i[1] < this._avgGrade);
+		return this._preparedPlotData.filter(i => i[0] >= this._avgTimeInContent && i[1] <= this._avgGrade);
 	}
 
 	get _avgGrade() {
@@ -100,6 +99,10 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 
 	_setSelected() {
 		this.data.setTiCVsGradeCardSelection(true);
+	}
+
+	_setQuadrantNum(quadNum) {
+		this.data.setTiCVsGradeCardFilter(quadNum);
 	}
 
 	get isSelected() {
@@ -139,9 +142,9 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						const y = Math.floor(event.yAxis[0].value);
 
 						let quadNum;
-						if (x <= that._avgTimeInContent && y <= that._avgGrade) quadNum = QUADRANT.LEFT_BOTTOM;
-						else if (x < that._avgTimeInContent && y > that._avgGrade) quadNum = QUADRANT.LEFT_TOP;
-						else if (x >= that._avgTimeInContent && y >= that._avgGrade) quadNum = QUADRANT.RIGHT_TOP;
+						if (x < that._avgTimeInContent && y < that._avgGrade) quadNum = QUADRANT.LEFT_BOTTOM;
+						else if (x <= that._avgTimeInContent && y >= that._avgGrade) quadNum = QUADRANT.LEFT_TOP;
+						else if (x > that._avgTimeInContent && y > that._avgGrade) quadNum = QUADRANT.RIGHT_TOP;
 						else quadNum = QUADRANT.RIGHT_BOTTOM;
 
 						const quadArray = Object.values(QUADRANT);
@@ -157,6 +160,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						}
 						that._setSelected();
 						that._valueClickHandler();
+						that._setQuadrantNum(quadNum);
 					},
 					update: function() {
 						//coloring  all point in blue

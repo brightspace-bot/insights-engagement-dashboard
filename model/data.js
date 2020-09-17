@@ -3,6 +3,7 @@ import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } fro
 
 import { CardFilter } from './cardFilter.js';
 import OrgUnitAncestors from './orgUnitAncestors';
+import { QUADRANT } from './../components/time-in-content-vs-grade-card';
 
 export const RECORD = {
 	ORG_UNIT_ID: 0,
@@ -40,6 +41,7 @@ export class Data {
 		this._orgUnitAncestors = null;
 		this._userDictionary = null;
 		this._TiCVsGradeSelected = false;
+		this._TiCVsGradeQuadNum = 0;
 
 		// @observables
 		this.isLoading = true;
@@ -158,6 +160,16 @@ export class Data {
 		this._TiCVsGradeSelected = boolValue;
 	}
 
+	setTiCVsGradeCardFilter(quadNum) {
+		this._TiCVsGradeQuadNum = quadNum;
+		const filter = this.cardFilters['d2l-insights-time-in-content-vs-grade-card'];
+		console.log(this._TiCVsGradeQuadNum);
+		if (this._TiCVsGradeQuadNum === QUADRANT.LEFT_BOTTOM) { filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] < this.avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] < this.avgGrade; }
+		else if (this._TiCVsGradeQuadNum === QUADRANT.LEFT_TOP) { filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] <= this.avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] >= this.avgGrade; }
+		else if (this._TiCVsGradeQuadNum === QUADRANT.RIGHT_TOP) { filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] > this.avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] > this.avgGrade; }
+		else { filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] >= this.avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] <= this.avgGrade; }
+	}
+
 	get currentFinalGradesVsTimeInContent() {
 		return this.getRecordsInView('d2l-insights-time-in-content-vs-grade-card')
 			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
@@ -245,5 +257,7 @@ decorate(Data, {
 	cardFilters: observable,
 	isLoading: observable,
 	onServerDataReload: action,
-	setApplied: action
+	setApplied: action,
+	setTiCVsGradeCardSelection: action,
+	setTiCVsGradeCardFilter: action
 });
