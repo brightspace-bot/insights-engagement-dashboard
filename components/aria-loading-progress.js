@@ -26,6 +26,9 @@ class AriaLoadingProgress extends Localizer(MobxLitElement) {
 	}
 
 	render() {
+		// loading-start-message is rendered as text node that forces FF to read it, otherwise FF skips it
+		// when loading is finished the code replaces `div` with text node to `div` with aria-label to
+		// to hide loading-finish-message from screen reader (from navigation with arrow keys)
 		return html`
 			<div class="d2l-insights-aria-loading-progress" aria-live="assertive">
 				${this.data.isLoading
