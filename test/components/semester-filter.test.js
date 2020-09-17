@@ -1,5 +1,4 @@
 import '../../components/semester-filter';
-
 import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
@@ -50,12 +49,26 @@ describe('d2l-insights-semester-filter', () => {
 	describe('render', () => {
 		it('should render semesters', async() => {
 			const expectedFilterData = [
-				{ id: '10007', name: 'IPSIS Semester New', displayName: 'IPSIS Semester New (Id: 10007)' },
-				{ id: '121194', name: 'Fall Test Semester', displayName: 'Fall Test Semester (Id: 121194)' },
-				{ id: '120127', name: 'IPSIS Test Semester 1', displayName: 'IPSIS Test Semester 1 (Id: 120127)' }
+				{ id: '10007', name: 'IPSIS Semester New', displayName: 'IPSIS Semester New (Id: 10007)', selected: false },
+				{ id: '121194', name: 'Fall Test Semester', displayName: 'Fall Test Semester (Id: 121194)', selected: false },
+				{ id: '120127', name: 'IPSIS Test Semester 1', displayName: 'IPSIS Test Semester 1 (Id: 120127)', selected: false }
 			];
 
 			const el = await fixture(html`<d2l-insights-semester-filter></d2l-insights-semester-filter>`);
+			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run. Add 200 ms for Firefox on OSX
+			await el.updateComplete;
+
+			expect(el.shadowRoot.querySelector('d2l-insights-dropdown-filter').data).to.deep.equal(expectedFilterData);
+		});
+
+		it('should render with selected items', async() => {
+			const expectedFilterData = [
+				{ id: '10007', name: 'IPSIS Semester New', displayName: 'IPSIS Semester New (Id: 10007)', selected: false },
+				{ id: '121194', name: 'Fall Test Semester', displayName: 'Fall Test Semester (Id: 121194)', selected: true },
+				{ id: '120127', name: 'IPSIS Test Semester 1', displayName: 'IPSIS Test Semester 1 (Id: 120127)', selected: true }
+			];
+
+			const el = await fixture(html`<d2l-insights-semester-filter .preSelected="${[121194, 120127, -1]}"></d2l-insights-semester-filter>`);
 			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run. Add 200 ms for Firefox on OSX
 			await el.updateComplete;
 

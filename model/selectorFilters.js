@@ -40,11 +40,15 @@ export class SemesterSelectorFilter {
 	}
 
 	shouldInclude(record) {
+		return this.shouldIncludeOrgUnitId(record[RECORD.ORG_UNIT_ID]);
+	}
+
+	shouldIncludeOrgUnitId(orgUnitId) {
 		if (!hasSelections(this.selected) || !this._orgUnitAncestors) {
 			return true;
 		}
 
-		return this._orgUnitAncestors.hasAncestorsInList(record[RECORD.ORG_UNIT_ID], this.selected);
+		return this._orgUnitAncestors.hasAncestorsInList(orgUnitId, this.selected);
 	}
 
 	shouldReloadFromServer(newSemesterIds) {
@@ -61,9 +65,9 @@ export class SemesterSelectorFilter {
 }
 
 export class OrgUnitSelectorFilter {
-	constructor({ selectedOrgUnitIds, isRecordsTruncated }, orgUnitAncestors) {
+	constructor({ defaultViewOrgUnitIds, selectedOrgUnitIds, isRecordsTruncated }, orgUnitAncestors) {
 		this._latestServerQuery = selectedOrgUnitIds || [];
-		this.selected = selectedOrgUnitIds || [];
+		this.selected = defaultViewOrgUnitIds || selectedOrgUnitIds || [];
 		this._isRecordsTruncated = isRecordsTruncated;
 		this._orgUnitAncestors = orgUnitAncestors;
 	}

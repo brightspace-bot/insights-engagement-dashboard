@@ -4,25 +4,29 @@ import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-ou-filter', () => {
+	const orgUnits = [
+		[3, 'Department 1', 2, [5]],
+		[2, 'Course 2', 3, [3, 4]],
+		[1, 'Course 1', 3, [3, 4]],
+		[6, 'Course 3', 3, [7, 4]],
+		[9, 'Faculty 2', 7, [6607]],
+		[8, 'Course 4', 3, [5]],
+		[99, 'Course 5', 3, [5]], // filtered out
+		[7, 'Department 2', 2, [5]],
+		[4, 'Semester', 52, [6607]],
+		[5, 'Faculty 1', 7, [6607]],
+		[6607, 'Dev', 1, [0]]
+	];
 	const data = {
 		serverData: {
 			records: [],
-			orgUnits: [
-				[3, 'Department 1', 2, [5]],
-				[2, 'Course 2', 3, [3, 4]],
-				[1, 'Course 1', 3, [3, 4]],
-				[6, 'Course 3', 3, [7, 4]],
-				[9, 'Faculty 2', 7, [6607]],
-				[8, 'Course 4', 3, [5]],
-				[7, 'Department 2', 2, [5]],
-				[4, 'Semester', 52, [6607]],
-				[5, 'Faculty 1', 7, [6607]],
-				[6607, 'Dev', 1, [0]]
-			],
+			orgUnits,
 			users: [],
-			semesterTypeId: 52,
-			selectedOrgUnitIds: [2, 8]
-		}
+			semesterTypeId: 52
+		},
+		// org units after semester filter: 99 goes away entirely; 5 will be included due to its children
+		orgUnits: orgUnits.filter(x => ![99, 5].includes(x[0])),
+		selectedOrgUnitIds: [2, 8]
 	};
 
 	describe('constructor', () => {
@@ -45,7 +49,7 @@ describe('d2l-insights-ou-filter', () => {
 			expect(selector.tree.tree).to.deep.equal({
 				'1': [1, 'Course 1', 3, [3, 4], [], 'none', false],
 				'2': [2, 'Course 2', 3, [3, 4], [], 'explicit', false],
-				'3': [3, 'Department 1', 2, [5], [1, 2], 'indeterminate', false],
+				'3': [3, 'Department 1', 2, [5], [2, 1], 'indeterminate', false],
 				// semester is omitted
 				'5': [5, 'Faculty 1', 7, [6607], [3, 7, 8], 'indeterminate', false],
 				'6': [6, 'Course 3', 3, [7, 4], [], 'none', false],
@@ -55,6 +59,21 @@ describe('d2l-insights-ou-filter', () => {
 				'6607': [6607, 'Dev', 1, [0], [5, 9], 'none', false]
 			});
 			expect(selector.tree.leafTypes).to.deep.equal([3]);
+		});
+
+		it('should keep nodes open on redraw', async() => {
+			const el = await fixture(html`<d2l-insights-ou-filter .data="${data}"></d2l-insights-ou-filter>`);
+			let selector = el.shadowRoot.querySelector('d2l-insights-tree-filter');
+			selector.tree.setOpen(3, true);
+			selector.tree.setOpen(5, true);
+
+			// shallow copy to force render
+			el.data = { ...data };
+			await el.updateComplete;
+			selector = el.shadowRoot.querySelector('d2l-insights-tree-filter');
+			await selector.treeUpdateComplete;
+
+			expect(selector.tree.open).to.deep.equal([3, 5]);
 		});
 	});
 

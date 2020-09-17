@@ -142,6 +142,12 @@ describe('d2l-insights-tree-filter', () => {
 			expect(node(3).isOpen).to.be.false;
 			expect(node(7).isOpen).to.be.true;
 		});
+
+		it('should return the list of open node ids', async() => {
+			node(3).simulateArrowClick();
+			await el.treeUpdateComplete;
+			expect(el.tree.open).to.deep.equal([3, 5, 7]);
+		});
 	});
 
 	describe('selection', () => {
