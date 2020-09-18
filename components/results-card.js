@@ -31,7 +31,14 @@ class ResultsCard extends Localizer(MobxLitElement) {
 
 	render() {
 		return html`
-			<d2l-labs-summary-card id="d2l-insights-engagement-results" .data="${this.data}" card-title="${this._cardTitle}" card-value="${this._cardValue}" card-message="${this._cardMessage}"></d2l-labs-summary-card>
+			<d2l-labs-summary-card
+				id="d2l-insights-engagement-results"
+				.data="${this.data}"
+				card-title="${this._cardTitle}"
+				card-value="${this._cardValue}"
+				card-message="${this._cardMessage}"
+				?loading="${this.data.isLoading}"
+			></d2l-labs-summary-card>
 		`;
 	}
 }

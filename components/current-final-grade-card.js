@@ -67,7 +67,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		const options = this.chartOptions;
-		if (!options.series[1].data.length) {
+		if (!this.data.isLoading && !options.series[1].data.length) {
 			return html`<div class="d2l-insights-final-grade-container">
 				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
 				<div class="d2l-insights-summary-card-body">
@@ -79,7 +79,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		} else {
 			return html`<div class="d2l-insights-final-grade-container">
 				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
-				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}"></d2l-labs-chart>
+				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}" ?loading="${this.data.isLoading}" ></d2l-labs-chart>
 			</div>`;
 		}
 	}

@@ -44,6 +44,7 @@ class OverdueAssignmentsCard extends Localizer(MobxLitElement) {
 				card-title="${this._cardTitle}"
 				card-value="${this._cardValue}"
 				card-message="${this._cardMessage}"
+				?loading="${this.data.isLoading}"
 				@d2l-labs-summary-card-value-click=${this._valueClickHandler}
 			></d2l-labs-summary-card>
 		`;

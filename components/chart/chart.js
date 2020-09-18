@@ -1,8 +1,9 @@
 import 'highcharts';
 import 'highcharts/modules/histogram-bellcurve';
 import 'highcharts/modules/accessibility';
+import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 
-import { html, LitElement } from 'lit-element';
+import { css, html, LitElement } from 'lit-element';
 /**
  * based on highcharts-webcomponent (npm) - main modifications: convert to plain .js, fix import, fix typing,
  * remove flag for suppressing updates, prevent unneeded update on first render
@@ -15,7 +16,8 @@ class Chart extends LitElement {
 			constructorType: { type: String },
 			highcharts: { type: Object, attribute: false },
 			immutable: { type: Boolean },
-			updateArgs: { type: Array, attribute: false }
+			updateArgs: { type: Array, attribute: false },
+			isLoading: { type: Boolean, attribute: 'loading' }
 		};
 	}
 
@@ -54,10 +56,23 @@ class Chart extends LitElement {
 		];
 	}
 
+	static get styles() {
+		return css`
+			:host {
+				display: inline-block;
+				position: relative;
+			}
+			:host([hidden]) {
+				display: none;
+			}
+		`;
+	}
+
 	render() {
 		return html`
-        <div></div>
-      `;
+			<d2l-insights-overlay spinner-size="200" ?loading="${this.isLoading}"></d2l-insights-overlay>
+			<div id="chart-container" tabindex="${this.isLoading ? -1 : 0}"></div>
+      	`;
 	}
 
 	updated() {
@@ -103,7 +118,7 @@ class Chart extends LitElement {
 	}
 
 	get chartContainer() {
-		return this.shadowRoot.querySelector('div');
+		return this.shadowRoot.querySelector('#chart-container');
 	}
 }
 customElements.define('d2l-labs-chart', Chart);

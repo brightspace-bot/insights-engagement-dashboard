@@ -48,5 +48,8 @@ export default {
 
 	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 
-	"components.insights-applied-filters.clear-all": "Clear all"
+	"components.insights-applied-filters.clear-all": "Clear all",
+
+	"components.insights-aria-loading-progress.loading-start": "Loading is in progress",
+	"components.insights-aria-loading-progress.loading-finish": "Loading is finished"
 };
