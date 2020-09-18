@@ -92,7 +92,10 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			animation: false,
 			tooltip: { enabled: false },
 			title: {
-				text: '' // override default title
+				text: this._cardTitle, // override default title
+				style: {
+					display: 'none'
+				}
 			},
 			xAxis: {
 				title: { text: '' }, // override default title

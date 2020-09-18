@@ -99,6 +99,16 @@ class Chart extends LitElement {
 		}
 		else {
 			// Create a chart
+			H.setOptions({
+				lang: {
+					accessibility: {
+						screenReaderSection: {
+							// fixes axe error: Landmarks must have a unique role or role/label/title
+							beforeRegionLabel: ''
+						}
+					}
+				}
+			});
 			this.chart = H[constructorType](this.chartContainer, this.options, this.chartCreated.bind(this));
 		}
 	}
