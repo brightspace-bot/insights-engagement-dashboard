@@ -10,10 +10,10 @@ export const BEFORE_CHART_FORMAT = '<h3>{chartTitle}</h3>' +
 	'<div>{typeDescription}</div>' +
 	'<div>{chartSubtitle}</div>' +
 	'<div>{chartLongdesc}</div>' +
-	'<div>{playAsSoundButton}</div>'+
-	'<div>{viewTableButton}</div>'+
-	'<div>{xAxisDescription}</div>'+
-	'<div>{yAxisDescription}</div>'+
+	'<div>{playAsSoundButton}</div>' +
+	'<div>{viewTableButton}</div>' +
+	'<div>{xAxisDescription}</div>' +
+	'<div>{yAxisDescription}</div>' +
 	'<div>{annotationsTitle}{annotationsList}</div>';
 
 /**
