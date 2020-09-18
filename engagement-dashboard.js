@@ -82,8 +82,8 @@ class EngagementDashboard extends Localizer(LitElement) {
 
 	render() {
 		const cardFilters = [
-			OverdueAssignmentsCardFilter,
-			TimeInContentVsGradeCardFilter
+			TimeInContentVsGradeCardFilter,
+			OverdueAssignmentsCardFilter
 		].map(filter => ({ ...filter, title: this.localize(filter.title) }));
 
 		this._data = new Data({

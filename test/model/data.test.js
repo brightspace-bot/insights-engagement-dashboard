@@ -371,10 +371,10 @@ describe('Data', () => {
 		});
 	});
 
-	describe('currentFinalGradesVsTimeInContent', () => {
+	describe('tiCVsGrades', () => {
 		it('should return the array of tuples: current final grade vs time in content, mins', async() => {
 			const expected = [[33, 22], [41, 33], [66, 44], [75, 55], [0, 33], [0, 100], [0, 100], [0, 100], [0, 73], [0, 73], [58, 41], [83, 55], [50, 39], [116, 93], [100, 75], [66, 84], [0, 98], [0, 89], [0, 98], [0, 88], [0, 99], [0, 42], [0, 66]];
-			expect(sut.currentFinalGradesVsTimeInContent).to.deep.equal(expected);
+			expect(sut.tiCVsGrades).to.deep.equal(expected);
 		});
 	});
 
@@ -392,10 +392,10 @@ describe('Data', () => {
 		});
 	});
 
-	describe('avgGrade', () => {
+	describe('avgGrades', () => {
 		it('should return a average current grade', async() => {
 			const expected = 69;
-			expect(sut.avgGrade).to.deep.equal(expected);
+			expect(sut.avgGrades).to.deep.equal(expected);
 		});
 	});
 });

@@ -14,7 +14,7 @@ export const QUADRANT = {
 export const TimeInContentVsGradeCardFilter  = {
 	id: 'd2l-insights-time-in-content-vs-grade-card',
 	title: 'components.insights-time-in-content-vs-grade-card.timeInContentVsGrade',
-	filter: (record) => !record
+	filter: (record) => record //init function
 };
 
 class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
@@ -70,47 +70,44 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get _preparedPlotData() {
-		return this.data.currentFinalGradesVsTimeInContent;
+		return this.data.tiCVsGrades;
 	}
 
 	get _plotDataForLeftBottomQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] < this._avgTimeInContent && i[1] < this._avgGrade);
+		return this._preparedPlotData.filter(i => i[0] < this._avgTimeInContent && i[1] < this._avgGrades);
 	}
 
 	get _plotDataForLeftTopQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] <= this._avgTimeInContent && i[1] >= this._avgGrade);
+		return this._preparedPlotData.filter(i => i[0] <= this._avgTimeInContent && i[1] >= this._avgGrades);
 	}
 
 	get _plotDataForRightTopQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] > this._avgTimeInContent && i[1] > this._avgGrade);
+		return this._preparedPlotData.filter(i => i[0] > this._avgTimeInContent && i[1] > this._avgGrades);
 	}
 
 	get _plotDataForRightBottomQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] >= this._avgTimeInContent && i[1] <= this._avgGrade);
+		return this._preparedPlotData.filter(i => i[0] >= this._avgTimeInContent && i[1] <= this._avgGrades);
 	}
 
-	get _avgGrade() {
-		return this.data.avgGrade;
+	get _avgGrades() {
+		return this.data.avgGrades;
 	}
 
 	get _avgTimeInContent() {
 		return this.data.avgTimeInContent;
 	}
 
-	_setSelected() {
-		this.data.setTiCVsGradeCardSelection(true);
-	}
-
 	_setQuadrantNum(quadNum) {
-		this.data.setTiCVsGradeCardFilter(quadNum);
+		this.data.setTiCVsGradesCardFilter(quadNum);
 	}
 
 	get isSelected() {
-		return this.data._TiCVsGradeSelected;
+		return this.data._tiCVsGradesSelected;
 	}
 
 	_valueClickHandler() {
 		this.data.setApplied('d2l-insights-time-in-content-vs-grade-card', true);
+		this.data.setTiCVsGradesCardSelection(true);
 	}
 
 	render() {
@@ -142,9 +139,9 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						const y = Math.floor(event.yAxis[0].value);
 
 						let quadNum;
-						if (x < that._avgTimeInContent && y < that._avgGrade) quadNum = QUADRANT.LEFT_BOTTOM;
-						else if (x <= that._avgTimeInContent && y >= that._avgGrade) quadNum = QUADRANT.LEFT_TOP;
-						else if (x > that._avgTimeInContent && y > that._avgGrade) quadNum = QUADRANT.RIGHT_TOP;
+						if (x < that._avgTimeInContent && y < that._avgGrades) quadNum = QUADRANT.LEFT_BOTTOM;
+						else if (x <= that._avgTimeInContent && y >= that._avgGrades) quadNum = QUADRANT.LEFT_TOP;
+						else if (x > that._avgTimeInContent && y > that._avgGrades) quadNum = QUADRANT.RIGHT_TOP;
 						else quadNum = QUADRANT.RIGHT_BOTTOM;
 
 						const quadArray = Object.values(QUADRANT);
@@ -158,7 +155,6 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 								});
 							}
 						}
-						that._setSelected();
 						that._valueClickHandler();
 						that._setQuadrantNum(quadNum);
 					},
@@ -245,7 +241,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				plotLines: [{
 					color: 'var(--d2l-color-celestine)',
 					dashStyle: 'Dash',
-					value: this._avgGrade,
+					value: this._avgGrades,
 					width: 1.5
 				}]
 			},

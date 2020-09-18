@@ -40,8 +40,11 @@ export class Data {
 		this.recordProvider = recordProvider;
 		this._orgUnitAncestors = null;
 		this._userDictionary = null;
-		this._TiCVsGradeSelected = false;
-		this._TiCVsGradeQuadNum = 0;
+		this._tiCVsGradesQuadNum = 0;
+		this._tiCVsGradesSelected = false;
+		this._overdueAssignmentSelected = false;
+		this._avgTimeInContent = 0;
+		this._avgGrades = 0;
 
 		// @observables
 		this.isLoading = true;
@@ -156,45 +159,80 @@ export class Data {
 			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
 	}
 
-	setTiCVsGradeCardSelection(boolValue) {
-		this._TiCVsGradeSelected = boolValue;
-	}
-
-	setTiCVsGradeCardFilter(quadNum) {
-		this._TiCVsGradeQuadNum = quadNum;
-		const filter = this.cardFilters['d2l-insights-time-in-content-vs-grade-card'];
-		console.log(this._TiCVsGradeQuadNum);
-		if (this._TiCVsGradeQuadNum === QUADRANT.LEFT_BOTTOM) { filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] < this.avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] < this.avgGrade; }
-		else if (this._TiCVsGradeQuadNum === QUADRANT.LEFT_TOP) { filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] <= this.avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] >= this.avgGrade; }
-		else if (this._TiCVsGradeQuadNum === QUADRANT.RIGHT_TOP) { filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] > this.avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] > this.avgGrade; }
-		else { filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] >= this.avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] <= this.avgGrade; }
-	}
-
-	get currentFinalGradesVsTimeInContent() {
-		return this.getRecordsInView('d2l-insights-time-in-content-vs-grade-card')
+	get tiCVsGrades() {
+		let records;
+		if (this._tiCVsGradesSelected) {
+			records = this.getRecordsInView();
+		} else {
+			records = this.getRecordsInView('d2l-insights-time-in-content-vs-grade-card');
+		}
+		return records
 			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
 			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]) //keep in count students either without grade or without time in content
 			.filter(item => item[0] || item[1]);
 	}
 
-	get avgTimeInContent() {
-		const arrayOfTimeInContent =  this.currentFinalGradesVsTimeInContent.map(item => item[0]);
-		return arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
+	setTiCVsGradesCardSelection(boolValue) {
+		this._tiCVsGradesSelected = boolValue;
 	}
 
-	get avgGrade() {
-		const arrayOfGrades = this.currentFinalGradesVsTimeInContent.map(item => item[1]);
-		return arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
+	setTiCVsGradesCardFilter(quadNum) {
+		this._tiCVsGradesQuadNum = quadNum;
+		const filter = this.cardFilters['d2l-insights-time-in-content-vs-grade-card'];
+
+		if (this._tiCVsGradesQuadNum === QUADRANT.LEFT_BOTTOM) {
+			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] < this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] < this._avgGrades;
+		}
+		else if (this._tiCVsGradesQuadNum === QUADRANT.LEFT_TOP) {
+			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] <= this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] >= this._avgGrades;
+		}
+		else if (this._tiCVsGradesQuadNum === QUADRANT.RIGHT_TOP) {
+			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] > this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] > this._avgGrades;
+		}
+		else {
+			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] >= this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] <= this._avgGrades;
+		}
+	}
+
+	get avgTimeInContent() {
+		//if the TiCVsGrades card was selected and his filter was applied, return the previous avg value
+		if (this._tiCVsGradesSelected && this.cardFilters['d2l-insights-time-in-content-vs-grade-card'].isApplied) {
+			return this._avgTimeInContent;
+		}
+		const arrayOfTimeInContent =  this.tiCVsGrades.map(item => item[0]);
+		this._avgTimeInContent = arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
+		return this._avgTimeInContent;
+	}
+
+	get avgGrades() {
+		//if the TiCVsGrades card was selected and his filter was applied, return the previous avg value
+		if (this._tiCVsGradesSelected && this.cardFilters['d2l-insights-time-in-content-vs-grade-card'].isApplied) {
+			return this._avgGrades;
+		}
+		const arrayOfGrades = this.tiCVsGrades.map(item => item[1]);
+		this._avgGrades = arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
+		return this._avgGrades;
 	}
 
 	get usersCountsWithOverdueAssignments() {
-		return this.getRecordsInView('d2l-insights-overdue-assignments-card')
+		let records;
+		if (this._overdueAssignmentSelected) {
+			records = this.getRecordsInView();
+		} else {
+			records = this.getRecordsInView('d2l-insights-overdue-assignments-card');
+		}
+
+		return records
 			.reduce((acc, record) => {
 				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
 					acc.add(record[RECORD.USER_ID]);
 				}
 				return acc;
 			}, 	new Set()).size;
+	}
+
+	overdueAssignmentSelected(boolValue) {
+		this._overdueAssignmentSelected = boolValue;
 	}
 
 	getRecordsInView(id) {
@@ -250,14 +288,15 @@ decorate(Data, {
 	users: computed,
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
-	currentFinalGradesVsTimeInContent: computed,
+	tiCVsGrades: computed,
 	avgTimeInContent: computed,
-	avgGrade: computed,
+	avgGrades: computed,
 	currentFinalGrades: computed,
 	cardFilters: observable,
 	isLoading: observable,
 	onServerDataReload: action,
 	setApplied: action,
-	setTiCVsGradeCardSelection: action,
-	setTiCVsGradeCardFilter: action
+	setTiCVsGradesCardSelection: action,
+	setTiCVsGradesCardFilter: action,
+	overdueAssignmentSelected: action
 });
