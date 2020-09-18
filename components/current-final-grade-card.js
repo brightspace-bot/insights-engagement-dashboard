@@ -1,5 +1,5 @@
-import './chart/chart';
 import { css, html } from 'lit-element/lit-element.js';
+import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
@@ -147,6 +147,11 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 						}
 					}
 				},
+			},
+			accessibility: {
+				screenReaderSection: {
+					beforeChartFormat: BEFORE_CHART_FORMAT
+				}
 			},
 			series: [{
 				type: 'histogram',
