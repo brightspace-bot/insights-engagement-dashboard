@@ -6,8 +6,9 @@ const dataEndpoint = '/d2l/api/ap/unstable/insights/data/engagement';
  * @param {[Number]} roleIds
  * @param {[Number]} semesterIds
  * @param {[Number]} orgUnitIds
+ * @param {Boolean} defaultView if true, request that the server select a limited set of data for first view
  */
-export async function fetchData({ roleIds = [], semesterIds = [], orgUnitIds = [] }) {
+export async function fetchData({ roleIds = [], semesterIds = [], orgUnitIds = [], defaultView = false }) {
 	const url = new URL(dataEndpoint, window.location.origin);
 	if (roleIds) {
 		url.searchParams.set('selectedRolesCsv', roleIds.join(','));
@@ -18,6 +19,7 @@ export async function fetchData({ roleIds = [], semesterIds = [], orgUnitIds = [
 	if (orgUnitIds) {
 		url.searchParams.set('selectedOrgUnitIdsCsv', orgUnitIds.join(','));
 	}
+	url.searchParams.set('defaultView', defaultView ? 'true' : 'false');
 	const response = await fetch(url.toString());
 	return await response.json();
 }

@@ -31,7 +31,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 	render() {
 		return html`<div class="ou-filter" ?loading="${this.data.isLoading}">
 			<d2l-insights-tree-filter
-				.tree="${this._tree}"
+				.tree="${this._getTree()}"
 				opener-text="${this.localize('components.org-unit-filter.name-all-selected')}"
 				opener-text-selected="${this.localize('components.org-unit-filter.name-some-selected')}"
 				@d2l-insights-tree-filter-select="${this._onChange}"
@@ -54,28 +54,47 @@ class OuFilter extends Localizer(MobxLitElement) {
 		));
 	}
 
-	get _tree() {
-		// index by id
-		// every object gets an additional three fields: an array of children, a selectedState, and an isOpen boolean
-		// the children array is so we can look up both parents (provided by the server) and children directly
-		const tree = {};
+	_getTree() {
+		// on redraw (e.g. new server data), ensure open nodes stay open so the user doesn't have
+		// to go open a parent again when selecting several children
+		const openNodes = new Set((this._tree && this._tree.open) || []);
+
+		// index all org units by id for quick lookup while building the filtered tree
+		const fullTree = {};
 		this.data.serverData.orgUnits
 			.filter(x => x[TYPE] !== this.data.serverData.semesterTypeId)
+			.forEach(x => fullTree[x[ID]] = x);
+
+		// Now build tree filtered by selected semesters. For each matching org unit, make sure its ancestors
+		// are included even if they don't match the semester filter themselves (e.g. a course offering is
+		// in the current semester, but the course template is not).
+		// Every object gets an additional three fields: an array of children, a selectedState, and an isOpen boolean.
+		// The children array is so we can look up both parents (provided by the server), and children directly.
+		const filteredTree = {};
+		this.data.orgUnits
+			.filter(x => x[TYPE] !== this.data.serverData.semesterTypeId)
 			.forEach(x => {
-				tree[x[ID]] = [...x, [], 'none', false];
+				this._addNodeIfNew(x, filteredTree, fullTree, openNodes);
 			});
 
-		this._fillChildrenArrays(tree);
-
-		return new Tree(tree, this.data.serverData.selectedOrgUnitIds, [COURSE_OFFERING]);
+		this._tree = new Tree(
+			filteredTree,
+			this.data.selectedOrgUnitIds,
+			[COURSE_OFFERING]
+		);
+		return this._tree;
 	}
 
-	_fillChildrenArrays(tree) {
-		Object.values(tree).forEach(node => this._addIdToParents(node, tree));
-	}
+	_addNodeIfNew(node, filteredTree, fullTree, openNodes) {
+		if (!node || filteredTree[node[ID]]) return;
 
-	_addIdToParents(child, tree) {
-		child[PARENTS].forEach(parentId => tree[parentId] && tree[parentId][CHILDREN].push(child[ID]));
+		filteredTree[node[ID]] = [...node, [], 'none', openNodes.has(node[ID])];
+		node[PARENTS].forEach(parentId => {
+			this._addNodeIfNew(fullTree[parentId], filteredTree, fullTree, openNodes);
+			if (filteredTree[parentId]) {
+				filteredTree[parentId][CHILDREN].push(node[ID]);
+			}
+		});
 	}
 }
 customElements.define('d2l-insights-ou-filter', OuFilter);

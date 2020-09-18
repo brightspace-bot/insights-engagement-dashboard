@@ -6,8 +6,8 @@ import { fetchSemesters } from '../model/lms';
 import { Localizer } from '../locales/localizer';
 
 /**
- * @property {{id: string, displayName: string, selected: boolean}[]} _filterData
- * @property {string[]} selected - array of selected ids
+ * @property {number[]} selected - array of selected ids (read-only)
+ * @property {number[]} preSelected - array of ids selected by code (write-only)
  * @property {number} page-size
  * @property {boolean} demo
  * @fires d2l-insights-semester-filter-change
@@ -19,6 +19,7 @@ class SemesterFilter extends Localizer(LitElement) {
 		return {
 			isDemo: { type: Boolean, attribute: 'demo' },
 			pageSize: { type: Number, attribute: 'page-size' },
+			preSelected: { type: Array, attribute: false },
 			_filterData: { type: Array, attribute: false },
 			_bookmark: { type: String, attribute: false },
 			_search: { types: String, attribute: false }
@@ -31,10 +32,14 @@ class SemesterFilter extends Localizer(LitElement) {
 		this._filterData = [];
 		this._bookmark = null;
 		this.pageSize = 3;
+		this.preSelected = [];
 	}
 
 	get selected() {
-		return this.shadowRoot.querySelector('d2l-insights-dropdown-filter').selected;
+		return this.shadowRoot
+			.querySelector('d2l-insights-dropdown-filter')
+			.selected
+			.map(semesterId => Number(semesterId));
 	}
 
 	async firstUpdated() {
@@ -46,7 +51,7 @@ class SemesterFilter extends Localizer(LitElement) {
 		return html`
 			<d2l-insights-dropdown-filter
 				name="${this.localize('components.semester-filter.name')}"
-				.data="${this._filterData}"
+				.data="${this._filterDataWithSelections}"
 
 				@d2l-insights-dropdown-filter-selected="${this._updateFilterSelections}"
 				@d2l-insights-dropdown-filter-selection-cleared="${this._updateFilterSelections}"
@@ -54,6 +59,11 @@ class SemesterFilter extends Localizer(LitElement) {
 			>
 			</d2l-insights-dropdown-filter>
 		`;
+	}
+
+	get _filterDataWithSelections() {
+		const selectedSet = new Set(this.preSelected);
+		return this._filterData.map(item =>	({ ...item, selected: selectedSet.has(Number(item.id)) }));
 	}
 
 	async _loadData() {

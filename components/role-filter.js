@@ -6,7 +6,6 @@ import { fetchRoles } from '../model/lms';
 import { Localizer } from '../locales/localizer';
 
 /**
- * @property {{id: string, displayName: string}[]} _filterData
  * @fires d2l-insights-role-filter-change
  * @fires d2l-insights-role-filter-close
  */
@@ -34,7 +33,10 @@ class RoleFilter extends Localizer(LitElement) {
 	}
 
 	get selected() {
-		return this.shadowRoot.querySelector('d2l-insights-dropdown-filter').selected;
+		return this.shadowRoot
+			.querySelector('d2l-insights-dropdown-filter')
+			.selected
+			.map(roleId => Number(roleId));
 	}
 
 	_setRoleData(roleData) {

@@ -1,6 +1,6 @@
 // adding variables here to match signature of real LMS. The filters don't actually work though.
 // eslint-disable-next-line no-unused-vars
-export async function fetchData({ roleIds, semesterIds, orgUnitIds }) {
+export async function fetchData({ roleIds, semesterIds, orgUnitIds, defaultView = false }) {
 	const demoData = {
 		records: [
 			[1, 100, 500, 1, 33, 1000],
@@ -15,14 +15,15 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds }) {
 		],
 		orgUnits: [
 			[1, 'Course 1', 3, [3, 4]],
-			[2, 'Course 2', 3, [3, 4]],
+			[2, 'Course 2', 3, [3, 10]],
 			[6, 'Course 3 has a surprisingly long name, but nonetheless this kind of thing is bound to happen sometimes and we do need to design for it. Is that not so?', 3, [7, 4]],
 			[8, 'ZCourse 4', 3, [5]],
 			[3, 'Department 1', 2, [5]],
 			[7, 'Department 2 has a longer name', 2, [5]],
-			[4, 'Semester', 25, [6606]],
+			[4, 'Semester 1', 25, [6606]],
+			[10, 'Semester 2', 25, [6606]],
 			[5, 'Faculty 1', 7, [6606]],
-			[9, 'Faculty 2', 7, [6606]],
+			[9, 'Faculty 2', 7, [6606, 10]],
 			[6606, 'Dev', 1, [0]]
 		],
 		users: [ // some of which are out of order
@@ -39,7 +40,10 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds }) {
 			[1100, 'JTest', 'JStudent']
 		],
 		semesterTypeId: 25,
-		selectedOrgUnitIds: [1, 2]
+		selectedSemestersIds: semesterIds,
+		selectedRolesIds: roleIds,
+		selectedOrgUnitIds: orgUnitIds,
+		defaultViewOrgUnitIds: defaultView ? [1, 2] : null
 	};
 	return new Promise(resolve => setTimeout(() => resolve(demoData), 100));
 }
@@ -70,6 +74,14 @@ export async function fetchSemesters(pageSize, bookmark, search) {
 			HasMoreItems: false
 		},
 		Items: [
+			{
+				orgUnitId: 4,
+				orgUnitName: 'Semester 1'
+			},
+			{
+				orgUnitId: 10,
+				orgUnitName: 'Semester 2'
+			},
 			{
 				orgUnitId: 10007,
 				orgUnitName: 'IPSIS Semester New'

@@ -7,7 +7,7 @@ import { Localizer } from '../locales/localizer';
 
 /**
  * @property {string} name
- * @property {{id: string, displayName: string, _selected: boolean}[]} data
+ * @property {{id: string, displayName: string, selected: boolean}[]} data
  * @property {string[]} selected - returns list of ids for selected items
  * @property {string} filter - current search filter value; only matching items will be visible
  * @property {boolean} disable-search
@@ -47,18 +47,18 @@ class DropdownFilter extends Localizer(LitElement) {
 
 	get selected() {
 		return this.data
-			.filter(item => item._selected)
+			.filter(item => item.selected)
 			.map(item => item.id);
 	}
 
 	get _selectedData() {
-		return this.data.filter(item => item._selected);
+		return this.data.filter(item => item.selected);
 	}
 
 	constructor() {
 		super();
 
-		/** {{id: string, displayName: string, _selected: boolean}[]} */
+		/** {{id: string, displayName: string, selected: boolean}[]} */
 		this.data = [];
 		this.name = '';
 		this.filter = '';
@@ -101,7 +101,7 @@ class DropdownFilter extends Localizer(LitElement) {
 					${this.data.map(item => html`<d2l-filter-dropdown-option
  						text="${item.displayName}"
  						value="${item.id}"
- 						?selected="${item._selected}"
+ 						?selected="${item.selected}"
  						?hidden="${!!this.filter && !item.displayName.toLowerCase().includes(this.filter.toLowerCase())}"
  					></d2l-filter-dropdown-option>`)}
 
@@ -125,7 +125,7 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	_setSelectedState(id, selected) {
-		this.data = this.data.map(x => (x.id === id ? { ...x, _selected: selected } : x));
+		this.data = this.data.map(x => (x.id === id ? { ...x, selected: selected } : x));
 	}
 
 	_handleSearchedClick(event) {
@@ -133,7 +133,7 @@ class DropdownFilter extends Localizer(LitElement) {
 	}
 
 	_clearSelectionClick() {
-		this.data = this.data.map(x => ({ ...x, _selected: false }));
+		this.data = this.data.map(x => ({ ...x, selected: false }));
 
 		/**
 		 * @event d2l-insights-dropdown-filter-selection-cleared
