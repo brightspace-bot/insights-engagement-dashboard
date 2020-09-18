@@ -31,7 +31,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 	render() {
 		return html`<div class="ou-filter" ?loading="${this.data.isLoading}">
 			<d2l-insights-tree-filter
-				.tree="${this._tree}"
+				.tree="${this._getTree()}"
 				opener-text="${this.localize('components.org-unit-filter.name-all-selected')}"
 				opener-text-selected="${this.localize('components.org-unit-filter.name-some-selected')}"
 				@d2l-insights-tree-filter-select="${this._onChange}"
@@ -54,10 +54,10 @@ class OuFilter extends Localizer(MobxLitElement) {
 		));
 	}
 
-	get _tree() {
+	_getTree() {
 		// on redraw (e.g. new server data), ensure open nodes stay open so the user doesn't have
 		// to go open a parent again when selecting several children
-		const openNodes = new Set((this.__tree && this.__tree.open) || []);
+		const openNodes = new Set((this._tree && this._tree.open) || []);
 
 		// index all org units by id for quick lookup while building the filtered tree
 		const fullTree = {};
@@ -77,12 +77,12 @@ class OuFilter extends Localizer(MobxLitElement) {
 				this._addNodeIfNew(x, filteredTree, fullTree, openNodes);
 			});
 
-		this.__tree = new Tree(
+		this._tree = new Tree(
 			filteredTree,
 			this.data.selectedOrgUnitIds,
 			[COURSE_OFFERING]
 		);
-		return this.__tree;
+		return this._tree;
 	}
 
 	_addNodeIfNew(node, filteredTree, fullTree, openNodes) {
@@ -91,7 +91,9 @@ class OuFilter extends Localizer(MobxLitElement) {
 		filteredTree[node[ID]] = [...node, [], 'none', openNodes.has(node[ID])];
 		node[PARENTS].forEach(parentId => {
 			this._addNodeIfNew(fullTree[parentId], filteredTree, fullTree, openNodes);
-			filteredTree[parentId] && filteredTree[parentId][CHILDREN].push(node[ID]);
+			if (filteredTree[parentId]) {
+				filteredTree[parentId][CHILDREN].push(node[ID]);
+			}
 		});
 	}
 }
