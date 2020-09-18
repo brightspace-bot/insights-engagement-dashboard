@@ -7,7 +7,7 @@ import sinon from 'sinon/pkg/sinon-esm.js';
 describe('d2l-insights-applied-filters', () => {
 	const data = {
 		setTiCVsGradesCardSelection : sinon.stub().resolves(false),
-		overdueAssignmentSelected : sinon.stub().resolves(false)
+		setOverdueAssignmentCardSelected : sinon.stub().resolves(false)
 	};
 
 	beforeEach(() => {

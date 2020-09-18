@@ -231,7 +231,7 @@ export class Data {
 			}, 	new Set()).size;
 	}
 
-	overdueAssignmentSelected(boolValue) {
+	setOverdueAssignmentCardSelected(boolValue) {
 		this._overdueAssignmentSelected = boolValue;
 	}
 
@@ -298,5 +298,5 @@ decorate(Data, {
 	setApplied: action,
 	setTiCVsGradesCardSelection: action,
 	setTiCVsGradesCardFilter: action,
-	overdueAssignmentSelected: action
+	setOverdueAssignmentCardSelected: action
 });

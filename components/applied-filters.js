@@ -68,7 +68,7 @@ class AppliedFilters extends Localizer(MobxLitElement) {
 				.forEach(f => this.data.setApplied(f, false));
 
 			this.data.setTiCVsGradesCardSelection(false);
-			this.data.overdueAssignmentSelected(false);
+			this.data.setOverdueAssignmentCardSelected(false);
 			return;
 		}
 
@@ -78,7 +78,7 @@ class AppliedFilters extends Localizer(MobxLitElement) {
 			this.data.setTiCVsGradesCardSelection(false);
 		}
 		if (event.detail.menuItemKey === 'd2l-insights-overdue-assignments-card') {
-			this.data.overdueAssignmentSelected(false);
+			this.data.setOverdueAssignmentCardSelected(false);
 		}
 	}
 }
