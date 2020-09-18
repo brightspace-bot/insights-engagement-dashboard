@@ -5,7 +5,16 @@ import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 
 import { css, html, LitElement } from 'lit-element';
 
-export const BEFORE_CHART_FORMAT = '<h3>{chartTitle}</h3><div>{typeDescription}</div><div>{chartSubtitle}</div><div>{chartLongdesc}</div><div>{playAsSoundButton}</div><div>{viewTableButton}</div><div>{xAxisDescription}</div><div>{yAxisDescription}</div><div>{annotationsTitle}{annotationsList}</div>';
+// use default highcharts's template but with <h3> instead of <h4> to fix axe heading-order error
+export const BEFORE_CHART_FORMAT = '<h3>{chartTitle}</h3>' +
+	'<div>{typeDescription}</div>' +
+	'<div>{chartSubtitle}</div>' +
+	'<div>{chartLongdesc}</div>' +
+	'<div>{playAsSoundButton}</div>'+
+	'<div>{viewTableButton}</div>'+
+	'<div>{xAxisDescription}</div>'+
+	'<div>{yAxisDescription}</div>'+
+	'<div>{annotationsTitle}{annotationsList}</div>';
 
 /**
  * based on highcharts-webcomponent (npm) - main modifications: convert to plain .js, fix import, fix typing,
