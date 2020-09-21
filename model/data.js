@@ -42,6 +42,7 @@ export class Data {
 		this.recordProvider = recordProvider;
 		this._orgUnitAncestors = null;
 		this._userDictionary = null;
+		this._recordsLength = 0;
 
 		// @observables
 		this.tiCVsGradesQuadNum = -1;
@@ -174,9 +175,10 @@ export class Data {
 	}
 
 	get currentFinalGrades() {
-		//keep in count students without grade (grade = null), but with time in content
+		//keep in count students with 0 grade, but remove with null
 		return this.getRecordsInView()
-			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
+			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
 			.filter(item => item[0] || item[1])
 			.map(item => (item[1] ? Math.floor(item[1] / 10) * 10 : 0))
 			.map(item => (item === 100 ? 90 : item)); // put grade 100 in bin 90-100
@@ -184,49 +186,32 @@ export class Data {
 
 	get tiCVsGrades() {
 		return this.getRecordsInView(TiCVsGradesFilterId)
-			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
-			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]) //keep in count students either without grade or without time in content
-			.filter(item => item[0] || item[1]);
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
+			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
+			.filter(item => item[0] || item[1])
+			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]); //keep in count students either without grade or without time in content
 	}
 
 	setTiCVsGradesCardFilter(quadNum) {
-		this.tiCVsGradesQuadNum = quadNum;
-		const filter = this.cardFilters[TiCVsGradesFilterId];
-
-		if (this.tiCVsGradesQuadNum === QUADRANT.LEFT_BOTTOM) {
-			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] < this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] < this._avgGrades;
-		}
-		else if (this.tiCVsGradesQuadNum === QUADRANT.LEFT_TOP) {
-			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] <= this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] >= this._avgGrades;
-		}
-		else if (this.tiCVsGradesQuadNum === QUADRANT.RIGHT_TOP) {
-			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] > this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] > this._avgGrades;
-		}
-		else if (this.tiCVsGradesQuadNum === QUADRANT.RIGHT_BOTTOM) {
-			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] >= this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] <= this._avgGrades;
-		}
-		else (filter.filter = (record) => record);
+		this.cardFilters[TiCVsGradesFilterId]._setTiCVsGradesCardFilter(quadNum);
 	}
 
-	get _avgTimeInContent() {
-		//average values calculated only from the initial set of data
-		if (this.avgTimeInContent) {
-			return this.avgTimeInContent;
-		}
+	get checkIfNeedChangeTiCVsGradesAvgValues() {
+		return !(this._recordsLength === this.records.length);
+	}
+
+	get tiCVsGradesAvgValues() {
+		return [this.avgTimeInContent, this.avgGrades];
+	}
+
+	setTiCVsGradesAvgValues() {
+		this._recordsLength = this.records.length;
+
 		const arrayOfTimeInContent =  this.tiCVsGrades.map(item => item[0]);
 		this.avgTimeInContent = arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
-		return this.avgTimeInContent;
-	}
-
-	get _avgGrades() {
-		//average values calculated only from the initial set of data
-		if (this.avgGrades) {
-			return this.avgGrades;
-		}
 
 		const arrayOfGrades = this.tiCVsGrades.map(item => item[1]);
 		this.avgGrades = arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
-		return this.avgGrades;
 	}
 
 	get usersCountsWithOverdueAssignments() {
@@ -316,5 +301,6 @@ decorate(Data, {
 	avgTimeInContent: observable,
 	onServerDataReload: action,
 	setApplied: action,
-	setTiCVsGradesCardFilter: action
+	setTiCVsGradesCardFilter: action,
+	setTiCVsGradesAvgValues: action
 });

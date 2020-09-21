@@ -90,11 +90,17 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get _avgGrades() {
-		return this.data._avgGrades;
+		if (this.data.checkIfNeedChangeTiCVsGradesAvgValues) {
+			this.data.setTiCVsGradesAvgValues();
+		}
+		return this.data.tiCVsGradesAvgValues[1];
 	}
 
 	get _avgTimeInContent() {
-		return this.data._avgTimeInContent;
+		if (this.data.checkIfNeedChangeTiCVsGradesAvgValues) {
+			this.data.setTiCVsGradesAvgValues();
+		}
+		return this.data.tiCVsGradesAvgValues[0];
 	}
 
 	_setQuadrantNum(quadNum) {
@@ -130,11 +136,9 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				events: {
 					click: function(event) {
 						//coloring  all point in blue
-						for (let q = 0; q < 4; q++) {
-							this.series[q].update({
-								marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
-							});
-						}
+						this.series.forEach(series => { series.update({
+							marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
+						});
 
 						const x = Math.floor(event.xAxis[0].value);
 						const y = Math.floor(event.yAxis[0].value);
@@ -145,36 +149,29 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						else if (x > that._avgTimeInContent && y > that._avgGrades) quadNum = QUADRANT.RIGHT_TOP;
 						else quadNum = QUADRANT.RIGHT_BOTTOM;
 
-						const quadArray = Object.values(QUADRANT);
-						quadArray.splice(quadNum, 1);
-
 						//coloring all non selected point in grey after selection
-						for (let q = 0; q < quadArray.length; q++) {
-							this.series[quadArray[q]].update({
-								marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' }
-							});
-						}
+						this.series.forEach(series => {
+							if (Number(series.name) !== quadNum) {
+								series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
+							}
+						});
 						that._valueClickHandler();
 						that._setQuadrantNum(quadNum);
 					},
 					update: function() {
 						//coloring all point in blue
 						if (!that.isApplied) {
-							for (let q = 0; q < 4; q++) {
-								this.series[q].update({
-									marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
-								});
-							}
+							this.series.forEach(series => { series.update({
+								marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
+							});
 						}
-						const quadArray = Object.values(QUADRANT);
-						quadArray.splice(that._QuadrantNum, 1);
 						if (that.isApplied) {
 							//coloring all non selected point in grey
-							for (let k = 0; k < 3; k++) {
-								this.series[quadArray[k]].update({
-									marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' }
-								});
-							}
+							this.series.forEach(series => {
+								if (Number(series.name) !== that._QuadrantNum) {
+									series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
+								}
+							});
 							//coloring selected quadrant point in blue
 							this.series[that._QuadrantNum].update({
 								marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
@@ -284,19 +281,19 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				}
 			},
 			series: [{
-				name: 'LeftBottomQuadrant',
+				name: '0',
 				data: this._plotDataForLeftBottomQuadrant
 			},
 			{
-				name: 'LeftTopQuadrant',
+				name: '1',
 				data: this._plotDataForLeftTopQuadrant
 			},
 			{
-				name: 'RightTopQuadrant',
+				name: '2',
 				data: this._plotDataForRightTopQuadrant
 			},
 			{
-				name: 'RightBottomQuadrant',
+				name: '3',
 				data: this._plotDataForRightBottomQuadrant
 			}]
 		};

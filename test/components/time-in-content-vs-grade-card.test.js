@@ -5,7 +5,8 @@ import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-help
 
 describe('d2l-insights-time-in-content-vs-grade-card', () => {
 	const data = {
-		tiCVsGrades: [[22, 33], [33, 41]]
+		tiCVsGrades: [[22, 33], [33, 41]],
+		tiCVsGradesAvgValues: [11, 22]
 	};
 
 	describe('constructor', () => {

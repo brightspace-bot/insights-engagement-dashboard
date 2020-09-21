@@ -13,7 +13,7 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds, defaultView 
 			[2, 400, 700, 0, 100, 7200],
 			[2, 500, 700, 0, 88, 4000],
 			[8, 200, 700, 0, null, 0],
-			[6, 600, 700, 0, 25, 2000],
+			[6, 600, 700, 0, 95, 2000],
 			[1, 400, 700, 1, 75, 2000]
 		],
 		orgUnits: [
