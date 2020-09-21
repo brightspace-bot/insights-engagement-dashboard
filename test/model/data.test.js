@@ -122,11 +122,13 @@ describe('Data', () => {
 		});
 	};
 
-	const cardFilters = [];
+	const cardFilters = [ { id: 'd2l-insights-time-in-content-vs-grade-card' }, { id: 'd2l-insights-overdue-assignments-card' } ];
 	let sut;
 	beforeEach(async() => {
 		sut = new Data({ recordProvider, cardFilters });
 		await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+		sut.avgTimeInContent = 0;
+		sut.avgGrades = 0;
 	});
 
 	describe('applyRoleFilter', () => {
@@ -366,7 +368,7 @@ describe('Data', () => {
 
 	describe('currentFinalGrades', () => {
 		it('should return the current final grades for users', async() => {
-			const expected = [20, 30, 40, 50, 30, 100, 100, 100, 70, 70, 40, 50, 30, 90, 70, 80, 90, 80, 90, 80, 90, 40, 60];
+			const expected = [20, 30, 40, 50, 30, 90, 90, 90, 70, 70, 40, 50, 30, 90, 70, 80, 90, 80, 90, 80, 90, 40, 60];
 			expect(sut.currentFinalGrades.toString()).to.deep.equal(expected.toString());
 		});
 	});
@@ -388,14 +390,14 @@ describe('Data', () => {
 	describe('avgTimeInContent', () => {
 		it('should return a average time in content', async() => {
 			const expected = 29;
-			expect(sut.avgTimeInContent).to.deep.equal(expected);
+			expect(sut._avgTimeInContent).to.deep.equal(expected);
 		});
 	});
 
 	describe('avgGrades', () => {
 		it('should return a average current grade', async() => {
 			const expected = 69;
-			expect(sut.avgGrades).to.deep.equal(expected);
+			expect(sut._avgGrades).to.deep.equal(expected);
 		});
 	});
 });

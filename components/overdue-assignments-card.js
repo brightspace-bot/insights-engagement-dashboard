@@ -51,7 +51,6 @@ class OverdueAssignmentsCard extends Localizer(MobxLitElement) {
 
 	_valueClickHandler() {
 		this.data.setApplied('d2l-insights-overdue-assignments-card', true);
-		this.data.setOverdueAssignmentCardSelected(true);
 	}
 }
 customElements.define('d2l-insights-overdue-assignments-card', OverdueAssignmentsCard);

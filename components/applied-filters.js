@@ -66,20 +66,9 @@ class AppliedFilters extends Localizer(MobxLitElement) {
 		if (event.detail.menuItemKey === clearAllOptionId) {
 			Object.keys(this.data.cardFilters)
 				.forEach(f => this.data.setApplied(f, false));
-
-			this.data.setTiCVsGradesCardSelection(false);
-			this.data.setOverdueAssignmentCardSelected(false);
 			return;
 		}
-
 		this.data.setApplied(event.detail.menuItemKey, event.detail.selected);
-
-		if (event.detail.menuItemKey === 'd2l-insights-time-in-content-vs-grade-card') {
-			this.data.setTiCVsGradesCardSelection(false);
-		}
-		if (event.detail.menuItemKey === 'd2l-insights-overdue-assignments-card') {
-			this.data.setOverdueAssignmentCardSelected(false);
-		}
 	}
 }
 customElements.define('d2l-insights-applied-filters', AppliedFilters);

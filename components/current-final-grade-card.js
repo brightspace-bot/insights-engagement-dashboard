@@ -96,6 +96,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			},
 			xAxis: {
 				title: { text: '' }, // override default title
+				min: 0,
 				allowDecimals: false,
 				alignTicks: false,
 				tickWidth: 0, // remove tick marks
@@ -143,7 +144,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 							return `${ix - 10} to ${ix}, ${val}.`;
 						}
 					}
-				},
+				}
 			},
 			series: [{
 				type: 'histogram',
@@ -152,7 +153,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				lineWidth: 1,
 				baseSeries: 1,
 				shadow: false,
-				binWidth: 10
+				binWidth: 9.999
 			},
 			{
 				data: this._preparedHistogramData,

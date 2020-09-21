@@ -34,19 +34,19 @@ function unique(array) {
 function countUnique(records, field) {
 	return new Set(records.map(r => r[field])).size;
 }
+const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
+const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
 
 export class Data {
 	constructor({ recordProvider, cardFilters }) {
 		this.recordProvider = recordProvider;
 		this._orgUnitAncestors = null;
 		this._userDictionary = null;
-		this._tiCVsGradesQuadNum = 0;
-		this._tiCVsGradesSelected = false;
-		this._overdueAssignmentSelected = false;
-		this._avgTimeInContent = 0;
-		this._avgGrades = 0;
 
 		// @observables
+		this.tiCVsGradesQuadNum = -1;
+		this.avgTimeInContent = 0;
+		this.avgGrades = 0;
 		this.isLoading = true;
 		this.serverData = {
 			records: [],
@@ -154,85 +154,69 @@ export class Data {
 	}
 
 	get currentFinalGrades() {
+		//keep in count students without grade (grade = null), but with time in content
 		return this.getRecordsInView()
-			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null)
-			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
+			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
+			.filter(item => item[0] || item[1])
+			.map(item => (item[1] ? Math.floor(item[1] / 10) * 10 : 0))
+			.map(item => (item === 100 ? 90 : item)); // put grade 100 in bin 90-100
 	}
 
 	get tiCVsGrades() {
-		let records;
-		if (this._tiCVsGradesSelected) {
-			records = this.getRecordsInView();
-		} else {
-			records = this.getRecordsInView('d2l-insights-time-in-content-vs-grade-card');
-		}
-		return records
+		return this.getRecordsInView(TiCVsGradesFilterId)
 			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
 			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]) //keep in count students either without grade or without time in content
 			.filter(item => item[0] || item[1]);
 	}
 
-	setTiCVsGradesCardSelection(boolValue) {
-		this._tiCVsGradesSelected = boolValue;
-	}
-
 	setTiCVsGradesCardFilter(quadNum) {
-		this._tiCVsGradesQuadNum = quadNum;
-		const filter = this.cardFilters['d2l-insights-time-in-content-vs-grade-card'];
+		this.tiCVsGradesQuadNum = quadNum;
+		const filter = this.cardFilters[TiCVsGradesFilterId];
 
-		if (this._tiCVsGradesQuadNum === QUADRANT.LEFT_BOTTOM) {
+		if (this.tiCVsGradesQuadNum === QUADRANT.LEFT_BOTTOM) {
 			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] < this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] < this._avgGrades;
 		}
-		else if (this._tiCVsGradesQuadNum === QUADRANT.LEFT_TOP) {
+		else if (this.tiCVsGradesQuadNum === QUADRANT.LEFT_TOP) {
 			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] <= this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] >= this._avgGrades;
 		}
-		else if (this._tiCVsGradesQuadNum === QUADRANT.RIGHT_TOP) {
+		else if (this.tiCVsGradesQuadNum === QUADRANT.RIGHT_TOP) {
 			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] > this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] > this._avgGrades;
 		}
-		else {
+		else if (this.tiCVsGradesQuadNum === QUADRANT.RIGHT_BOTTOM) {
 			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] >= this._avgTimeInContent * 60 && record[RECORD.CURRENT_FINAL_GRADE] <= this._avgGrades;
 		}
+		else (filter.filter = (record) => record);
 	}
 
-	get avgTimeInContent() {
-		//if the TiCVsGrades card was selected and his filter was applied, return the previous avg value
-		if (this._tiCVsGradesSelected && this.cardFilters['d2l-insights-time-in-content-vs-grade-card'].isApplied) {
-			return this._avgTimeInContent;
+	get _avgTimeInContent() {
+		//average values calculated only from the initial set of data
+		if (this.avgTimeInContent) {
+			return this.avgTimeInContent;
 		}
 		const arrayOfTimeInContent =  this.tiCVsGrades.map(item => item[0]);
-		this._avgTimeInContent = arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
-		return this._avgTimeInContent;
+		this.avgTimeInContent = arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
+		return this.avgTimeInContent;
 	}
 
-	get avgGrades() {
-		//if the TiCVsGrades card was selected and his filter was applied, return the previous avg value
-		if (this._tiCVsGradesSelected && this.cardFilters['d2l-insights-time-in-content-vs-grade-card'].isApplied) {
-			return this._avgGrades;
+	get _avgGrades() {
+		//average values calculated only from the initial set of data
+		if (this.avgGrades) {
+			return this.avgGrades;
 		}
+
 		const arrayOfGrades = this.tiCVsGrades.map(item => item[1]);
-		this._avgGrades = arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
-		return this._avgGrades;
+		this.avgGrades = arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
+		return this.avgGrades;
 	}
 
 	get usersCountsWithOverdueAssignments() {
-		let records;
-		if (this._overdueAssignmentSelected) {
-			records = this.getRecordsInView();
-		} else {
-			records = this.getRecordsInView('d2l-insights-overdue-assignments-card');
-		}
-
-		return records
+		return this.getRecordsInView(OverdueAssignmentsFilterId)
 			.reduce((acc, record) => {
 				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
 					acc.add(record[RECORD.USER_ID]);
 				}
 				return acc;
 			}, 	new Set()).size;
-	}
-
-	setOverdueAssignmentCardSelected(boolValue) {
-		this._overdueAssignmentSelected = boolValue;
 	}
 
 	getRecordsInView(id) {
@@ -271,7 +255,15 @@ export class Data {
 	_persist() {
 		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
 			Object.keys(this.cardFilters)
-				.map(f => ({ id: f, applied: this.cardFilters[f].isApplied }))
+				.map(f => ({ id: f, applied: this.cardFilters[f].isApplied, filter: this.cardFilters[f].filter.toString() }))
+		));
+
+		localStorage.setItem('d2l-insights-engagement-dashboard.tiCVsGradesQuadNum', JSON.stringify(
+			this.tiCVsGradesQuadNum
+		));
+
+		localStorage.setItem('d2l-insights-engagement-dashboard.tiCVsGradesAvgValues', JSON.stringify(
+			Object.values([this.avgGrades, this.avgTimeInContent])
 		));
 	}
 
@@ -279,6 +271,12 @@ export class Data {
 		// this might be better handled by url-rewriting
 		const state = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.state') || '[]');
 		state.forEach(filterState => this.setApplied(filterState.id, filterState.applied));
+		state.forEach(filterState => this.cardFilters[filterState.id].filter = eval(filterState.filter));
+
+		this.tiCVsGradesQuadNum = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.tiCVsGradesQuadNum') || -1);
+		const avgValues = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.tiCVsGradesAvgValues') || '[0, 0]');
+		this.avgGrades = avgValues[0];
+		this.avgTimeInContent = avgValues[1];
 	}
 }
 
@@ -289,14 +287,13 @@ decorate(Data, {
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
 	tiCVsGrades: computed,
-	avgTimeInContent: computed,
-	avgGrades: computed,
 	currentFinalGrades: computed,
 	cardFilters: observable,
 	isLoading: observable,
+	tiCVsGradesQuadNum: observable,
+	avgGrades: observable,
+	avgTimeInContent: observable,
 	onServerDataReload: action,
 	setApplied: action,
-	setTiCVsGradesCardSelection: action,
-	setTiCVsGradesCardFilter: action,
-	setOverdueAssignmentCardSelected: action
+	setTiCVsGradesCardFilter: action
 });

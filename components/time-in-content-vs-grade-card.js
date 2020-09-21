@@ -74,7 +74,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get _plotDataForLeftBottomQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] < this._avgTimeInContent && i[1] < this._avgGrades);
+		return  this._preparedPlotData.filter(i => i[0] < this._avgTimeInContent && i[1] < this._avgGrades);
 	}
 
 	get _plotDataForLeftTopQuadrant() {
@@ -90,24 +90,27 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get _avgGrades() {
-		return this.data.avgGrades;
+		return this.data._avgGrades;
 	}
 
 	get _avgTimeInContent() {
-		return this.data.avgTimeInContent;
+		return this.data._avgTimeInContent;
 	}
 
 	_setQuadrantNum(quadNum) {
 		this.data.setTiCVsGradesCardFilter(quadNum);
 	}
 
-	get isSelected() {
-		return this.data._tiCVsGradesSelected;
+	get _QuadrantNum() {
+		return this.data.tiCVsGradesQuadNum;
+	}
+
+	get isApplied() {
+		return this.data.cardFilters['d2l-insights-time-in-content-vs-grade-card'].isApplied;
 	}
 
 	_valueClickHandler() {
 		this.data.setApplied('d2l-insights-time-in-content-vs-grade-card', true);
-		this.data.setTiCVsGradesCardSelection(true);
 	}
 
 	render() {
@@ -128,11 +131,9 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 					click: function(event) {
 						//coloring  all point in blue
 						for (let q = 0; q < 4; q++) {
-							for (let i = 0; i < this.series[q].data.length; i++) {
-								this.series[q].data[i].update({
-									marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
-								});
-							}
+							this.series[q].update({
+								marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
+							});
 						}
 
 						const x = Math.floor(event.xAxis[0].value);
@@ -149,31 +150,41 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 
 						//coloring all non selected point in grey after selection
 						for (let q = 0; q < quadArray.length; q++) {
-							for (let i = 0; i < this.series[quadArray[q]].data.length; i++) {
-								this.series[quadArray[q]].data[i].update({
-									marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' }
-								});
-							}
+							this.series[quadArray[q]].update({
+								marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' }
+							});
 						}
 						that._valueClickHandler();
 						that._setQuadrantNum(quadNum);
 					},
 					update: function() {
-						//coloring  all point in blue
-						if (!that.isSelected) {
+						//coloring all point in blue
+						if (!that.isApplied) {
 							for (let q = 0; q < 4; q++) {
-								for (let i = 0; i < this.series[q].data.length; i++) {
-									this.series[q].data[i].update({
-										marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
-									});
-								}
+								this.series[q].update({
+									marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
+								});
 							}
+						}
+						const quadArray = Object.values(QUADRANT);
+						quadArray.splice(that._QuadrantNum, 1);
+						if (that.isApplied) {
+							//coloring all non selected point in grey
+							for (let k = 0; k < 3; k++) {
+								this.series[quadArray[k]].update({
+									marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' }
+								});
+							}
+							//coloring selected quadrant point in blue
+							this.series[that._QuadrantNum].update({
+								marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
+							});
 						}
 					}
 				}
 			},
 			animation: false,
-			tooltip: { enabled: false },
+			tooltip: { enabled: true },
 			title: {
 				text: ''
 			},
