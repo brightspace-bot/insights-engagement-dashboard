@@ -4,6 +4,18 @@ import 'highcharts/modules/accessibility';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 
 import { css, html, LitElement } from 'lit-element';
+
+// use default highcharts's template but with <h3> instead of <h4> to fix axe heading-order error
+export const BEFORE_CHART_FORMAT = '<h3>{chartTitle}</h3>' +
+	'<div>{typeDescription}</div>' +
+	'<div>{chartSubtitle}</div>' +
+	'<div>{chartLongdesc}</div>' +
+	'<div>{playAsSoundButton}</div>' +
+	'<div>{viewTableButton}</div>' +
+	'<div>{xAxisDescription}</div>' +
+	'<div>{yAxisDescription}</div>' +
+	'<div>{annotationsTitle}{annotationsList}</div>';
+
 /**
  * based on highcharts-webcomponent (npm) - main modifications: convert to plain .js, fix import, fix typing,
  * remove flag for suppressing updates, prevent unneeded update on first render
@@ -99,6 +111,16 @@ class Chart extends LitElement {
 		}
 		else {
 			// Create a chart
+			H.setOptions({
+				lang: {
+					accessibility: {
+						screenReaderSection: {
+							// fixes axe error: Landmarks must have a unique role or role/label/title
+							beforeRegionLabel: ''
+						}
+					}
+				}
+			});
 			this.chart = H[constructorType](this.chartContainer, this.options, this.chartCreated.bind(this));
 		}
 	}

@@ -1,6 +1,6 @@
 import 'highcharts';
-import './chart/chart';
 import { css, html } from 'lit-element/lit-element.js';
+import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
@@ -94,7 +94,10 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 			animation: false,
 			tooltip: { enabled: false },
 			title: {
-				text: ''
+				text: this._cardTitle, // override default title
+				style: {
+					display: 'none'
+				}
 			},
 			legend: {
 				enabled: false
@@ -163,6 +166,11 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 					value: this._avgGrade,
 					width: 1.5
 				}]
+			},
+			accessibility: {
+				screenReaderSection: {
+					beforeChartFormat: BEFORE_CHART_FORMAT
+				}
 			},
 			series: [{
 				data: this._preparedPlotData,
