@@ -275,7 +275,7 @@ export class Data {
 	_persist() {
 		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
 			Object.keys(this.cardFilters)
-				.map(f => ({ id: f, applied: this.cardFilters[f].isApplied, filter: this.cardFilters[f].filter.toString() }))
+				.map(f => ({ id: f, applied: this.cardFilters[f].isApplied, filter: String(this.cardFilters[f].filter) }))
 		));
 
 		localStorage.setItem('d2l-insights-engagement-dashboard.tiCVsGradesQuadNum', JSON.stringify(
