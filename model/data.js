@@ -3,7 +3,6 @@ import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } fro
 
 import { CardFilter } from './cardFilter.js';
 import OrgUnitAncestors from './orgUnitAncestors';
-import { QUADRANT } from './../components/time-in-content-vs-grade-card';
 
 export const RECORD = {
 	ORG_UNIT_ID: 0,
