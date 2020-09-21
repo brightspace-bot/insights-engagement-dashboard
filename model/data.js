@@ -57,7 +57,8 @@ export class Data {
 			semesterTypeId: null,
 			selectedOrgUnitIds: [],
 			selectedRolesIds: [],
-			selectedSemestersIds: []
+			selectedSemestersIds: [],
+			defaultViewOrgUnitIds: null
 		};
 
 		this._selectorFilters = {
@@ -78,14 +79,15 @@ export class Data {
 		// mobx will run _persist() whenever relevant state changes
 		autorun(() => this._persist());
 
-		this.loadData({});
+		this.loadData({ defaultView: true });
 	}
 
-	loadData({ newRoleIds = null, newSemesterIds = null, newOrgUnitIds = null }) {
+	loadData({ newRoleIds = null, newSemesterIds = null, newOrgUnitIds = null, defaultView = false }) {
 		const filters = {
 			roleIds: newRoleIds || this._selectorFilters.role.selected,
 			semesterIds: newSemesterIds || this._selectorFilters.semester.selected,
-			orgUnitIds: newOrgUnitIds || this._selectorFilters.orgUnit.selected
+			orgUnitIds: newOrgUnitIds || this._selectorFilters.orgUnit.selected,
+			defaultView
 		};
 		this.recordProvider(filters).then(data => this.onServerDataReload(data));
 	}
@@ -104,7 +106,7 @@ export class Data {
 		};
 	}
 
-	applyRoleFilters(newRoleIds) {
+	set selectedRoleIds(newRoleIds) {
 		if (this._selectorFilters.role.shouldReloadFromServer(newRoleIds)) {
 			this.loadData({ newRoleIds });
 		} else {
@@ -112,7 +114,11 @@ export class Data {
 		}
 	}
 
-	applySemesterFilters(newSemesterIds) {
+	get selectedRoleIds() {
+		return this._selectorFilters.role.selected;
+	}
+
+	set selectedSemesterIds(newSemesterIds) {
 		if (this._selectorFilters.semester.shouldReloadFromServer(newSemesterIds)) {
 			this.loadData({ newSemesterIds });
 		} else {
@@ -120,12 +126,20 @@ export class Data {
 		}
 	}
 
-	applyOrgUnitFilters(newOrgUnitIds) {
+	get selectedSemesterIds() {
+		return this._selectorFilters.semester.selected;
+	}
+
+	set selectedOrgUnitIds(newOrgUnitIds) {
 		if (this._selectorFilters.orgUnit.shouldReloadFromServer(newOrgUnitIds)) {
 			this.loadData({ newOrgUnitIds });
 		} else {
 			this._selectorFilters.orgUnit.selected = newOrgUnitIds;
 		}
+	}
+
+	get selectedOrgUnitIds() {
+		return this._selectorFilters.orgUnit.selected;
 	}
 
 	// @computed
@@ -139,6 +153,12 @@ export class Data {
 	get users() {
 		const userIdsInView = unique(this.getRecordsInView().map(record => record[RECORD.USER_ID]));
 		return userIdsInView.map(userId => this._userDictionary.get(userId));
+	}
+
+	// @computed
+	// just the ous matching the semester filter
+	get orgUnits() {
+		return this.serverData.orgUnits.filter(x => this._selectorFilters.semester.shouldIncludeOrgUnitId(x[ORG_UNIT.ID]));
 	}
 
 	// @computed
@@ -284,6 +304,7 @@ decorate(Data, {
 	serverData: observable,
 	records: computed,
 	users: computed,
+	orgUnits: computed,
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
 	tiCVsGrades: computed,

@@ -1,5 +1,5 @@
-import './chart/chart';
 import { css, html } from 'lit-element/lit-element.js';
+import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
@@ -67,7 +67,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		const options = this.chartOptions;
-		if (!options.series[1].data.length) {
+		if (!this.data.isLoading && !options.series[1].data.length) {
 			return html`<div class="d2l-insights-final-grade-container">
 				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
 				<div class="d2l-insights-summary-card-body">
@@ -79,7 +79,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		} else {
 			return html`<div class="d2l-insights-final-grade-container">
 				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
-				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}"></d2l-labs-chart>
+				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}" ?loading="${this.data.isLoading}" ></d2l-labs-chart>
 			</div>`;
 		}
 	}
@@ -92,7 +92,10 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			animation: false,
 			tooltip: { enabled: false },
 			title: {
-				text: '' // override default title
+				text: this._cardTitle, // override default title
+				style: {
+					display: 'none'
+				}
 			},
 			xAxis: {
 				title: { text: '' }, // override default title
@@ -100,7 +103,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				allowDecimals: false,
 				alignTicks: false,
 				tickWidth: 0, // remove tick marks
-				tickPositions: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				tickPositions: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
 				floor: 0,
 				ceiling: 100,
 				endOnTick: true,
@@ -144,6 +147,11 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 							return `${ix - 10} to ${ix}, ${val}.`;
 						}
 					}
+				}
+			},
+			accessibility: {
+				screenReaderSection: {
+					beforeChartFormat: BEFORE_CHART_FORMAT
 				}
 			},
 			series: [{

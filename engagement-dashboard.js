@@ -8,20 +8,22 @@ import './components/users-table.js';
 import './components/table.js';
 import './components/current-final-grade-card.js';
 import './components/applied-filters';
+import './components/aria-loading-progress';
 
-import { css, html, LitElement } from 'lit-element/lit-element.js';
+import { css, html } from 'lit-element/lit-element.js';
 import { Data } from './model/data.js';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
 import { Localizer } from './locales/localizer';
+import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsCardFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeCardFilter } from './components/time-in-content-vs-grade-card';
 
 /**
  * @property {Boolean} useTestData - if true, use canned data; otherwise call the LMS
  */
-class EngagementDashboard extends Localizer(LitElement) {
+class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	static get properties() {
 		return {
@@ -81,17 +83,9 @@ class EngagementDashboard extends Localizer(LitElement) {
 	}
 
 	render() {
-		const cardFilters = [
-			TimeInContentVsGradeCardFilter,
-			OverdueAssignmentsCardFilter
-		].map(filter => ({ ...filter, title: this.localize(filter.title) }));
-
-		this._data = new Data({
-			recordProvider: this.isDemo ? fetchDemoData : fetchData,
-			cardFilters: cardFilters
-		});
-
 		return html`
+				<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
+
 				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
 
 				<div class="view-filters-container">
@@ -102,6 +96,7 @@ class EngagementDashboard extends Localizer(LitElement) {
 					<d2l-insights-semester-filter
 						page-size="10000"
 						?demo="${this.isDemo}"
+						.preSelected="${this._data.selectedSemesterIds}"
 						@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
 					></d2l-insights-semester-filter>
 					<d2l-insights-role-filter
@@ -127,19 +122,35 @@ class EngagementDashboard extends Localizer(LitElement) {
 		`;
 	}
 
+	get _data() {
+		if (!this.__data) {
+			const cardFilters = [
+				OverdueAssignmentsCardFilter,
+				TimeInContentVsGradeCardFilter
+			].map(filter => ({ ...filter, title: this.localize(filter.title) }));
+
+			this.__data = new Data({
+				recordProvider: this.isDemo ? fetchDemoData : fetchData,
+				cardFilters: cardFilters
+			});
+		}
+
+		return this.__data;
+	}
+
 	_roleFilterChange(event) {
 		event.stopPropagation();
-		this._data.applyRoleFilters(event.target.selected.map(roleId => Number(roleId)));
+		this._data.selectedRoleIds = event.target.selected;
 	}
 
 	_orgUnitFilterChange(event) {
 		event.stopPropagation();
-		this._data.applyOrgUnitFilters(event.target.selected);
+		this._data.selectedOrgUnitIds = event.target.selected;
 	}
 
 	_semesterFilterChange(event) {
 		event.stopPropagation();
-		this._data.applySemesterFilters(event.target.selected.map(semesterId => Number(semesterId)));
+		this._data.selectedSemesterIds = event.target.selected;
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);

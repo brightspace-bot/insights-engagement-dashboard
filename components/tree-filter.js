@@ -39,6 +39,10 @@ export class Tree {
 		return this._getSelected(this.rootId);
 	}
 
+	get open() {
+		return Object.values(this.tree).filter(x => x[OPEN]).map(x => x[ID]);
+	}
+
 	getChildren(id) {
 		// coming soon: handle truncation case (getChildren has a callback which calls LMS)
 		if (!id) id = this.rootId;

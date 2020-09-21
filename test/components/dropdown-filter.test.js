@@ -47,7 +47,7 @@ describe('d2l-insights-dropdown-filter', () => {
 
 		it('should render the dropdown opener with the correct name if one is selected', async() => {
 			const data = JSON.parse(JSON.stringify(testData)); // deep copy
-			data[0]._selected = true;
+			data[0].selected = true;
 
 			el = await fixture(html`<d2l-insights-dropdown-filter name="${name}" more .data="${data}"></d2l-insights-dropdown-filter>`);
 			await new Promise(resolve => setTimeout(resolve, 0)); // allow fetch to run
@@ -61,8 +61,8 @@ describe('d2l-insights-dropdown-filter', () => {
 
 		it('should render the dropdown opener with the correct name if multiple are selected', async() => {
 			const data = JSON.parse(JSON.stringify(testData)); // deep copy
-			data[0]._selected = true;
-			data[1]._selected = true;
+			data[0].selected = true;
+			data[1].selected = true;
 
 			el = await fixture(html`<d2l-insights-dropdown-filter name="${name}" more .data="${data}"></d2l-insights-dropdown-filter>`);
 			await new Promise(resolve => setTimeout(resolve, 0)); // allow fetch to run

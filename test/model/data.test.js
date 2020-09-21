@@ -131,14 +131,14 @@ describe('Data', () => {
 		sut.avgGrades = 0;
 	});
 
-	describe('applyRoleFilter', () => {
+	describe('set selectedRoleIds', () => {
 		it('should cause a reload from server if filter says it should reload', () => {
 			const recordProvider = sinon.stub().resolves(serverData);
 			sut.recordProvider = recordProvider;
 
 			// set isRecordsTruncated to true to force a reload
 			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: true });
-			sut.applyRoleFilters([mockRoleIds.student]);
+			sut.selectedRoleIds = [mockRoleIds.student];
 
 			sinon.assert.calledWithMatch(recordProvider, sinon.match({
 				roleIds: [mockRoleIds.student],
@@ -153,13 +153,13 @@ describe('Data', () => {
 
 			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
 			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: false });
-			sut.applyRoleFilters([mockRoleIds.student]);
+			sut.selectedRoleIds = [mockRoleIds.student];
 
 			sinon.assert.notCalled(recordProvider);
 		});
 	});
 
-	describe('applySemesterFilter', () => {
+	describe('set selectedSemesterIds', () => {
 		it('should cause a reload from server if filter says it should reload', () => {
 			const recordProvider = sinon.stub().resolves(serverData);
 			sut.recordProvider = recordProvider;
@@ -169,7 +169,7 @@ describe('Data', () => {
 				selectedSemestersIds: null,
 				isRecordsTruncated: true
 			}, null);
-			sut.applySemesterFilters([11]);
+			sut.selectedSemesterIds = [11];
 
 			sinon.assert.calledWithMatch(recordProvider, sinon.match({
 				roleIds: [],
@@ -187,13 +187,13 @@ describe('Data', () => {
 				selectedSemestersIds: null,
 				isRecordsTruncated: false
 			}, null);
-			sut.applySemesterFilters([mockRoleIds.student]);
+			sut.selectedSemesterIds = [mockRoleIds.student];
 
 			sinon.assert.notCalled(recordProvider);
 		});
 	});
 
-	describe('applyOrgUnitFilter', () => {
+	describe('set selectedOrgUnits', () => {
 		it('should cause a reload from server if filter says it should reload', () => {
 			const recordProvider = sinon.stub().resolves(serverData);
 			sut.recordProvider = recordProvider;
@@ -203,7 +203,7 @@ describe('Data', () => {
 				selectedOrgUnitIds: null,
 				isRecordsTruncated: true
 			}, null);
-			sut.applyOrgUnitFilters([1001]);
+			sut.selectedOrgUnitIds = [1001];
 
 			sinon.assert.calledWithMatch(recordProvider, sinon.match({
 				roleIds: [],
@@ -221,7 +221,7 @@ describe('Data', () => {
 				selectedSemestersIds: null,
 				isRecordsTruncated: false
 			}, null);
-			sut.applyOrgUnitFilters([1001]);
+			sut.selectedOrgUnitIds = [1001];
 
 			sinon.assert.notCalled(recordProvider);
 		});
@@ -239,7 +239,7 @@ describe('Data', () => {
 				return [1002, 3, 311, 313, 2, 212, 113].includes(recordOrgUnitId);
 			});
 
-			sut.applyOrgUnitFilters(orgUnitFilters);
+			sut.selectedOrgUnitIds = orgUnitFilters;
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -251,7 +251,7 @@ describe('Data', () => {
 				return [12, 112, 212].includes(recordOrgUnitId);
 			});
 
-			sut.applySemesterFilters(semesterFilters);
+			sut.selectedSemesterIds = semesterFilters;
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -262,7 +262,7 @@ describe('Data', () => {
 				return roleFilters.includes(record[2]);
 			});
 
-			sut.applyRoleFilters(roleFilters);
+			sut.selectedRoleIds = roleFilters;
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -275,9 +275,9 @@ describe('Data', () => {
 				record[0] === 212 && record[1] === 300
 			);
 
-			sut.applyOrgUnitFilters(orgUnitFilters);
-			sut.applySemesterFilters(semesterFilters);
-			sut.applyRoleFilters(roleFilters);
+			sut.selectedOrgUnitIds = orgUnitFilters;
+			sut.selectedSemesterIds = semesterFilters;
+			sut.selectedRoleIds = roleFilters;
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -295,7 +295,7 @@ describe('Data', () => {
 				return [100, 200, 300].includes(userId);
 			});
 
-			sut.applyOrgUnitFilters(orgUnitFilters);
+			sut.selectedOrgUnitIds = orgUnitFilters;
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -307,7 +307,7 @@ describe('Data', () => {
 				return [100, 300, 400].includes(userId);
 			});
 
-			sut.applySemesterFilters(semesterFilters);
+			sut.selectedSemesterIds = semesterFilters;
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -319,7 +319,7 @@ describe('Data', () => {
 				return [100, 400].includes(userId);
 			});
 
-			sut.applyRoleFilters(roleFilters);
+			sut.selectedRoleIds = roleFilters;
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -333,11 +333,45 @@ describe('Data', () => {
 				return [100].includes(userId);
 			});
 
-			sut.applyOrgUnitFilters(orgUnitFilters);
-			sut.applySemesterFilters(semesterFilters);
-			sut.applyRoleFilters(roleFilters);
+			sut.selectedOrgUnitIds = orgUnitFilters;
+			sut.selectedSemesterIds = semesterFilters;
+			sut.selectedRoleIds = roleFilters;
 
 			expect(sut.users).to.deep.equal(expectedUsers);
+		});
+	});
+
+	describe('get orgUnits', () => {
+		it('should return all org units if no filters are applied', async() => {
+			expect(sut.orgUnits).to.deep.equal(serverData.orgUnits);
+		});
+
+		it('should return filtered org units when semester filter is applied', async() => {
+			const semesterFilters = [13];
+			const expectedOrgUnits = serverData.orgUnits.filter(ou => {
+				const ouId = ou[0];
+				return [13, 113, 313].includes(ouId);
+			});
+
+			sut.selectedSemesterIds = semesterFilters;
+
+			expect(sut.orgUnits).to.deep.equal(expectedOrgUnits);
+		});
+
+		it('should ignore role and org unit filters', async() => {
+			const orgUnitFilters = [112, 113];
+			const semesterFilters = [13];
+			const roleFilters = [mockRoleIds.admin];
+			const expectedOrgUnits = serverData.orgUnits.filter(ou => {
+				const ouId = ou[0];
+				return [13, 113, 313].includes(ouId);
+			});
+
+			sut.selectedOrgUnitIds = orgUnitFilters;
+			sut.selectedSemesterIds = semesterFilters;
+			sut.selectedRoleIds = roleFilters;
+
+			expect(sut.orgUnits).to.deep.equal(expectedOrgUnits);
 		});
 	});
 
@@ -360,7 +394,7 @@ describe('Data', () => {
 				['McCartney, Paul']
 			];
 
-			sut.applyRoleFilters(roleFilters);
+			sut.selectedRoleIds = roleFilters;
 
 			expect(sut.userDataForDisplay).to.deep.equal(expectedUsers);
 		});

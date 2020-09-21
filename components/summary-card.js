@@ -1,3 +1,4 @@
+import './overlay';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 
 /**
@@ -12,7 +13,8 @@ class SummaryCard extends LitElement {
 			title: { type: String, attribute: 'card-title' },
 			value: { type: String, attribute: 'card-value' },
 			message: { type: String, attribute: 'card-message' },
-			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' }
+			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' },
+			isLoading: { type: Boolean, attribute: 'loading' }
 		};
 	}
 
@@ -30,7 +32,8 @@ class SummaryCard extends LitElement {
 				border-radius: 15px;
 				border-style: solid;
 				border-width: 1.5px;
-				display: inline-block;
+				display: flex;
+				flex-direction: column;
 				height: 121px;
 				margin-right: 10px;
 				margin-top: 10px;
@@ -42,7 +45,8 @@ class SummaryCard extends LitElement {
 				align-items: center;
 				display: flex;
 				height: 100%;
-				margin-top: -15px;
+				position: relative;
+
 			}
 
 			.d2l-insights-summary-card-title {
@@ -98,7 +102,8 @@ class SummaryCard extends LitElement {
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
 			<div class="d2l-insights-summary-card-title">${this.title}</div>
-			<div class="d2l-insights-summary-card-body">
+			<div class="d2l-insights-summary-card-body" aria-hidden="${!!this.isLoading}">
+			<d2l-insights-overlay spinner-size="100" ?loading="${this.isLoading}"></d2l-insights-overlay>
 			${this.isValueClickable ?
 			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
 			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}

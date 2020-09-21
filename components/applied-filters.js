@@ -68,6 +68,7 @@ class AppliedFilters extends Localizer(MobxLitElement) {
 				.forEach(f => this.data.setApplied(f, false));
 			return;
 		}
+
 		this.data.setApplied(event.detail.menuItemKey, event.detail.selected);
 	}
 }

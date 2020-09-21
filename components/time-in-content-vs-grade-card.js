@@ -1,6 +1,6 @@
 import 'highcharts';
-import './chart/chart';
 import { css, html } from 'lit-element/lit-element.js';
+import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
@@ -117,7 +117,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-time-in-content-vs-grade-title">${this._cardTitle}</div>
-		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}"></d2l-labs-chart>`;
+		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>`;
 	}
 
 	get chartOptions() {
@@ -184,9 +184,12 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				}
 			},
 			animation: false,
-			tooltip: { enabled: true },
+			tooltip: { enabled: false },
 			title: {
-				text: ''
+				text: this._cardTitle, // override default title
+				style: {
+					display: 'none'
+				}
 			},
 			legend: {
 				enabled: false
@@ -273,6 +276,11 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 							return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
 						}
 					}
+				}
+			},
+			accessibility: {
+				screenReaderSection: {
+					beforeChartFormat: BEFORE_CHART_FORMAT
 				}
 			},
 			series: [{
