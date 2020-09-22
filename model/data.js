@@ -204,6 +204,7 @@ export class Data {
 	}
 
 	setTiCVsGradesAvgValues() {
+		//avg values will change if records length changes
 		this._recordsLength = this.records.length;
 
 		const arrayOfTimeInContent =  this.tiCVsGrades.map(item => item[0]);

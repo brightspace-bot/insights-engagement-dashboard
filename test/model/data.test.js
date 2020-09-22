@@ -435,4 +435,20 @@ describe('Data', () => {
 			expect(sut.tiCVsGradesAvgValues).to.deep.equal(expected);
 		});
 	});
+
+	describe('checkIfNeedChangeTiCVsGradesAvgValues', () => {
+		it('should return true if records length changes', async() => {
+			const expected = true;
+			sut._recordsLength = 0;
+			expect(sut.checkIfNeedChangeTiCVsGradesAvgValues).to.deep.equal(expected);
+		});
+	});
+
+	describe('setTiCVsGradesCardFilter', () => {
+		it('should set TiCVsGrades card filter dependent on selected quadrant num', async() => {
+			const expected = String((record) => record);
+			sut.setTiCVsGradesCardFilter(-1);
+			expect(String(sut.cardFilters['d2l-insights-time-in-content-vs-grade-card'].filter)).to.deep.equal(expected);
+		});
+	});
 });
