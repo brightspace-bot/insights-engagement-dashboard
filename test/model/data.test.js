@@ -127,8 +127,6 @@ describe('Data', () => {
 	beforeEach(async() => {
 		sut = new Data({ recordProvider, cardFilters });
 		await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
-		sut.avgTimeInContent = 10;
-		sut.avgGrades = 10;
 	});
 
 	describe('set selectedRoleIds', () => {
@@ -422,25 +420,9 @@ describe('Data', () => {
 	});
 
 	describe('tiCVsGradesAvgValues', () => {
-		it('should return a average time and grades', async() => {
-			const expected = [10, 10];
-			expect(sut.tiCVsGradesAvgValues).to.deep.equal(expected);
-		});
-	});
-
-	describe('setTiCVsGradesAvgValues', () => {
 		it('should set and return a average time and grades', async() => {
 			const expected = [29, 69];
-			sut.setTiCVsGradesAvgValues();
 			expect(sut.tiCVsGradesAvgValues).to.deep.equal(expected);
-		});
-	});
-
-	describe('checkIfNeedChangeTiCVsGradesAvgValues', () => {
-		it('should return true if records length changes', async() => {
-			const expected = true;
-			sut._recordsLength = 0;
-			expect(sut.checkIfNeedChangeTiCVsGradesAvgValues).to.deep.equal(expected);
 		});
 	});
 

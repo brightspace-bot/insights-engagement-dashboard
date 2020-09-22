@@ -3,7 +3,6 @@ import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } fro
 
 import { CardFilter } from './cardFilter.js';
 import OrgUnitAncestors from './orgUnitAncestors';
-import { QUADRANT } from '../components/time-in-content-vs-grade-card';
 
 export const RECORD = {
 	ORG_UNIT_ID: 0,
@@ -42,10 +41,9 @@ export class Data {
 		this.recordProvider = recordProvider;
 		this._orgUnitAncestors = null;
 		this._userDictionary = null;
-		this._recordsLength = 0;
 
 		// @observables
-		this.tiCVsGradesQuadNum = -1;
+		this.tiCVsGradesQuadrant = 'leftBottom';
 		this.avgTimeInContent = 0;
 		this.avgGrades = 0;
 		this.isLoading = true;
@@ -192,37 +190,17 @@ export class Data {
 			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]); //keep in count students either without grade or without time in content
 	}
 
-	setTiCVsGradesCardFilter(quadNum) {
-		this.tiCVsGradesQuadNum = quadNum;
-		const filter = this.cardFilters[TiCVsGradesFilterId];
-		if (this.tiCVsGradesQuadNum === QUADRANT.LEFT_BOTTOM) {
-			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] < this.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] < this.tiCVsGradesAvgValues[1];
-		} else if (this.tiCVsGradesQuadNum === QUADRANT.LEFT_TOP) {
-			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] <= this.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] >= this.tiCVsGradesAvgValues[1];
-		} else if (this.tiCVsGradesQuadNum === QUADRANT.RIGHT_TOP) {
-			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] > this.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] > this.tiCVsGradesAvgValues[1];
-		} else if (this.tiCVsGradesQuadNum === QUADRANT.RIGHT_BOTTOM) {
-			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] >= this.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] <= this.tiCVsGradesAvgValues[1];
-		} else (filter.filter = (record) => record);
-	}
-
-	get checkIfNeedChangeTiCVsGradesAvgValues() {
-		return !(this._recordsLength === this.records.length);
+	setTiCVsGradesCardFilter(quadrant) {
+		this.cardFilters[TiCVsGradesFilterId]._setTiCVsGradesCardFilter(quadrant);
 	}
 
 	get tiCVsGradesAvgValues() {
-		return [this.avgTimeInContent, this.avgGrades];
-	}
-
-	setTiCVsGradesAvgValues() {
-		//avg values will change if records length changes
-		this._recordsLength = this.records.length;
-
 		const arrayOfTimeInContent =  this.tiCVsGrades.map(item => item[0]);
 		this.avgTimeInContent = arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
 
 		const arrayOfGrades = this.tiCVsGrades.map(item => item[1]);
 		this.avgGrades = arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
+		return [this.avgTimeInContent, this.avgGrades];
 	}
 
 	get usersCountsWithOverdueAssignments() {
@@ -271,15 +249,7 @@ export class Data {
 	_persist() {
 		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
 			Object.keys(this.cardFilters)
-				.map(f => ({ id: f, applied: this.cardFilters[f].isApplied, filter: String(this.cardFilters[f].filter) }))
-		));
-
-		localStorage.setItem('d2l-insights-engagement-dashboard.tiCVsGradesQuadNum', JSON.stringify(
-			this.tiCVsGradesQuadNum
-		));
-
-		localStorage.setItem('d2l-insights-engagement-dashboard.tiCVsGradesAvgValues', JSON.stringify(
-			Object.values([this.avgGrades, this.avgTimeInContent])
+				.map(f => ({ id: f, applied: this.cardFilters[f].isApplied }))
 		));
 	}
 
@@ -287,12 +257,6 @@ export class Data {
 		// this might be better handled by url-rewriting
 		const state = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.state') || '[]');
 		state.forEach(filterState => this.setApplied(filterState.id, filterState.applied));
-		state.forEach(filterState => this.cardFilters[filterState.id].filter = eval(filterState.filter));
-
-		this.tiCVsGradesQuadNum = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.tiCVsGradesQuadNum') || -1);
-		const avgValues = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.tiCVsGradesAvgValues') || '[0, 0]');
-		this.avgGrades = avgValues[0];
-		this.avgTimeInContent = avgValues[1];
 	}
 }
 
@@ -307,11 +271,7 @@ decorate(Data, {
 	currentFinalGrades: computed,
 	cardFilters: observable,
 	isLoading: observable,
-	tiCVsGradesQuadNum: observable,
-	avgGrades: observable,
-	avgTimeInContent: observable,
 	onServerDataReload: action,
 	setApplied: action,
-	setTiCVsGradesCardFilter: action,
-	setTiCVsGradesAvgValues: action
+	setTiCVsGradesCardFilter: action
 });

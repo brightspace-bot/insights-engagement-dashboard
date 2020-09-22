@@ -1,4 +1,7 @@
 import { computed, decorate, observable } from 'mobx';
+import { RECORD } from './data';
+
+const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
 
 export class CardFilter {
 	constructor({ id, messageProvider, title, field, deltaField, threshold, countUniqueField, isApplied = false, filter }, data) {
@@ -28,6 +31,21 @@ export class CardFilter {
 
 	shouldInclude(record) {
 		return this.filter(record);
+	}
+
+	_setTiCVsGradesCardFilter(quadrant) {
+		this.data.tiCVsGradesQuadrant = quadrant;
+		if (this.id === this.data.cardFilters[TiCVsGradesFilterId].id) {
+			if (this.data.tiCVsGradesQuadrant === 'leftBottom') {
+				this.filter = (record) => record[RECORD.TIME_IN_CONTENT] < this.data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] < this.data.tiCVsGradesAvgValues[1];
+			} else if (this.data.tiCVsGradesQuadrant === 'leftTop') {
+				this.filter = (record) => record[RECORD.TIME_IN_CONTENT] <= this.data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] >= this.data.tiCVsGradesAvgValues[1];
+			} else if (this.data.tiCVsGradesQuadrant === 'rightTop') {
+				this.filter = (record) => record[RECORD.TIME_IN_CONTENT] > this.data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] > this.data.tiCVsGradesAvgValues[1];
+			} else if (this.data.tiCVsGradesQuadrant === 'rightBottom') {
+				this.filter = (record) => record[RECORD.TIME_IN_CONTENT] >= this.data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] <= this.data.tiCVsGradesAvgValues[1];
+			} else (this.filter = (record) => record);
+		}
 	}
 }
 

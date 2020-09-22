@@ -4,13 +4,6 @@ import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
-export const QUADRANT = {
-	LEFT_BOTTOM: 0,
-	LEFT_TOP: 1,
-	RIGHT_TOP: 2,
-	RIGHT_BOTTOM: 3
-};
-
 export const TimeInContentVsGradeCardFilter  = {
 	id: 'd2l-insights-time-in-content-vs-grade-card',
 	title: 'components.insights-time-in-content-vs-grade-card.timeInContentVsGrade',
@@ -90,25 +83,50 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get _avgGrades() {
-		if (this.data.checkIfNeedChangeTiCVsGradesAvgValues) {
-			this.data.setTiCVsGradesAvgValues();
-		}
 		return this.data.tiCVsGradesAvgValues[1];
 	}
 
 	get _avgTimeInContent() {
-		if (this.data.checkIfNeedChangeTiCVsGradesAvgValues) {
-			this.data.setTiCVsGradesAvgValues();
-		}
 		return this.data.tiCVsGradesAvgValues[0];
 	}
 
-	_setQuadrantNum(quadNum) {
-		this.data.setTiCVsGradesCardFilter(quadNum);
+	_setQuadrant(quadrant) {
+		this.data.setTiCVsGradesCardFilter(quadrant);
 	}
 
-	get _QuadrantNum() {
-		return this.data.tiCVsGradesQuadNum;
+	_calculateQuadrant(x, y) {
+		let quadrant;
+		if (x < this._avgTimeInContent && y < this._avgGrades) quadrant = 'leftBottom';
+		else if (x <= this._avgTimeInContent && y >= this._avgGrades) quadrant = 'leftTop';
+		else if (x > this._avgTimeInContent && y > this._avgGrades) quadrant = 'rightTop';
+		else quadrant = 'rightBottom';
+		return quadrant;
+	}
+
+	_coloringAllPointInAmethyst(series) {
+		series.forEach(series => { series.update({
+			marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
+		});
+	}
+
+	_coloringNonSelectedPointInMica(series) {
+		series.forEach(series => {
+			if (series.name !== this._quadrant) {
+				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
+			}
+		});
+	}
+
+	_coloringSelectedQuadrantPointsInAmethyst(series) {
+		series.forEach(series => {
+			if (series.name === this._quadrant) {
+				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
+			}
+		});
+	}
+
+	get _quadrant() {
+		return this.data.tiCVsGradesQuadrant;
 	}
 
 	get isApplied() {
@@ -135,47 +153,19 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				height: 250,
 				events: {
 					click: function(event) {
-						//coloring  all point in blue
-						this.series.forEach(series => { series.update({
-							marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
-						});
-
-						const x = Math.floor(event.xAxis[0].value);
-						const y = Math.floor(event.yAxis[0].value);
-
-						let quadNum;
-						if (x < that._avgTimeInContent && y < that._avgGrades) quadNum = QUADRANT.LEFT_BOTTOM;
-						else if (x <= that._avgTimeInContent && y >= that._avgGrades) quadNum = QUADRANT.LEFT_TOP;
-						else if (x > that._avgTimeInContent && y > that._avgGrades) quadNum = QUADRANT.RIGHT_TOP;
-						else quadNum = QUADRANT.RIGHT_BOTTOM;
-
-						//coloring all non selected point in grey after selection
-						this.series.forEach(series => {
-							if (Number(series.name) !== quadNum) {
-								series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
-							}
-						});
+						that._coloringAllPointInAmethyst(this.series);
+						const quadrant = that._calculateQuadrant(Math.floor(event.xAxis[0].value), Math.floor(event.yAxis[0].value));
+						that._setQuadrant(quadrant);
+						that._coloringNonSelectedPointInMica(this.series);
 						that._valueClickHandler();
-						that._setQuadrantNum(quadNum);
 					},
 					update: function() {
-						//coloring all point in blue
 						if (!that.isApplied) {
-							this.series.forEach(series => { series.update({
-								marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
-							});
+							that._coloringAllPointInAmethyst(this.series);
 						}
 						if (that.isApplied) {
-							//coloring all non selected point in grey
-							this.series.forEach(series => {
-								if (Number(series.name) !== that._QuadrantNum) {
-									series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
-								}
-							});
-							//coloring selected quadrant point in blue
-							this.series[that._QuadrantNum].update({
-								marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' }
-							});
+							that._coloringNonSelectedPointInMica(this.series);
+							that._coloringSelectedQuadrantPointsInAmethyst(this.series);
 						}
 					}
 				}
@@ -281,19 +271,19 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				}
 			},
 			series: [{
-				name: '0',
+				name: 'leftBottom',
 				data: this._plotDataForLeftBottomQuadrant
 			},
 			{
-				name: '1',
+				name: 'leftTop',
 				data: this._plotDataForLeftTopQuadrant
 			},
 			{
-				name: '2',
+				name: 'rightTop',
 				data: this._plotDataForRightTopQuadrant
 			},
 			{
-				name: '3',
+				name: 'rightBottom',
 				data: this._plotDataForRightBottomQuadrant
 			}]
 		};
