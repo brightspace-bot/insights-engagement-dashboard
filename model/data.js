@@ -3,6 +3,7 @@ import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } fro
 
 import { CardFilter } from './cardFilter.js';
 import OrgUnitAncestors from './orgUnitAncestors';
+import { QUADRANT } from '../components/time-in-content-vs-grade-card';
 
 export const RECORD = {
 	ORG_UNIT_ID: 0,
@@ -192,7 +193,17 @@ export class Data {
 	}
 
 	setTiCVsGradesCardFilter(quadNum) {
-		this.cardFilters[TiCVsGradesFilterId]._setTiCVsGradesCardFilter(quadNum);
+		this.tiCVsGradesQuadNum = quadNum;
+		const filter = this.cardFilters[TiCVsGradesFilterId];
+		if (this.tiCVsGradesQuadNum === QUADRANT.LEFT_BOTTOM) {
+			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] < this.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] < this.tiCVsGradesAvgValues[1];
+		} else if (this.tiCVsGradesQuadNum === QUADRANT.LEFT_TOP) {
+			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] <= this.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] >= this.tiCVsGradesAvgValues[1];
+		} else if (this.tiCVsGradesQuadNum === QUADRANT.RIGHT_TOP) {
+			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] > this.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] > this.tiCVsGradesAvgValues[1];
+		} else if (this.tiCVsGradesQuadNum === QUADRANT.RIGHT_BOTTOM) {
+			filter.filter = (record) => record[RECORD.TIME_IN_CONTENT] >= this.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] <= this.tiCVsGradesAvgValues[1];
+		} else (filter.filter = (record) => record);
 	}
 
 	get checkIfNeedChangeTiCVsGradesAvgValues() {
