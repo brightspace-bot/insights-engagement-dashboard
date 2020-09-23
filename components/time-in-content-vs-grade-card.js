@@ -189,7 +189,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				}
 			},
 			animation: false,
-			tooltip: { enabled: true },
+			tooltip: { enabled: false },
 			title: {
 				text: this._cardTitle, // override default title
 				style: {

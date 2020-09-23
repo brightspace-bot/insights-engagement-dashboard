@@ -122,7 +122,7 @@ describe('Data', () => {
 		});
 	};
 
-	const cardFilters = [ { id: 'd2l-insights-time-in-content-vs-grade-card' }, { id: 'd2l-insights-overdue-assignments-card' } ];
+	const cardFilters = [];
 	let sut;
 	beforeEach(async() => {
 		sut = new Data({ recordProvider, cardFilters });

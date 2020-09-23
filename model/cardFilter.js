@@ -1,7 +1,4 @@
 import { computed, decorate, observable } from 'mobx';
-import { RECORD } from './data';
-
-const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
 
 export class CardFilter {
 	constructor({ id, messageProvider, title, field, deltaField, threshold, countUniqueField, isApplied = false, filter }, data) {
