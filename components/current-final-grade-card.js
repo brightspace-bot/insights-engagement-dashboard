@@ -99,10 +99,11 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			},
 			xAxis: {
 				title: { text: '' }, // override default title
+				min: 0,
 				allowDecimals: false,
 				alignTicks: false,
 				tickWidth: 0, // remove tick marks
-				tickPositions: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				tickPositions: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
 				floor: 0,
 				ceiling: 100,
 				endOnTick: true,
@@ -146,7 +147,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 							return `${ix - 10} to ${ix}, ${val}.`;
 						}
 					}
-				},
+				}
 			},
 			accessibility: {
 				screenReaderSection: {
@@ -160,7 +161,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				lineWidth: 1,
 				baseSeries: 1,
 				shadow: false,
-				binWidth: 10
+				binWidth: 9.999
 			},
 			{
 				data: this._preparedHistogramData,
