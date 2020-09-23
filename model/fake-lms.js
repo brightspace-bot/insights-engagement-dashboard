@@ -5,7 +5,7 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds, defaultView 
 		records: [
 			[1, 100, 500, 1, 55, 1000],
 			[1, 200, 600, 0, 33, 2000],
-			[1, 300, 500, 1, null, 1000],
+			[1, 300, 500, 0, null, 1000],
 			[1, 400, 500, 0, 30, 5000],
 			[2, 100, 500, 0, 60, 1100],
 			[2, 200, 700, 1, 38, 4000],

@@ -3,11 +3,29 @@ import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../model/data';
 
 export const TimeInContentVsGradeCardFilter  = {
 	id: 'd2l-insights-time-in-content-vs-grade-card',
 	title: 'components.insights-time-in-content-vs-grade-card.timeInContentVsGrade',
-	filter: (record) => record //init function
+	filter: (record, data) => {
+		let result;
+		if (data.tiCVsGradesQuadrant === 'leftBottom') {
+			result = record[RECORD.TIME_IN_CONTENT] < data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] < data.tiCVsGradesAvgValues[1];
+		} else if (data.tiCVsGradesQuadrant === 'leftTop') {
+			result = record[RECORD.TIME_IN_CONTENT] <= data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] >= data.tiCVsGradesAvgValues[1];
+		} else if (data.tiCVsGradesQuadrant === 'rightTop') {
+			result = record[RECORD.TIME_IN_CONTENT] > data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] > data.tiCVsGradesAvgValues[1];
+		} else if (data.tiCVsGradesQuadrant === 'rightBottom') {
+			result =  record[RECORD.TIME_IN_CONTENT] >= data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] < data.tiCVsGradesAvgValues[1];
+		} else (result = false);
+		return result;
+	}
+};
+
+export const AVG = {
+	TIME: 0,
+	GRADE: 1
 };
 
 class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
@@ -67,31 +85,31 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get _plotDataForLeftBottomQuadrant() {
-		return  this._preparedPlotData.filter(i => i[0] < this._avgTimeInContent && i[1] < this._avgGrades);
+		return  this._preparedPlotData.filter(i => i[AVG.TIME] < this._avgTimeInContent && i[AVG.GRADE] < this._avgGrades);
 	}
 
 	get _plotDataForLeftTopQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] <= this._avgTimeInContent && i[1] >= this._avgGrades);
+		return this._preparedPlotData.filter(i => i[AVG.TIME] <= this._avgTimeInContent && i[AVG.GRADE] >= this._avgGrades);
 	}
 
 	get _plotDataForRightTopQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] > this._avgTimeInContent && i[1] > this._avgGrades);
+		return this._preparedPlotData.filter(i => i[AVG.TIME] > this._avgTimeInContent && i[AVG.GRADE] > this._avgGrades);
 	}
 
 	get _plotDataForRightBottomQuadrant() {
-		return this._preparedPlotData.filter(i => i[0] >= this._avgTimeInContent && i[1] <= this._avgGrades);
+		return this._preparedPlotData.filter(i => i[AVG.TIME] >= this._avgTimeInContent && i[AVG.GRADE] < this._avgGrades);
 	}
 
 	get _avgGrades() {
-		return this.data.tiCVsGradesAvgValues[1];
+		return this.data.tiCVsGradesAvgValues[AVG.GRADE];
 	}
 
 	get _avgTimeInContent() {
-		return this.data.tiCVsGradesAvgValues[0];
+		return this.data.tiCVsGradesAvgValues[AVG.TIME];
 	}
 
 	_setQuadrant(quadrant) {
-		this.data.setTiCVsGradesCardFilter(quadrant);
+		this.data.setTiCVsGradesQuadrant(quadrant);
 	}
 
 	_calculateQuadrant(x, y) {
@@ -171,7 +189,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				}
 			},
 			animation: false,
-			tooltip: { enabled: false },
+			tooltip: { enabled: true },
 			title: {
 				text: this._cardTitle, // override default title
 				style: {

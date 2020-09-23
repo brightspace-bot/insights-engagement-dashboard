@@ -190,8 +190,8 @@ export class Data {
 			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]); //keep in count students either without grade or without time in content
 	}
 
-	setTiCVsGradesCardFilter(quadrant) {
-		this.cardFilters[TiCVsGradesFilterId]._setTiCVsGradesCardFilter(quadrant);
+	setTiCVsGradesQuadrant(quadrant) {
+		this.tiCVsGradesQuadrant = quadrant;
 	}
 
 	get tiCVsGradesAvgValues() {
@@ -271,6 +271,7 @@ decorate(Data, {
 	currentFinalGrades: computed,
 	cardFilters: observable,
 	isLoading: observable,
+	tiCVsGradesQuadrant: observable,
 	onServerDataReload: action,
 	setApplied: action,
 	setTiCVsGradesCardFilter: action
