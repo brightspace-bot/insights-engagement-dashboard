@@ -121,13 +121,13 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		return quadrant;
 	}
 
-	_coloringAllPointInAmethyst(series) {
+	_colorAllPointsInAmethyst(series) {
 		series.forEach(series => { series.update({
 			marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
 		});
 	}
 
-	_coloringNonSelectedPointInMica(series) {
+	_colorNonSelectedPointsInMica(series) {
 		series.forEach(series => {
 			if (series.name !== this._quadrant) {
 				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
@@ -135,7 +135,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		});
 	}
 
-	_coloringSelectedQuadrantPointsInAmethyst(series) {
+	_colorSelectedQuadrantPointsInAmethyst(series) {
 		series.forEach(series => {
 			if (series.name === this._quadrant) {
 				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
@@ -171,19 +171,19 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				height: 250,
 				events: {
 					click: function(event) {
-						that._coloringAllPointInAmethyst(this.series);
+						that._colorAllPointsInAmethyst(this.series);
 						const quadrant = that._calculateQuadrant(Math.floor(event.xAxis[0].value), Math.floor(event.yAxis[0].value));
 						that._setQuadrant(quadrant);
-						that._coloringNonSelectedPointInMica(this.series);
+						that._colorNonSelectedPointsInMica(this.series);
 						that._valueClickHandler();
 					},
 					update: function() {
 						if (!that.isApplied) {
-							that._coloringAllPointInAmethyst(this.series);
+							that._colorAllPointsInAmethyst(this.series);
 						}
 						if (that.isApplied) {
-							that._coloringNonSelectedPointInMica(this.series);
-							that._coloringSelectedQuadrantPointsInAmethyst(this.series);
+							that._colorNonSelectedPointsInMica(this.series);
+							that._colorSelectedQuadrantPointsInAmethyst(this.series);
 						}
 					}
 				}

@@ -273,6 +273,5 @@ decorate(Data, {
 	isLoading: observable,
 	tiCVsGradesQuadrant: observable,
 	onServerDataReload: action,
-	setApplied: action,
-	setTiCVsGradesCardFilter: action
+	setApplied: action
 });
