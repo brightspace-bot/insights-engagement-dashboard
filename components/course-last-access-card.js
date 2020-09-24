@@ -101,7 +101,10 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 			animation: false,
 			tooltip: { enabled: false },
 			title: {
-				text: '' // override default title
+				text: this._cardTitle,
+				style: {
+					display: 'none'
+				}
 			},
 			xAxis: { // axis flipped for this chart
 				title: {

@@ -216,13 +216,6 @@ export class Data {
 		}
 	}
 
-	get currentFinalGradesVsTimeInContent() {
-		return this.getRecordsInView()
-			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
-			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]) //keep in count students either without grade or without time in content
-			.filter(item => item[0] || item[1]);
-	}
-
 	get tiCVsGrades() {
 		return this.getRecordsInView(TiCVsGradesFilterId)
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
@@ -309,7 +302,6 @@ decorate(Data, {
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
 	courseLastAccessDates: computed,
-	currentFinalGradesVsTimeInContent: computed,
 	tiCVsGrades: computed,
 	currentFinalGrades: computed,
 	cardFilters: observable,
