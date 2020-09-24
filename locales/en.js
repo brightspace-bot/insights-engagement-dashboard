@@ -56,6 +56,7 @@ export default {
 	"components.insights-course-last-access-card.fiveToSevenDaysAgo": "5-7 days ago",
 	"components.insights-course-last-access-card.oneToFiveDaysAgo": "1-5 days ago",
 	"components.insights-course-last-access-card.lessThanOneDayAgo": "< 1 day ago",
+	"components.insights-course-last-access-card.accessibilityLessThanOne": "Less than 1 day ago",
 
 	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 

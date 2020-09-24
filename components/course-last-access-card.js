@@ -71,6 +71,10 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 		return this.data.courseLastAccessDates;
 	}
 
+	get _accessibilityLessThanOneLabel() {
+		return this.localize('components.insights-course-last-access-card.accessibilityLessThanOne');
+	}
+
 	get _cardCategoriesText() {
 		return [
 			this.localize('components.insights-course-last-access-card.never'),
@@ -159,9 +163,9 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 						pointDescriptionFormatter: function(point) {
 							const val = point.y;
 							if (point.x === 5) {
-								return `Less than 1, number of users, ${val}.`;
+								return `${that._accessibilityLessThanOneLabel}, ${that._horizontalLabel}, ${val}.`;
 							}
-							return `${that._cardCategoriesText[point.x]}, number of users, ${val}.`;
+							return `${that._cardCategoriesText[point.x]}, ${that._horizontalLabel}, ${val}.`;
 						}
 					}
 				},
