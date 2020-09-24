@@ -10,7 +10,8 @@ export const RECORD = {
 	ROLE_ID: 2,
 	OVERDUE: 3,
 	CURRENT_FINAL_GRADE: 4,
-	TIME_IN_CONTENT: 5
+	TIME_IN_CONTENT: 5,
+	COURSE_LAST_ACCESS: 6
 };
 
 export const USER = {
@@ -173,8 +174,41 @@ export class Data {
 			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
 	}
 
+	get courseLastAccessDates() {
+		// return an array of size 6, each element mapping to a category on the course last access bar chart
+		const dateBucketCounts = [0, 0, 0, 0, 0, 0];
+		const lastAccessDatesArray = this.getRecordsInView().map(record => [record[RECORD.COURSE_LAST_ACCESS] === null ? -1 : (Date.now() - record[RECORD.COURSE_LAST_ACCESS])]);
+		lastAccessDatesArray.forEach(record => dateBucketCounts[ this._bucketCourseLastAccessDates(record) ]++);
+		return dateBucketCounts;
+	}
+
+	_bucketCourseLastAccessDates(courseLastAccessDateRange) {
+		const fourteenDayMillis = 1209600000;
+		const sevenDayMillis = 604800000;
+		const fiveDayMillis = 432000000;
+		const oneDayMillis = 86400000;
+		if (courseLastAccessDateRange < 0) {
+			return 0;
+		}
+		if (courseLastAccessDateRange >= fourteenDayMillis) {
+			return 1;
+		}
+		if (courseLastAccessDateRange <= oneDayMillis) {
+			return 5;
+		}
+		if (courseLastAccessDateRange <= fiveDayMillis) {
+			return 4;
+		}
+		if (courseLastAccessDateRange <= sevenDayMillis) {
+			return 3;
+		}
+		if (courseLastAccessDateRange <= fourteenDayMillis) {
+			return 2;
+		}
+	}
+
 	get currentFinalGradesVsTimeInContent() {
-		return  this.getRecordsInView()
+		return this.getRecordsInView()
 			.map(record => [!record[RECORD.TIME_IN_CONTENT] ? 0 : record[RECORD.TIME_IN_CONTENT], !record[RECORD.CURRENT_FINAL_GRADE] ? 0 : record[RECORD.CURRENT_FINAL_GRADE]])
 			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]) //keep in count students either without grade or without time in content
 			.filter(item => item[0] || item[1]);
@@ -254,6 +288,7 @@ decorate(Data, {
 	orgUnits: computed,
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
+	courseLastAccessDates: computed,
 	currentFinalGradesVsTimeInContent: computed,
 	currentFinalGrades: computed,
 	cardFilters: observable,
