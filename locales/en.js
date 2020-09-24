@@ -46,6 +46,18 @@ export default {
 	"components.insights-current-final-grade-card.textLabel": "This chart displays the current final grade for each user per course",
 	"components.insights-current-final-grade-card.emptyMessage": "There are no results available that match your filters.",
 
+	"components.insights-course-last-access-card.courseAccess": "Course Access",
+	"components.insights-course-last-access-card.numberOfUsers": "Number of Users",
+	"components.insights-course-last-access-card.textLabel": "This chart displays the current final grade for each user per course",
+	"components.insights-course-last-access-card.lastDateSinceAccess": "Last Time a User Accessed a Course",
+	"components.insights-course-last-access-card.never": "Never",
+	"components.insights-course-last-access-card.moreThanFourteenDaysAgo": "> 14 days ago",
+	"components.insights-course-last-access-card.sevenToFourteenDaysAgo": "7-14 days ago",
+	"components.insights-course-last-access-card.fiveToSevenDaysAgo": "5-7 days ago",
+	"components.insights-course-last-access-card.oneToFiveDaysAgo": "1-5 days ago",
+	"components.insights-course-last-access-card.lessThanOneDayAgo": "< 1 day ago",
+	"components.insights-course-last-access-card.accessibilityLessThanOne": "Less than 1 day ago",
+
 	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 
 	"components.insights-applied-filters.clear-all": "Clear all",

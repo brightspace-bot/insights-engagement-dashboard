@@ -9,6 +9,7 @@ import './components/table.js';
 import './components/current-final-grade-card.js';
 import './components/applied-filters';
 import './components/aria-loading-progress';
+import './components/course-last-access-card.js';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { Data } from './model/data.js';
@@ -116,6 +117,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				<div class="d2l-insights-chart-container">
 					<div><d2l-insights-current-final-grade-card .data="${this._data}"></d2l-insights-current-final-grade-card></div>
 					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}"></d2l-insights-time-in-content-vs-grade-card></div>
+					<div><d2l-insights-course-last-access-card .data="${this._data}"></d2l-insights-course-last-access-card></div>
 				</div>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 				<d2l-insights-users-table .data="${this._data}"></d2l-insights-users-table>
