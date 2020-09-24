@@ -1,4 +1,4 @@
-import 'array-flat-polyfill';
+// import 'array-flat-polyfill';
 import './tree-selector.js';
 
 import { action, computed, decorate, observable } from 'mobx';

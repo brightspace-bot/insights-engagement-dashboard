@@ -34,8 +34,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 
 		it('should exclude chart form tabindex when data is loading', async() => {
 			const loadingData = Object.assign({}, data, { isLoading: true });
-			const el = await fixture(html`<d2l-insights-time-in-content-vs-grade-card .data="${loadingData}"></d2l-insights-time-in-content-vs-grade-card>`);
-
+			const el = await fixture(html`<d2l-insights-current-final-grade-card .data="${loadingData}"></d2l-insights-current-final-grade-card>`);
 			const chart = el.shadowRoot.querySelector('d2l-labs-chart');
 			const chartDiv = chart.shadowRoot.querySelector('#chart-container');
 			expect(chartDiv.getAttribute('tabindex')).to.equal('-1');

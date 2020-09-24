@@ -34,6 +34,8 @@ function unique(array) {
 function countUnique(records, field) {
 	return new Set(records.map(r => r[field])).size;
 }
+const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
+const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
 
 export class Data {
 	constructor({ recordProvider, cardFilters }) {
@@ -42,6 +44,9 @@ export class Data {
 		this._userDictionary = null;
 
 		// @observables
+		this.tiCVsGradesQuadrant = 'leftBottom';
+		this.avgTimeInContent = 0;
+		this.avgGrades = 0;
 		this.isLoading = true;
 		this.serverData = {
 			records: [],
@@ -169,9 +174,13 @@ export class Data {
 	}
 
 	get currentFinalGrades() {
+		//keep in count students with 0 grade, but remove with null
 		return this.getRecordsInView()
-			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null)
-			.map(record => Math.floor(record[RECORD.CURRENT_FINAL_GRADE] / 10) * 10);
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
+			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
+			.filter(item => item[0] || item[1])
+			.map(item => (item[1] ? Math.floor(item[1] / 10) * 10 : 0))
+			.map(item => (item === 100 ? 90 : item)); // put grade 100 in bin 90-100
 	}
 
 	get courseLastAccessDates() {
@@ -214,18 +223,29 @@ export class Data {
 			.filter(item => item[0] || item[1]);
 	}
 
-	get avgTimeInContent() {
-		const arrayOfTimeInContent =  this.currentFinalGradesVsTimeInContent.map(item => item[0]);
-		return arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
+	get tiCVsGrades() {
+		return this.getRecordsInView(TiCVsGradesFilterId)
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
+			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
+			.filter(item => item[0] || item[1])
+			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]); //keep in count students either without grade or without time in content
 	}
 
-	get avgGrade() {
-		const arrayOfGrades = this.currentFinalGradesVsTimeInContent.map(item => item[1]);
-		return arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
+	setTiCVsGradesQuadrant(quadrant) {
+		this.tiCVsGradesQuadrant = quadrant;
+	}
+
+	get tiCVsGradesAvgValues() {
+		const arrayOfTimeInContent =  this.tiCVsGrades.map(item => item[0]);
+		this.avgTimeInContent = arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
+
+		const arrayOfGrades = this.tiCVsGrades.map(item => item[1]);
+		this.avgGrades = arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
+		return [this.avgTimeInContent, this.avgGrades];
 	}
 
 	get usersCountsWithOverdueAssignments() {
-		return this.getRecordsInView()
+		return this.getRecordsInView(OverdueAssignmentsFilterId)
 			.reduce((acc, record) => {
 				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
 					acc.add(record[RECORD.USER_ID]);
@@ -290,9 +310,11 @@ decorate(Data, {
 	usersCountsWithOverdueAssignments: computed,
 	courseLastAccessDates: computed,
 	currentFinalGradesVsTimeInContent: computed,
+	tiCVsGrades: computed,
 	currentFinalGrades: computed,
 	cardFilters: observable,
 	isLoading: observable,
+	tiCVsGradesQuadrant: observable,
 	onServerDataReload: action,
 	setApplied: action
 });

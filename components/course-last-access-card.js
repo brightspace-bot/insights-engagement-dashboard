@@ -87,7 +87,7 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-course-last-access-container">
 		<div class="d2l-insights-course-last-access-title">${this._cardTitle}</div>
-		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}"></d2l-labs-chart>
+		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>
 		</div>`;
 	}
 

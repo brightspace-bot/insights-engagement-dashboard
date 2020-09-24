@@ -5,7 +5,8 @@ import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-help
 
 describe('d2l-insights-time-in-content-vs-grade-card', () => {
 	const data = {
-		currentFinalGradesVsTimeInContent: [[22, 33], [33, 41]]
+		tiCVsGrades: [[22, 33], [33, 41]],
+		tiCVsGradesAvgValues: [11, 22]
 	};
 
 	describe('constructor', () => {
@@ -26,7 +27,7 @@ describe('d2l-insights-time-in-content-vs-grade-card', () => {
 			const el = await fixture(html`<d2l-insights-time-in-content-vs-grade-card .data="${data}"></d2l-insights-time-in-content-vs-grade-card>`);
 			const title = (el.shadowRoot.querySelectorAll('div.d2l-insights-time-in-content-vs-grade-title'));
 			expect(title[0].innerText).to.equal('Time in Content vs. Grade');
-			expect(el._preparedPlotData).to.equal(data.currentFinalGradesVsTimeInContent);
+			expect(el._preparedPlotData).to.equal(data.tiCVsGrades);
 		});
 
 		it('should exclude chart form tabindex when data is loading', async() => {

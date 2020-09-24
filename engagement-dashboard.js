@@ -6,7 +6,6 @@ import './components/role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
 import './components/table.js';
-import './components/time-in-content-vs-grade-card';
 import './components/current-final-grade-card.js';
 import './components/applied-filters';
 import './components/aria-loading-progress';
@@ -20,6 +19,7 @@ import { heading3Styles } from '@brightspace-ui/core/components/typography/style
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsCardFilter } from './components/overdue-assignments-card';
+import { TimeInContentVsGradeCardFilter } from './components/time-in-content-vs-grade-card';
 
 /**
  * @property {Boolean} useTestData - if true, use canned data; otherwise call the LMS
@@ -127,7 +127,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	get _data() {
 		if (!this.__data) {
 			const cardFilters = [
-				OverdueAssignmentsCardFilter
+				OverdueAssignmentsCardFilter,
+				TimeInContentVsGradeCardFilter
 			].map(filter => ({ ...filter, title: this.localize(filter.title) }));
 
 			this.__data = new Data({

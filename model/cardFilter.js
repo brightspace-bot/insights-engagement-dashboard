@@ -27,7 +27,7 @@ export class CardFilter {
 	}
 
 	shouldInclude(record) {
-		return this.filter(record);
+		return this.filter(record, this.data);
 	}
 }
 
