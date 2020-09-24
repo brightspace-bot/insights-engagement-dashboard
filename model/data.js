@@ -133,9 +133,8 @@ export class Data {
 	set selectedOrgUnitIds(newOrgUnitIds) {
 		if (this._selectorFilters.orgUnit.shouldReloadFromServer(newOrgUnitIds)) {
 			this.loadData({ newOrgUnitIds });
-		} else {
-			this._selectorFilters.orgUnit.selected = newOrgUnitIds;
 		}
+		// no need to update the filter here: it uses the same data structure as the web component that renders it
 	}
 
 	get selectedOrgUnitIds() {

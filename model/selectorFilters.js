@@ -1,4 +1,4 @@
-import { decorate, observable } from 'mobx';
+import { computed, decorate, observable } from 'mobx';
 import { RECORD } from './data';
 
 function hasSelections(selectedIds) {
@@ -65,19 +65,22 @@ export class SemesterSelectorFilter {
 }
 
 export class OrgUnitSelectorFilter {
-	constructor({ defaultViewOrgUnitIds, selectedOrgUnitIds, isRecordsTruncated }, orgUnitAncestors) {
+	constructor({ selectedOrgUnitIds, isRecordsTruncated }, orgUnitTree) {
 		this._latestServerQuery = selectedOrgUnitIds || [];
-		this.selected = defaultViewOrgUnitIds || selectedOrgUnitIds || [];
 		this._isRecordsTruncated = isRecordsTruncated;
-		this._orgUnitAncestors = orgUnitAncestors;
+		this._orgUnitTree = orgUnitTree;
+	}
+
+	get selected() {
+		return this._orgUnitTree.selected;
 	}
 
 	shouldInclude(record) {
-		if (!hasSelections(this.selected) || !this._orgUnitAncestors) {
+		if (!hasSelections(this.selected) || !this._orgUnitTree) {
 			return true;
 		}
 
-		return this._orgUnitAncestors.hasAncestorsInList(record[RECORD.ORG_UNIT_ID], this.selected);
+		return this._orgUnitTree.hasAncestorsInList(record[RECORD.ORG_UNIT_ID], this.selected);
 	}
 
 	shouldReloadFromServer(newOrgUnitIds) {
@@ -86,7 +89,7 @@ export class OrgUnitSelectorFilter {
 		}
 
 		return hasSelections(this._latestServerQuery) && newOrgUnitIds.some(newOrgUnitId =>
-			!this._orgUnitAncestors.hasAncestorsInList(newOrgUnitId, this._latestServerQuery)
+			!this._orgUnitTree.hasAncestorsInList(newOrgUnitId, this._latestServerQuery)
 		);
 	}
 }
@@ -100,5 +103,5 @@ decorate(SemesterSelectorFilter, {
 });
 
 decorate(OrgUnitSelectorFilter, {
-	selected: observable
+	selected: computed
 });
