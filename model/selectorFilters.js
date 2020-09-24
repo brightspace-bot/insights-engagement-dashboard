@@ -72,15 +72,16 @@ export class OrgUnitSelectorFilter {
 	}
 
 	get selected() {
-		return this._orgUnitTree.selected;
+		return (this._orgUnitTree && this._orgUnitTree.selected) || [];
 	}
 
 	shouldInclude(record) {
-		if (!hasSelections(this.selected) || !this._orgUnitTree) {
+		const selected = this.selected;
+		if (!hasSelections(selected)) {
 			return true;
 		}
 
-		return this._orgUnitTree.hasAncestorsInList(record[RECORD.ORG_UNIT_ID], this.selected);
+		return this._orgUnitTree.hasAncestorsInList(record[RECORD.ORG_UNIT_ID], selected);
 	}
 
 	shouldReloadFromServer(newOrgUnitIds) {

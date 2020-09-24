@@ -115,6 +115,7 @@ describe('Data', () => {
 		return new Promise((resolve) => {
 			resolve({
 				...serverData,
+				semesterTypeId: mockOuTypes.semester,
 				selectedRolesIds: roleIds,
 				selectedSemestersIds: semesterIds,
 				selectedOrgUnitIds: orgUnitIds
@@ -127,6 +128,22 @@ describe('Data', () => {
 	beforeEach(async() => {
 		sut = new Data({ recordProvider, cardFilters });
 		await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+	});
+
+	describe('reload from server', () => {
+		it('maintains ou tree open state', async() => {
+			const oldTree = sut.orgUnitTree;
+			sut.orgUnitTree.setOpen(1001, true);
+			sut.orgUnitTree.setOpen(1, true);
+
+			// trigger a reload and allow recordProvider to resolve
+			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: true });
+			sut.selectedRoleIds = [mockRoleIds.student];
+			await new Promise(resolve => setTimeout(resolve, 0));
+
+			expect(sut.orgUnitTree).to.not.equal(oldTree); // make sure the the data was loaded
+			expect(sut.orgUnitTree.open.sort()).to.deep.equal([1, 1001]);
+		});
 	});
 
 	describe('set selectedRoleIds', () => {
@@ -237,7 +254,7 @@ describe('Data', () => {
 				return [1002, 3, 311, 313, 2, 212, 113].includes(recordOrgUnitId);
 			});
 
-			sut.selectedOrgUnitIds = orgUnitFilters;
+			orgUnitFilters.forEach(x => sut.orgUnitTree.setSelected(x, true));
 
 			expect(sut.records).to.deep.equal(expectedRecords);
 		});
@@ -273,7 +290,7 @@ describe('Data', () => {
 				record[0] === 212 && record[1] === 300
 			);
 
-			sut.selectedOrgUnitIds = orgUnitFilters;
+			orgUnitFilters.forEach(x => sut.orgUnitTree.setSelected(x, true));
 			sut.selectedSemesterIds = semesterFilters;
 			sut.selectedRoleIds = roleFilters;
 
@@ -293,7 +310,7 @@ describe('Data', () => {
 				return [100, 200, 300].includes(userId);
 			});
 
-			sut.selectedOrgUnitIds = orgUnitFilters;
+			orgUnitFilters.forEach(x => sut.orgUnitTree.setSelected(x, true));
 
 			expect(sut.users).to.deep.equal(expectedUsers);
 		});
@@ -331,45 +348,11 @@ describe('Data', () => {
 				return [100].includes(userId);
 			});
 
-			sut.selectedOrgUnitIds = orgUnitFilters;
+			orgUnitFilters.forEach(x => sut.orgUnitTree.setSelected(x, true));
 			sut.selectedSemesterIds = semesterFilters;
 			sut.selectedRoleIds = roleFilters;
 
 			expect(sut.users).to.deep.equal(expectedUsers);
-		});
-	});
-
-	describe('get orgUnits', () => {
-		it('should return all org units if no filters are applied', async() => {
-			expect(sut.orgUnits).to.deep.equal(serverData.orgUnits);
-		});
-
-		it('should return filtered org units when semester filter is applied', async() => {
-			const semesterFilters = [13];
-			const expectedOrgUnits = serverData.orgUnits.filter(ou => {
-				const ouId = ou[0];
-				return [13, 113, 313].includes(ouId);
-			});
-
-			sut.selectedSemesterIds = semesterFilters;
-
-			expect(sut.orgUnits).to.deep.equal(expectedOrgUnits);
-		});
-
-		it('should ignore role and org unit filters', async() => {
-			const orgUnitFilters = [112, 113];
-			const semesterFilters = [13];
-			const roleFilters = [mockRoleIds.admin];
-			const expectedOrgUnits = serverData.orgUnits.filter(ou => {
-				const ouId = ou[0];
-				return [13, 113, 313].includes(ouId);
-			});
-
-			sut.selectedOrgUnitIds = orgUnitFilters;
-			sut.selectedSemesterIds = semesterFilters;
-			sut.selectedRoleIds = roleFilters;
-
-			expect(sut.orgUnits).to.deep.equal(expectedOrgUnits);
 		});
 	});
 

@@ -220,37 +220,35 @@ describe('selectorFilters', () => {
 
 	describe('OrgUnitSelectorFilter', () => {
 		describe('shouldInclude', () => {
+			it('should return true if the filter has no org unit tree', () => {
+				const record = [1, 1, 1]; // doesn't matter what the ids are here
+				const sut = new OrgUnitSelectorFilter({}, null);
+				expect(sut.shouldInclude(record)).to.be.true;
+			});
+
 			it('should return true if the filter has no selected ids', () => {
 				const record = [1, 1, 1]; // doesn't matter what the ids are here
-				const sut = new OrgUnitSelectorFilter({
-					selectedOrgUnitIds: [],
-					isRecordsTruncated: false
-				}, null);
+				const sut = new OrgUnitSelectorFilter({}, { selected: [] });
 				expect(sut.shouldInclude(record)).to.be.true;
 			});
 
 			it('should return true if the record orgUnit id has an ancestor in the selected orgUnit list', () => {
-				const mockOrgUnitAncestors = {
+				const mockOrgUnitTree = {
 					hasAncestorsInList: (/* any */) => true
 				};
-				const record = [1, 5, 5];
-				const sut = new OrgUnitSelectorFilter({
-					selectedOrgUnitIds: [1, 2, 3],
-					isRecordsTruncated: false
-				}, mockOrgUnitAncestors);
+				const record = [1, 5, 5]; // doesn't matter what the ids are here
+				const sut = new OrgUnitSelectorFilter({}, mockOrgUnitTree);
 
 				expect(sut.shouldInclude(record)).to.be.true;
 			});
 
 			it('should return false if the record orgUnitId has no ancestors in the selected ids', () => {
-				const mockOrgUnitAncestors = {
+				const mockOrgUnitTree = {
+					selected: [1, 2],
 					hasAncestorsInList: (/* any */) => false
 				};
 				const record = [10, 5, 5]; // doesn't matter what the ids are here
-				const sut = new OrgUnitSelectorFilter({
-					selectedOrgUnitIds: [2, 3, 4],
-					isRecordsTruncated: false
-				}, mockOrgUnitAncestors);
+				const sut = new OrgUnitSelectorFilter({}, mockOrgUnitTree);
 
 				expect(sut.shouldInclude(record)).to.be.false;
 			});
@@ -277,7 +275,7 @@ describe('selectorFilters', () => {
 			});
 
 			it('should return true if the new orgUnitIds list has any id that has no ancestors in the existing list', () => {
-				const mockOrgUnitAncestors = {
+				const mockOrgUnitTree = {
 					// pretend 3 has no ancestors in the list
 					hasAncestorsInList: (orgUnitId) => orgUnitId !== 3
 				};
@@ -286,27 +284,28 @@ describe('selectorFilters', () => {
 				const sut = new OrgUnitSelectorFilter({
 					selectedOrgUnitIds: [1, 2],
 					isRecordsTruncated: false
-				}, mockOrgUnitAncestors);
+				}, mockOrgUnitTree);
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.true;
 			});
 
 			it('should return false if no filters were applied originally and data was not truncated', () => {
 				const newOrgUnitIds = [1, 2, 3];
+				const mockOrgUnitTree = { selected: [] };
 				const sut = new OrgUnitSelectorFilter({
 					selectedOrgUnitIds: null,
 					isRecordsTruncated: false
-				}, null);
+				}, mockOrgUnitTree);
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.false;
 
 				// apply local changes - make sure it won't reload from server if it doesn't need to
-				sut.selected = [1, 3, 5];
+				mockOrgUnitTree.selected = [1, 3, 5];
 				expect(sut.shouldReloadFromServer([1, 3, 5])).to.be.false;
 				expect(sut.shouldReloadFromServer([1, 3, 5, 7])).to.be.false;
 				expect(sut.shouldReloadFromServer([])).to.be.false;
 			});
 
 			it('should return false if the new list has only ids that had ancestors in the old list', () => {
-				const mockOrgUnitAncestors = {
+				const mockOrgUnitTree = {
 					hasAncestorsInList: (/* any */) => true
 				};
 
@@ -314,22 +313,23 @@ describe('selectorFilters', () => {
 				const sut = new OrgUnitSelectorFilter({
 					selectedOrgUnitIds: [1, 2],
 					isRecordsTruncated: false
-				}, mockOrgUnitAncestors);
+				}, mockOrgUnitTree);
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.false;
 			});
 
 			it('should use the server query ids to determine reload instead of the local ids', () => {
-				const mockOrgUnitAncestors = {
+				const mockOrgUnitTree = {
+					selected: [1, 3, 5],
 					hasAncestorsInList: (orgUnitId, list) => list.includes(orgUnitId)
 				};
 
 				const sut = new OrgUnitSelectorFilter({
 					selectedOrgUnitIds: [1, 3, 5],
 					isRecordsTruncated: false
-				}, mockOrgUnitAncestors);
+				}, mockOrgUnitTree);
 
 				// apply local changes
-				sut.selected = [1, 3];
+				mockOrgUnitTree.selected = [1, 3];
 				expect(sut.shouldReloadFromServer([1, 3])).to.be.false;
 				// if it were using the newly applied local selection, this next line would be true
 				expect(sut.shouldReloadFromServer([1, 3, 5])).to.be.false;

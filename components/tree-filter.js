@@ -90,7 +90,7 @@ export class Tree {
 
 	getChildIdsForDisplay(id) {
 		return this.getChildIds(id)
-			.filter(x => this.isVisible(x))
+			.filter(x => this._isVisible(x))
 			.sort((a, b) => this._nameForSort(a).localeCompare(this._nameForSort(b)));
 	}
 
@@ -102,7 +102,7 @@ export class Tree {
 
 	getMatchingIds(searchString) {
 		return this.ids
-			.filter(x => this.isVisible(x))
+			.filter(x => this._isVisible(x))
 			.filter(x => !this._isRoot(x) && this._nameForSort(x).toLowerCase().includes(searchString.toLowerCase()));
 	}
 
@@ -144,11 +144,6 @@ export class Tree {
 
 	isOpenable(id) {
 		return !this.leafTypes.includes(this.getType(id));
-	}
-
-	isVisible(id) {
-		return (this._visible === null || this._visible.has(id))
-			&& !this.invisibleTypes.includes(this.getType(id));
 	}
 
 	/**
@@ -204,6 +199,11 @@ export class Tree {
 		return this.getParentIds(id).includes(0);
 	}
 
+	_isVisible(id) {
+		return (this._visible === null || this._visible.has(id))
+			&& !this.invisibleTypes.includes(this.getType(id));
+	}
+
 	_nameForSort(id) {
 		return this.getName(id) + id;
 	}
@@ -222,7 +222,11 @@ export class Tree {
 		// never select the root (user can clear the selection instead)
 		if (this._isRoot(id)) return;
 
-		const childIds = this.getChildIds(id);
+		// don't select invisible node types
+		if (this.invisibleTypes.includes(this.getType(id))) return;
+
+		// only consider children of visible types: this node is selected if all potentially visible children are
+		const childIds = this.getChildIds(id).filter(x => !this.invisibleTypes.includes(this.getType(x)));
 		const state = childIds.every(childId => this.getState(childId) === 'explicit')
 			? 'explicit'
 			: childIds.every(childId => this.getState(childId) === 'none')
