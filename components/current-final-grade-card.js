@@ -94,6 +94,28 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		this.data.setApplied('d2l-insights-current-final-grade-card', true);
 	}
 
+	_colorNonSelectedPointsInMica(data) {
+		data.forEach(point => {
+			if (this.category !== Math.ceil(point.x)) {
+				point.update({ color: 'var(--d2l-color-mica)' });
+			}
+		});
+	}
+
+	_colorNonSelectedPointsInMicaAfterRender(data) {
+		data.forEach(data => {
+			if (Math.ceil(data.category) !== this.category) {
+				data.update({ color: 'var(--d2l-color-mica)' }, false);
+			}
+		});
+	}
+
+	_colorAllPointsInAmethystAfterRender(data) {
+		data.forEach(data => {
+			data.update({ color: 'var(--d2l-color-amethyst)' }, false);
+		});
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -123,18 +145,11 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				height: 230,
 				events: {
 					render: function() {
-						console.log('render');
 						if (that.isApplied) {
-							this.series[0].data.forEach(data => {
-								if (Math.ceil(data.category) !== that.category) {
-									data.update({ color: 'var(--d2l-color-mica)' }, false);
-								}
-							});
+							that._colorNonSelectedPointsInMicaAfterRender(this.series[0].data);
 							this.render();
 						} else {
-							this.series[0].data.forEach(data => {
-								data.update({ color: 'var(--d2l-color-amethyst)' }, false);
-							});
+							that._colorAllPointsInAmethystAfterRender(this.series[0].data);
 							this.render();
 						}
 					}
@@ -209,13 +224,8 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 						events: {
 							select: function() {
 								that._valueClickHandler();
-								const selectedCategory = Math.ceil(this.category);
-								that.setCategory(selectedCategory);
-								this.series.data.forEach(point => {
-									if (selectedCategory !== Math.ceil(point.x)) {
-										point.update({ color: 'var(--d2l-color-mica)' });
-									}
-								});
+								that.setCategory(Math.ceil(this.category));
+								that._colorNonSelectedPointsInMica(this.series.data);
 							}
 						}
 					}
