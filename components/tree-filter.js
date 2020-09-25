@@ -16,6 +16,7 @@ export class Tree {
 	/**
 	 * Type to use as the .tree property of a d2l-insights-tree-filter. Mutator methods will
 	 * trigger re-rendering as needed. Call as new Tree({}) for a default empty tree.
+	 * NB: this is actually a DAG, not a tree. :)
 	 * @param {[][]} [nodes=[]] - Array of arrays, each with elements for each of the above constants
 	 * @param {Number[]} [leafTypes=[]] - TYPE values that cannot be opened
 	 * @param {Number[]} [invisibleTypes=[]] - TYPE values that should not be rendered
@@ -77,32 +78,46 @@ export class Tree {
 	/**
 	 * Adds nodes as children of the given parent. New nodes will be selected if the parent is.
 	 * The parents of the new nodes will be set to the given parent plus any previous parents (if the node
-	 * was already in the tree).
+	 * was already in the tree). The new nodes are assumed to match the ancestorFilter, if any;
+	 * future changes to that filter are not supported (i.e. it is assumed the caller will reload data
+	 * and create a new tree in that case).
 	 * @param {number} parentId The parent of the new nodes. The new nodes *replace* any existing children.
-	 * @param nodes Array of nodes to be added to the tree if there is not already a node with the same id.
+	 * @param newChildren Array of nodes to be added to the tree; name and type will be updated if the id already exists.
 	 */
 	// how to distinguish between nodes with no children and nodes that need to request children:
 	// nodes with no child nodes on construction have no entry in the map; we return null for these and
 	// fire the "children please" event (rendering [] in the meantime). Owner should handle the event: if not truncated,
 	// add []; if truncated, fetchRelevant children and add them.
 	// TODO: this
-	addNodes(parentId, nodes) {
-		const parent = this.tree[parentId];
+	addNodes(parentId, newChildren) {
+		const parent = this._nodes.get(parentId);
 		if (!parent) return;
 
-		if (parent[STATE] === 'explicit') {
-			nodes.forEach(node => node[STATE] = 'explicit');
+		// add parentId to any existing parents of these nodes (before replacing the nodes and losing this info)
+		newChildren.forEach(x => {
+			const existingParents = this.getParentIds(x[ID]);
+			const allParents = new Set([parentId, ...existingParents]);
+			x[PARENTS] = [...allParents];
+		});
+		newChildren.forEach(x => this._nodes.set(x[ID], x));
+
+		// replace all of parent's children
+		this._children.set(parentId, newChildren.map(x => x[ID]));
+
+		// caller should only provide visible nodes
+		if (this._visible) {
+			newChildren.forEach(x => this._visible.add(x[ID]));
+		}
+		if (this.getState(parentId) === 'explicit') {
+			newChildren.forEach(x => this._state.set(x[ID], 'explicit'));
 		}
 
-		nodes.forEach(node => {
-			const oldNode = this.tree[node[ID]];
-			const parents = oldNode ? new Set(oldNode[PARENTS]) : new Set();
-			parents.add(parentId);
-			node[PARENTS] = [...parents];
-			this.tree[node[ID]] = oldNode || node;
-		});
-
-		parent[CHILDREN] = nodes.map(node => node[ID]);
+		// Ancestors may need updating: if one or more of newChildren was already present (due to
+		// being added under another parent), then they may also have been opened and have descendants,
+		// which now need a new ancestor.
+		// For simplicity and correctness, we simply reset the ancestors map, which will be
+		// regenerated as needed by getAncestorIds.
+		this._ancestors = new Map();
 	}
 
 	getAncestorIds(id) {
@@ -175,6 +190,15 @@ export class Tree {
 
 	isOpenable(id) {
 		return !this.leafTypes.includes(this.getType(id));
+	}
+
+	/**
+	 * True iff the children of id are known (even if there are zero children).
+	 * @param id
+	 * @returns {boolean}
+	 */
+	isPopulated(id) {
+		return this._children.has(id);
 	}
 
 	/**
@@ -295,6 +319,7 @@ decorate(Tree, {
  * @property {String} openerText - appears on the dropdown opener if no items are selected
  * @property {String} openerTextSelected - appears on the dropdown opener if one or more items are selected
  * @fires d2l-insights-tree-filter-select - selection has changed; selected property of this element is the list of selected ids
+ * @fires d2l-insights-tree-filter-request-children - owner should call addNodes with children of event.detail.id
  */
 class TreeFilter extends Localizer(MobxLitElement) {
 
@@ -424,6 +449,22 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		event.stopPropagation();
 		this._needResize = true;
 		this.tree.setOpen(event.detail.id, event.detail.isOpen);
+
+		if (event.detail.isOpen && !this.tree.isPopulated(event.detail.id)) {
+			/**
+			 * @event d2l-insights-tree-filter-request-children
+			 */
+			this.dispatchEvent(new CustomEvent(
+				'd2l-insights-tree-filter-request-children',
+				{
+					bubbles: true,
+					composed: false,
+					detail: {
+						id: event.detail.id
+					}
+				}
+			));
+		}
 	}
 
 	_onSearch(event) {

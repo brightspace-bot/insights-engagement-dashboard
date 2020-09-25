@@ -164,6 +164,100 @@ describe('Tree', () => {
 		});
 	});
 
+	describe('addNodes and isPopulated', () => {
+		it('should report isPopulated as false if no children were present at initialization', () => {
+			expect(sut.isPopulated(4)).to.be.false;
+		});
+
+		it('should report isPopulated as true if children were present at initialization', () => {
+			expect(sut.isPopulated(1001)).to.be.true;
+		});
+
+		it('should add the given nodes', () => {
+			sut.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+
+			expect(sut.getName(991)).to.equal('new1');
+			expect(sut.getName(992)).to.equal('new2');
+			expect(sut.getType(991)).to.equal(mockOuTypes.course);
+			expect(sut.getType(992)).to.equal(mockOuTypes.courseOffering);
+			expect(sut.isOpenable(991)).to.be.true;
+			expect(sut.isOpenable(992)).to.be.false;
+		});
+
+		it('should add the nodes to a previously childless parent', () => {
+			sut.addNodes(4, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(sut.getChildIds(4).sort()).to.deep.equal([991, 992]);
+			expect(sut.isPopulated(4)).to.be.true;
+		});
+
+		it('should replace existing children', () => {
+			sut.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(sut.getChildIds(1001).sort()).to.deep.equal([991, 992]);
+			expect(sut.isPopulated(1001)).to.be.true;
+		});
+
+		it('should accept an empty array', () => {
+			sut.addNodes(4, []);
+			expect(sut.getChildIds(4)).to.deep.equal([]);
+			// Callers can use isPopulated to distinguish between an empty node and a node that needs
+			// to have its children added.
+			expect(sut.isPopulated(4)).to.be.true;
+		});
+
+		it('should make new children visible if there is no ancestor filter', () => {
+			sut.addNodes(1001, [[991, 'bnew1', mockOuTypes.course], [992, 'anew2', mockOuTypes.courseOffering]]);
+			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([992, 991]);
+		});
+
+		it('should make new children visible given an ancestor filter', () => {
+			sut.setAncestorFilter([12]);
+			sut.addNodes(1001, [[991, 'bnew1', mockOuTypes.course], [992, 'anew2', mockOuTypes.courseOffering]]);
+
+			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([992, 991]);
+		});
+
+		it('should select new nodes if the parent is selected', () => {
+			sut.addNodes(1003, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(sut.getState(991)).to.equal('explicit');
+			expect(sut.getState(992)).to.equal('explicit');
+		});
+
+		it('should not select new nodes if the parent is partially selected', () => {
+			sut.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(sut.getState(991)).to.equal('none');
+			expect(sut.getState(992)).to.equal('none');
+		});
+
+		it('should not select new nodes if the parent is not selected', () => {
+			sut.addNodes(1002, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(sut.getState(991)).to.equal('none');
+			expect(sut.getState(992)).to.equal('none');
+		});
+
+		it('should set the parent of new nodes', () => {
+			sut.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(sut.getParentIds(991)).to.deep.equal([1001]);
+			expect(sut.getParentIds(992)).to.deep.equal([1001]);
+		});
+
+		it('should add the new parent to existing nodes', () => {
+			sut.addNodes(1001, [[4, 'already a child of 1003', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(sut.getParentIds(4).sort()).to.deep.equal([1001, 1003]);
+			expect(sut.getParentIds(992)).to.deep.equal([1001]);
+		});
+
+		it('should report the correct ancestors for a new node', () => {
+			sut.addNodes(3, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			assertSetsAreEqual(sut.getAncestorIds(991), new Set([1001, 1002, 3, 6606, 991]));
+		});
+
+		it('should report the correct ancestors for descendants of a node with a new parent', () => {
+			sut.addNodes(1003, [[1, 'already a child of 1001', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			assertSetsAreEqual(sut.getAncestorIds(1), new Set([1, 1001, 1003, 6606]));
+			assertSetsAreEqual(sut.getAncestorIds(112), new Set([112, 1, 1001, 1003, 12, 6606]));
+		});
+	});
+
 	describe('getAncestorIds', () => {
 		it('builds the ancestors map correctly', () => {
 			const expectedAncestorsMap = {
@@ -211,6 +305,10 @@ describe('Tree', () => {
 	describe('getChildIdsForDisplay and setAncestorFilter', () => {
 		it('returns sorted children', () => {
 			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
+		});
+
+		it('returns empty if the node had no children on initialization', () => {
+			expect(sut.getChildIdsForDisplay(4)).to.deep.equal([]);
 		});
 
 		it('excludes nodes of invisible type', () => {
@@ -566,6 +664,15 @@ describe('d2l-insights-tree-filter', () => {
 
 		it('should fire d2l-insights-tree-selector-change on deselection', async() => {
 			await expectEvent(3);
+		});
+
+		it('should fire d2l-insights-tree-filter-request-children on open of childless node', async() => {
+			const listener = oneEvent(el, 'd2l-insights-tree-filter-request-children');
+			node(10).simulateArrowClick();
+			const event = await listener;
+			expect(event.type).to.equal('d2l-insights-tree-filter-request-children');
+			expect(event.target).to.equal(el);
+			expect(event.detail.id).to.equal(10);
 		});
 	});
 });
