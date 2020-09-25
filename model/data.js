@@ -36,6 +36,7 @@ function countUnique(records, field) {
 }
 const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
 const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
+const CurrentFinalGradeFilterId = 'd2l-insights-current-final-grade-card';
 
 export class Data {
 	constructor({ recordProvider, cardFilters }) {
@@ -44,6 +45,7 @@ export class Data {
 		this._userDictionary = null;
 
 		// @observables
+		this.gradesCategory = 0;
 		this.tiCVsGradesQuadrant = 'leftBottom';
 		this.avgTimeInContent = 0;
 		this.avgGrades = 0;
@@ -175,12 +177,16 @@ export class Data {
 
 	get currentFinalGrades() {
 		//keep in count students with 0 grade, but remove with null
-		return this.getRecordsInView()
+		return this.getRecordsInView(CurrentFinalGradeFilterId)
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
 			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
 			.filter(item => item[0] || item[1])
 			.map(item => (item[1] ? Math.floor(item[1] / 10) * 10 : 0))
 			.map(item => (item === 100 ? 90 : item)); // put grade 100 in bin 90-100
+	}
+
+	setGradesCategory(category) {
+		this.gradesCategory = category;
 	}
 
 	get courseLastAccessDates() {
@@ -307,6 +313,7 @@ decorate(Data, {
 	cardFilters: observable,
 	isLoading: observable,
 	tiCVsGradesQuadrant: observable,
+	gradesCategory: observable,
 	onServerDataReload: action,
 	setApplied: action
 });

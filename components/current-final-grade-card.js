@@ -2,6 +2,21 @@ import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../model/data';
+
+export const CurrentFinalGradeCardFilter  = {
+	id: 'd2l-insights-current-final-grade-card',
+	title: 'components.insights-current-final-grade-card.currentGrade',
+	filter: (record, data) => {
+		let result;
+		if (data.gradesCategory === 90) {
+			result = record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] >= data.gradesCategory && record[RECORD.CURRENT_FINAL_GRADE] <= (data.gradesCategory + 10);
+		} else {
+			result = record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] >= data.gradesCategory && record[RECORD.CURRENT_FINAL_GRADE] < (data.gradesCategory + 10);
+		}
+		return result;
+	}
+};
 
 class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 
@@ -63,6 +78,22 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		return this.data.currentFinalGrades;
 	}
 
+	setCategory(category) {
+		this.data.setGradesCategory(category);
+	}
+
+	get category() {
+		return this.data.gradesCategory;
+	}
+
+	get isApplied() {
+		return this.data.cardFilters['d2l-insights-current-final-grade-card'].isApplied;
+	}
+
+	_valueClickHandler() {
+		this.data.setApplied('d2l-insights-current-final-grade-card', true);
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -85,9 +116,29 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get chartOptions() {
+		const that = this;
+
 		return {
 			chart: {
-				height: 230
+				height: 230,
+				events: {
+					render: function() {
+						console.log('render');
+						if (that.isApplied) {
+							this.series[0].data.forEach(data => {
+								if (Math.ceil(data.category) !== that.category) {
+									data.update({ color: 'var(--d2l-color-mica)' }, false);
+								}
+							});
+							this.render();
+						} else {
+							this.series[0].data.forEach(data => {
+								data.update({ color: 'var(--d2l-color-amethyst)' }, false);
+							});
+							this.render();
+						}
+					}
+				}
 			},
 			animation: false,
 			tooltip: { enabled: false },
@@ -146,6 +197,27 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 								val = point.y;
 							return `${ix - 10} to ${ix}, ${val}.`;
 						}
+					},
+					allowPointSelect: true,
+					color: 'var(--d2l-color-amethyst)',
+					states: {
+						select: {
+							color: 'var(--d2l-color-amethyst)'
+						}
+					},
+					point: {
+						events: {
+							select: function() {
+								that._valueClickHandler();
+								const selectedCategory = Math.ceil(this.category);
+								that.setCategory(selectedCategory);
+								this.series.data.forEach(point => {
+									if (selectedCategory !== Math.ceil(point.x)) {
+										point.update({ color: 'var(--d2l-color-mica)' });
+									}
+								});
+							}
+						}
 					}
 				}
 			},
@@ -156,12 +228,11 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			},
 			series: [{
 				type: 'histogram',
-				color: 'var(--d2l-color-amethyst)',
 				animation: false,
 				lineWidth: 1,
 				baseSeries: 1,
 				shadow: false,
-				binWidth: 9.999
+				binWidth: 9.9999
 			},
 			{
 				data: this._preparedHistogramData,
