@@ -1,6 +1,7 @@
 const rolesEndpoint = '/d2l/api/lp/1.23/roles/';
 const semestersEndpoint = '/d2l/api/ap/unstable/insights/data/semesters';
 const dataEndpoint = '/d2l/api/ap/unstable/insights/data/engagement';
+const relevantChildrenEndpoint = orgUnitId => `/d2l/api/ap/unstable/insights/data/orgunits/${orgUnitId}/children`;
 
 /**
  * @param {[Number]} roleIds
@@ -54,4 +55,14 @@ export async function fetchSemesters(pageSize, bookmark, search) {
 	}
 	const response = await fetch(url.toString());
 	return await response.json();
+}
+
+export async function fetchRelevantChildren(orgUnitId, selectedSemesterIds) {
+	const url = new URL(relevantChildrenEndpoint(orgUnitId), window.location.origin);
+	if (selectedSemesterIds) {
+		url.searchParams.set('selectedSemestersCsv', selectedSemesterIds.join(','));
+	}
+	const response = await fetch(url.toString());
+	// Paging not handled yet (work is in backlog)
+	return (await response.json()).Items;
 }

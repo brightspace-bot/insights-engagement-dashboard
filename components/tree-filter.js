@@ -74,6 +74,37 @@ export class Tree {
 		return this._getSelected(this.rootId);
 	}
 
+	/**
+	 * Adds nodes as children of the given parent. New nodes will be selected if the parent is.
+	 * The parents of the new nodes will be set to the given parent plus any previous parents (if the node
+	 * was already in the tree).
+	 * @param {number} parentId The parent of the new nodes. The new nodes *replace* any existing children.
+	 * @param nodes Array of nodes to be added to the tree if there is not already a node with the same id.
+	 */
+	// how to distinguish between nodes with no children and nodes that need to request children:
+	// nodes with no child nodes on construction have no entry in the map; we return null for these and
+	// fire the "children please" event (rendering [] in the meantime). Owner should handle the event: if not truncated,
+	// add []; if truncated, fetchRelevant children and add them.
+	// TODO: this
+	addNodes(parentId, nodes) {
+		const parent = this.tree[parentId];
+		if (!parent) return;
+
+		if (parent[STATE] === 'explicit') {
+			nodes.forEach(node => node[STATE] = 'explicit');
+		}
+
+		nodes.forEach(node => {
+			const oldNode = this.tree[node[ID]];
+			const parents = oldNode ? new Set(oldNode[PARENTS]) : new Set();
+			parents.add(parentId);
+			node[PARENTS] = [...parents];
+			this.tree[node[ID]] = oldNode || node;
+		});
+
+		parent[CHILDREN] = nodes.map(node => node[ID]);
+	}
+
 	getAncestorIds(id) {
 		if (id === 0) return new Set();
 
@@ -251,6 +282,7 @@ decorate(Tree, {
 	_open: observable,
 	_visible: observable,
 	selected: computed,
+	addNodes: action,
 	setAncestorFilter: action,
 	setOpen: action,
 	setSelected: action
