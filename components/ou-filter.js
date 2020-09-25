@@ -57,7 +57,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 	async _onRequestChildren(event) {
 		const id = event.detail.id;
 		const children = await fetchRelevantChildren(id, this.data.selectedSemesterIds);
-		await this._tree.addNodes(id, children);
+		await event.target.tree.addNodes(id, children);
 	}
 }
 customElements.define('d2l-insights-ou-filter', OuFilter);
