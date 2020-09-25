@@ -23,8 +23,18 @@ export class Tree {
 	 * @param {Number[]} [selectedIds] - ids to mark selected. Ancestors and descendants will be marked accordingly.
 	 * @param {Number[]} [ancestorIds] - same as if passed to setAncestorFilter
 	 * @param {Tree} [oldTree] - tree to copy previous state from (e.g. which nodes are open)
+	 * @param {Boolean} isDynamic - if true, the tree is assumed to be incomplete, and tree-filter will fire events as needed
+	 * to request children
 	 */
-	constructor({ nodes = [], leafTypes = [], invisibleTypes = [], selectedIds, ancestorIds, oldTree }) {
+	constructor({
+		nodes = [],
+		leafTypes = [],
+		invisibleTypes = [],
+		selectedIds,
+		ancestorIds,
+		oldTree,
+		isDynamic = false
+	}) {
 		this.leafTypes = leafTypes;
 		this.invisibleTypes = invisibleTypes;
 		this.initialSelectedIds = selectedIds;
@@ -35,6 +45,7 @@ export class Tree {
 		this._open = oldTree ? new Set(oldTree.open) : new Set();
 		// null for no filter, vs. empty Set() when none match
 		this._visible = null;
+		this._populated = isDynamic ? new Set() : null;
 
 		// fill in children (parents are provided by the caller, and ancestors will be generated on demand)
 		this.ids.forEach(id => {
@@ -118,6 +129,10 @@ export class Tree {
 		// For simplicity and correctness, we simply reset the ancestors map, which will be
 		// regenerated as needed by getAncestorIds.
 		this._ancestors = new Map();
+
+		if (this._populated) {
+			this._populated.add(parentId);
+		}
 	}
 
 	getAncestorIds(id) {
@@ -198,7 +213,7 @@ export class Tree {
 	 * @returns {boolean}
 	 */
 	isPopulated(id) {
-		return this._children.has(id);
+		return !this._populated || this._populated.has(id);
 	}
 
 	/**
@@ -305,6 +320,7 @@ decorate(Tree, {
 	_state: observable,
 	_open: observable,
 	_visible: observable,
+	_populated: observable,
 	selected: computed,
 	addNodes: action,
 	setAncestorFilter: action,
@@ -378,7 +394,7 @@ class TreeFilter extends Localizer(MobxLitElement) {
 				@d2l-insights-tree-selector-search="${this._onSearch}"
 			>
 				${this._renderSearchResults()}
-				${this._renderChildren()}
+				${this._renderChildren(this.tree.rootId)}
 			</d2l-insights-tree-selector>
 		</div>`;
 	}
@@ -402,6 +418,12 @@ class TreeFilter extends Localizer(MobxLitElement) {
 
 	_renderChildren(id, parentName, indentLevel = 0) {
 		parentName = parentName || this.localize('components.tree-filter.node-name.root');
+
+		if (!this.tree.isPopulated(id)) {
+			// request children; in the meantime we can render whatever we have
+			this._requestChildren(id);
+		}
+
 		return this.tree
 			.getChildIdsForDisplay(id)
 			.map(id => this._renderNode(id, parentName, indentLevel + 1));
@@ -449,22 +471,6 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		event.stopPropagation();
 		this._needResize = true;
 		this.tree.setOpen(event.detail.id, event.detail.isOpen);
-
-		if (event.detail.isOpen && !this.tree.isPopulated(event.detail.id)) {
-			/**
-			 * @event d2l-insights-tree-filter-request-children
-			 */
-			this.dispatchEvent(new CustomEvent(
-				'd2l-insights-tree-filter-request-children',
-				{
-					bubbles: true,
-					composed: false,
-					detail: {
-						id: event.detail.id
-					}
-				}
-			));
-		}
 	}
 
 	_onSearch(event) {
@@ -483,6 +489,20 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		this.dispatchEvent(new CustomEvent(
 			'd2l-insights-tree-filter-select',
 			{ bubbles: true, composed: false }
+		));
+	}
+
+	_requestChildren(id) {
+		/**
+		 * @event d2l-insights-tree-filter-request-children
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-filter-request-children',
+			{
+				bubbles: true,
+				composed: false,
+				detail: { id }
+			}
 		));
 	}
 }

@@ -93,7 +93,8 @@ export class Data {
 			invisibleTypes: [newServerData.semesterTypeId],
 			selectedIds: newServerData.defaultViewOrgUnitIds || newServerData.selectedOrgUnitIds || [],
 			ancestorIds: newServerData.selectedSemestersIds || [],
-			oldTree: this.orgUnitTree
+			oldTree: this.orgUnitTree,
+			isDynamic: newServerData.isOrgUnitsTruncated
 		});
 		this._userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
 		this.isLoading = false;

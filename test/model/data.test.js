@@ -111,6 +111,7 @@ describe('Data', () => {
 		isOrgUnitsTruncated: false
 	};
 
+	const TRUNCATE_IF_THIS_ROLE_IS_PRESENT = 999999;
 	const recordProvider = async({ roleIds = null, semesterIds = null, orgUnitIds = null }) => {
 		return new Promise((resolve) => {
 			resolve({
@@ -118,7 +119,8 @@ describe('Data', () => {
 				semesterTypeId: mockOuTypes.semester,
 				selectedRolesIds: roleIds,
 				selectedSemestersIds: semesterIds,
-				selectedOrgUnitIds: orgUnitIds
+				selectedOrgUnitIds: orgUnitIds,
+				isOrgUnitsTruncated: roleIds.includes(TRUNCATE_IF_THIS_ROLE_IS_PRESENT)
 			});
 		});
 	};
@@ -143,6 +145,16 @@ describe('Data', () => {
 
 			expect(sut.orgUnitTree).to.not.equal(oldTree); // make sure the the data was loaded
 			expect(sut.orgUnitTree.open.sort()).to.deep.equal([1, 1001]);
+			expect(sut.orgUnitTree.isPopulated(6606)).to.be.true;
+		});
+
+		it('marks the org unit tree as dynamic if the server truncated it', async() => {
+			// trigger a truncated reload and allow recordProvider to resolve
+			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: true });
+			sut.selectedRoleIds = [mockRoleIds.student, TRUNCATE_IF_THIS_ROLE_IS_PRESENT];
+			await new Promise(resolve => setTimeout(resolve, 0));
+
+			expect(sut.orgUnitTree.isPopulated(6606)).to.be.false;
 		});
 	});
 

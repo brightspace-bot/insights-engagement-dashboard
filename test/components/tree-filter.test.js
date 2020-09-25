@@ -43,7 +43,7 @@ describe('Tree', () => {
 
 	let sut;
 	beforeEach(() => {
-		sut = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes });
+		sut = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: true });
 	});
 
 	describe('constructor', () => {
@@ -165,12 +165,15 @@ describe('Tree', () => {
 	});
 
 	describe('addNodes and isPopulated', () => {
-		it('should report isPopulated as false if no children were present at initialization', () => {
+		it('should report isPopulated as false after initialization of a dynamic tree', () => {
+			expect(sut.isPopulated(1001)).to.be.false;
 			expect(sut.isPopulated(4)).to.be.false;
 		});
 
-		it('should report isPopulated as true if children were present at initialization', () => {
+		it('should report isPopulated as true after initialization of static tree', () => {
+			const sut = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: false });
 			expect(sut.isPopulated(1001)).to.be.true;
+			expect(sut.isPopulated(4)).to.be.true;
 		});
 
 		it('should add the given nodes', () => {
@@ -186,21 +189,25 @@ describe('Tree', () => {
 
 		it('should add the nodes to a previously childless parent', () => {
 			sut.addNodes(4, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect(sut.getChildIds(4).sort()).to.deep.equal([991, 992]);
+			expect([...sut.getChildIds(4)].sort()).to.deep.equal([991, 992]);
 			expect(sut.isPopulated(4)).to.be.true;
+		});
+
+		it('should add the nodes to root (possible corner case)', () => {
+			sut.addNodes(6606, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect([...sut.getChildIds(6606)].sort()).to.deep.equal([991, 992]);
+			expect(sut.isPopulated(6606)).to.be.true;
 		});
 
 		it('should replace existing children', () => {
 			sut.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect(sut.getChildIds(1001).sort()).to.deep.equal([991, 992]);
+			expect([...sut.getChildIds(1001)].sort()).to.deep.equal([991, 992]);
 			expect(sut.isPopulated(1001)).to.be.true;
 		});
 
 		it('should accept an empty array', () => {
 			sut.addNodes(4, []);
 			expect(sut.getChildIds(4)).to.deep.equal([]);
-			// Callers can use isPopulated to distinguish between an empty node and a node that needs
-			// to have its children added.
 			expect(sut.isPopulated(4)).to.be.true;
 		});
 
@@ -242,7 +249,7 @@ describe('Tree', () => {
 
 		it('should add the new parent to existing nodes', () => {
 			sut.addNodes(1001, [[4, 'already a child of 1003', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect(sut.getParentIds(4).sort()).to.deep.equal([1001, 1003]);
+			expect([...sut.getParentIds(4)].sort()).to.deep.equal([1001, 1003]);
 			expect(sut.getParentIds(992)).to.deep.equal([1001]);
 		});
 
@@ -359,7 +366,7 @@ describe('Tree', () => {
 
 	describe('getParentIds', () => {
 		it('returns the parent ids', () => {
-			expect(sut.getParentIds(3).sort()).to.deep.equal([1001, 1002]);
+			expect([...sut.getParentIds(3)].sort()).to.deep.equal([1001, 1002]);
 		});
 
 		it('returns an empty array if the node has no parents', () => {
@@ -424,10 +431,11 @@ describe('Tree', () => {
 
 describe('d2l-insights-tree-filter', () => {
 	let el;
-	function node(id) {
-		return el.shadowRoot.querySelector(`d2l-insights-tree-selector-node[data-id="${id}"]`);
+	function node(id, element = el) {
+		return element.shadowRoot.querySelector(`d2l-insights-tree-selector-node[data-id="${id}"]`);
 	}
-	beforeEach(async() => {
+
+	async function buildElementUnderTest(isDynamic, childHandler) {
 		const tree = new Tree({
 			nodes: [
 				[1, 'Course 1', 3, [3, 4]],
@@ -442,18 +450,27 @@ describe('d2l-insights-tree-filter', () => {
 				[6607, 'Dev', 1, [0]]
 			],
 			selectedIds: [1, 2, 7],
-			leafTypes: [3]
+			leafTypes: [3],
+			isDynamic
 		});
-		tree.setOpen(5, true);
-		tree.setOpen(7, true);
 
-		el = await fixture(
+		const el = await fixture(
 			html`<d2l-insights-tree-filter
 				opener-text="filter"
 				opener-text-selected="filter with selections"
+				@d2l-insights-tree-filter-request-children="${childHandler}"
 				.tree="${tree}"
 			></d2l-insights-tree-filter>`
 		);
+		await el.treeUpdateComplete;
+
+		return el;
+	}
+
+	beforeEach(async() => {
+		el = await buildElementUnderTest(false);
+		el.tree.setOpen(5, true);
+		el.tree.setOpen(7, true);
 		await el.treeUpdateComplete;
 	});
 
@@ -666,13 +683,28 @@ describe('d2l-insights-tree-filter', () => {
 			await expectEvent(3);
 		});
 
-		it('should fire d2l-insights-tree-filter-request-children on open of childless node', async() => {
+		it('should immediately fire d2l-insights-tree-filter-request-children for root of dynamic tree', async() => {
+			let isCalled = false;
+			let calledWithId = -1;
+			await buildElementUnderTest(true, event => {
+				isCalled = true;
+				calledWithId = event.detail.id;
+			});
+			expect(isCalled).to.be.true;
+			expect(calledWithId).to.equal(6607);
+		});
+
+		it('should fire d2l-insights-tree-filter-request-children on open in dynamic tree', async() => {
+			const el = await buildElementUnderTest(true, event => {
+				// fill in some children so opening node 5 doesn't trigger another call for root
+				event.target.tree.addNodes(event.detail.id, [[event.detail.id === 6607 ? 5 : 123, 'dynamic child', 2, []]]);
+			});
 			const listener = oneEvent(el, 'd2l-insights-tree-filter-request-children');
-			node(10).simulateArrowClick();
+			node(5, el).simulateArrowClick();
 			const event = await listener;
 			expect(event.type).to.equal('d2l-insights-tree-filter-request-children');
 			expect(event.target).to.equal(el);
-			expect(event.detail.id).to.equal(10);
+			expect(event.detail.id).to.equal(5);
 		});
 	});
 });
