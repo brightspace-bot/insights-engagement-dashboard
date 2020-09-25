@@ -1,8 +1,9 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
-
 import { CardFilter } from './cardFilter.js';
-import OrgUnitAncestors from './orgUnitAncestors';
+import { Tree } from '../components/tree-filter';
+
+export const COURSE_OFFERING = 3;
 
 export const RECORD = {
 	ORG_UNIT_ID: 0,
@@ -20,13 +21,6 @@ export const USER = {
 	LAST_NAME: 2
 };
 
-export const ORG_UNIT = {
-	ID: 0,
-	NAME: 1,
-	TYPE: 2,
-	ANCESTORS: 3
-};
-
 function unique(array) {
 	return [...new Set(array)];
 }
@@ -40,7 +34,7 @@ const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
 export class Data {
 	constructor({ recordProvider, cardFilters }) {
 		this.recordProvider = recordProvider;
-		this._orgUnitAncestors = null;
+		this.orgUnitTree = new Tree({});
 		this._userDictionary = null;
 
 		// @observables
@@ -63,8 +57,8 @@ export class Data {
 
 		this._selectorFilters = {
 			role: new RoleSelectorFilter(this.serverData),
-			semester: new SemesterSelectorFilter(this.serverData, this._orgUnitAncestors),
-			orgUnit: new OrgUnitSelectorFilter(this.serverData, this._orgUnitAncestors)
+			semester: new SemesterSelectorFilter(this.serverData, this.orgUnitTree),
+			orgUnit: new OrgUnitSelectorFilter(this.serverData, this.orgUnitTree)
 		};
 
 		this.cardFilters = {};
@@ -94,15 +88,22 @@ export class Data {
 
 	// @action
 	onServerDataReload(newServerData) {
-		this._orgUnitAncestors = new OrgUnitAncestors(newServerData.orgUnits);
+		this.orgUnitTree = new Tree({
+			nodes: newServerData.orgUnits,
+			leafTypes: [COURSE_OFFERING],
+			invisibleTypes: [newServerData.semesterTypeId],
+			selectedIds: newServerData.defaultViewOrgUnitIds || newServerData.selectedOrgUnitIds || [],
+			ancestorIds: newServerData.selectedSemestersIds || [],
+			oldTree: this.orgUnitTree
+		});
 		this._userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
 		this.isLoading = false;
 		this.serverData = newServerData;
 
 		this._selectorFilters = {
 			role: new RoleSelectorFilter(this.serverData),
-			semester: new SemesterSelectorFilter(this.serverData, this._orgUnitAncestors),
-			orgUnit: new OrgUnitSelectorFilter(this.serverData, this._orgUnitAncestors)
+			semester: new SemesterSelectorFilter(this.serverData, this.orgUnitTree),
+			orgUnit: new OrgUnitSelectorFilter(this.serverData, this.orgUnitTree)
 		};
 	}
 
@@ -133,9 +134,8 @@ export class Data {
 	set selectedOrgUnitIds(newOrgUnitIds) {
 		if (this._selectorFilters.orgUnit.shouldReloadFromServer(newOrgUnitIds)) {
 			this.loadData({ newOrgUnitIds });
-		} else {
-			this._selectorFilters.orgUnit.selected = newOrgUnitIds;
 		}
+		// no need to update the filter here: it uses the same data structure as the web component that renders it
 	}
 
 	get selectedOrgUnitIds() {
@@ -153,12 +153,6 @@ export class Data {
 	get users() {
 		const userIdsInView = unique(this.getRecordsInView().map(record => record[RECORD.USER_ID]));
 		return userIdsInView.map(userId => this._userDictionary.get(userId));
-	}
-
-	// @computed
-	// just the ous matching the semester filter
-	get orgUnits() {
-		return this.serverData.orgUnits.filter(x => this._selectorFilters.semester.shouldIncludeOrgUnitId(x[ORG_UNIT.ID]));
 	}
 
 	// @computed
@@ -296,9 +290,9 @@ export class Data {
 
 decorate(Data, {
 	serverData: observable,
+	orgUnitTree: observable,
 	records: computed,
 	users: computed,
-	orgUnits: computed,
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
 	courseLastAccessDates: computed,
