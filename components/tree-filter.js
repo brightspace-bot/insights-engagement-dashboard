@@ -56,7 +56,7 @@ export class Tree {
 	}
 
 	get ids() {
-		return [...this._nodes.values()].map(x => x[ID]);
+		return [...this._nodes.keys()];
 	}
 
 	get open() {
