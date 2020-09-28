@@ -147,10 +147,10 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 					render: function() {
 						if (that.isApplied) {
 							that._colorNonSelectedPointsInMicaAfterRender(this.series[0].data);
-							this.render();
+							this.render(false);
 						} else {
 							that._colorAllPointsInAmethystAfterRender(this.series[0].data);
-							this.render();
+							this.render(false);
 						}
 					}
 				}
