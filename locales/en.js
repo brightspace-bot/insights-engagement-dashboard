@@ -45,6 +45,8 @@ export default {
 	"components.insights-current-final-grade-card.numberOfStudents": "Number of Students",
 	"components.insights-current-final-grade-card.textLabel": "This chart displays the current final grade for each user per course",
 	"components.insights-current-final-grade-card.emptyMessage": "There are no results available that match your filters.",
+	"components.insights-current-final-grade-card.gradeBetween": "{numberOfUsers} users have a current grade between {range}%",
+	"components.insights-current-final-grade-card.gradeBetweenSingleUser": "1 user has a current grade between {range}%",
 
 	"components.insights-course-last-access-card.courseAccess": "Course Access",
 	"components.insights-course-last-access-card.numberOfUsers": "Number of Users",
