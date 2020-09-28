@@ -113,7 +113,6 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				borderRadius: 12,
 				style: {
 					color: 'white',
-					backgroundColor: 'blue'
 				}
 			},
 			title: {
