@@ -63,12 +63,12 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		return this.data.currentFinalGrades;
 	}
 
-	get _gradeBetweenText() {
-		return this.localize('components.insights-current-final-grade-card.gradeBetween');
+	_gradeBetweenText(numberOfUsers, range) {
+		return this.localize('components.insights-current-final-grade-card.gradeBetween', { numberOfUsers, range });
 	}
 
-	get _gradeBetweenTextSingleUser() {
-		return this.localize('components.insights-current-final-grade-card.gradeBetweenSingleUser');
+	_gradeBetweenTextSingleUser(range) {
+		return this.localize('components.insights-current-final-grade-card.gradeBetweenSingleUser', { range });
 	}
 
 	render() {
@@ -104,9 +104,16 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 					const yCeil = Math.ceil(this.y);
 					const xCeil = Math.ceil(this.x);
 					if (yCeil === 1) {
-						return `${yCeil} ${that._gradeBetweenTextSingleUser} ${xCeil}-${xCeil + 10}%.`;
+						return `${that._gradeBetweenTextSingleUser(`${xCeil}-${xCeil + 10}`)}`;
 					}
-					return `${yCeil} ${that._gradeBetweenText} ${xCeil}-${xCeil + 10}%.`;
+					return `${that._gradeBetweenText(`${yCeil}`, `${xCeil}-${xCeil + 10}`)}`;
+				},
+				backgroundColor: 'var(--d2l-color-ferrite)',
+				borderColor: 'var(--d2l-color-ferrite)',
+				borderRadius: 12,
+				style: {
+					color: 'white',
+					backgroundColor: 'blue'
 				}
 			},
 			title: {
