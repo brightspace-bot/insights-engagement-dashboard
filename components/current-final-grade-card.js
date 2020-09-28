@@ -10,9 +10,9 @@ export const CurrentFinalGradeCardFilter  = {
 	filter: (record, data) => {
 		let result;
 		if (data.gradesCategory === 90) {
-			result = record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] >= data.gradesCategory && record[RECORD.CURRENT_FINAL_GRADE] <= (data.gradesCategory + 10);
+			result = record[RECORD.CURRENT_FINAL_GRADE] >= data.gradesCategory && record[RECORD.CURRENT_FINAL_GRADE] <= (data.gradesCategory + 10);
 		} else {
-			result = record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] >= data.gradesCategory && record[RECORD.CURRENT_FINAL_GRADE] < (data.gradesCategory + 10);
+			result = record[RECORD.CURRENT_FINAL_GRADE] >= data.gradesCategory && record[RECORD.CURRENT_FINAL_GRADE] < (data.gradesCategory + 10);
 		}
 		return result;
 	}
@@ -94,25 +94,25 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		this.data.setApplied('d2l-insights-current-final-grade-card', true);
 	}
 
-	_colorNonSelectedPointsInMica(data) {
-		data.forEach(point => {
+	_colorNonSelectedPointsInMica(seriesData) {
+		seriesData.forEach(point => {
 			if (this.category !== Math.ceil(point.x)) {
 				point.update({ color: 'var(--d2l-color-mica)' });
 			}
 		});
 	}
 
-	_colorNonSelectedPointsInMicaAfterRender(data) {
-		data.forEach(data => {
-			if (Math.ceil(data.category) !== this.category) {
-				data.update({ color: 'var(--d2l-color-mica)' }, false);
+	_colorNonSelectedPointsInMicaAfterRender(seriesData) {
+		seriesData.forEach(point => {
+			if (Math.ceil(point.category) !== this.category) {
+				point.update({ color: 'var(--d2l-color-mica)' }, false);
 			}
 		});
 	}
 
-	_colorAllPointsInAmethystAfterRender(data) {
-		data.forEach(data => {
-			data.update({ color: 'var(--d2l-color-amethyst)' }, false);
+	_colorAllPointsInAmethystAfterRender(seriesData) {
+		seriesData.forEach(point => {
+			point.update({ color: 'var(--d2l-color-amethyst)' }, false);
 		});
 	}
 
