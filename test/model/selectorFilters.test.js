@@ -264,6 +264,15 @@ describe('selectorFilters', () => {
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.true;
 			});
 
+			it('should return true if ou tree is truncated', () => {
+				const newOrgUnitIds = [1, 3]; // a list that otherwise wouldn't trigger a server reload
+				const sut = new OrgUnitSelectorFilter({
+					selectedOrgUnitIds: [1, 3, 5],
+					isOrgUnitsTruncated: true
+				}, null);
+				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.true;
+			});
+
 			it('should return true if the existing selected list has items and the new list has no items', () => {
 				// i.e. the filter was cleared
 				const newOrgUnitIds = [/* empty */];

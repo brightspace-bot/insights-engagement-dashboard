@@ -41,9 +41,11 @@ describe('Tree', () => {
 	const leafTypes = [mockOuTypes.courseOffering];
 	const invisibleTypes = [mockOuTypes.semester];
 
-	let sut;
+	let dynamicTree;
+	let staticTree;
 	beforeEach(() => {
-		sut = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: true });
+		dynamicTree = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: true });
+		staticTree = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: false });
 	});
 
 	describe('constructor', () => {
@@ -58,56 +60,56 @@ describe('Tree', () => {
 
 	describe('ids', () => {
 		it('should return all node ids', () => {
-			expect(sut.ids.sort()).to.deep.equal(nodes.map(x => x[0]).sort());
+			expect(dynamicTree.ids.sort()).to.deep.equal(nodes.map(x => x[0]).sort());
 		});
 	});
 
 	describe('open, setOpen, isOpen', () => {
 		it('should list open node ids', () => {
-			sut.setOpen(2, true);
-			sut.setOpen(112, true);
-			sut.setOpen(1001, true);
-			expect(sut.open.sort()).to.deep.equal([1001, 112, 2]);
+			dynamicTree.setOpen(2, true);
+			dynamicTree.setOpen(112, true);
+			dynamicTree.setOpen(1001, true);
+			expect(dynamicTree.open.sort()).to.deep.equal([1001, 112, 2]);
 		});
 
 		it('should remove closed nodes from the list', () => {
-			sut.setOpen(2, true);
-			sut.setOpen(112, true);
-			sut.setOpen(1001, true);
-			sut.setOpen(112, false);
-			expect(sut.open.sort()).to.deep.equal([1001, 2]);
+			dynamicTree.setOpen(2, true);
+			dynamicTree.setOpen(112, true);
+			dynamicTree.setOpen(1001, true);
+			dynamicTree.setOpen(112, false);
+			expect(dynamicTree.open.sort()).to.deep.equal([1001, 2]);
 		});
 
 		it('should copy open state from old tree', () => {
-			sut.setOpen(1, true);
-			sut.setOpen(211, true);
-			const newTree = new Tree({ nodes, oldTree: sut });
+			dynamicTree.setOpen(1, true);
+			dynamicTree.setOpen(211, true);
+			const newTree = new Tree({ nodes, oldTree: dynamicTree });
 			expect(newTree.open.sort()).to.deep.equal([1, 211]);
 		});
 
 		it('should indicate an open node', () => {
-			sut.setOpen(211, true);
-			expect(sut.isOpen(211)).to.be.true;
+			dynamicTree.setOpen(211, true);
+			expect(dynamicTree.isOpen(211)).to.be.true;
 		});
 
 		it('should indicate a closed node', () => {
-			expect(sut.isOpen(211)).to.be.false;
+			expect(dynamicTree.isOpen(211)).to.be.false;
 		});
 
 		it('should indicate that an unknown node is closed', () => {
-			expect(sut.isOpen(427224)).to.be.false;
+			expect(dynamicTree.isOpen(427224)).to.be.false;
 		});
 	});
 
 	describe('rootId', () => {
 		it('should return node with parent 0', () => {
-			expect(sut.rootId).to.equal(6606);
+			expect(dynamicTree.rootId).to.equal(6606);
 		});
 	});
 
 	describe('selected, setSelected, and getState', () => {
 		it('should return expected selection', () => {
-			expect(sut.selected.sort()).to.deep.equal([1003, 111]);
+			expect(dynamicTree.selected.sort()).to.deep.equal([1003, 111]);
 		});
 
 		it.skip('should return expected selection given multiple parents of some nodes', () => {
@@ -129,139 +131,167 @@ describe('Tree', () => {
 		});
 
 		it('should mark a parent indeterminate if some children are selected', () => {
-			expect(sut.getState(1)).to.equal('indeterminate');
+			expect(dynamicTree.getState(1)).to.equal('indeterminate');
 		});
 
 		it('should mark a parent explicit if all children are selected', () => {
-			sut.setSelected(112, true);
-			expect(sut.getState(1)).to.equal('explicit');
+			staticTree.setSelected(112, true);
+			expect(staticTree.getState(1)).to.equal('explicit');
+		});
+
+		it('should mark a parent indeterminate if all children are selected but the parent is not populated', () => {
+			dynamicTree.setSelected(112, true);
+			expect(dynamicTree.getState(1)).to.equal('indeterminate');
+		});
+
+		it('should mark a parent explicit if all children are selected and the parent is populated', () => {
+			dynamicTree._populated.add(1); // quick fake addChildren()
+			dynamicTree.setSelected(112, true);
+			expect(dynamicTree.getState(1)).to.equal('explicit');
 		});
 
 		it('should mark an ancestor explicit if all descendants are selected', () => {
-			sut.setSelected(2, true);
-			sut.setSelected(112, true);
-			sut.setSelected(312, true);
-			expect(sut.getState(1001)).to.equal('explicit');
+			staticTree.setSelected(2, true);
+			staticTree.setSelected(112, true);
+			staticTree.setSelected(312, true);
+			expect(staticTree.getState(1001)).to.equal('explicit');
 		});
 
 		it('should mark children explicit if their parent is selected', () => {
-			expect(sut.getState(4)).to.equal('explicit');
+			expect(dynamicTree.getState(4)).to.equal('explicit');
 		});
 
 		it('should change a parent from explicit to none if all children are deselected', () => {
-			sut.setSelected(4, false);
-			expect(sut.getState(1003)).to.equal('none');
+			dynamicTree.setSelected(4, false);
+			expect(dynamicTree.getState(1003)).to.equal('none');
 		});
 
 		it('should change a parent from explicit to indeterminate if some children are deselected', () => {
-			sut.setSelected(1, true);
-			sut.setSelected(111, false);
-			expect(sut.getState(1)).to.equal('indeterminate');
+			dynamicTree.setSelected(1, true);
+			dynamicTree.setSelected(111, false);
+			expect(dynamicTree.getState(1)).to.equal('indeterminate');
 		});
 
 		it('should return none as state for unknown node', () => {
-			expect(sut.getState('2323523')).to.equal('none');
+			expect(dynamicTree.getState('2323523')).to.equal('none');
 		});
 	});
 
 	describe('addNodes and isPopulated', () => {
 		it('should report isPopulated as false after initialization of a dynamic tree', () => {
-			expect(sut.isPopulated(1001)).to.be.false;
-			expect(sut.isPopulated(4)).to.be.false;
+			expect(dynamicTree.isPopulated(1001)).to.be.false;
+			expect(dynamicTree.isPopulated(4)).to.be.false;
 		});
 
 		it('should report isPopulated as true after initialization of static tree', () => {
-			const sut = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: false });
-			expect(sut.isPopulated(1001)).to.be.true;
-			expect(sut.isPopulated(4)).to.be.true;
+			expect(staticTree.isPopulated(1001)).to.be.true;
+			expect(staticTree.isPopulated(4)).to.be.true;
 		});
 
 		it('should add the given nodes', () => {
-			sut.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			dynamicTree.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
 
-			expect(sut.getName(991)).to.equal('new1');
-			expect(sut.getName(992)).to.equal('new2');
-			expect(sut.getType(991)).to.equal(mockOuTypes.course);
-			expect(sut.getType(992)).to.equal(mockOuTypes.courseOffering);
-			expect(sut.isOpenable(991)).to.be.true;
-			expect(sut.isOpenable(992)).to.be.false;
+			expect(dynamicTree.getName(991)).to.equal('new1');
+			expect(dynamicTree.getName(992)).to.equal('new2');
+			expect(dynamicTree.getType(991)).to.equal(mockOuTypes.course);
+			expect(dynamicTree.getType(992)).to.equal(mockOuTypes.courseOffering);
+			expect(dynamicTree.isOpenable(991)).to.be.true;
+			expect(dynamicTree.isOpenable(992)).to.be.false;
+		});
+
+		it('should add the given nodes (constructor)', () => {
+			const tree = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: true,
+				extraChildren: new Map([
+					[1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]]
+				])
+			});
+
+			expect(tree.getName(991)).to.equal('new1');
+			expect(tree.getName(992)).to.equal('new2');
+			expect(tree.getType(991)).to.equal(mockOuTypes.course);
+			expect(tree.getType(992)).to.equal(mockOuTypes.courseOffering);
+			expect(tree.isOpenable(991)).to.be.true;
+			expect(tree.isOpenable(992)).to.be.false;
 		});
 
 		it('should add the nodes to a previously childless parent', () => {
-			sut.addNodes(4, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect([...sut.getChildIds(4)].sort()).to.deep.equal([991, 992]);
-			expect(sut.isPopulated(4)).to.be.true;
+			dynamicTree.addNodes(4, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect([...dynamicTree.getChildIds(4)].sort()).to.deep.equal([991, 992]);
+			expect(dynamicTree.isPopulated(4)).to.be.true;
 		});
 
 		it('should add the nodes to root (possible corner case)', () => {
-			sut.addNodes(6606, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect([...sut.getChildIds(6606)].sort()).to.deep.equal([991, 992]);
-			expect(sut.isPopulated(6606)).to.be.true;
+			dynamicTree.addNodes(6606, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect([...dynamicTree.getChildIds(6606)].sort()).to.deep.equal([991, 992]);
+			expect(dynamicTree.isPopulated(6606)).to.be.true;
 		});
 
 		it('should replace existing children', () => {
-			sut.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect([...sut.getChildIds(1001)].sort()).to.deep.equal([991, 992]);
-			expect(sut.isPopulated(1001)).to.be.true;
+			dynamicTree.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect([...dynamicTree.getChildIds(1001)].sort()).to.deep.equal([991, 992]);
+			expect(dynamicTree.isPopulated(1001)).to.be.true;
 		});
 
 		it('should accept an empty array', () => {
-			sut.addNodes(4, []);
-			expect(sut.getChildIds(4)).to.deep.equal([]);
-			expect(sut.isPopulated(4)).to.be.true;
+			dynamicTree.addNodes(4, []);
+			expect(dynamicTree.getChildIds(4)).to.deep.equal([]);
+			expect(dynamicTree.isPopulated(4)).to.be.true;
 		});
 
-		it('should make new children visible if there is no ancestor filter', () => {
-			sut.addNodes(1001, [[991, 'bnew1', mockOuTypes.course], [992, 'anew2', mockOuTypes.courseOffering]]);
-			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([992, 991]);
-		});
-
-		it('should make new children visible given an ancestor filter', () => {
-			sut.setAncestorFilter([12]);
-			sut.addNodes(1001, [[991, 'bnew1', mockOuTypes.course], [992, 'anew2', mockOuTypes.courseOffering]]);
-
-			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([992, 991]);
+		it('should make new children visible', () => {
+			dynamicTree.addNodes(1001, [[991, 'bnew1', mockOuTypes.course], [992, 'anew2', mockOuTypes.courseOffering]]);
+			expect(dynamicTree.getChildIdsForDisplay(1001)).to.deep.equal([992, 991]);
 		});
 
 		it('should select new nodes if the parent is selected', () => {
-			sut.addNodes(1003, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect(sut.getState(991)).to.equal('explicit');
-			expect(sut.getState(992)).to.equal('explicit');
+			dynamicTree.addNodes(1003, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(dynamicTree.getState(991)).to.equal('explicit');
+			expect(dynamicTree.getState(992)).to.equal('explicit');
+		});
+
+		it('should select new nodes if the parent is selected (constructor)', () => {
+			const tree = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: true,
+				extraChildren: new Map([
+					[1003, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]]
+				])
+			});
+			expect(tree.getState(991)).to.equal('explicit');
+			expect(tree.getState(992)).to.equal('explicit');
 		});
 
 		it('should not select new nodes if the parent is partially selected', () => {
-			sut.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect(sut.getState(991)).to.equal('none');
-			expect(sut.getState(992)).to.equal('none');
+			dynamicTree.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(dynamicTree.getState(991)).to.equal('none');
+			expect(dynamicTree.getState(992)).to.equal('none');
 		});
 
 		it('should not select new nodes if the parent is not selected', () => {
-			sut.addNodes(1002, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect(sut.getState(991)).to.equal('none');
-			expect(sut.getState(992)).to.equal('none');
+			dynamicTree.addNodes(1002, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(dynamicTree.getState(991)).to.equal('none');
+			expect(dynamicTree.getState(992)).to.equal('none');
 		});
 
 		it('should set the parent of new nodes', () => {
-			sut.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect(sut.getParentIds(991)).to.deep.equal([1001]);
-			expect(sut.getParentIds(992)).to.deep.equal([1001]);
+			dynamicTree.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect(dynamicTree.getParentIds(991)).to.deep.equal([1001]);
+			expect(dynamicTree.getParentIds(992)).to.deep.equal([1001]);
 		});
 
 		it('should add the new parent to existing nodes', () => {
-			sut.addNodes(1001, [[4, 'already a child of 1003', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect([...sut.getParentIds(4)].sort()).to.deep.equal([1001, 1003]);
-			expect(sut.getParentIds(992)).to.deep.equal([1001]);
+			dynamicTree.addNodes(1001, [[4, 'already a child of 1003', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			expect([...dynamicTree.getParentIds(4)].sort()).to.deep.equal([1001, 1003]);
+			expect(dynamicTree.getParentIds(992)).to.deep.equal([1001]);
 		});
 
 		it('should report the correct ancestors for a new node', () => {
-			sut.addNodes(3, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			assertSetsAreEqual(sut.getAncestorIds(991), new Set([1001, 1002, 3, 6606, 991]));
+			dynamicTree.addNodes(3, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			assertSetsAreEqual(dynamicTree.getAncestorIds(991), new Set([1001, 1002, 3, 6606, 991]));
 		});
 
 		it('should report the correct ancestors for descendants of a node with a new parent', () => {
-			sut.addNodes(1003, [[1, 'already a child of 1001', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			assertSetsAreEqual(sut.getAncestorIds(1), new Set([1, 1001, 1003, 6606]));
-			assertSetsAreEqual(sut.getAncestorIds(112), new Set([112, 1, 1001, 1003, 12, 6606]));
+			dynamicTree.addNodes(1003, [[1, 'already a child of 1001', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+			assertSetsAreEqual(dynamicTree.getAncestorIds(1), new Set([1, 1001, 1003, 6606]));
+			assertSetsAreEqual(dynamicTree.getAncestorIds(112), new Set([112, 1, 1001, 1003, 12, 6606]));
 		});
 	});
 
@@ -287,7 +317,7 @@ describe('Tree', () => {
 
 			Object.keys(expectedAncestorsMap).forEach((id) => {
 				const expectedAncestors = new Set(expectedAncestorsMap[id]);
-				const actualAncestors = sut.getAncestorIds(Number(id));
+				const actualAncestors = dynamicTree.getAncestorIds(Number(id));
 				assertSetsAreEqual(actualAncestors, expectedAncestors);
 			});
 		});
@@ -301,35 +331,40 @@ describe('Tree', () => {
 		});
 
 		it('returns [id] if an orgUnit was not in the map', () => {
-			assertSetsAreEqual(sut.getAncestorIds(12345), new Set([12345]));
+			assertSetsAreEqual(dynamicTree.getAncestorIds(12345), new Set([12345]));
 		});
 
 		it('returns an empty set for id 0', () => {
-			assertSetsAreEqual(sut.getAncestorIds(0), new Set());
+			assertSetsAreEqual(dynamicTree.getAncestorIds(0), new Set());
 		});
 	});
 
 	describe('getChildIdsForDisplay and setAncestorFilter', () => {
 		it('returns sorted children', () => {
-			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
+			expect(dynamicTree.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
 		});
 
 		it('returns empty if the node had no children on initialization', () => {
-			expect(sut.getChildIdsForDisplay(4)).to.deep.equal([]);
+			expect(dynamicTree.getChildIdsForDisplay(4)).to.deep.equal([]);
 		});
 
 		it('excludes nodes of invisible type', () => {
-			expect(sut.getChildIdsForDisplay(6606)).to.deep.equal([1001, 1002, 1003 /* semesters omitted */]);
+			expect(dynamicTree.getChildIdsForDisplay(6606)).to.deep.equal([1001, 1002, 1003 /* semesters omitted */]);
+		});
+
+		it('ignores ancestor filter on dynamic tree', () => {
+			dynamicTree.setAncestorFilter([12]);
+			expect(dynamicTree.getChildIdsForDisplay(1)).to.deep.equal([111, 112]);
 		});
 
 		it('lists leaf nodes only if they match the ancestor filter', () => {
-			sut.setAncestorFilter([12]);
-			expect(sut.getChildIdsForDisplay(1)).to.deep.equal([112]);
+			staticTree.setAncestorFilter([12]);
+			expect(staticTree.getChildIdsForDisplay(1)).to.deep.equal([112]);
 		});
 
 		it('lists non-leaf nodes only if they contain leaf nodes matching the ancestor filter', () => {
-			sut.setAncestorFilter([12]);
-			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([1, 3]);
+			staticTree.setAncestorFilter([12]);
+			expect(staticTree.getChildIdsForDisplay(1001)).to.deep.equal([1, 3]);
 		});
 
 		it('applies ancestor filter from constructor', () => {
@@ -340,91 +375,91 @@ describe('Tree', () => {
 		it('clears the ancestor filter when given an empty list', () => {
 			const tree = new Tree({ nodes, invisibleTypes, ancestorIds: [12] });
 			tree.setAncestorFilter([]);
-			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
+			expect(tree.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
 		});
 
 		it('clears the ancestor filter when given null', () => {
 			const tree = new Tree({ nodes, invisibleTypes, ancestorIds: [12] });
 			tree.setAncestorFilter(null);
-			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
+			expect(tree.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
 		});
 	});
 
 	describe('getName', () => {
 		it('returns the node name', () => {
-			expect(sut.getName(1)).to.equal('Course 1');
+			expect(dynamicTree.getName(1)).to.equal('Course 1');
 		});
 
 		it('returns an empty string if the node has no name', () => {
-			expect(sut.getName(4)).to.equal('');
+			expect(dynamicTree.getName(4)).to.equal('');
 		});
 
 		it('returns an empty string for unknown nodes', () => {
-			expect(sut.getName(864343)).to.equal('');
+			expect(dynamicTree.getName(864343)).to.equal('');
 		});
 	});
 
 	describe('getParentIds', () => {
 		it('returns the parent ids', () => {
-			expect([...sut.getParentIds(3)].sort()).to.deep.equal([1001, 1002]);
+			expect([...dynamicTree.getParentIds(3)].sort()).to.deep.equal([1001, 1002]);
 		});
 
 		it('returns an empty array if the node has no parents', () => {
-			expect(sut.getParentIds(-100)).to.deep.equal([]);
+			expect(dynamicTree.getParentIds(-100)).to.deep.equal([]);
 		});
 
 		it('returns an empty array if the node is unknown', () => {
-			expect(sut.getParentIds(864343)).to.deep.equal([]);
+			expect(dynamicTree.getParentIds(864343)).to.deep.equal([]);
 		});
 	});
 
 	describe('getType', () => {
 		it('returns the node type', () => {
-			expect(sut.getType(1)).to.equal(mockOuTypes.course);
+			expect(dynamicTree.getType(1)).to.equal(mockOuTypes.course);
 		});
 
 		it('returns 0 if the node has no type', () => {
-			expect(sut.getType(-100)).to.equal(0);
+			expect(dynamicTree.getType(-100)).to.equal(0);
 		});
 
 		it('returns 0 for unknown nodes', () => {
-			expect(sut.getType(73548)).to.equal(0);
+			expect(dynamicTree.getType(73548)).to.equal(0);
 		});
 	});
 
 	describe('hasAncestorsInList', () => {
 		it('returns false if passed in orgUnit is not in the ancestors list', () => {
-			expect(sut.hasAncestorsInList(12345, [6606])).to.be.false;
+			expect(dynamicTree.hasAncestorsInList(12345, [6606])).to.be.false;
 		});
 
 		it('returns false if orgUnit is not in the list to check', () => {
-			expect(sut.hasAncestorsInList(1001, [1002, 1003])).to.be.false;
+			expect(dynamicTree.hasAncestorsInList(1001, [1002, 1003])).to.be.false;
 		});
 
 		it('returns false if orgUnit has no ancestors in the list to check', () => {
-			expect(sut.hasAncestorsInList(1, [1002, 1003])).to.be.false;
+			expect(dynamicTree.hasAncestorsInList(1, [1002, 1003])).to.be.false;
 		});
 
 		it('returns true if orgUnit is in the list to check', () => {
-			expect(sut.hasAncestorsInList(1001, [1001, 1002])).to.be.true;
+			expect(dynamicTree.hasAncestorsInList(1001, [1001, 1002])).to.be.true;
 		});
 
 		it('returns true if orgUnit has ancestors in the list to check', () => {
-			expect(sut.hasAncestorsInList(1, [1001, 1002])).to.be.true;
+			expect(dynamicTree.hasAncestorsInList(1, [1001, 1002])).to.be.true;
 		});
 	});
 
 	describe('isOpenable', () => {
 		it('should return true for a node that is not a leaf type', () => {
-			expect(sut.isOpenable(1)).to.be.true;
+			expect(dynamicTree.isOpenable(1)).to.be.true;
 		});
 
 		it('should return false for a node that is a leaf type', () => {
-			expect(sut.isOpenable(111)).to.be.false;
+			expect(dynamicTree.isOpenable(111)).to.be.false;
 		});
 
 		it('should return some boolean if the node is unknown (no error)', () => {
-			expect(sut.isOpenable(2352235)).to.be.a('Boolean');
+			expect(dynamicTree.isOpenable(2352235)).to.be.a('Boolean');
 		});
 	});
 });
