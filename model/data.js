@@ -1,6 +1,7 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 import { CardFilter } from './cardFilter.js';
+import { fetchCachedChildren } from './lms.js';
 import { Tree } from '../components/tree-filter';
 
 export const COURSE_OFFERING = 3;
@@ -94,8 +95,14 @@ export class Data {
 			selectedIds: newServerData.defaultViewOrgUnitIds || newServerData.selectedOrgUnitIds || [],
 			ancestorIds: newServerData.selectedSemestersIds || [],
 			oldTree: this.orgUnitTree,
-			isDynamic: newServerData.isOrgUnitsTruncated
+			isDynamic: newServerData.isOrgUnitsTruncated,
+			// preload the tree with any children queries we've already run: otherwise parts of the
+			// tree blink out and then come back as they are loaded again
+			extraChildren: newServerData.isOrgUnitsTruncated ?
+				fetchCachedChildren(newServerData.selectedSemestersIds) || new Map() :
+				null
 		});
+
 		this._userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
 		this.isLoading = false;
 		this.serverData = newServerData;

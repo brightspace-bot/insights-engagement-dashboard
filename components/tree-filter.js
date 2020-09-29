@@ -25,6 +25,8 @@ export class Tree {
 	 * @param {Tree} [oldTree] - tree to copy previous state from (e.g. which nodes are open)
 	 * @param {Boolean} isDynamic - if true, the tree is assumed to be incomplete, and tree-filter will fire events as needed
 	 * to request children
+	 * @param {Map}[extraChildren] - Map from parent node ids to arrays of nodes; these will be added to the tree before
+	 * any selections are applied and the parents marked as populated. Useful for adding cached lookups to a dynamic tree.
 	 */
 	constructor({
 		nodes = [],
@@ -33,7 +35,8 @@ export class Tree {
 		selectedIds,
 		ancestorIds,
 		oldTree,
-		isDynamic = false
+		isDynamic = false,
+		extraChildren
 	}) {
 		this.leafTypes = leafTypes;
 		this.invisibleTypes = invisibleTypes;
@@ -58,6 +61,12 @@ export class Tree {
 			});
 		});
 
+		if (extraChildren) {
+			extraChildren.forEach((children, orgUnitId) => {
+				this.addNodes(orgUnitId, children);
+			});
+		}
+
 		if (selectedIds) {
 			selectedIds.forEach(x => this.setSelected(x, true));
 		}
@@ -69,6 +78,10 @@ export class Tree {
 
 	get ids() {
 		return [...this._nodes.values()].map(x => x[ID]);
+	}
+
+	get isDynamic() {
+		return !!this._populated;
 	}
 
 	get open() {
@@ -91,15 +104,10 @@ export class Tree {
 	 * The parents of the new nodes will be set to the given parent plus any previous parents (if the node
 	 * was already in the tree). The new nodes are assumed to match the ancestorFilter, if any;
 	 * future changes to that filter are not supported (i.e. it is assumed the caller will reload data
-	 * and create a new tree in that case).
+	 * and create a new tree in that case). See also note on setAncestorFilter().
 	 * @param {number} parentId The parent of the new nodes. The new nodes *replace* any existing children.
 	 * @param newChildren Array of nodes to be added to the tree; name and type will be updated if the id already exists.
 	 */
-	// how to distinguish between nodes with no children and nodes that need to request children:
-	// nodes with no child nodes on construction have no entry in the map; we return null for these and
-	// fire the "children please" event (rendering [] in the meantime). Owner should handle the event: if not truncated,
-	// add []; if truncated, fetchRelevant children and add them.
-	// TODO: this
 	addNodes(parentId, newChildren) {
 		const parent = this._nodes.get(parentId);
 		if (!parent) return;
@@ -218,10 +226,15 @@ export class Tree {
 
 	/**
 	 * Filters the visible tree to nodes which are ancestors of nodes descended from the given ids
-	 * (a node is its own ancestor)
+	 * (a node is its own ancestor).
+	 * NB: ignored if the tree is dynamic, so that dynamically loaded partial trees don't get
+	 * hidden due to missing information. It is expected that dynamic trees only include visible
+	 * nodes, and that the tree will be replaced if the ancestor filter should change.
 	 * @param {Number[]} ancestorIds
 	 */
 	setAncestorFilter(ancestorIds) {
+		if (this.isDynamic) return;
+
 		if (!ancestorIds || ancestorIds.length === 0) {
 			this._visible = null;
 			return;
@@ -295,9 +308,11 @@ export class Tree {
 		// don't select invisible node types
 		if (this.invisibleTypes.includes(this.getType(id))) return;
 
-		// only consider children of visible types: this node is selected if all potentially visible children are
+		// Only consider children of visible types: this node is selected if all potentially visible children are
+		// Note that if this node hasn't been populated, we don't know if all children are selected,
+		// so it is indeterminate at most.
 		const childIds = this.getChildIds(id).filter(x => !this.invisibleTypes.includes(this.getType(x)));
-		const state = childIds.every(childId => this.getState(childId) === 'explicit')
+		const state = (this.isPopulated(id) && childIds.every(childId => this.getState(childId) === 'explicit'))
 			? 'explicit'
 			: childIds.every(childId => this.getState(childId) === 'none')
 				? 'none'

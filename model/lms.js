@@ -57,6 +57,9 @@ export async function fetchSemesters(pageSize, bookmark, search) {
 	return await response.json();
 }
 
+const relevantChildrenCache = new Map();
+const cacheKey = selectedSemesterIds => JSON.stringify(selectedSemesterIds || []);
+
 export async function fetchRelevantChildren(orgUnitId, selectedSemesterIds) {
 	const url = new URL(relevantChildrenEndpoint(orgUnitId), window.location.origin);
 	if (selectedSemesterIds) {
@@ -64,5 +67,15 @@ export async function fetchRelevantChildren(orgUnitId, selectedSemesterIds) {
 	}
 	const response = await fetch(url.toString());
 	// Paging not handled yet (work is in backlog)
-	return (await response.json()).Items;
+	const items = (await response.json()).Items;
+
+	const key = cacheKey(selectedSemesterIds);
+	if (!relevantChildrenCache.has(key)) relevantChildrenCache.set(key, new Map());
+	relevantChildrenCache.get(key).set(orgUnitId, items);
+
+	return items;
+}
+
+export function fetchCachedChildren(selectedSemesterIds) {
+	return relevantChildrenCache.get(cacheKey(selectedSemesterIds));
 }
