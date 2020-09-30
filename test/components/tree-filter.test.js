@@ -2,6 +2,328 @@ import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 import { Tree } from '../../components/tree-filter.js';
 
+const mockOuTypes = {
+	organization: 0,
+	department: 1,
+	course: 2,
+	courseOffering: 3,
+	semester: 5
+};
+
+function assertSetsAreEqual(setA, setB) {
+	expect([...setA].sort()).to.deep.equal([...setB].sort());
+}
+
+describe('Tree', () => {
+
+	const nodes = [
+		[-100, 'edge case', null, null],
+		[6606, 'Org', mockOuTypes.organization, [0]],
+		[1001, 'Department 1', mockOuTypes.department, [6606]],
+		[1002, 'Department 2', mockOuTypes.department, [6606]],
+		[1003, 'Department 3', mockOuTypes.department, [6606]],
+
+		[2, 'Course 2', mockOuTypes.course, [1001]],
+		[1, 'Course 1', mockOuTypes.course, [1001]],
+		[3, 'Course 3', mockOuTypes.course, [1001, 1002]], // part of 2 departments
+		[4, null, mockOuTypes.course, [1003]],
+
+		[11, 'Semester 1', mockOuTypes.semester, [6606]],
+		[12, 'Semester 2', mockOuTypes.semester, [6606]],
+		[13, 'Semester 3', mockOuTypes.semester, [6606]],
+
+		[111, 'Course 1 / Semester 1', mockOuTypes.courseOffering, [1, 11]],
+		[112, 'Course 1 / Semester 2', mockOuTypes.courseOffering, [1, 12]],
+		[211, 'Course 2 / Semester 1', mockOuTypes.courseOffering, [2, 11]],
+		[312, 'Course 3 / Semester 2', mockOuTypes.courseOffering, [3, 12]]
+	];
+	const selectedIds = [111, 1003];
+	const leafTypes = [mockOuTypes.courseOffering];
+	const invisibleTypes = [mockOuTypes.semester];
+
+	let sut;
+	beforeEach(() => {
+		sut = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes });
+	});
+
+	describe('constructor', () => {
+		it('should accept missing selectedIds and oldTree', () => {
+			new Tree({ nodes: [[10, 'Faculty 2', 7, [6607]]], leafTypes: [3] });
+		});
+
+		it('should build a default tree', () => {
+			new Tree({});
+		});
+	});
+
+	describe('ids', () => {
+		it('should return all node ids', () => {
+			expect(sut.ids.sort()).to.deep.equal(nodes.map(x => x[0]).sort());
+		});
+	});
+
+	describe('open, setOpen, isOpen', () => {
+		it('should list open node ids', () => {
+			sut.setOpen(2, true);
+			sut.setOpen(112, true);
+			sut.setOpen(1001, true);
+			expect(sut.open.sort()).to.deep.equal([1001, 112, 2]);
+		});
+
+		it('should remove closed nodes from the list', () => {
+			sut.setOpen(2, true);
+			sut.setOpen(112, true);
+			sut.setOpen(1001, true);
+			sut.setOpen(112, false);
+			expect(sut.open.sort()).to.deep.equal([1001, 2]);
+		});
+
+		it('should copy open state from old tree', () => {
+			sut.setOpen(1, true);
+			sut.setOpen(211, true);
+			const newTree = new Tree({ nodes, oldTree: sut });
+			expect(newTree.open.sort()).to.deep.equal([1, 211]);
+		});
+
+		it('should indicate an open node', () => {
+			sut.setOpen(211, true);
+			expect(sut.isOpen(211)).to.be.true;
+		});
+
+		it('should indicate a closed node', () => {
+			expect(sut.isOpen(211)).to.be.false;
+		});
+
+		it('should indicate that an unknown node is closed', () => {
+			expect(sut.isOpen(427224)).to.be.false;
+		});
+	});
+
+	describe('rootId', () => {
+		it('should return node with parent 0', () => {
+			expect(sut.rootId).to.equal(6606);
+		});
+	});
+
+	describe('selected, setSelected, and getState', () => {
+		it('should return expected selection', () => {
+			expect(sut.selected.sort()).to.deep.equal([1003, 111]);
+		});
+
+		it.skip('should return expected selection given multiple parents of some nodes', () => {
+			// NOTE
+			// This test would fail, because the algorithm walks down the tree through indeterminate nodes until
+			// it finds all explicitly selected descendants - but this means if there is more than one
+			// path to a node, it can appear twice or it can appear along with an ancestor.
+			// This has only very minor performance implications, so for simplicity this behaviour
+			// is allowed.
+			const tree = new Tree({ nodes, invisibleTypes, selectedIds: [111, 1002] });
+			expect(tree.selected.sort()).to.deep.equal([1002, 111]);
+		});
+
+		it('should set selected nodes', () => {
+			const tree = new Tree({ nodes, invisibleTypes });
+			tree.setSelected(111, true);
+			tree.setSelected(1003, true);
+			expect(tree.selected.sort()).to.deep.equal([1003, 111]);
+		});
+
+		it('should mark a parent indeterminate if some children are selected', () => {
+			expect(sut.getState(1)).to.equal('indeterminate');
+		});
+
+		it('should mark a parent explicit if all children are selected', () => {
+			sut.setSelected(112, true);
+			expect(sut.getState(1)).to.equal('explicit');
+		});
+
+		it('should mark an ancestor explicit if all descendants are selected', () => {
+			sut.setSelected(2, true);
+			sut.setSelected(112, true);
+			sut.setSelected(312, true);
+			expect(sut.getState(1001)).to.equal('explicit');
+		});
+
+		it('should mark children explicit if their parent is selected', () => {
+			expect(sut.getState(4)).to.equal('explicit');
+		});
+
+		it('should change a parent from explicit to none if all children are deselected', () => {
+			sut.setSelected(4, false);
+			expect(sut.getState(1003)).to.equal('none');
+		});
+
+		it('should change a parent from explicit to indeterminate if some children are deselected', () => {
+			sut.setSelected(1, true);
+			sut.setSelected(111, false);
+			expect(sut.getState(1)).to.equal('indeterminate');
+		});
+
+		it('should return none as state for unknown node', () => {
+			expect(sut.getState('2323523')).to.equal('none');
+		});
+	});
+
+	describe('getAncestorIds', () => {
+		it('builds the ancestors map correctly', () => {
+			const expectedAncestorsMap = {
+				6606: [6606],
+				1001: [1001, 6606],
+				1002: [1002, 6606],
+				1003: [1003, 6606],
+				1: [1, 1001, 6606],
+				2: [2, 1001, 6606],
+				3: [3, 1001, 1002, 6606],
+				4: [4, 1003, 6606],
+				11: [11, 6606],
+				12: [12, 6606],
+				13: [13, 6606],
+				111: [111, 1, 11, 1001, 6606],
+				112: [112, 1, 12, 1001, 6606],
+				211: [211, 2, 11, 1001, 6606],
+				312: [312, 3, 12, 1001, 1002, 6606]
+			};
+
+			Object.keys(expectedAncestorsMap).forEach((id) => {
+				const expectedAncestors = new Set(expectedAncestorsMap[id]);
+				const actualAncestors = sut.getAncestorIds(Number(id));
+				assertSetsAreEqual(actualAncestors, expectedAncestors);
+			});
+		});
+
+		it('should not throw if an org unit has no parents', () => {
+			new Tree({ nodes: [
+				[6606, 'Org', mockOuTypes.organization, [0]],
+				[1001, 'Department 1', mockOuTypes.department, null],
+				[1002, 'Department 2', mockOuTypes.department, [6606]]
+			] });
+		});
+
+		it('returns [id] if an orgUnit was not in the map', () => {
+			assertSetsAreEqual(sut.getAncestorIds(12345), new Set([12345]));
+		});
+
+		it('returns an empty set for id 0', () => {
+			assertSetsAreEqual(sut.getAncestorIds(0), new Set());
+		});
+	});
+
+	describe('getChildIdsForDisplay and setAncestorFilter', () => {
+		it('returns sorted children', () => {
+			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
+		});
+
+		it('excludes nodes of invisible type', () => {
+			expect(sut.getChildIdsForDisplay(6606)).to.deep.equal([1001, 1002, 1003 /* semesters omitted */]);
+		});
+
+		it('lists leaf nodes only if they match the ancestor filter', () => {
+			sut.setAncestorFilter([12]);
+			expect(sut.getChildIdsForDisplay(1)).to.deep.equal([112]);
+		});
+
+		it('lists non-leaf nodes only if they contain leaf nodes matching the ancestor filter', () => {
+			sut.setAncestorFilter([12]);
+			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([1, 3]);
+		});
+
+		it('applies ancestor filter from constructor', () => {
+			const tree = new Tree({ nodes, invisibleTypes, ancestorIds: [12] });
+			expect(tree.getChildIdsForDisplay(1001)).to.deep.equal([1, 3]);
+		});
+
+		it('clears the ancestor filter when given an empty list', () => {
+			const tree = new Tree({ nodes, invisibleTypes, ancestorIds: [12] });
+			tree.setAncestorFilter([]);
+			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
+		});
+
+		it('clears the ancestor filter when given null', () => {
+			const tree = new Tree({ nodes, invisibleTypes, ancestorIds: [12] });
+			tree.setAncestorFilter(null);
+			expect(sut.getChildIdsForDisplay(1001)).to.deep.equal([1, 2, 3]);
+		});
+	});
+
+	describe('getName', () => {
+		it('returns the node name', () => {
+			expect(sut.getName(1)).to.equal('Course 1');
+		});
+
+		it('returns an empty string if the node has no name', () => {
+			expect(sut.getName(4)).to.equal('');
+		});
+
+		it('returns an empty string for unknown nodes', () => {
+			expect(sut.getName(864343)).to.equal('');
+		});
+	});
+
+	describe('getParentIds', () => {
+		it('returns the parent ids', () => {
+			expect(sut.getParentIds(3).sort()).to.deep.equal([1001, 1002]);
+		});
+
+		it('returns an empty array if the node has no parents', () => {
+			expect(sut.getParentIds(-100)).to.deep.equal([]);
+		});
+
+		it('returns an empty array if the node is unknown', () => {
+			expect(sut.getParentIds(864343)).to.deep.equal([]);
+		});
+	});
+
+	describe('getType', () => {
+		it('returns the node type', () => {
+			expect(sut.getType(1)).to.equal(mockOuTypes.course);
+		});
+
+		it('returns 0 if the node has no type', () => {
+			expect(sut.getType(-100)).to.equal(0);
+		});
+
+		it('returns 0 for unknown nodes', () => {
+			expect(sut.getType(73548)).to.equal(0);
+		});
+	});
+
+	describe('hasAncestorsInList', () => {
+		it('returns false if passed in orgUnit is not in the ancestors list', () => {
+			expect(sut.hasAncestorsInList(12345, [6606])).to.be.false;
+		});
+
+		it('returns false if orgUnit is not in the list to check', () => {
+			expect(sut.hasAncestorsInList(1001, [1002, 1003])).to.be.false;
+		});
+
+		it('returns false if orgUnit has no ancestors in the list to check', () => {
+			expect(sut.hasAncestorsInList(1, [1002, 1003])).to.be.false;
+		});
+
+		it('returns true if orgUnit is in the list to check', () => {
+			expect(sut.hasAncestorsInList(1001, [1001, 1002])).to.be.true;
+		});
+
+		it('returns true if orgUnit has ancestors in the list to check', () => {
+			expect(sut.hasAncestorsInList(1, [1001, 1002])).to.be.true;
+		});
+	});
+
+	describe('isOpenable', () => {
+		it('should return true for a node that is not a leaf type', () => {
+			expect(sut.isOpenable(1)).to.be.true;
+		});
+
+		it('should return false for a node that is a leaf type', () => {
+			expect(sut.isOpenable(111)).to.be.false;
+		});
+
+		it('should return some boolean if the node is unknown (no error)', () => {
+			expect(sut.isOpenable(2352235)).to.be.a('Boolean');
+		});
+	});
+});
+
 describe('d2l-insights-tree-filter', () => {
 	let el;
 	function node(id) {
@@ -9,17 +331,23 @@ describe('d2l-insights-tree-filter', () => {
 	}
 	beforeEach(async() => {
 		const tree = new Tree({
-			'1': [1, 'Course 1', 3, [3, 4], [], 'none', false],
-			'2': [2, 'Course 2', 3, [3, 4], [], 'none', false],
-			'3': [3, 'Department 1', 2, [5], [1, 2], 'none', false],
-			'5': [5, 'Faculty 1', 7, [6607], [3, 7, 8, 9], 'none', true],
-			'6': [6, 'Course 3', 3, [7, 4], [], 'none', false],
-			'7': [7, 'Department 2', 2, [5], [6], 'none', true],
-			'8': [8, 'Course 4', 3, [5], [], 'none', false],
-			'9': [9, 'Course 5', 3, [5], [], 'none', false],
-			'10': [10, 'Faculty 2', 7, [6607], [], 'none', false],
-			'6607': [6607, 'Dev', 1, [0], [5, 10], 'none', false]
-		}, [1, 2, 7], [3]);
+			nodes: [
+				[1, 'Course 1', 3, [3, 4]],
+				[2, 'Course 2', 3, [3, 4]],
+				[3, 'Department 1', 2, [5]],
+				[5, 'Faculty 1', 7, [6607]],
+				[6, 'Course 3', 3, [7, 4]],
+				[7, 'Department 2', 2, [5]],
+				[8, 'Course 4', 3, [5]],
+				[9, 'Course 5', 3, [5]],
+				[10, 'Faculty 2', 7, [6607]],
+				[6607, 'Dev', 1, [0]]
+			],
+			selectedIds: [1, 2, 7],
+			leafTypes: [3]
+		});
+		tree.setOpen(5, true);
+		tree.setOpen(7, true);
 
 		el = await fixture(
 			html`<d2l-insights-tree-filter
@@ -35,12 +363,6 @@ describe('d2l-insights-tree-filter', () => {
 		it('should construct', () => {
 			runConstructor('d2l-insights-tree-selector-node');
 		});
-
-		describe('Tree', () => {
-			it('should accept null selectedIds', () => {
-				new Tree({ '10': [10, 'Faculty 2', 7, [6607], [], 'none', false] }, null, [3]);
-			});
-		});
 	});
 
 	describe('accessibility', () => {
@@ -51,12 +373,12 @@ describe('d2l-insights-tree-filter', () => {
 
 	describe('render', () => {
 		it('should render with opener-text if no items are selected', async() => {
-			const treeWithNoSelections = new Tree({
-				'1': [1, 'Course 1', 3, [3], [], 'none', false],
-				'3': [3, 'Department 1', 2, [5], [1], 'none', false],
-				'5': [5, 'Faculty 1', 7, [6607], [3], 'none', false],
-				'6607': [6607, 'Dev', 1, [0], [5], 'none', false]
-			}, [], [3]);
+			const treeWithNoSelections = new Tree({ nodes: [
+				[1, 'Course 1', 3, [3], [], 'none', false],
+				[3, 'Department 1', 2, [5], [1], 'none', false],
+				[5, 'Faculty 1', 7, [6607], [3], 'none', false],
+				[6607, 'Dev', 1, [0], [5], 'none', false]
+			], selectedIds: [], leafTypes: [3] });
 
 			el = await fixture(
 				html`<d2l-insights-tree-filter
@@ -146,7 +468,7 @@ describe('d2l-insights-tree-filter', () => {
 		it('should return the list of open node ids', async() => {
 			node(3).simulateArrowClick();
 			await el.treeUpdateComplete;
-			expect(el.tree.open).to.deep.equal([3, 5, 7]);
+			expect(el.tree.open.sort()).to.deep.equal([3, 5, 7]);
 		});
 	});
 
@@ -161,7 +483,7 @@ describe('d2l-insights-tree-filter', () => {
 			expect(el.selected.sort()).to.deep.equal([3, 7, 9]);
 		});
 
-		it('should replace descendants when ancestor selected', async() => {
+		it('should replace descendants in selection when ancestor selected', async() => {
 			node(5).simulateCheckboxClick();
 			await el.treeUpdateComplete;
 			expect(el.selected.sort()).to.deep.equal([5]);

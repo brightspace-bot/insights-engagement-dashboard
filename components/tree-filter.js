@@ -1,125 +1,257 @@
 import './tree-selector.js';
 
+import 'array-flat-polyfill';
 import { action, computed, decorate, observable } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
-// array indices
-export const ID = 0;
-export const NAME = 1;
-export const TYPE = 2;
-export const PARENTS = 3;
-export const CHILDREN = 4;
-export const STATE = 5;
-export const OPEN = 6;
+// node array indices
+export const ID = 0; // unique node identifier (Number)
+export const NAME = 1; // node name (String)
+export const TYPE = 2; // Number
+export const PARENTS = 3; // array of parent ids (Number); a node with parent 0 is the root
 
 export class Tree {
 	/**
-	 * @param tree - a map from ids to arrays, each of which has fields defined by the above constants; may be modified at any time
-	 * @param selectedIds - array of ids which are selected initially (won't be modified)
-	 * @param leafTypes - array of values in the TYPE column; nodes of these types cannot be expanded
+	 * Type to use as the .tree property of a d2l-insights-tree-filter. Mutator methods will
+	 * trigger re-rendering as needed. Call as new Tree({}) for a default empty tree.
+	 * @param {[][]} [nodes=[]] - Array of arrays, each with elements for each of the above constants
+	 * @param {Number[]} [leafTypes=[]] - TYPE values that cannot be opened
+	 * @param {Number[]} [invisibleTypes=[]] - TYPE values that should not be rendered
+	 * @param {Number[]} [selectedIds] - ids to mark selected. Ancestors and descendants will be marked accordingly.
+	 * @param {Number[]} [ancestorIds] - same as if passed to setAncestorFilter
+	 * @param {Tree} [oldTree] - tree to copy previous state from (e.g. which nodes are open)
 	 */
-	constructor(tree, selectedIds, leafTypes) {
-		this.tree = tree;
+	constructor({ nodes = [], leafTypes = [], invisibleTypes = [], selectedIds, ancestorIds, oldTree }) {
 		this.leafTypes = leafTypes;
+		this.invisibleTypes = invisibleTypes;
 		this.initialSelectedIds = selectedIds;
+		this._nodes = new Map(nodes.map(x => [x[ID], x]));
+		this._children = new Map();
+		this._ancestors = new Map();
+		this._state = new Map();
+		this._open = oldTree ? new Set(oldTree.open) : new Set();
+		// null for no filter, vs. empty Set() when none match
+		this._visible = null;
+
+		// fill in children (parents are provided by the caller, and ancestors will be generated on demand)
+		this.ids.forEach(id => {
+			this.getParentIds(id).forEach(parentId => {
+				if (this._children.has(parentId)) {
+					this._children.get(parentId).push(id);
+				} else {
+					this._children.set(parentId, [id]);
+				}
+			});
+		});
+
 		if (selectedIds) {
 			selectedIds.forEach(x => this.setSelected(x, true));
 		}
+
+		if (ancestorIds) {
+			this.setAncestorFilter(ancestorIds);
+		}
+	}
+
+	get ids() {
+		return [...this._nodes.keys()];
+	}
+
+	get open() {
+		return [...this._open];
 	}
 
 	get rootId() {
-		const rootOrgUnit = Object.values(this.tree).find(x => this._isRoot(x));
-		return rootOrgUnit && rootOrgUnit[ID];
+		if (!this._rootId) {
+			this._rootId = this.ids.find(x => this._isRoot(x));
+		}
+		return this._rootId;
 	}
 
 	get selected() {
 		return this._getSelected(this.rootId);
 	}
 
-	get open() {
-		return Object.values(this.tree).filter(x => x[OPEN]).map(x => x[ID]);
+	getAncestorIds(id) {
+		if (id === 0) return new Set();
+
+		if (!this._ancestors.has(id)) {
+			const ancestors = new Set([
+				id,
+				...this.getParentIds(id).flatMap(x => [...this.getAncestorIds(x)])
+			]);
+			this._ancestors.set(id, ancestors);
+		}
+
+		return this._ancestors.get(id);
 	}
 
-	getChildren(id) {
-		// coming soon: handle truncation case (getChildren has a callback which calls LMS)
-		if (!id) id = this.rootId;
-		if (!id) return [];
-
-		return this.tree[id][CHILDREN]
-			.map(id => this.tree[id])
+	getChildIdsForDisplay(id) {
+		return this.getChildIds(id)
+			.filter(x => this._isVisible(x))
 			.sort((a, b) => this._nameForSort(a).localeCompare(this._nameForSort(b)));
 	}
 
-	setOpen(id, isOpen) {
-		this.tree[id][OPEN] = isOpen;
+	getChildIds(id) {
+		if (!id) id = this.rootId;
+		if (!id) return [];
+		return this._children.get(id) || [];
 	}
 
-	getMatching(searchString) {
-		return Object.values(this.tree).filter(x =>
-			!this._isRoot(x) && this._nameForSort(x) && this._nameForSort(x).toLowerCase().includes(searchString.toLowerCase())
-		);
+	getMatchingIds(searchString) {
+		return this.ids
+			.filter(x => this._isVisible(x))
+			.filter(x => !this._isRoot(x) && this._nameForSort(x).toLowerCase().includes(searchString.toLowerCase()));
+	}
+
+	getName(id) {
+		const node = this._nodes.get(id);
+		return (node && node[NAME]) || '';
+	}
+
+	getParentIds(id) {
+		const node = this._nodes.get(id);
+		return (node && node[PARENTS]) || [];
+	}
+
+	getState(id) {
+		return this._state.get(id) || 'none';
+	}
+
+	getType(id) {
+		const node = this._nodes.get(id);
+		return (node && node[TYPE]) || 0;
+	}
+
+	/**
+	 * Checks if a node has ancestors in a given list.
+	 * NOTE: returns true if the node itself is in the list.
+	 * @param {Number} id - the node whose ancestors we want to check
+	 * @param {[Number]} listToCheck - an array of node ids which potentially has ancestors in it
+	 * @returns {boolean}
+	 */
+	hasAncestorsInList(id, listToCheck) {
+		const ancestorsSet = this.getAncestorIds(id);
+
+		return listToCheck.some(potentialAncestor => ancestorsSet.has(potentialAncestor));
+	}
+
+	isOpen(id) {
+		return this._open.has(id);
+	}
+
+	isOpenable(id) {
+		return !this.leafTypes.includes(this.getType(id));
+	}
+
+	/**
+	 * Filters the visible tree to nodes which are ancestors of nodes descended from the given ids
+	 * (a node is its own ancestor)
+	 * @param {Number[]} ancestorIds
+	 */
+	setAncestorFilter(ancestorIds) {
+		if (!ancestorIds || ancestorIds.length === 0) {
+			this._visible = null;
+			return;
+		}
+
+		this._visible = new Set();
+
+		this.ids.forEach(id => {
+			if (this.hasAncestorsInList(id, ancestorIds)) {
+				this._visible.add(id);
+				this.getAncestorIds(id).forEach(ancestorId => this._visible.add(ancestorId));
+			}
+		});
+	}
+
+	setOpen(id, isOpen) {
+		if (isOpen) {
+			this._open.add(id);
+		} else {
+			this._open.delete(id);
+		}
 	}
 
 	setSelected(id, isSelected) {
-		const node = this.tree[id];
-		if (!node) return;
-
 		// clicking on a node either fully selects or fully deselects its entire subtree
 		this._setSubtreeSelected(id, isSelected);
 
 		// parents may now be in any state, depending on siblings
-		node[PARENTS].forEach(parentId => this._updateSelected(parentId));
+		this.getParentIds(id).forEach(parentId => this._updateSelected(parentId));
 	}
 
 	_getSelected(id) {
-		const node = this.tree[id];
-		if (!node) return [];
+		const state = this.getState(id);
 
-		if (node[STATE] === 'explicit') return [id];
+		if (state === 'explicit') return [id];
 
-		if (node[STATE] === 'indeterminate' || this._isRoot(node)) return node[CHILDREN].flatMap(childId => this._getSelected(childId));
+		if (state === 'indeterminate' || this._isRoot(id)) {
+			return this.getChildIds(id).flatMap(childId => this._getSelected(childId));
+		}
 
 		return [];
 	}
 
+	_isRoot(id) {
+		return this.getParentIds(id).includes(0);
+	}
+
+	_isVisible(id) {
+		return (this._visible === null || this._visible.has(id))
+			&& !this.invisibleTypes.includes(this.getType(id));
+	}
+
+	_nameForSort(id) {
+		return this.getName(id) + id;
+	}
+
 	_setSubtreeSelected(id, isSelected) {
-		const node = this.tree[id];
-		if (!node) return;
+		if (isSelected) {
+			this._state.set(id, 'explicit');
+		} else {
+			this._state.delete(id);
+		}
 
-		node[STATE] = isSelected ? 'explicit' : 'none';
-
-		node[CHILDREN].forEach(childId => this._setSubtreeSelected(childId, isSelected));
-	}
-
-	_isRoot(x) {
-		return x[PARENTS].includes(0);
-	}
-
-	_nameForSort(x) {
-		return x[NAME] + x[ID];
+		this.getChildIds(id).forEach(childId => this._setSubtreeSelected(childId, isSelected));
 	}
 
 	_updateSelected(id) {
-		const node = this.tree[id];
 		// never select the root (user can clear the selection instead)
-		if (!node || this._isRoot(node)) return;
+		if (this._isRoot(id)) return;
 
-		node[STATE] = node[CHILDREN].every(childId => this.tree[childId][STATE] === 'explicit')
+		// don't select invisible node types
+		if (this.invisibleTypes.includes(this.getType(id))) return;
+
+		// only consider children of visible types: this node is selected if all potentially visible children are
+		const childIds = this.getChildIds(id).filter(x => !this.invisibleTypes.includes(this.getType(x)));
+		const state = childIds.every(childId => this.getState(childId) === 'explicit')
 			? 'explicit'
-			: node[CHILDREN].every(childId => this.tree[childId][STATE] === 'none')
+			: childIds.every(childId => this.getState(childId) === 'none')
 				? 'none'
 				: 'indeterminate' ;
 
-		node[PARENTS].forEach(parentId => this._updateSelected(parentId));
+		if (state === 'none') {
+			this._state.delete(id);
+		} else {
+			this._state.set(id, state);
+		}
+
+		this.getParentIds(id).forEach(x => this._updateSelected(x));
 	}
 }
 
 decorate(Tree, {
-	tree: observable,
-	rootId: computed,
+	_nodes: observable,
+	_children: observable,
+	_ancestors: observable,
+	_state: observable,
+	_open: observable,
+	_visible: observable,
 	selected: computed,
+	setAncestorFilter: action,
 	setOpen: action,
 	setSelected: action
 });
@@ -214,24 +346,27 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	_renderChildren(id, parentName, indentLevel = 0) {
 		parentName = parentName || this.localize('components.tree-filter.node-name.root');
 		return this.tree
-			.getChildren(id)
-			.map(x => this._renderNode(x, parentName, indentLevel + 1));
+			.getChildIdsForDisplay(id)
+			.map(id => this._renderNode(id, parentName, indentLevel + 1));
 	}
 
-	_renderNode(x, parentName, indentLevel) {
-		const isOpen = x[OPEN];
+	_renderNode(id, parentName, indentLevel) {
+		const isOpen = this.tree.isOpen(id);
+		const isOpenable = this.tree.isOpenable(id);
+		const orgUnitName = this.tree.getName(id);
+		const state = this.tree.getState(id);
 		return html`<d2l-insights-tree-selector-node slot="tree"
-					name="${this.localize('components.tree-filter.node-name', { orgUnitName: x[NAME], id: x[ID] })}"
-					data-id="${x[ID]}"
-					?openable="${!this.tree.leafTypes.includes(x[TYPE])}"
+					name="${this.localize('components.tree-filter.node-name', { orgUnitName, id })}"
+					data-id="${id}"
+					?openable="${isOpenable}"
 					?open="${isOpen}"
-					selected-state="${x[STATE]}"
+					selected-state="${state}"
 					indent-level="${indentLevel}"
 					parent-name="${parentName}"
 					@d2l-insights-tree-selector-node-open="${this._onOpen}"
 					@d2l-insights-tree-selector-node-select="${this._onSelect}"
 				>
-					${isOpen ? this._renderChildren(x[ID], x[NAME], indentLevel) : ''}
+					${isOpen ? this._renderChildren(id, orgUnitName, indentLevel) : ''}
 				</d2l-insights-tree-selector-node>`;
 	}
 
@@ -239,14 +374,18 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		if (!this._isSearch) return html``;
 
 		return this.tree
-			.getMatching(this.searchString)
-			.map(x => html`<d2l-insights-tree-selector-node slot="search-results"
-				name="${this.localize('components.tree-filter.node-name', { orgUnitName: x[NAME], id: x[ID] })}"
-				data-id="${x[ID]}"
-				selected-state="${x[STATE]}"
-				@d2l-insights-tree-selector-node-select="${this._onSelect}"
-			>
-			</d2l-insights-tree-selector-node>`);
+			.getMatchingIds(this.searchString)
+			.map(id => {
+				const orgUnitName = this.tree.getName(id);
+				const state = this.tree.getState(id);
+				return html`<d2l-insights-tree-selector-node slot="search-results"
+					name="${this.localize('components.tree-filter.node-name', { orgUnitName, id })}"
+					data-id="${id}"
+					selected-state="${state}"
+					@d2l-insights-tree-selector-node-select="${this._onSelect}"
+				>
+				</d2l-insights-tree-selector-node>`;
+			});
 	}
 
 	_onOpen(event) {
