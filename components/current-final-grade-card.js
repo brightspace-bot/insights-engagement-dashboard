@@ -1,30 +1,29 @@
-/* eslint-disable prefer-const */
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../model/data';
 
+function or(pred1, pred2) {
+	return el => pred1(el) || pred2(el);
+}
+
 export const CurrentFinalGradeCardFilter  = {
 	id: 'd2l-insights-current-final-grade-card',
 	title: 'components.insights-current-final-grade-card.currentGrade',
 	filter: (record, data) => {
-		let result;
-		const category = Array.from(data.gradesCategory).slice().sort();
-		// eslint-disable-next-line no-unused-vars
+		const categories = Array.from(data.gradesCategory).slice();
 		const rec = record[RECORD.CURRENT_FINAL_GRADE];
-		let str = [];
-		if (!data.gradesCategory.has(90)) {
-			category.forEach(cat => str.push(`(rec >= ${cat} && rec < ${cat} + 10) ||`));
-			const strFilter = str.join('').slice(0, -3);  // remove last "OR" statement
-			result = eval(strFilter);
-		} else {
-			const categoryArray = category.filter(i => i !== 90);
-			categoryArray.forEach(cat => str.push(`(rec >= ${cat} && rec < ${cat} + 10) ||`));
-			const strFilter = str.join('').concat(' (rec >= 90 && rec <= 100)');
-			result = eval(strFilter);
-		}
-		return result;
+		const predicate = cat => rec => rec < (cat + 10) && rec >= cat;
+		const predicateForNinetyCondition = cat => rec => rec <= (cat + 10) && rec >= cat;
+		const combPred = categories.map(cat => {
+			if (cat === 90) {
+				return predicateForNinetyCondition(cat);
+			} else {
+				return predicate(cat);
+			}
+		}).reduce(or);
+		return combPred(rec);
 	}
 };
 
@@ -260,8 +259,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 					point: {
 						events: {
 							select: function() {
-								const selectedPoints = this.series.chart.getSelectedPoints();
-								selectedPoints.forEach(point => that.addToCategory(Math.ceil(Number(point.category))));
+								that.addToCategory(Math.ceil(this.category));
 								that._valueClickHandler();
 								that._colorNonSelectedPointsInMica(this.series.data);
 								that._colorSelectedPointsInAmethyst(this.series.data);
