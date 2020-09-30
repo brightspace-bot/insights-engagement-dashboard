@@ -9,7 +9,7 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	static get properties() {
 		return {
 			data: { type: Object, attribute: false },
-			skeleton: { type: Boolean, attribute: true }
+			skeleton: { type: Boolean, reflect: true }
 		};
 	}
 
@@ -115,13 +115,15 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	render() {
+		// add to the component skeleton property to apply skeleton styles
+		this.skeleton = this.data.isLoading;
+
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
-		return html`
-			<div class="d2l-insights-course-last-access-container">
-				<div class="d2l-insights-course-last-access-title d2l-skeletize d2l-skeletize-45" ?skeleton="${this.skeleton}">${this._cardTitle}</div>
-				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>
-			</div>`;
+		return html`<div class="d2l-insights-course-last-access-container">
+			<div class="d2l-insights-course-last-access-title d2l-skeletize d2l-skeletize-45" ?skeleton="${this.skeleton}">${this._cardTitle}</div>
+			<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>
+		</div>`;
 	}
 
 	get chartOptions() {

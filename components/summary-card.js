@@ -16,7 +16,7 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 			message: { type: String, attribute: 'card-message' },
 			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' },
 			isLoading: { type: Boolean, attribute: 'loading' },
-			skeleton: { type: Boolean, attribute: true }
+			skeleton: { type: Boolean, reflect: true }
 		};
 	}
 
@@ -104,6 +104,9 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 	}
 
 	render() {
+		// add to the component skeleton property to apply skeleton styles
+		this.skeleton = this.data.isLoading;
+
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">

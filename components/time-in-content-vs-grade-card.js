@@ -34,7 +34,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 	static get properties() {
 		return {
 			data: { type: Object, attribute: false },
-			skeleton: { type: Boolean, attribute: true }
+			skeleton: { type: Boolean, reflect: true }
 		};
 	}
 
@@ -161,6 +161,9 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 	}
 
 	render() {
+		// add to the component skeleton property to apply skeleton styles
+		this.skeleton = this.data.isLoading;
+
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`
