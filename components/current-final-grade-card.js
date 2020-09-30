@@ -2,12 +2,14 @@ import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
-class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
+class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
-			data: { type: Object, attribute: false }
+			data: { type: Object, attribute: false },
+			skeleton: { type: Boolean, attribute: true }
 		};
 	}
 
@@ -17,7 +19,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, css`
 			:host {
 				display: inline-block;
 			}
@@ -44,7 +46,11 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
-		`;
+
+			.d2l-insights-current-final-grade-title[skeleton] {
+				line-height: normal;
+			}
+		`];
 	}
 
 	get _cardTitle() {
@@ -86,7 +92,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			</div>`;
 		} else {
 			return html`<div class="d2l-insights-final-grade-container">
-				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
+				<div class="d2l-insights-current-final-grade-title d2l-skeletize  d2l-skeletize-45" ?skeleton="${this.skeleton}">${this._cardTitle}</div>
 				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}" ?loading="${this.data.isLoading}" ></d2l-labs-chart>
 			</div>`;
 		}

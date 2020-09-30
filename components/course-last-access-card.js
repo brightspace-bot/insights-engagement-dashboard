@@ -2,12 +2,14 @@ import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
-class CourseLastAccessCard extends Localizer(MobxLitElement) {
+class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
-			data: { type: Object, attribute: false }
+			data: { type: Object, attribute: false },
+			skeleton: { type: Boolean, attribute: true }
 		};
 	}
 
@@ -17,7 +19,7 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, css`
 			:host {
 				display: inline-block;
 			}
@@ -44,7 +46,11 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
-		`;
+
+			.d2l-insights-course-last-access-title[skeleton] {
+				line-height: normal
+			}
+		`];
 	}
 
 	get _cardTitle() {
@@ -111,10 +117,11 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
-		return html`<div class="d2l-insights-course-last-access-container">
-		<div class="d2l-insights-course-last-access-title">${this._cardTitle}</div>
-		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>
-		</div>`;
+		return html`
+			<div class="d2l-insights-course-last-access-container">
+				<div class="d2l-insights-course-last-access-title d2l-skeletize d2l-skeletize-45" ?skeleton="${this.skeleton}">${this._cardTitle}</div>
+				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>
+			</div>`;
 	}
 
 	get chartOptions() {

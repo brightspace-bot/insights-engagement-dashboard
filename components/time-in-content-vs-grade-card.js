@@ -3,6 +3,7 @@ import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 import { RECORD } from '../model/data';
 
 export const TimeInContentVsGradeCardFilter  = {
@@ -28,11 +29,12 @@ export const AVG = {
 	GRADE: 1
 };
 
-class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
+class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
-			data: { type: Object, attribute: false }
+			data: { type: Object, attribute: false },
+			skeleton: { type: Boolean, attribute: true }
 		};
 	}
 
@@ -42,7 +44,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, css`
 			:host {
 				border-color: var(--d2l-color-mica);
 				border-radius: 15px;
@@ -65,7 +67,10 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
-		`;
+			.d2l-insights-time-in-content-vs-grade-title[skeleton] {
+				line-height: normal;
+			}
+		`];
 	}
 
 	get _cardTitle() {
@@ -158,8 +163,9 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
-		return html`<div class="d2l-insights-time-in-content-vs-grade-title">${this._cardTitle}</div>
-		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>`;
+		return html`
+			<div class="d2l-insights-time-in-content-vs-grade-title d2l-skeletize d2l-skeletize-45" ?skeleton="${this.skeleton}">${this._cardTitle}</div>
+			<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>`;
 	}
 
 	get chartOptions() {
