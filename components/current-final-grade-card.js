@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
@@ -9,10 +10,19 @@ export const CurrentFinalGradeCardFilter  = {
 	title: 'components.insights-current-final-grade-card.currentGrade',
 	filter: (record, data) => {
 		let result;
-		if (data.gradesCategory === 90) {
-			result = record[RECORD.CURRENT_FINAL_GRADE] >= data.gradesCategory && record[RECORD.CURRENT_FINAL_GRADE] <= (data.gradesCategory + 10);
+		const category = Array.from(data.gradesCategory).sort();
+		// eslint-disable-next-line no-unused-vars
+		const rec = record[RECORD.CURRENT_FINAL_GRADE];
+		let str = [];
+		if (!data.gradesCategory.has(90)) {
+			category.forEach(cat => str.push(`(rec >= ${cat} && rec < ${cat} + 10) ||`));
+			const strFilter = str.join('').slice(0, -3);  // remove last "OR" statement
+			result = eval(strFilter);
 		} else {
-			result = record[RECORD.CURRENT_FINAL_GRADE] >= data.gradesCategory && record[RECORD.CURRENT_FINAL_GRADE] < (data.gradesCategory + 10);
+			const categoryArray = category.filter(i => i !== 90);
+			categoryArray.forEach(cat => str.push(`(rec >= ${cat} && rec < ${cat} + 10) ||`));
+			const strFilter = str.join('').concat(' (rec >= 90 && rec <= 100)');
+			result = eval(strFilter);
 		}
 		return result;
 	}
@@ -78,8 +88,12 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		return this.data.currentFinalGrades;
 	}
 
-	setCategory(category) {
-		this.data.setGradesCategory(category);
+	setCategoryEmpty() {
+		this.data.setGradesCategoryEmpty();
+	}
+
+	addToCategory(category) {
+		this.data.addToGradesCategory(category);
 	}
 
 	get category() {
@@ -96,23 +110,17 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 
 	_colorNonSelectedPointsInMica(seriesData) {
 		seriesData.forEach(point => {
-			if (this.category !== Math.ceil(point.x)) {
-				point.update({ color: 'var(--d2l-color-mica)' });
-			}
-		});
-	}
-
-	_colorNonSelectedPointsInMicaAfterRender(seriesData) {
-		seriesData.forEach(point => {
-			if (Math.ceil(point.category) !== this.category) {
+			if (!this.category.has(Math.ceil(point.category))) {
 				point.update({ color: 'var(--d2l-color-mica)' }, false);
 			}
 		});
 	}
 
-	_colorAllPointsInAmethystAfterRender(seriesData) {
+	_colorSelectedPointsInAmethyst(seriesData) {
 		seriesData.forEach(point => {
-			point.update({ color: 'var(--d2l-color-amethyst)' }, false);
+			if (this.category.has(Math.ceil(point.category))) {
+				point.update({ color: 'var(--d2l-color-amethyst)' }, false);
+			}
 		});
 	}
 
@@ -145,11 +153,16 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				height: 230,
 				events: {
 					render: function() {
+						//after redrawing the chart as a result of updating (for example, when the user disable any of the filters),
+						// we need to keep the color of the selected/nonselected bars
 						if (that.isApplied) {
-							that._colorNonSelectedPointsInMicaAfterRender(this.series[0].data);
+							that._colorNonSelectedPointsInMica(this.series[0].data);
+							this.render(false);
+							that._colorSelectedPointsInAmethyst(this.series[0].data);
 							this.render(false);
 						} else {
-							that._colorAllPointsInAmethystAfterRender(this.series[0].data);
+							that.setCategoryEmpty();
+							that._colorSelectedPointsInAmethyst(this.series[0].data);
 							this.render(false);
 						}
 					}
@@ -223,9 +236,11 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 					point: {
 						events: {
 							select: function() {
+								const selectedPoints = this.series.chart.getSelectedPoints();
+								selectedPoints.forEach(point => that.addToCategory(Math.ceil(Number(point.category))));
 								that._valueClickHandler();
-								that.setCategory(Math.ceil(this.category));
 								that._colorNonSelectedPointsInMica(this.series.data);
+								that._colorSelectedPointsInAmethyst(this.series.data);
 							}
 						}
 					}

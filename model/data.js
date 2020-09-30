@@ -45,7 +45,9 @@ export class Data {
 		this._userDictionary = null;
 
 		// @observables
-		this.gradesCategory = 0;
+		this.gradesCategory = new Set();
+		this.gradesCategory.add(0);
+
 		this.tiCVsGradesQuadrant = 'leftBottom';
 		this.avgTimeInContent = 0;
 		this.avgGrades = 0;
@@ -185,8 +187,12 @@ export class Data {
 			.map(item => (item === 100 ? 90 : item)); // put grade 100 in bin 90-100
 	}
 
-	setGradesCategory(category) {
-		this.gradesCategory = category;
+	setGradesCategoryEmpty() {
+		this.gradesCategory = new Set();
+	}
+
+	addToGradesCategory(category) {
+		this.gradesCategory.add(category);
 	}
 
 	get courseLastAccessDates() {
