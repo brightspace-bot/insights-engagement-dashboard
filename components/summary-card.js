@@ -1,6 +1,5 @@
 import './overlay';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
-import { selectStyles } from '@brightspace-ui/core/components/inputs/input-select-styles.js';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 /**
@@ -22,7 +21,7 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 	}
 
 	static get styles() {
-		return [super.styles, selectStyles,	css`
+		return [super.styles, css`
 			:host {
 				display: inline-block;
 			}
