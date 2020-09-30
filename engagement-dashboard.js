@@ -111,8 +111,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					<d2l-insights-applied-filters .data="${this._data}"></d2l-insights-applied-filters>
 				</div>
 				<div class="d2l-insights-summary-container">
-					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
-					<d2l-insights-overdue-assignments-card .data="${this._data}"></d2l-insights-overdue-assignments-card>
+					<d2l-insights-results-card .data="${this._data}" ?skeleton=${this._data.isLoading}></d2l-insights-results-card>
+					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton=${this._data.isLoading}></d2l-insights-overdue-assignments-card>
 				</div>
 				<div class="d2l-insights-chart-container">
 					<div><d2l-insights-current-final-grade-card .data="${this._data}" ?skeleton=${this._data.isLoading}></d2l-insights-current-final-grade-card></div>

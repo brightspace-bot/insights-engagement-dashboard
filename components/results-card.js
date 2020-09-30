@@ -8,7 +8,8 @@ class ResultsCard extends Localizer(MobxLitElement) {
 
 	static get properties() {
 		return {
-			data: { type: Object, attribute: false }
+			data: { type: Object, attribute: false },
+			skeleton: { type: Boolean, attribute: true }
 		};
 	}
 
@@ -38,7 +39,7 @@ class ResultsCard extends Localizer(MobxLitElement) {
 				card-value="${this._cardValue}"
 				card-message="${this._cardMessage}"
 				?loading="${this.data.isLoading}"
-				?skeleton="${this.data.isLoading}"
+				?skeleton="${this.skeleton}"
 			></d2l-labs-summary-card>
 		`;
 	}
