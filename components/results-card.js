@@ -38,6 +38,7 @@ class ResultsCard extends Localizer(MobxLitElement) {
 				card-value="${this._cardValue}"
 				card-message="${this._cardMessage}"
 				?loading="${this.data.isLoading}"
+				?skeleton="${this.data.isLoading}"
 			></d2l-labs-summary-card>
 		`;
 	}
