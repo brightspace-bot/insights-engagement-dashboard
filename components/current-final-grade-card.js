@@ -10,7 +10,7 @@ export const CurrentFinalGradeCardFilter  = {
 	title: 'components.insights-current-final-grade-card.currentGrade',
 	filter: (record, data) => {
 		let result;
-		const category = Array.from(data.gradesCategory).sort();
+		const category = Array.from(data.gradesCategory).slice().sort();
 		// eslint-disable-next-line no-unused-vars
 		const rec = record[RECORD.CURRENT_FINAL_GRADE];
 		let str = [];
