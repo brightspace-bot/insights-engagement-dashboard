@@ -54,11 +54,11 @@ class UsersTable extends Localizer(MobxLitElement) {
 		this._pageSize = 20;
 		// should be compatible with this.data.userDataForDisplay
 		// the text does not matter here. The empty text leads to empty div which in turn does not render skeleton rectangle
-		this._loadingData = [...Array(5).keys()].map(i => ['Loading']);
+		this._loadingData = [...Array(5).keys()].map(() => ['Loading']);
 	}
 
 	get _itemsCount() {
-		if( this.data.isLoading ) {
+		if (this.data.isLoading) {
 			return this._loadingData.length;
 		}
 
@@ -71,7 +71,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 	}
 
 	get _displayData() {
-		if( this.data.isLoading ) {
+		if (this.data.isLoading) {
 			return this._loadingData;
 		}
 

@@ -123,15 +123,15 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			}
 
 			.d2l-insights-table-cell > div[skeleton] {
-				width: 45%;
-				max-width: 300px;
 				line-height: normal;
+				max-width: 300px;
+				width: 45%;
 			}
 
 			@media (max-width: 713px) {
 				.d2l-insights-table-cell > div[skeleton] {
-					width: 100%;
 					max-width: 100%;
+					width: 100%;
 				}
 			}
 		`];

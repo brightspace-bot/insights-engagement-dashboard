@@ -48,7 +48,7 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			}
 
 			.d2l-insights-course-last-access-title[skeleton] {
-				line-height: normal
+				line-height: normal;
 			}
 		`];
 	}
