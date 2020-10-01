@@ -31,6 +31,7 @@ function countUnique(records, field) {
 }
 const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
 const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
+const CurrentFinalGradeFilterId = 'd2l-insights-current-final-grade-card';
 
 export class Data {
 	constructor({ recordProvider, cardFilters }) {
@@ -39,6 +40,7 @@ export class Data {
 		this._userDictionary = null;
 
 		// @observables
+		this.selectedGradesCategories = new Set();
 		this.tiCVsGradesQuadrant = 'leftBottom';
 		this.avgTimeInContent = 0;
 		this.avgGrades = 0;
@@ -177,12 +179,31 @@ export class Data {
 
 	get currentFinalGrades() {
 		//keep in count students with 0 grade, but remove with null
-		return this.getRecordsInView()
+		return this.getRecordsInView(CurrentFinalGradeFilterId)
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
 			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
 			.filter(item => item[0] || item[1])
-			.map(item => (item[1] ? Math.floor(item[1] / 10) * 10 : 0))
-			.map(item => (item === 100 ? 90 : item)); // put grade 100 in bin 90-100
+			.map(item => this.gradeCategory(item[1]));
+	}
+
+	gradeCategory(grade) {
+		if (grade === null || grade === 0) {
+			return grade;
+		}
+		else if (grade === 100) {
+			return 90; // put grade 100 in bin 90-100
+		}
+		else {
+			return Math.floor(grade / 10) * 10;
+		}
+	}
+
+	setGradesCategoryEmpty() {
+		this.selectedGradesCategories = new Set();
+	}
+
+	addToGradesCategory(category) {
+		this.selectedGradesCategories.add(category);
 	}
 
 	get courseLastAccessDates() {
@@ -285,14 +306,14 @@ export class Data {
 	_persist() {
 		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
 			Object.keys(this.cardFilters)
-				.map(f => ({ id: f, applied: this.cardFilters[f].isApplied }))
+				.map(f => ({ id: f }))
 		));
 	}
 
 	_restore() {
 		// this might be better handled by url-rewriting
 		const state = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.state') || '[]');
-		state.forEach(filterState => this.setApplied(filterState.id, filterState.applied));
+		state.forEach(filterState => this.setApplied(filterState.id));
 	}
 }
 
@@ -309,6 +330,9 @@ decorate(Data, {
 	cardFilters: observable,
 	isLoading: observable,
 	tiCVsGradesQuadrant: observable,
+	selectedGradesCategories: observable,
 	onServerDataReload: action,
-	setApplied: action
+	setApplied: action,
+	setGradesCategoryEmpty: action,
+	addToGradesCategory: action
 });

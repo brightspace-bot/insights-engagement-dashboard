@@ -400,6 +400,16 @@ describe('Data', () => {
 		});
 	});
 
+	describe('gradeCategory', () => {
+		it('should return the corresponding category bin for grade', async() => {
+			const expected = [10, 90, null, 0];
+			expect(sut.gradeCategory(19)).to.deep.equal(expected[0]);
+			expect(sut.gradeCategory(100)).to.deep.equal(expected[1]);
+			expect(sut.gradeCategory(null)).to.deep.equal(expected[2]);
+			expect(sut.gradeCategory(0)).to.deep.equal(expected[3]);
+		});
+	});
+
 	describe('tiCVsGrades', () => {
 		it('should return the array of tuples: current final grade vs time in content, mins', async() => {
 			const expected = [[33, 22], [41, 33], [66, 44], [75, 55], [0, 33], [0, 100], [0, 100], [0, 100], [0, 73], [0, 73], [58, 41], [83, 55], [50, 39], [116, 93], [100, 75], [66, 84], [0, 98], [0, 89], [0, 98], [0, 88], [0, 99], [0, 42], [0, 66]];
