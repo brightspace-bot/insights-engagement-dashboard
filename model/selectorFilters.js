@@ -65,9 +65,10 @@ export class SemesterSelectorFilter {
 }
 
 export class OrgUnitSelectorFilter {
-	constructor({ selectedOrgUnitIds, isRecordsTruncated }, orgUnitTree) {
+	constructor({ selectedOrgUnitIds, isRecordsTruncated, isOrgUnitsTruncated }, orgUnitTree) {
 		this._latestServerQuery = selectedOrgUnitIds || [];
 		this._isRecordsTruncated = isRecordsTruncated;
+		this._isOrgUnitsTruncated = isOrgUnitsTruncated;
 		this._orgUnitTree = orgUnitTree;
 	}
 
@@ -85,7 +86,11 @@ export class OrgUnitSelectorFilter {
 	}
 
 	shouldReloadFromServer(newOrgUnitIds) {
-		if (this._isRecordsTruncated || isFilterCleared(this._latestServerQuery, newOrgUnitIds)) {
+		if (this._isRecordsTruncated
+			// ou selection affects the *order* of org units, so if the ou tree is
+			// truncated, selection can affect which ones are in view
+			|| this._isOrgUnitsTruncated
+			|| isFilterCleared(this._latestServerQuery, newOrgUnitIds)) {
 			return true;
 		}
 

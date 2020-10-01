@@ -1,4 +1,5 @@
 import { css, html } from 'lit-element/lit-element.js';
+import { fetchRelevantChildren } from '../model/lms';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
@@ -33,6 +34,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 				opener-text="${this.localize('components.org-unit-filter.name-all-selected')}"
 				opener-text-selected="${this.localize('components.org-unit-filter.name-some-selected')}"
 				@d2l-insights-tree-filter-select="${this._onChange}"
+				@d2l-insights-tree-filter-request-children="${this._onRequestChildren}"
 			>
 			</d2l-insights-tree-filter>
 		</div>`;
@@ -50,6 +52,12 @@ class OuFilter extends Localizer(MobxLitElement) {
 			'd2l-insights-ou-filter-change',
 			{ bubbles: true, composed: false }
 		));
+	}
+
+	async _onRequestChildren(event) {
+		const id = event.detail.id;
+		const children = await fetchRelevantChildren(id, this.data.selectedSemesterIds);
+		this.data.orgUnitTree.addNodes(id, children);
 	}
 }
 customElements.define('d2l-insights-ou-filter', OuFilter);

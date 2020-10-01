@@ -1,6 +1,7 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 import { CardFilter } from './cardFilter.js';
+import { fetchCachedChildren } from './lms.js';
 import { Tree } from '../components/tree-filter';
 
 export const COURSE_OFFERING = 3;
@@ -31,6 +32,7 @@ function countUnique(records, field) {
 const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
 const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
 const CourseLastAccessFilterId = 'd2l-insights-course-last-access-card';
+const CurrentFinalGradeFilterId = 'd2l-insights-current-final-grade-card';
 
 export class Data {
 	constructor({ recordProvider, cardFilters }) {
@@ -40,6 +42,7 @@ export class Data {
 
 		// @observables
 		this.selectedLastAccessCategory = new Set();
+		this.selectedGradesCategories = new Set();
 		this.tiCVsGradesQuadrant = 'leftBottom';
 		this.avgTimeInContent = 0;
 		this.avgGrades = 0;
@@ -96,8 +99,15 @@ export class Data {
 			invisibleTypes: [newServerData.semesterTypeId],
 			selectedIds: newServerData.defaultViewOrgUnitIds || newServerData.selectedOrgUnitIds || [],
 			ancestorIds: newServerData.selectedSemestersIds || [],
-			oldTree: this.orgUnitTree
+			oldTree: this.orgUnitTree,
+			isDynamic: newServerData.isOrgUnitsTruncated,
+			// preload the tree with any children queries we've already run: otherwise parts of the
+			// tree blink out and then come back as they are loaded again
+			extraChildren: newServerData.isOrgUnitsTruncated ?
+				fetchCachedChildren(newServerData.selectedSemestersIds) || new Map() :
+				null
 		});
+
 		this._userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
 		this.isLoading = false;
 		this.serverData = newServerData;
@@ -171,12 +181,31 @@ export class Data {
 
 	get currentFinalGrades() {
 		//keep in count students with 0 grade, but remove with null
-		return this.getRecordsInView()
+		return this.getRecordsInView(CurrentFinalGradeFilterId)
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
 			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
 			.filter(item => item[0] || item[1])
-			.map(item => (item[1] ? Math.floor(item[1] / 10) * 10 : 0))
-			.map(item => (item === 100 ? 90 : item)); // put grade 100 in bin 90-100
+			.map(item => this.gradeCategory(item[1]));
+	}
+
+	gradeCategory(grade) {
+		if (grade === null || grade === 0) {
+			return grade;
+		}
+		else if (grade === 100) {
+			return 90; // put grade 100 in bin 90-100
+		}
+		else {
+			return Math.floor(grade / 10) * 10;
+		}
+	}
+
+	setGradesCategoryEmpty() {
+		this.selectedGradesCategories = new Set();
+	}
+
+	addToGradesCategory(category) {
+		this.selectedGradesCategories.add(category);
 	}
 
 	get courseLastAccessDates() {
@@ -312,8 +341,11 @@ decorate(Data, {
 	isLoading: observable,
 	tiCVsGradesQuadrant: observable,
 	selectedLastAccessCategory: observable,
+	selectedGradesCategories: observable,
 	onServerDataReload: action,
 	setApplied: action,
+	setGradesCategoryEmpty: action,
+	addToGradesCategory: action,
 	addToLastAccessCategory: action,
 	setLastAccessCategoryEmpty: action
 });
