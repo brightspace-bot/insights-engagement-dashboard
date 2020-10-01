@@ -66,6 +66,10 @@ class UsersTable extends Localizer(MobxLitElement) {
 	}
 
 	get _maxPages() {
+		if (this.data.isLoading) {
+			return 0;
+		}
+
 		const itemsCount = this._itemsCount;
 		return itemsCount ? Math.ceil(itemsCount / this._pageSize) : 0;
 	}
@@ -109,13 +113,26 @@ class UsersTable extends Localizer(MobxLitElement) {
 				@pagination-item-counter-change="${this._handlePageSizeChange}"
 			></d2l-labs-pagination>
 
+			${this._renderTotalUsers()}
+		`;
+	}
+
+	_renderTotalUsers() {
+		const itemCounts = this.data.isLoading ? 0 : this._itemsCount;
+
+		return html`
 			<div class="d2l-insights-users-table-total-users">
-				${this.localize('components.insights-users-table.totalUsers', { num: this._itemsCount })}
+				${this.localize('components.insights-users-table.totalUsers', { num: itemCounts })}
 			</div>
 		`;
 	}
 
 	updated() {
+		if (this.data.isLoading) {
+			this._currentPage = 0;
+			return;
+		}
+
 		if (this._itemsCount === 0) {
 			this._currentPage = 0;
 		} else if (this._currentPage === 0) {
