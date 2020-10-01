@@ -52,9 +52,16 @@ class UsersTable extends Localizer(MobxLitElement) {
 		};
 		this._currentPage = 1;
 		this._pageSize = 20;
+		// should be compatible with this.data.userDataForDisplay
+		// the text does not matter here. The empty text leads to empty div which in turn does not render skeleton rectangle
+		this._loadingData = [...Array(5).keys()].map(i => ['Loading']);
 	}
 
 	get _itemsCount() {
+		if( this.data.isLoading ) {
+			return this._loadingData.length;
+		}
+
 		return this.data.userDataForDisplay.length;
 	}
 
@@ -64,6 +71,10 @@ class UsersTable extends Localizer(MobxLitElement) {
 	}
 
 	get _displayData() {
+		if( this.data.isLoading ) {
+			return this._loadingData;
+		}
+
 		if (this._itemsCount) {
 			const start = this._pageSize * (this._currentPage - 1);
 			const end = this._pageSize * (this._currentPage); // it's ok if this is larger than the size of the array
@@ -83,6 +94,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 	render() {
 		return html`
 			<d2l-insights-table
+				?skeleton="${this.data.isLoading}"
 				title="${this.localize('components.insights-users-table.title')}"
 				.columns=${this.columns}
 				.data="${this._displayData}"></d2l-insights-table>

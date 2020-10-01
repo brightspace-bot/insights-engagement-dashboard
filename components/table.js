@@ -1,6 +1,7 @@
 import { css, html, LitElement } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 /**
  * @property {String} title - for use by screen reader users
@@ -8,18 +9,19 @@ import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
  * @property {Array} data - a row-indexed 2D array of rows and columns.
  * E.g. data[0] gets the entire first row; data[0][0] gets the first row / first column
  */
-class Table extends Localizer(RtlMixin(LitElement)) {
+class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	static get properties() {
 		return {
 			title: { type: String, attribute: true },
 			columns: { type: Array, attribute: false },
-			data: { type: Array, attribute: false }
+			data: { type: Array, attribute: false },
+			skeleton: { type: Boolean, attribute: true }
 		};
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, css`
 			:host {
 				display: block;
 			}
@@ -119,7 +121,20 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-left-radius: 8px;
 			}
-		`;
+
+			.d2l-insights-table-cell > div[skeleton] {
+				width: 45%;
+				max-width: 300px;
+				line-height: normal;
+			}
+
+			@media (max-width: 713px) {
+				.d2l-insights-table-cell > div[skeleton] {
+					width: 100%;
+					max-width: 100%;
+				}
+			}
+		`];
 	}
 
 	constructor() {
@@ -167,7 +182,7 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 			<tbody>
 				${this.data.map((row, rowIdx) => html`
 					<tr class="${ (rowIdx === this.data.length - 1) ? 'd2l-insights-table-row-last' : '' }">
-						${row.map(this._renderBodyCell)}
+						${row.map(this._renderBodyCell, this)}
 					</tr>
 				`)}
 			</tbody>
@@ -184,7 +199,9 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 			styles += ' d2l-insights-table-cell-last';
 		}
 		return html`
-			<td class="${styles}">${value}</td>
+			<td class="${styles}">
+				<div class="d2l-skeletize" ?skeleton="${this.skeleton}">${value}</div>
+			</td>
 		`;
 	}
 }
