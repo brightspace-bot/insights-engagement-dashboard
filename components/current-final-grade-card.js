@@ -106,6 +106,12 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		});
 	}
 
+	_colorAllPointsInAmethyst(seriesData) {
+		seriesData.forEach(point => {
+			point.update({ color: 'var(--d2l-color-amethyst)' }, false);
+		});
+	}
+
 	_gradeBetweenText(numberOfUsers, range) {
 		return this.localize('components.insights-current-final-grade-card.gradeBetween', { numberOfUsers, range });
 	}
@@ -153,7 +159,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 							this.render(false);
 						} else {
 							that.setCategoryEmpty();
-							that._colorSelectedPointsInAmethyst(this.series[0].data);
+							that._colorAllPointsInAmethyst(this.series[0].data);
 							this.render(false);
 						}
 					}
