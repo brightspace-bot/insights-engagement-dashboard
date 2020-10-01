@@ -4,27 +4,10 @@ import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../model/data';
 
-function or(pred1, pred2) {
-	return el => pred1(el) || pred2(el);
-}
-
 export const CurrentFinalGradeCardFilter  = {
 	id: 'd2l-insights-current-final-grade-card',
 	title: 'components.insights-current-final-grade-card.currentGrade',
-	filter: (record, data) => {
-		const categories = Array.from(data.gradesCategory).slice();
-		const rec = record[RECORD.CURRENT_FINAL_GRADE];
-		const predicate = cat => rec => rec < (cat + 10) && rec >= cat;
-		const predicateForNinetyCondition = cat => rec => rec <= (cat + 10) && rec >= cat;
-		const combPred = categories.map(cat => {
-			if (cat === 90) {
-				return predicateForNinetyCondition(cat);
-			} else {
-				return predicate(cat);
-			}
-		}).reduce(or);
-		return combPred(rec);
-	}
+	filter: (record, data) => data.selectedGradesCategories.has(data.gradeCategory(record[RECORD.CURRENT_FINAL_GRADE]))
 };
 
 class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
@@ -96,7 +79,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	get category() {
-		return this.data.gradesCategory;
+		return this.data.selectedGradesCategories;
 	}
 
 	get isApplied() {
