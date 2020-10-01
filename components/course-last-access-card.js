@@ -2,6 +2,15 @@ import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../model/data';
+
+export const CourseLastAccessCardFilter  = {
+	id: 'd2l-insights-course-last-access-card',
+	title: 'components.insights-course-last-access-card.courseAccess',
+	filter: (record, data) => data.selectedLastAccessCategory.has(
+		data._bucketCourseLastAccessDates(record[RECORD.COURSE_LAST_ACCESS] === null ? -1 : (Date.now() - record[RECORD.COURSE_LAST_ACCESS]))
+	)
+};
 
 class CourseLastAccessCard extends Localizer(MobxLitElement) {
 
@@ -108,6 +117,48 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 		];
 	}
 
+	_valueClickHandler() {
+		this.data.setApplied('d2l-insights-course-last-access-card', true);
+	}
+
+	get isApplied() {
+		return this.data.cardFilters['d2l-insights-course-last-access-card'].isApplied;
+	}
+
+	setCategoryEmpty() {
+		this.data.setLastAccessCategoryEmpty();
+	}
+
+	addToCategory(category) {
+		this.data.addToLastAccessCategory(category);
+	}
+
+	get category() {
+		return this.data.selectedLastAccessCategory;
+	}
+
+	_colorNonSelectedPointsInMica(seriesData) {
+		seriesData.forEach(point => {
+			if (!this.category.has(point.index)) {
+				point.update({ color: 'var(--d2l-color-mica)' }, false);
+			}
+		});
+	}
+
+	_colorSelectedPointsInCelestine(seriesData) {
+		seriesData.forEach(point => {
+			if (this.category.has(point.index)) {
+				point.update({ color: 'var(--d2l-color-celestine)' }, false);
+			}
+		});
+	}
+
+	_colorAllPointsInCelestine(seriesData) {
+		seriesData.forEach(point => {
+			point.update({ color: 'var(--d2l-color-celestine)' }, false);
+		});
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -123,6 +174,22 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 			chart: {
 				type: 'bar',
 				height: '250px',
+				events: {
+					render: function() {
+						//after redrawing the chart as a result of updating (for example, when the user disable any of the filters),
+						// we need to keep the color of the selected/nonselected bars
+						if (that.isApplied) {
+							that._colorNonSelectedPointsInMica(this.series[0].data);
+							this.render(false);
+							that._colorSelectedPointsInCelestine(this.series[0].data);
+							this.render(false);
+						} else {
+							that.setCategoryEmpty();
+							that._colorAllPointsInCelestine(this.series[0].data);
+							this.render(false);
+						}
+					}
+				}
 			},
 			animation: false,
 			tooltip: {
@@ -202,8 +269,25 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 							}
 							return `${that._cardCategoriesText[point.x]}, ${that._horizontalLabel}, ${val}.`;
 						}
+					},
+					allowPointSelect: true,
+					color: 'var(--d2l-color-celestine)',
+					states: {
+						select: {
+							color: 'var(--d2l-color-celestine)'
+						}
+					},
+					point: {
+						events: {
+							select: function() {
+								that.addToCategory(this.index);
+								that._valueClickHandler();
+								that._colorNonSelectedPointsInMica(this.series.data);
+								that._colorSelectedPointsInCelestine(this.series.data);
+							}
+						}
 					}
-				},
+				}
 			},
 			accessibility: {
 				screenReaderSection: {
