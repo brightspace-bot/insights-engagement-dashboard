@@ -94,8 +94,8 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 
 			.d2l-insights-summary-card-body > div[skeleton] {
 				height: 70px;
+				margin-right: 10px;
 				width: 70px;
-				margin-right: 10px
 			}
 		`];
 	}
