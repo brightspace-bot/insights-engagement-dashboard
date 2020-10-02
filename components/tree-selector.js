@@ -68,10 +68,11 @@ class TreeSelector extends Localizer(LitElement) {
 	}
 
 	render() {
+		// TODO: decide about no-auto-fit
 		return html`
 			<d2l-dropdown>
 				<d2l-dropdown-button-subtle text="${this.name}">
-					<d2l-dropdown-content align="start">
+					<d2l-dropdown-content align="start" no-auto-fit>
 						<div class="d2l-insights-tree-selector-search" slot="header">
 							<d2l-input-search
 								label="${this.localize('components.tree-selector.search-label')}"
