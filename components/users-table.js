@@ -6,6 +6,15 @@ import { css, html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
+export const TABLE_USER = {
+	LAST_FIRST_NAME: 0,
+	// LAST_ACCESSED_SYSTEM: 1,
+	COURSES: 1,
+	AVG_GRADE: 2,
+	AVG_TIME_IN_CONTENT: 3
+	// AVG_DISCUSSION_ACTIVITY: 4
+};
+
 /**
  * At the moment the mobx data object is doing sorting / filtering logic
  *
@@ -74,9 +83,14 @@ class UsersTable extends Localizer(MobxLitElement) {
 		return [];
 	}
 
-	get columns() {
+	get columnHeaders() {
 		return [
-			this.localize('components.insights-users-table.lastFirstName')
+			this.localize('components.insights-users-table.lastFirstName'),
+			// this.localize('components.insights-users-table.lastAccessedSystem'),
+			this.localize('components.insights-users-table.courses'),
+			this.localize('components.insights-users-table.avgGrade'),
+			this.localize('components.insights-users-table.avgTimeInContent')
+			// this.localize('components.insights-users-table.avgDiscussionActivity')
 		];
 	}
 
@@ -84,7 +98,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 		return html`
 			<d2l-insights-table
 				title="${this.localize('components.insights-users-table.title')}"
-				.columns=${this.columns}
+				.columnHeaders=${this.columnHeaders}
 				.data="${this._displayData}"></d2l-insights-table>
 
 			<d2l-labs-pagination
