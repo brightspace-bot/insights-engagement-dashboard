@@ -92,7 +92,7 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 				line-height: normal;
 			}
 
-			:host([skeleton]) .d2l-insights-summary-card-body > div{
+			:host([skeleton]) .d2l-insights-summary-card-body > div {
 				height: 70px;
 				margin-right: 10px;
 				width: 70px;
