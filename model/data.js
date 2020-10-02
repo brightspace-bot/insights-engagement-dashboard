@@ -2,6 +2,7 @@ import { action, autorun, computed, decorate, observable } from 'mobx';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 import { CardFilter } from './cardFilter.js';
 import { fetchCachedChildren } from './lms.js';
+import { TABLE_USER } from '../components/users-table';
 import { Tree } from '../components/tree-filter';
 
 export const COURSE_OFFERING = 3;
@@ -171,9 +172,16 @@ export class Data {
 		// then sort by lastFirstName
 
 		return this.users
-			.map(user => [`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`])
+			.map(user => [
+				`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, // last first name
+				// 'N/A', // last accessed system
+				'', // courses
+				'', // average grade
+				'', // average time in content
+				// 'N/A', // average discussion activity
+			])
 			.sort((user1, user2) => {
-				return user1[0].localeCompare(user2[0]);
+				return user1[TABLE_USER.LAST_FIRST_NAME].localeCompare(user2[TABLE_USER.LAST_FIRST_NAME]);
 			});
 	}
 

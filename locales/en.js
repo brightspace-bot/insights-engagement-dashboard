@@ -34,6 +34,11 @@ export default {
 
 	"components.insights-users-table.title": "User Details",
 	"components.insights-users-table.lastFirstName": "Last Name, First Name",
+	"components.insights-users-table.lastAccessedSystem": "Last Accessed System",
+	"components.insights-users-table.courses": "Courses",
+	"components.insights-users-table.avgGrade": "Average Grade",
+	"components.insights-users-table.avgTimeInContent": "Average Time In Content",
+	"components.insights-users-table.avgDiscussionActivity": "Average Discussion Activity",
 	"components.insights-users-table.totalUsers": "Total Users: {num}",
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
 
