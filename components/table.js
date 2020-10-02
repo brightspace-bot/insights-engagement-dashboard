@@ -1,4 +1,5 @@
 import { css, html, LitElement } from 'lit-element';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
@@ -189,16 +190,16 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	}
 
 	_renderBodyCell(value, idx, row) {
-		let styles = 'd2l-insights-table-cell';
+		const styles = {};
 		if (idx === 0) {
-			styles += ' d2l-insights-table-cell-first';
+			styles['d2l-insights-table-cell-first'] = true;
 		}
 
 		if (idx === row.length - 1) {
-			styles += ' d2l-insights-table-cell-last';
+			styles['d2l-insights-table-cell-last'] = true;
 		}
 		return html`
-			<td class="${styles}">
+			<td class="d2l-insights-table-cell ${classMap(styles)}">
 				<div class="d2l-skeletize">${value}</div>
 			</td>
 		`;
