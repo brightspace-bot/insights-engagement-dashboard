@@ -2,7 +2,14 @@ import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../model/data';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
+
+export const CurrentFinalGradeCardFilter  = {
+	id: 'd2l-insights-current-final-grade-card',
+	title: 'components.insights-current-final-grade-card.currentGrade',
+	filter: (record, data) => data.selectedGradesCategories.has(data.gradeCategory(record[RECORD.CURRENT_FINAL_GRADE]))
+};
 
 class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -68,12 +75,53 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.data.currentFinalGrades;
 	}
 
+	setCategoryEmpty() {
+		this.data.setGradesCategoryEmpty();
+	}
+
+	addToCategory(category) {
+		this.data.addToGradesCategory(category);
+	}
+
+	get category() {
+		return this.data.selectedGradesCategories;
+	}
+
+	get isApplied() {
+		return this.data.cardFilters['d2l-insights-current-final-grade-card'].isApplied;
+	}
+
+	_valueClickHandler() {
+		this.data.setApplied('d2l-insights-current-final-grade-card', true);
+	}
+
+	_colorNonSelectedPoints(seriesData, color) {
+		seriesData.forEach(point => {
+			if (!this.category.has(Math.ceil(point.category))) this._pointUpdateColor(point, color);
+		});
+	}
+
+	_colorSelectedPoints(seriesData, color) {
+		seriesData.forEach(point => {
+			if (this.category.has(Math.ceil(point.category))) this._pointUpdateColor(point, color);
+		});
+	}
+
+	_colorAllPoints(seriesData, color) {
+		seriesData.forEach(point => this._pointUpdateColor(point, color));
+	}
+
+	_pointUpdateColor(point, colorForPoint) {
+		point.update({ color: colorForPoint }, false);
+	}
+
 	_gradeBetweenText(numberOfUsers, range) {
 		return this.localize('components.insights-current-final-grade-card.gradeBetween', { numberOfUsers, range });
 	}
 
 	_gradeBetweenTextSingleUser(range) {
 		return this.localize('components.insights-current-final-grade-card.gradeBetweenSingleUser', { range });
+
 	}
 
 	render() {
@@ -99,9 +147,24 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	get chartOptions() {
 		const that = this;
+
 		return {
 			chart: {
-				height: 230
+				height: 230,
+				events: {
+					render: function() {
+						//after redrawing the chart as a result of updating (for example, when the user disable any of the filters),
+						// we need to keep the color of the selected/nonselected bars
+						if (that.isApplied) {
+							that._colorNonSelectedPoints(this.series[0].data, 'var(--d2l-color-mica)');
+							that._colorSelectedPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
+						} else {
+							that.setCategoryEmpty();
+							that._colorAllPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
+						}
+						this.render(false);
+					}
+				}
 			},
 			animation: false,
 			tooltip: {
@@ -175,6 +238,22 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 								val = point.y;
 							return `${ix - 10} to ${ix}, ${val}.`;
 						}
+					},
+					allowPointSelect: true,
+					color: 'var(--d2l-color-amethyst)',
+					states: {
+						select: {
+							color: 'var(--d2l-color-amethyst)'
+						}
+					},
+					point: {
+						events: {
+							select: function() {
+								that.addToCategory(Math.ceil(this.category));
+								that._valueClickHandler();
+								that._colorSelectedPoints(this.series.data, 'var(--d2l-color-amethyst)');
+							}
+						}
 					}
 				}
 			},
@@ -185,12 +264,11 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			},
 			series: [{
 				type: 'histogram',
-				color: 'var(--d2l-color-amethyst)',
 				animation: false,
 				lineWidth: 1,
 				baseSeries: 1,
 				shadow: false,
-				binWidth: 9.999
+				binWidth: 9.9999
 			},
 			{
 				data: this._preparedHistogramData,

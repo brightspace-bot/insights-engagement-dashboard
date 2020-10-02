@@ -16,14 +16,28 @@ export class Tree {
 	/**
 	 * Type to use as the .tree property of a d2l-insights-tree-filter. Mutator methods will
 	 * trigger re-rendering as needed. Call as new Tree({}) for a default empty tree.
+	 * NB: this is actually a DAG, not a tree. :)
 	 * @param {[][]} [nodes=[]] - Array of arrays, each with elements for each of the above constants
 	 * @param {Number[]} [leafTypes=[]] - TYPE values that cannot be opened
 	 * @param {Number[]} [invisibleTypes=[]] - TYPE values that should not be rendered
 	 * @param {Number[]} [selectedIds] - ids to mark selected. Ancestors and descendants will be marked accordingly.
 	 * @param {Number[]} [ancestorIds] - same as if passed to setAncestorFilter
 	 * @param {Tree} [oldTree] - tree to copy previous state from (e.g. which nodes are open)
+	 * @param {Boolean} isDynamic - if true, the tree is assumed to be incomplete, and tree-filter will fire events as needed
+	 * to request children
+	 * @param {Map}[extraChildren] - Map from parent node ids to arrays of nodes; these will be added to the tree before
+	 * any selections are applied and the parents marked as populated. Useful for adding cached lookups to a dynamic tree.
 	 */
-	constructor({ nodes = [], leafTypes = [], invisibleTypes = [], selectedIds, ancestorIds, oldTree }) {
+	constructor({
+		nodes = [],
+		leafTypes = [],
+		invisibleTypes = [],
+		selectedIds,
+		ancestorIds,
+		oldTree,
+		isDynamic = false,
+		extraChildren
+	}) {
 		this.leafTypes = leafTypes;
 		this.invisibleTypes = invisibleTypes;
 		this.initialSelectedIds = selectedIds;
@@ -34,6 +48,7 @@ export class Tree {
 		this._open = oldTree ? new Set(oldTree.open) : new Set();
 		// null for no filter, vs. empty Set() when none match
 		this._visible = null;
+		this._populated = isDynamic ? new Set() : null;
 
 		// fill in children (parents are provided by the caller, and ancestors will be generated on demand)
 		this.ids.forEach(id => {
@@ -46,6 +61,12 @@ export class Tree {
 			});
 		});
 
+		if (extraChildren) {
+			extraChildren.forEach((children, orgUnitId) => {
+				this.addNodes(orgUnitId, children);
+			});
+		}
+
 		if (selectedIds) {
 			selectedIds.forEach(x => this.setSelected(x, true));
 		}
@@ -57,6 +78,10 @@ export class Tree {
 
 	get ids() {
 		return [...this._nodes.keys()];
+	}
+
+	get isDynamic() {
+		return !!this._populated;
 	}
 
 	get open() {
@@ -72,6 +97,50 @@ export class Tree {
 
 	get selected() {
 		return this._getSelected(this.rootId);
+	}
+
+	/**
+	 * Adds nodes as children of the given parent. New nodes will be selected if the parent is.
+	 * The parents of the new nodes will be set to the given parent plus any previous parents (if the node
+	 * was already in the tree). The new nodes are assumed to match the ancestorFilter, if any;
+	 * future changes to that filter are not supported (i.e. it is assumed the caller will reload data
+	 * and create a new tree in that case). See also note on setAncestorFilter().
+	 * @param {number} parentId The parent of the new nodes. The new nodes *replace* any existing children.
+	 * @param newChildren Array of nodes to be added to the tree; name and type will be updated if the id already exists.
+	 */
+	addNodes(parentId, newChildren) {
+		const parent = this._nodes.get(parentId);
+		if (!parent) return;
+
+		// add parentId to any existing parents of these nodes (before replacing the nodes and losing this info)
+		newChildren.forEach(x => {
+			const existingParents = this.getParentIds(x[ID]);
+			const allParents = new Set([parentId, ...existingParents]);
+			x[PARENTS] = [...allParents];
+		});
+		newChildren.forEach(x => this._nodes.set(x[ID], x));
+
+		// replace all of parent's children
+		this._children.set(parentId, newChildren.map(x => x[ID]));
+
+		// caller should only provide visible nodes
+		if (this._visible) {
+			newChildren.forEach(x => this._visible.add(x[ID]));
+		}
+		if (this.getState(parentId) === 'explicit') {
+			newChildren.forEach(x => this._state.set(x[ID], 'explicit'));
+		}
+
+		// Ancestors may need updating: if one or more of newChildren was already present (due to
+		// being added under another parent), then they may also have been opened and have descendants,
+		// which now need a new ancestor.
+		// For simplicity and correctness, we simply reset the ancestors map, which will be
+		// regenerated as needed by getAncestorIds.
+		this._ancestors = new Map();
+
+		if (this._populated) {
+			this._populated.add(parentId);
+		}
 	}
 
 	getAncestorIds(id) {
@@ -147,11 +216,25 @@ export class Tree {
 	}
 
 	/**
+	 * True iff the children of id are known (even if there are zero children).
+	 * @param id
+	 * @returns {boolean}
+	 */
+	isPopulated(id) {
+		return !this._populated || this._populated.has(id);
+	}
+
+	/**
 	 * Filters the visible tree to nodes which are ancestors of nodes descended from the given ids
-	 * (a node is its own ancestor)
+	 * (a node is its own ancestor).
+	 * NB: ignored if the tree is dynamic, so that dynamically loaded partial trees don't get
+	 * hidden due to missing information. It is expected that dynamic trees only include visible
+	 * nodes, and that the tree will be replaced if the ancestor filter should change.
 	 * @param {Number[]} ancestorIds
 	 */
 	setAncestorFilter(ancestorIds) {
+		if (this.isDynamic) return;
+
 		if (!ancestorIds || ancestorIds.length === 0) {
 			this._visible = null;
 			return;
@@ -225,9 +308,11 @@ export class Tree {
 		// don't select invisible node types
 		if (this.invisibleTypes.includes(this.getType(id))) return;
 
-		// only consider children of visible types: this node is selected if all potentially visible children are
+		// Only consider children of visible types: this node is selected if all potentially visible children are
+		// Note that if this node hasn't been populated, we don't know if all children are selected,
+		// so it is indeterminate at most.
 		const childIds = this.getChildIds(id).filter(x => !this.invisibleTypes.includes(this.getType(x)));
-		const state = childIds.every(childId => this.getState(childId) === 'explicit')
+		const state = (this.isPopulated(id) && childIds.every(childId => this.getState(childId) === 'explicit'))
 			? 'explicit'
 			: childIds.every(childId => this.getState(childId) === 'none')
 				? 'none'
@@ -250,7 +335,9 @@ decorate(Tree, {
 	_state: observable,
 	_open: observable,
 	_visible: observable,
+	_populated: observable,
 	selected: computed,
+	addNodes: action,
 	setAncestorFilter: action,
 	setOpen: action,
 	setSelected: action
@@ -263,6 +350,7 @@ decorate(Tree, {
  * @property {String} openerText - appears on the dropdown opener if no items are selected
  * @property {String} openerTextSelected - appears on the dropdown opener if one or more items are selected
  * @fires d2l-insights-tree-filter-select - selection has changed; selected property of this element is the list of selected ids
+ * @fires d2l-insights-tree-filter-request-children - owner should call addNodes with children of event.detail.id
  */
 class TreeFilter extends Localizer(MobxLitElement) {
 
@@ -321,7 +409,7 @@ class TreeFilter extends Localizer(MobxLitElement) {
 				@d2l-insights-tree-selector-search="${this._onSearch}"
 			>
 				${this._renderSearchResults()}
-				${this._renderChildren()}
+				${this._renderChildren(this.tree.rootId)}
 			</d2l-insights-tree-selector>
 		</div>`;
 	}
@@ -345,6 +433,12 @@ class TreeFilter extends Localizer(MobxLitElement) {
 
 	_renderChildren(id, parentName, indentLevel = 0) {
 		parentName = parentName || this.localize('components.tree-filter.node-name.root');
+
+		if (!this.tree.isPopulated(id)) {
+			// request children; in the meantime we can render whatever we have
+			this._requestChildren(id);
+		}
+
 		return this.tree
 			.getChildIdsForDisplay(id)
 			.map(id => this._renderNode(id, parentName, indentLevel + 1));
@@ -410,6 +504,20 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		this.dispatchEvent(new CustomEvent(
 			'd2l-insights-tree-filter-select',
 			{ bubbles: true, composed: false }
+		));
+	}
+
+	_requestChildren(id) {
+		/**
+		 * @event d2l-insights-tree-filter-request-children
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-filter-request-children',
+			{
+				bubbles: true,
+				composed: false,
+				detail: { id }
+			}
 		));
 	}
 }

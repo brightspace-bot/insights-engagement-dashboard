@@ -183,12 +183,11 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 						that._valueClickHandler();
 					},
 					update: function() {
-						if (!that.isApplied) {
-							that._colorAllPointsInAmethyst(this.series);
-						}
 						if (that.isApplied) {
 							that._colorNonSelectedPointsInMica(this.series);
 							that._colorSelectedQuadrantPointsInAmethyst(this.series);
+						} else {
+							that._colorAllPointsInAmethyst(this.series);
 						}
 					}
 				}
