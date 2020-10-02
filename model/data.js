@@ -201,7 +201,7 @@ export class Data {
 	}
 
 	setGradesCategoryEmpty() {
-		this.selectedGradesCategories = new Set();
+		this.selectedGradesCategories.clear();
 	}
 
 	addToGradesCategory(category) {
@@ -246,7 +246,7 @@ export class Data {
 	}
 
 	setLastAccessCategoryEmpty() {
-		this.selectedLastAccessCategory = new Set();
+		this.selectedLastAccessCategory.clear();
 	}
 
 	get tiCVsGrades() {
@@ -314,6 +314,7 @@ export class Data {
 	}
 
 	_persist() {
+		//It's save only the list of filters, then will be a separate story for keep state
 		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
 			Object.keys(this.cardFilters)
 				.map(f => ({ id: f }))

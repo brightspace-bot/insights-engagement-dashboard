@@ -137,26 +137,24 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 		return this.data.selectedLastAccessCategory;
 	}
 
-	_colorNonSelectedPointsInMica(seriesData) {
+	_colorNonSelectedPoints(seriesData, color) {
 		seriesData.forEach(point => {
-			if (!this.category.has(point.index)) {
-				point.update({ color: 'var(--d2l-color-mica)' }, false);
-			}
+			if (!this.category.has(point.index)) this._pointUpdateColor(point, color);
 		});
 	}
 
-	_colorSelectedPointsInCelestine(seriesData) {
+	_colorSelectedPoints(seriesData, color) {
 		seriesData.forEach(point => {
-			if (this.category.has(point.index)) {
-				point.update({ color: 'var(--d2l-color-celestine)' }, false);
-			}
+			if (this.category.has(point.index)) this._pointUpdateColor(point, color);
 		});
 	}
 
-	_colorAllPointsInCelestine(seriesData) {
-		seriesData.forEach(point => {
-			point.update({ color: 'var(--d2l-color-celestine)' }, false);
-		});
+	_colorAllPoints(seriesData, color) {
+		seriesData.forEach(point => this._pointUpdateColor(point, color));
+	}
+
+	_pointUpdateColor(point, colorForPoint) {
+		point.update({ color: colorForPoint }, false);
 	}
 
 	render() {
@@ -179,15 +177,13 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 						//after redrawing the chart as a result of updating (for example, when the user disable any of the filters),
 						// we need to keep the color of the selected/nonselected bars
 						if (that.isApplied) {
-							that._colorNonSelectedPointsInMica(this.series[0].data);
-							this.render(false);
-							that._colorSelectedPointsInCelestine(this.series[0].data);
-							this.render(false);
+							that._colorNonSelectedPoints(this.series[0].data, 'var(--d2l-color-mica)');
+							that._colorSelectedPoints(this.series[0].data, 'var(--d2l-color-celestine)');
 						} else {
 							that.setCategoryEmpty();
-							that._colorAllPointsInCelestine(this.series[0].data);
-							this.render(false);
+							that._colorAllPoints(this.series[0].data, 'var(--d2l-color-celestine)');
 						}
+						this.render(false);
 					}
 				}
 			},
@@ -282,8 +278,7 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 							select: function() {
 								that.addToCategory(this.index);
 								that._valueClickHandler();
-								that._colorNonSelectedPointsInMica(this.series.data);
-								that._colorSelectedPointsInCelestine(this.series.data);
+								that._colorSelectedPoints(this.series.data, 'var(--d2l-color-celestine)');
 							}
 						}
 					}
@@ -295,8 +290,7 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 				}
 			},
 			series: [{
-				data: this._preparedBarChartData,
-				color: 'var(--d2l-color-celestine)',
+				data: this._preparedBarChartData
 			}]
 		};
 	}

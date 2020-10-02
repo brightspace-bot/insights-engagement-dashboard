@@ -90,26 +90,24 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		this.data.setApplied('d2l-insights-current-final-grade-card', true);
 	}
 
-	_colorNonSelectedPointsInMica(seriesData) {
+	_colorNonSelectedPoints(seriesData, color) {
 		seriesData.forEach(point => {
-			if (!this.category.has(Math.ceil(point.category))) {
-				point.update({ color: 'var(--d2l-color-mica)' }, false);
-			}
+			if (!this.category.has(Math.ceil(point.category))) this._pointUpdateColor(point, color);
 		});
 	}
 
-	_colorSelectedPointsInAmethyst(seriesData) {
+	_colorSelectedPoints(seriesData, color) {
 		seriesData.forEach(point => {
-			if (this.category.has(Math.ceil(point.category))) {
-				point.update({ color: 'var(--d2l-color-amethyst)' }, false);
-			}
+			if (this.category.has(Math.ceil(point.category))) this._pointUpdateColor(point, color);
 		});
 	}
 
-	_colorAllPointsInAmethyst(seriesData) {
-		seriesData.forEach(point => {
-			point.update({ color: 'var(--d2l-color-amethyst)' }, false);
-		});
+	_colorAllPoints(seriesData, color) {
+		seriesData.forEach(point => this._pointUpdateColor(point, color));
+	}
+
+	_pointUpdateColor(point, colorForPoint) {
+		point.update({ color: colorForPoint }, false);
 	}
 
 	_gradeBetweenText(numberOfUsers, range) {
@@ -153,15 +151,13 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 						//after redrawing the chart as a result of updating (for example, when the user disable any of the filters),
 						// we need to keep the color of the selected/nonselected bars
 						if (that.isApplied) {
-							that._colorNonSelectedPointsInMica(this.series[0].data);
-							this.render(false);
-							that._colorSelectedPointsInAmethyst(this.series[0].data);
-							this.render(false);
+							that._colorNonSelectedPoints(this.series[0].data, 'var(--d2l-color-mica)');
+							that._colorSelectedPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
 						} else {
 							that.setCategoryEmpty();
-							that._colorAllPointsInAmethyst(this.series[0].data);
-							this.render(false);
+							that._colorAllPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
 						}
+						this.render(false);
 					}
 				}
 			},
@@ -250,8 +246,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 							select: function() {
 								that.addToCategory(Math.ceil(this.category));
 								that._valueClickHandler();
-								that._colorNonSelectedPointsInMica(this.series.data);
-								that._colorSelectedPointsInAmethyst(this.series.data);
+								that._colorSelectedPoints(this.series.data, 'var(--d2l-color-amethyst)');
 							}
 						}
 					}
