@@ -15,8 +15,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		return {
 			title: { type: String, attribute: true },
 			columns: { type: Array, attribute: false },
-			data: { type: Array, attribute: false },
-			skeleton: { type: Boolean, attribute: true }
+			data: { type: Array, attribute: false }
 		};
 	}
 

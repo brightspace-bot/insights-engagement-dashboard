@@ -14,9 +14,7 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 			title: { type: String, attribute: 'card-title' },
 			value: { type: String, attribute: 'card-value' },
 			message: { type: String, attribute: 'card-message' },
-			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' },
-			isLoading: { type: Boolean, attribute: 'loading' },
-			skeleton: { type: Boolean, reflect: true }
+			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' }
 		};
 	}
 
@@ -104,19 +102,16 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 	}
 
 	render() {
-		// add to the component skeleton property to apply skeleton styles
-		this.skeleton = this.data.isLoading;
-
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
 			<div class="d2l-insights-summary-card-title d2l-skeletize d2l-skeletize-45" ?skeleton="${this.skeleton}">${this.title}</div>
-			<div class="d2l-insights-summary-card-body" aria-hidden="${!!this.isLoading}">
+			<div class="d2l-insights-summary-card-body" aria-hidden="${this.skeleton}">
 			${this.isValueClickable ?
 			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
 			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
 			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${this.message}</span>
-			<d2l-insights-overlay spinner-size="100" ?loading="${this.isLoading}"></d2l-insights-overlay>
+			<d2l-insights-overlay spinner-size="100" ?loading="${this.skeleton}"></d2l-insights-overlay>
 			</div>
 		</div>`;
 	}

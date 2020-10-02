@@ -173,6 +173,7 @@ describe('d2l-insights-users-table', () => {
 
 			it('should show 5 skeleton rows with zero pages if loading', async() => {
 				el.data = { userDataForDisplay: [], isLoading: true };
+				el.skeleton = true;
 				await new Promise(resolve => setTimeout(resolve, 200));
 				await innerTable.updateComplete;
 				await pageSelector.updateComplete;

@@ -5,6 +5,7 @@ import './table.js';
 import { css, html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 /**
  * At the moment the mobx data object is doing sorting / filtering logic
@@ -13,7 +14,7 @@ import { MobxLitElement } from '@adobe/lit-mobx';
  * @property {Number} _currentPage
  * @property {Number} _pageSize
  */
-class UsersTable extends Localizer(MobxLitElement) {
+class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
@@ -58,7 +59,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 	}
 
 	get _itemsCount() {
-		if (this.data.isLoading) {
+		if (this.skeleton) {
 			return this._loadingData.length;
 		}
 
@@ -66,7 +67,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 	}
 
 	get _maxPages() {
-		if (this.data.isLoading) {
+		if (this.skeleton) {
 			return 0;
 		}
 
@@ -75,7 +76,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 	}
 
 	get _displayData() {
-		if (this.data.isLoading) {
+		if (this.skeleton) {
 			return this._loadingData;
 		}
 
@@ -98,7 +99,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 	render() {
 		return html`
 			<d2l-insights-table
-				?skeleton="${this.data.isLoading}"
+				?skeleton="${this.skeleton}"
 				title="${this.localize('components.insights-users-table.title')}"
 				.columns=${this.columns}
 				.data="${this._displayData}"></d2l-insights-table>
@@ -118,7 +119,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 	}
 
 	_renderTotalUsers() {
-		const itemCounts = this.data.isLoading ? 0 : this._itemsCount;
+		const itemCounts = this.skeleton ? 0 : this._itemsCount;
 
 		return html`
 			<div class="d2l-insights-users-table-total-users">
@@ -128,7 +129,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 	}
 
 	updated() {
-		if (this.data.isLoading) {
+		if (this.skeleton) {
 			this._currentPage = 0;
 			return;
 		}
