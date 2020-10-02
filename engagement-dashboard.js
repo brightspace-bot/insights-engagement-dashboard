@@ -108,7 +108,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container-applied-filters">
-					<d2l-insights-applied-filters .data="${this._data}"></d2l-insights-applied-filters>
+					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
 				</div>
 				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
