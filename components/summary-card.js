@@ -88,11 +88,11 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 				max-width: 180px;
 			}
 
-			.d2l-insights-summary-card-title[skeleton] {
+			:host([skeleton]) .d2l-insights-summary-card-title {
 				line-height: normal;
 			}
 
-			.d2l-insights-summary-card-body > div[skeleton] {
+			:host([skeleton]) .d2l-insights-summary-card-body > div{
 				height: 70px;
 				margin-right: 10px;
 				width: 70px;
@@ -111,9 +111,9 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
-			<div class="d2l-insights-summary-card-title d2l-skeletize d2l-skeletize-45" ?skeleton="${this.skeleton}">${this.title}</div>
+			<div class="d2l-insights-summary-card-title d2l-skeletize d2l-skeletize-45">${this.title}</div>
 			<div class="d2l-insights-summary-card-body" aria-hidden="${this.skeleton}">
-				<div class="d2l-skeletize" ?skeleton="${this.skeleton}">
+				<div class="d2l-skeletize">
 					${this.isValueClickable ?
 						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
 						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-fiel">${this.value}</span>`}

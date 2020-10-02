@@ -121,14 +121,14 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				border-bottom-left-radius: 8px;
 			}
 
-			.d2l-insights-table-cell > div[skeleton] {
+			:host([skeleton]) .d2l-insights-table-cell > div {
 				line-height: normal;
 				max-width: 300px;
 				width: 45%;
 			}
 
 			@media (max-width: 713px) {
-				.d2l-insights-table-cell > div[skeleton] {
+				:host([skeleton]) .d2l-insights-table-cell > div {
 					max-width: 100%;
 					width: 100%;
 				}
@@ -199,7 +199,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		}
 		return html`
 			<td class="${styles}">
-				<div class="d2l-skeletize" ?skeleton="${this.skeleton}">${value}</div>
+				<div class="d2l-skeletize">${value}</div>
 			</td>
 		`;
 	}

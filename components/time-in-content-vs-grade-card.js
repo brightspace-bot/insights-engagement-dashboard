@@ -66,7 +66,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				font-weight: bold;
 				text-indent: 3%;
 			}
-			.d2l-insights-time-in-content-vs-grade-title[skeleton] {
+			:host([skeleton]) .d2l-insights-time-in-content-vs-grade-title {
 				line-height: normal;
 			}
 		`];
@@ -163,7 +163,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`
-			<div class="d2l-insights-time-in-content-vs-grade-title d2l-skeletize d2l-skeletize-45" ?skeleton="${this.skeleton}">${this._cardTitle}</div>
+			<div class="d2l-insights-time-in-content-vs-grade-title d2l-skeletize d2l-skeletize-45">${this._cardTitle}</div>
 			<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?skeleton="${this.skeleton}"></d2l-labs-chart>`;
 	}
 
