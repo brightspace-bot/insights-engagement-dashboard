@@ -108,6 +108,25 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		return this.data.tiCVsGradesAvgValues[AVG.TIME];
 	}
 
+	get _dataMidPoints() {
+		const maxTimeInContent = this.data.tiCVsGrades.reduce((max, arr) => {
+			return Math.max(max, arr[0]);
+		}, -Infinity);
+		return [[this._avgTimeInContent / 2, 25],
+			[this._avgTimeInContent / 2, 75],
+			[(maxTimeInContent + this._avgTimeInContent) / 2, 25],
+			[(maxTimeInContent + this._avgTimeInContent) / 2, 75]];
+	}
+
+	get _plotDataLengths() {
+		return [
+			this._plotDataForLeftBottomQuadrant.length,
+			this._plotDataForLeftTopQuadrant.length,
+			this._plotDataForRightTopQuadrant.length,
+			this._plotDataForRightBottomQuadrant.length
+		];
+	}
+
 	_setQuadrant(quadrant) {
 		this.data.setTiCVsGradesQuadrant(quadrant);
 	}
@@ -155,6 +174,11 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		this.data.setApplied('d2l-insights-time-in-content-vs-grade-card', true);
 	}
 
+	_toolTipTextByQuadrant(quadrant, numberOfUsers) {
+		const quadrantTerm = `components.insights-time-in-content-vs-grade-card.${quadrant}`;
+		return this.localize(quadrantTerm, { numberOfUsers });
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -189,7 +213,35 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				}
 			},
 			animation: false,
-			tooltip: { enabled: false },
+			tooltip: {
+				formatter: function() {
+					if (this.series.name === 'midPoint') {
+						const dataLengths = that._plotDataLengths;
+						const midPoints = that._dataMidPoints;
+						const currentPoint = [this.x, this.y];
+						if (currentPoint.toString() === midPoints[0].toString()) {
+							return that._toolTipTextByQuadrant('leftBottom', dataLengths[0]);
+						}
+						if (currentPoint.toString() === midPoints[1].toString()) {
+							return that._toolTipTextByQuadrant('leftTop', dataLengths[1]);
+						}
+						if (currentPoint.toString() === midPoints[2].toString()) {
+							return that._toolTipTextByQuadrant('rightTop', dataLengths[2]);
+						}
+						if (currentPoint.toString() === midPoints[3].toString()) {
+							return that._toolTipTextByQuadrant('rightBottom', dataLengths[3]);
+						}
+					}
+					return false;
+				},
+				backgroundColor: 'var(--d2l-color-ferrite)',
+				borderColor: 'var(--d2l-color-ferrite)',
+				borderRadius: 12,
+				style: {
+					color: 'white',
+					width: 375
+				}
+			},
 			title: {
 				text: this._cardTitle, // override default title
 				style: {
@@ -280,7 +332,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						pointDescriptionFormatter: function(point) {
 							return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
 						}
-					}
+					},
 				}
 			},
 			accessibility: {
@@ -302,7 +354,20 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 			},
 			{
 				name: 'rightBottom',
-				data: this._plotDataForRightBottomQuadrant
+				data: this._plotDataForRightBottomQuadrant,
+			},
+			{
+				name: 'midPoint',
+				data: that._dataMidPoints,
+				lineColor: 'transparent',
+				marker: {
+					fillColor: 'transparent',
+					states: {
+						hover: {
+							enabled: false
+						}
+					}
+				},
 			}]
 		};
 	}
