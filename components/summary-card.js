@@ -91,6 +91,12 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 			.d2l-insights-summary-card-title[skeleton] {
 				line-height: normal;
 			}
+
+			.d2l-insights-summary-card-body > div[skeleton] {
+				height: 70px;
+				width: 70px;
+				margin-right: 10px
+			}
 		`];
 	}
 
@@ -107,11 +113,12 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 		return html`<div class="d2l-insights-summary-card">
 			<div class="d2l-insights-summary-card-title d2l-skeletize d2l-skeletize-45" ?skeleton="${this.skeleton}">${this.title}</div>
 			<div class="d2l-insights-summary-card-body" aria-hidden="${this.skeleton}">
-			${this.isValueClickable ?
-			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
-			html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
-			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field">${this.message}</span>
-			<d2l-insights-overlay spinner-size="100" ?loading="${this.skeleton}"></d2l-insights-overlay>
+				<div class="d2l-skeletize" ?skeleton="${this.skeleton}">
+					${this.isValueClickable ?
+						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
+						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-fiel">${this.value}</span>`}
+				</div>
+			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field d2l-skeletize-paragraph-3">${this.message}</span>
 			</div>
 		</div>`;
 	}
