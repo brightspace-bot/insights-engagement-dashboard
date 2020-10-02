@@ -118,15 +118,6 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 			[(maxTimeInContent + this._avgTimeInContent) / 2, 75]];
 	}
 
-	get _plotDataLengths() {
-		return [
-			this._plotDataForLeftBottomQuadrant.length,
-			this._plotDataForLeftTopQuadrant.length,
-			this._plotDataForRightTopQuadrant.length,
-			this._plotDataForRightBottomQuadrant.length
-		];
-	}
-
 	_setQuadrant(quadrant) {
 		this.data.setTiCVsGradesQuadrant(quadrant);
 	}
@@ -216,20 +207,19 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 			tooltip: {
 				formatter: function() {
 					if (this.series.name === 'midPoint') {
-						const dataLengths = that._plotDataLengths;
 						const midPoints = that._dataMidPoints;
-						const currentPoint = [this.x, this.y];
-						if (currentPoint.toString() === midPoints[0].toString()) {
-							return that._toolTipTextByQuadrant('leftBottom', dataLengths[0]);
+						const currentMidPoint = [this.x, this.y];
+						if (currentMidPoint.toString() === midPoints[0].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[0].name, this.series.chart.series[0].data.length);
 						}
-						if (currentPoint.toString() === midPoints[1].toString()) {
-							return that._toolTipTextByQuadrant('leftTop', dataLengths[1]);
+						if (currentMidPoint.toString() === midPoints[1].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[1].name, this.series.chart.series[1].data.length);
 						}
-						if (currentPoint.toString() === midPoints[2].toString()) {
-							return that._toolTipTextByQuadrant('rightTop', dataLengths[2]);
+						if (currentMidPoint.toString() === midPoints[2].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[2].name, this.series.chart.series[2].data.length);
 						}
-						if (currentPoint.toString() === midPoints[3].toString()) {
-							return that._toolTipTextByQuadrant('rightBottom', dataLengths[3]);
+						if (currentMidPoint.toString() === midPoints[3].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[3].name, this.series.chart.series[3].data.length);
 						}
 					}
 					return false;
@@ -240,7 +230,8 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				style: {
 					color: 'white',
 					width: 375
-				}
+				},
+				shared: true
 			},
 			title: {
 				text: this._cardTitle, // override default title
