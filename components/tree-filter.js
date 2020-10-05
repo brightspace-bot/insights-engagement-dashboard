@@ -543,17 +543,17 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	}
 
 	_renderSearchLoadingControls() {
-		if (this._isSearch && this._isLoadingSearch) {
+		if (!this._isSearch) return html``;
+
+		if (this._isLoadingSearch) {
 			return html`<d2l-loading-spinner slot="search-results"></d2l-loading-spinner>`;
 		}
 
-		if (this._isSearch && this.isLoadMoreSearch)  {
+		if (this.isLoadMoreSearch)  {
 			return html`<d2l-button slot="search-results"
 				@click="${this._onSearchLoadMore}"
 			>Load More</d2l-button>`;
 		}
-
-		return html``;
 	}
 
 	_renderSearchResults() {
