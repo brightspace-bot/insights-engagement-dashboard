@@ -153,8 +153,8 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	_renderThead() {
 		const styles = {
-			['d2l-insights-table-row-first']: true,
-			['d2l-insights-table-row-last']: this.data.length === 0
+			'd2l-insights-table-row-first': true,
+			'd2l-insights-table-row-last': this.data.length === 0
 		};
 
 		return html`
@@ -168,9 +168,9 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	_renderHeaderCell(name, idx, cols) {
 		const styles = {
-			['d2l-insights-table-cell']: true,
-			['d2l-insights-table-cell-first']: idx === 0,
-			['d2l-insights-table-cell-last']: idx === cols.length - 1
+			'd2l-insights-table-cell': true,
+			'd2l-insights-table-cell-first': idx === 0,
+			'd2l-insights-table-cell-last': idx === cols.length - 1
 		};
 
 		return html`
@@ -180,7 +180,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	_renderTbody() {
 		const styles = (rowIdx) => ({
-			['d2l-insights-table-row-last']: rowIdx === this.data.length - 1
+			'd2l-insights-table-row-last': rowIdx === this.data.length - 1
 		});
 
 		return html`
@@ -196,9 +196,9 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	_renderBodyCell(value, idx, row) {
 		const styles = {
-			['d2l-insights-table-cell']: true,
-			['d2l-insights-table-cell-first']: idx === 0,
-			['d2l-insights-table-cell-last']: idx === row.length - 1
+			'd2l-insights-table-cell': true,
+			'd2l-insights-table-cell-first': idx === 0,
+			'd2l-insights-table-cell-last': idx === row.length - 1
 		};
 
 		return html`
