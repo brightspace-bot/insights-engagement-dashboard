@@ -62,7 +62,6 @@ const relevantChildrenCache = new Map();
 const cacheKey = selectedSemesterIds => JSON.stringify(selectedSemesterIds || []);
 
 export async function fetchRelevantChildren(orgUnitId, selectedSemesterIds) {
-	await new Promise(resolve => setTimeout(resolve, 3000)); // TODO: remove
 	const url = new URL(relevantChildrenEndpoint(orgUnitId), window.location.origin);
 	if (selectedSemesterIds) {
 		url.searchParams.set('selectedSemestersCsv', selectedSemesterIds.join(','));
@@ -88,7 +87,6 @@ const orgUnitSearchCache = {
 	nodes: null
 };
 export async function orgUnitSearch(searchString, selectedSemesterIds, bookmark) {
-	await new Promise(resolve => setTimeout(resolve, 3000)); // TODO: remove
 	const url = new URL(ouSearchEndpoint, window.location.origin);
 	url.searchParams.set('search', searchString);
 	if (selectedSemesterIds) {

@@ -538,12 +538,10 @@ class TreeFilter extends Localizer(MobxLitElement) {
 				</d2l-insights-tree-selector-node>`;
 	}
 
-	// todo: style
 	_renderLoadingIndicator() {
 		return html`<d2l-loading-spinner slot="tree"></d2l-loading-spinner>`;
 	}
 
-	// todo: style
 	_renderSearchLoadingControls() {
 		if (this._isSearch && this._isLoadingSearch) {
 			return html`<d2l-loading-spinner slot="search-results"></d2l-loading-spinner>`;
