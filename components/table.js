@@ -1,13 +1,18 @@
+import { bodySmallStyles, bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { css, html, LitElement } from 'lit-element';
-import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
+export const COLUMN_TYPES = {
+	NORMAL_TEXT: 0,
+	TEXT_SUB_TEXT: 1
+};
+
 /**
  * @property {String} title - for use by screen reader users
- * @property {Array} columns - list of column header text
+ * @property {Array} columnInfo - list of column info. Contains headerText and columnType
  * @property {Array} data - a row-indexed 2D array of rows and columns.
  * E.g. data[0] gets the entire first row; data[0][0] gets the first row / first column
  */
@@ -16,13 +21,13 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	static get properties() {
 		return {
 			title: { type: String, attribute: true },
-			columnHeaders: { type: Array, attribute: false },
+			columnInfo: { type: Array, attribute: false },
 			data: { type: Array, attribute: false }
 		};
 	}
 
 	static get styles() {
-		return [super.styles, bodyStandardStyles, css`
+		return [super.styles, bodyStandardStyles, bodySmallStyles, css`
 			:host {
 				display: block;
 			}
@@ -137,7 +142,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	constructor() {
 		super();
-		this.columnHeaders = [];
+		this.columnInfo = [];
 		this.data = [];
 		this.title = '';
 	}
@@ -151,30 +156,34 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		`;
 	}
 
+	get _numColumns() {
+		return this.columnInfo.length;
+	}
+
 	_renderThead() {
 		const styles = {
 			'd2l-insights-table-row-first': true,
-			'd2l-insights-table-row-last': this.data.length === 0
+			'd2l-insights-table-row-last': !this.skeleton && this.data.length === 0
 		};
 
 		return html`
 			<thead class="d2l-insights-table-header">
 				<tr class="${classMap(styles)}">
-					${this.columnHeaders.map(this._renderHeaderCell)}
+					${this.columnInfo.map(this._renderHeaderCell, this)}
 				</tr>
 			</thead>
 		`;
 	}
 
-	_renderHeaderCell(name, idx, cols) {
+	_renderHeaderCell(info, idx) {
 		const styles = {
 			'd2l-insights-table-cell': true,
 			'd2l-insights-table-cell-first': idx === 0,
-			'd2l-insights-table-cell-last': idx === cols.length - 1
+			'd2l-insights-table-cell-last': idx === this._numColumns - 1
 		};
 
 		return html`
-			<th class="${classMap(styles)}" scope="col">${name}</th>
+			<th class="${classMap(styles)}" scope="col">${info.headerText}</th>
 		`;
 	}
 
@@ -194,18 +203,32 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		`;
 	}
 
-	_renderBodyCell(value, idx, row) {
+	_renderBodyCell(value, idx) {
+		const columnType = this.columnInfo[idx].columnType;
 		const styles = {
 			'd2l-insights-table-cell': true,
 			'd2l-insights-table-cell-first': idx === 0,
-			'd2l-insights-table-cell-last': idx === row.length - 1
+			'd2l-insights-table-cell-last': idx === this._numColumns - 1
 		};
 
-		return html`
+		const defaultHtml = html`
 			<td class="${classMap(styles)}">
-				<div class="d2l-skeletize d2l-body-standard">${value}</div>
+				<div class="d2l-skeletize d2l-skeletize-95 d2l-body-standard">${value}</div>
 			</td>
 		`;
+
+		if (!this.skeleton) {
+			if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
+				return html`
+					<td class="${classMap(styles)}">
+						<div class="d2l-body-standard">${value[0]}</div>
+						<div class="d2l-body-small">${value[1]}</div>
+					</td>
+				`;
+			} // future work: else if COLUMN_TYPES.SUBCOLUMNS...
+		}
+
+		return defaultHtml;
 	}
 }
 customElements.define('d2l-insights-table', Table);

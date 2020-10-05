@@ -36,17 +36,17 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds, defaultView 
 			[6606, 'Dev', 1, [0]]
 		],
 		users: [ // some of which are out of order
-			[100,  'ATest', 'AStudent'],
-			[300,  'CTest', 'CStudent'],
-			[200,  'BTest', 'BStudent'],
-			[400,  'DTest', 'DStudent'],
-			[500,  'ETest', 'EStudent'],
-			[600,  'GTest', 'GStudent'],
-			[700,  'FTest', 'FStudent'],
-			[800,  'HTest', 'HStudent'],
-			[900,  'ITest', 'IStudent'],
-			[1000, 'KTest', 'KStudent'],
-			[1100, 'JTest', 'JStudent']
+			[100,  'ATest', 'AStudent', 'AStudent'],
+			[300,  'CTest', 'CStudent', 'CStudent'],
+			[200,  'BTest', 'BStudent', 'BStudent'],
+			[400,  'DTest', 'DStudent', 'DStudent'],
+			[500,  'ETest', 'EStudent', 'EStudent'],
+			[600,  'GTest', 'GStudent', 'GStudent'],
+			[700,  'FTest', 'FStudent', 'FStudent'],
+			[800,  'HTest', 'HStudent', 'HStudent'],
+			[900,  'ITest', 'IStudent', 'IStudent'],
+			[1000, 'KTest', 'KStudent', 'KStudent'],
+			[1100, 'JTest', 'JStudent', 'JStudent']
 		],
 		semesterTypeId: 25,
 		selectedSemestersIds: semesterIds,
