@@ -1,9 +1,11 @@
 import 'highcharts';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
+import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../model/data';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const TimeInContentVsGradeCardFilter  = {
 	id: 'd2l-insights-time-in-content-vs-grade-card',
@@ -28,7 +30,7 @@ export const AVG = {
 	GRADE: 1
 };
 
-class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
+class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
@@ -42,7 +44,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, bodyStandardStyles, css`
 			:host {
 				border-color: var(--d2l-color-mica);
 				border-radius: 15px;
@@ -65,7 +67,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
-		`;
+		`];
 	}
 
 	get _cardTitle() {
@@ -108,6 +110,16 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		return this.data.tiCVsGradesAvgValues[AVG.TIME];
 	}
 
+	get _dataMidPoints() {
+		const maxTimeInContent = this.data.tiCVsGrades.reduce((max, arr) => {
+			return Math.max(max, arr[0]);
+		}, -Infinity);
+		return [[this._avgTimeInContent / 2, 25],
+			[this._avgTimeInContent / 2, 75],
+			[(maxTimeInContent + this._avgTimeInContent) / 2, 25],
+			[(maxTimeInContent + this._avgTimeInContent) / 2, 75]];
+	}
+
 	_setQuadrant(quadrant) {
 		this.data.setTiCVsGradesQuadrant(quadrant);
 	}
@@ -122,14 +134,16 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	_colorAllPointsInAmethyst(series) {
-		series.forEach(series => { series.update({
-			marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
+		series.forEach(series => {
+			if (series.name !== 'midPoint') {
+				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
+			}
 		});
 	}
 
 	_colorNonSelectedPointsInMica(series) {
 		series.forEach(series => {
-			if (series.name !== this._quadrant) {
+			if ((series.name !== this._quadrant) && (series.name !== 'midPoint')) {
 				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
 			}
 		});
@@ -137,7 +151,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 
 	_colorSelectedQuadrantPointsInAmethyst(series) {
 		series.forEach(series => {
-			if (series.name === this._quadrant) {
+			if ((series.name === this._quadrant) && (series.name !== 'midPoint')) {
 				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
 			}
 		});
@@ -155,11 +169,17 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 		this.data.setApplied('d2l-insights-time-in-content-vs-grade-card', true);
 	}
 
+	_toolTipTextByQuadrant(quadrant, numberOfUsers) {
+		const quadrantTerm = `components.insights-time-in-content-vs-grade-card.${quadrant}`;
+		return this.localize(quadrantTerm, { numberOfUsers });
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
-		return html`<div class="d2l-insights-time-in-content-vs-grade-title">${this._cardTitle}</div>
-		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>`;
+		return html`
+			<div class="d2l-insights-time-in-content-vs-grade-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
+			<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?skeleton="${this.skeleton}"></d2l-labs-chart>`;
 	}
 
 	get chartOptions() {
@@ -178,18 +198,45 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						that._valueClickHandler();
 					},
 					update: function() {
-						if (!that.isApplied) {
-							that._colorAllPointsInAmethyst(this.series);
-						}
 						if (that.isApplied) {
 							that._colorNonSelectedPointsInMica(this.series);
 							that._colorSelectedQuadrantPointsInAmethyst(this.series);
+						} else {
+							that._colorAllPointsInAmethyst(this.series);
 						}
 					}
 				}
 			},
 			animation: false,
-			tooltip: { enabled: false },
+			tooltip: {
+				formatter: function() {
+					if (this.series.name === 'midPoint') {
+						const midPoints = that._dataMidPoints;
+						const currentMidPoint = [this.x, this.y];
+						if (currentMidPoint.toString() === midPoints[0].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[0].name, this.series.chart.series[0].data.length);
+						}
+						if (currentMidPoint.toString() === midPoints[1].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[1].name, this.series.chart.series[1].data.length);
+						}
+						if (currentMidPoint.toString() === midPoints[2].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[2].name, this.series.chart.series[2].data.length);
+						}
+						if (currentMidPoint.toString() === midPoints[3].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[3].name, this.series.chart.series[3].data.length);
+						}
+					}
+					return false;
+				},
+				backgroundColor: 'var(--d2l-color-ferrite)',
+				borderColor: 'var(--d2l-color-ferrite)',
+				borderRadius: 12,
+				style: {
+					color: 'white',
+					width: 375
+				},
+				shared: false
+			},
 			title: {
 				text: this._cardTitle, // override default title
 				style: {
@@ -280,7 +327,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 						pointDescriptionFormatter: function(point) {
 							return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
 						}
-					}
+					},
 				}
 			},
 			accessibility: {
@@ -302,7 +349,20 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 			},
 			{
 				name: 'rightBottom',
-				data: this._plotDataForRightBottomQuadrant
+				data: this._plotDataForRightBottomQuadrant,
+			},
+			{
+				name: 'midPoint',
+				data: that._dataMidPoints,
+				lineColor: 'transparent',
+				marker: {
+					fillColor: 'transparent',
+					states: {
+						hover: {
+							enabled: false
+						}
+					}
+				},
 			}]
 		};
 	}

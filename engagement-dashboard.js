@@ -9,8 +9,11 @@ import './components/table.js';
 import './components/current-final-grade-card.js';
 import './components/applied-filters';
 import './components/aria-loading-progress';
+import './components/course-last-access-card.js';
 
 import { css, html } from 'lit-element/lit-element.js';
+import { CourseLastAccessCardFilter } from './components/course-last-access-card';
+import { CurrentFinalGradeCardFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
@@ -107,26 +110,33 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container-applied-filters">
-					<d2l-insights-applied-filters .data="${this._data}"></d2l-insights-applied-filters>
+					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
 				</div>
 				<div class="d2l-insights-summary-container">
-					<d2l-insights-results-card .data="${this._data}"></d2l-insights-results-card>
-					<d2l-insights-overdue-assignments-card .data="${this._data}"></d2l-insights-overdue-assignments-card>
+					<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
+					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
 				</div>
 				<div class="d2l-insights-chart-container">
-					<div><d2l-insights-current-final-grade-card .data="${this._data}"></d2l-insights-current-final-grade-card></div>
-					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}"></d2l-insights-time-in-content-vs-grade-card></div>
+					<div><d2l-insights-current-final-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>
+					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
+					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
 				</div>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-				<d2l-insights-users-table .data="${this._data}"></d2l-insights-users-table>
+				<d2l-insights-users-table .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-users-table>
 		`;
+	}
+
+	get _isLoading() {
+		return this._data.isLoading;
 	}
 
 	get _data() {
 		if (!this.__data) {
 			const cardFilters = [
 				OverdueAssignmentsCardFilter,
-				TimeInContentVsGradeCardFilter
+				TimeInContentVsGradeCardFilter,
+				CourseLastAccessCardFilter,
+				CurrentFinalGradeCardFilter
 			].map(filter => ({ ...filter, title: this.localize(filter.title) }));
 
 			this.__data = new Data({

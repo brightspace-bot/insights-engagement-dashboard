@@ -1,6 +1,9 @@
 import { css, html, LitElement } from 'lit-element';
+import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 /**
  * @property {String} title - for use by screen reader users
@@ -8,18 +11,18 @@ import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
  * @property {Array} data - a row-indexed 2D array of rows and columns.
  * E.g. data[0] gets the entire first row; data[0][0] gets the first row / first column
  */
-class Table extends Localizer(RtlMixin(LitElement)) {
+class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	static get properties() {
 		return {
 			title: { type: String, attribute: true },
-			columns: { type: Array, attribute: false },
+			columnHeaders: { type: Array, attribute: false },
 			data: { type: Array, attribute: false }
 		};
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, bodyStandardStyles, css`
 			:host {
 				display: block;
 			}
@@ -119,12 +122,22 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-left-radius: 8px;
 			}
-		`;
+
+			:host([skeleton]) .d2l-insights-table-cell > div {
+				width: 45%;
+			}
+
+			@media (max-width: 1024px) {
+				:host([skeleton]) .d2l-insights-table-cell > div {
+					width: 100%;
+				}
+			}
+		`];
 	}
 
 	constructor() {
 		super();
-		this.columns = [];
+		this.columnHeaders = [];
 		this.data = [];
 		this.title = '';
 	}
@@ -139,35 +152,42 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 	}
 
 	_renderThead() {
+		const styles = {
+			'd2l-insights-table-row-first': true,
+			'd2l-insights-table-row-last': this.data.length === 0
+		};
+
 		return html`
 			<thead class="d2l-insights-table-header">
-				<tr class="d2l-insights-table-row-first ${ (this.data.length === 0) ? 'd2l-insights-table-row-last' : '' }">
-					${this.columns.map(this._renderHeaderCell)}
+				<tr class="${classMap(styles)}">
+					${this.columnHeaders.map(this._renderHeaderCell)}
 				</tr>
 			</thead>
 		`;
 	}
 
 	_renderHeaderCell(name, idx, cols) {
-		let styles = 'd2l-insights-table-cell';
-		if (idx === 0) {
-			styles += ' d2l-insights-table-cell-first';
-		}
+		const styles = {
+			'd2l-insights-table-cell': true,
+			'd2l-insights-table-cell-first': idx === 0,
+			'd2l-insights-table-cell-last': idx === cols.length - 1
+		};
 
-		if (idx === cols.length - 1) {
-			styles += ' d2l-insights-table-cell-last';
-		}
 		return html`
-			<th class="${styles}" scope="col">${name}</th>
+			<th class="${classMap(styles)}" scope="col">${name}</th>
 		`;
 	}
 
 	_renderTbody() {
+		const styles = (rowIdx) => ({
+			'd2l-insights-table-row-last': rowIdx === this.data.length - 1
+		});
+
 		return html`
 			<tbody>
 				${this.data.map((row, rowIdx) => html`
-					<tr class="${ (rowIdx === this.data.length - 1) ? 'd2l-insights-table-row-last' : '' }">
-						${row.map(this._renderBodyCell)}
+					<tr class="${classMap(styles(rowIdx))}">
+						${row.map(this._renderBodyCell, this)}
 					</tr>
 				`)}
 			</tbody>
@@ -175,16 +195,16 @@ class Table extends Localizer(RtlMixin(LitElement)) {
 	}
 
 	_renderBodyCell(value, idx, row) {
-		let styles = 'd2l-insights-table-cell';
-		if (idx === 0) {
-			styles += ' d2l-insights-table-cell-first';
-		}
+		const styles = {
+			'd2l-insights-table-cell': true,
+			'd2l-insights-table-cell-first': idx === 0,
+			'd2l-insights-table-cell-last': idx === row.length - 1
+		};
 
-		if (idx === row.length - 1) {
-			styles += ' d2l-insights-table-cell-last';
-		}
 		return html`
-			<td class="${styles}">${value}</td>
+			<td class="${classMap(styles)}">
+				<div class="d2l-skeletize d2l-body-standard">${value}</div>
+			</td>
 		`;
 	}
 }

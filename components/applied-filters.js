@@ -8,10 +8,11 @@ import { html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { repeat } from 'lit-html/directives/repeat';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 const clearAllOptionId = 'clear-all';
 
-class AppliedFilters extends Localizer(MobxLitElement) {
+class AppliedFilters extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
@@ -58,7 +59,11 @@ class AppliedFilters extends Localizer(MobxLitElement) {
 					</d2l-filter-dropdown-category>
 				</d2l-filter-dropdown>
 			</div>
-			<d2l-applied-filters for="d2l-insights-applied-filters-dropdown"></d2l-applied-filters>
+
+			${!this.skeleton
+				? html`<d2l-applied-filters for="d2l-insights-applied-filters-dropdown"></d2l-applied-filters>`
+				: html``
+			}
 		`;
 	}
 

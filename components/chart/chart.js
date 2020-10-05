@@ -4,6 +4,7 @@ import 'highcharts/modules/accessibility';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 
 import { css, html, LitElement } from 'lit-element';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 // use default highcharts's template but with <h3> instead of <h4> to fix axe heading-order error
 export const BEFORE_CHART_FORMAT = '<h3>{chartTitle}</h3>' +
@@ -21,15 +22,14 @@ export const BEFORE_CHART_FORMAT = '<h3>{chartTitle}</h3>' +
  * remove flag for suppressing updates, prevent unneeded update on first render
  * @element highcharts-chart
  */
-class Chart extends LitElement {
+class Chart extends SkeletonMixin(LitElement) {
 	static get properties() {
 		return {
 			options: { type: Object, attribute: false },
 			constructorType: { type: String },
 			highcharts: { type: Object, attribute: false },
 			immutable: { type: Boolean },
-			updateArgs: { type: Array, attribute: false },
-			isLoading: { type: Boolean, attribute: 'loading' }
+			updateArgs: { type: Array, attribute: false }
 		};
 	}
 
@@ -82,8 +82,8 @@ class Chart extends LitElement {
 
 	render() {
 		return html`
-			<d2l-insights-overlay spinner-size="200" ?loading="${this.isLoading}"></d2l-insights-overlay>
-			<div id="chart-container" tabindex="${this.isLoading ? -1 : 0}"></div>
+			<div id="chart-container" tabindex="${this.skeleton ? -1 : 0}"></div>
+			<d2l-insights-overlay spinner-size="200" ?loading="${this.skeleton}"></d2l-insights-overlay>
       	`;
 	}
 

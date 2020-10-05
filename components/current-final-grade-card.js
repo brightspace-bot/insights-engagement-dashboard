@@ -1,9 +1,18 @@
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
+import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../model/data';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
-class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
+export const CurrentFinalGradeCardFilter  = {
+	id: 'd2l-insights-current-final-grade-card',
+	title: 'components.insights-current-final-grade-card.currentGrade',
+	filter: (record, data) => data.selectedGradesCategories.has(data.gradeCategory(record[RECORD.CURRENT_FINAL_GRADE]))
+};
+
+class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
@@ -17,7 +26,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, bodyStandardStyles, css`
 			:host {
 				display: inline-block;
 			}
@@ -44,7 +53,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
-		`;
+		`];
 	}
 
 	get _cardTitle() {
@@ -63,11 +72,60 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		return this.data.currentFinalGrades;
 	}
 
+	setCategoryEmpty() {
+		this.data.setGradesCategoryEmpty();
+	}
+
+	addToCategory(category) {
+		this.data.addToGradesCategory(category);
+	}
+
+	get category() {
+		return this.data.selectedGradesCategories;
+	}
+
+	get isApplied() {
+		return this.data.cardFilters['d2l-insights-current-final-grade-card'].isApplied;
+	}
+
+	_valueClickHandler() {
+		this.data.setApplied('d2l-insights-current-final-grade-card', true);
+	}
+
+	_colorNonSelectedPoints(seriesData, color) {
+		seriesData.forEach(point => {
+			if (!this.category.has(Math.ceil(point.category))) this._pointUpdateColor(point, color);
+		});
+	}
+
+	_colorSelectedPoints(seriesData, color) {
+		seriesData.forEach(point => {
+			if (this.category.has(Math.ceil(point.category))) this._pointUpdateColor(point, color);
+		});
+	}
+
+	_colorAllPoints(seriesData, color) {
+		seriesData.forEach(point => this._pointUpdateColor(point, color));
+	}
+
+	_pointUpdateColor(point, colorForPoint) {
+		point.update({ color: colorForPoint }, false);
+	}
+
+	_gradeBetweenText(numberOfUsers, range) {
+		return this.localize('components.insights-current-final-grade-card.gradeBetween', { numberOfUsers, range });
+	}
+
+	_gradeBetweenTextSingleUser(range) {
+		return this.localize('components.insights-current-final-grade-card.gradeBetweenSingleUser', { range });
+
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		const options = this.chartOptions;
-		if (!this.data.isLoading && !options.series[1].data.length) {
+		if (!this.skeleton && !options.series[1].data.length) {
 			return html`<div class="d2l-insights-final-grade-container">
 				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
 				<div class="d2l-insights-summary-card-body">
@@ -78,19 +136,50 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			</div>`;
 		} else {
 			return html`<div class="d2l-insights-final-grade-container">
-				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
-				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}" ?loading="${this.data.isLoading}" ></d2l-labs-chart>
+				<div class="d2l-insights-current-final-grade-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
+				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}" ?skeleton="${this.skeleton}" ></d2l-labs-chart>
 			</div>`;
 		}
 	}
 
 	get chartOptions() {
+		const that = this;
+
 		return {
 			chart: {
-				height: 230
+				height: 230,
+				events: {
+					render: function() {
+						//after redrawing the chart as a result of updating (for example, when the user disable any of the filters),
+						// we need to keep the color of the selected/nonselected bars
+						if (that.isApplied) {
+							that._colorNonSelectedPoints(this.series[0].data, 'var(--d2l-color-mica)');
+							that._colorSelectedPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
+						} else {
+							that.setCategoryEmpty();
+							that._colorAllPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
+						}
+						this.render(false);
+					}
+				}
 			},
 			animation: false,
-			tooltip: { enabled: false },
+			tooltip: {
+				formatter: function() {
+					const yCeil = Math.ceil(this.y);
+					const xCeil = Math.ceil(this.x);
+					if (yCeil === 1) {
+						return `${that._gradeBetweenTextSingleUser(`${xCeil}-${xCeil + 10}`)}`;
+					}
+					return `${that._gradeBetweenText(`${yCeil}`, `${xCeil}-${xCeil + 10}`)}`;
+				},
+				backgroundColor: 'var(--d2l-color-ferrite)',
+				borderColor: 'var(--d2l-color-ferrite)',
+				borderRadius: 12,
+				style: {
+					color: 'white',
+				}
+			},
 			title: {
 				text: this._cardTitle, // override default title
 				style: {
@@ -146,6 +235,22 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 								val = point.y;
 							return `${ix - 10} to ${ix}, ${val}.`;
 						}
+					},
+					allowPointSelect: true,
+					color: 'var(--d2l-color-amethyst)',
+					states: {
+						select: {
+							color: 'var(--d2l-color-amethyst)'
+						}
+					},
+					point: {
+						events: {
+							select: function() {
+								that.addToCategory(Math.ceil(this.category));
+								that._valueClickHandler();
+								that._colorSelectedPoints(this.series.data, 'var(--d2l-color-amethyst)');
+							}
+						}
 					}
 				}
 			},
@@ -156,16 +261,15 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			},
 			series: [{
 				type: 'histogram',
-				color: 'var(--d2l-color-amethyst)',
 				animation: false,
 				lineWidth: 1,
 				baseSeries: 1,
 				shadow: false,
-				binWidth: 9.999
+				binWidth: 9.9999
 			},
 			{
 				data: this._preparedHistogramData,
-				visible: false
+				visible: false,
 			}],
 		};
 	}

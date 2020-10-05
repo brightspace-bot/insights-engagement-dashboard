@@ -4,7 +4,7 @@ import { expect, fixture, html } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-table', () => {
-	const columns = [
+	const headers = [
 		'header1',
 		'header2',
 		'header3'
@@ -25,26 +25,26 @@ describe('d2l-insights-table', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async() => {
-			const el = await fixture(html`<d2l-insights-table .columns=${columns} .data="${data}"></d2l-insights-table>`);
+			const el = await fixture(html`<d2l-insights-table .columnHeaders=${headers} .data="${data}"></d2l-insights-table>`);
 			await expect(el).to.be.accessible();
 		});
 	});
 
 	describe('render', () => {
 		it('should have correct header and data', async() => {
-			const el = await fixture(html`<d2l-insights-table .columns=${columns} .data="${data}"></d2l-insights-table>`);
+			const el = await fixture(html`<d2l-insights-table .columnHeaders=${headers} .data="${data}"></d2l-insights-table>`);
 
 			const headerCells = Array.from(el.shadowRoot.querySelectorAll('thead>tr>th'));
-			expect(headerCells.length).to.equal(columns.length);
+			expect(headerCells.length).to.equal(headers.length);
 			headerCells.forEach((cell, idx) => {
-				expect(cell.innerText).to.equal(columns[idx]);
+				expect(cell.innerText).to.equal(headers[idx]);
 			});
 
 			const rows = Array.from(el.shadowRoot.querySelectorAll('tbody>tr'));
 			expect(rows.length).to.equal(4);
 
 			rows.forEach((row, idx) => {
-				const cells = Array.from(row.querySelectorAll('td'));
+				const cells = Array.from(row.querySelectorAll('td>div'));
 				expect(cells.length).to.equal(3);
 
 				cells.forEach((cell, jdx) => {
