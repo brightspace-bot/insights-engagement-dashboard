@@ -175,6 +175,8 @@ export class Data {
 
 		return this.users
 			.map(user => [
+				// When add/remove column here DO NOT forget to update `user-table._lodaingData` to show skeleton properly
+
 				`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, // last first name
 				// 'N/A', // last accessed system
 				'', // courses

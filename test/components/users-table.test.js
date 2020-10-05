@@ -63,7 +63,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.pageNumber).to.equal(1);
 
 				// since there are 23 users, the first (default) page should show the first 20 users, in order, on it
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
 				expect(displayedUsers.length).to.equal(20);
 				displayedUsers.forEach((user, idx) => {
 					expect(user.innerText).to.equal(data.userDataForDisplay[idx][0]);
@@ -81,7 +81,7 @@ describe('d2l-insights-users-table', () => {
 
 				expect(pageSelector.pageNumber).to.equal(2);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
 				expect(displayedUsers.length).to.equal(3);
 				displayedUsers.forEach((user, idx) => {
 					expect(user.innerText).to.equal(data.userDataForDisplay[idx + 20][0]);
@@ -99,7 +99,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.maxPageNumber).to.equal(3);
 				expect(pageSelector.pageNumber).to.equal(1);
 
-				let displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				let displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
 				expect(displayedUsers.length).to.equal(10);
 				displayedUsers.forEach((user, idx) => {
 					expect(user.innerText).to.equal(data.userDataForDisplay[idx][0]);
@@ -115,7 +115,7 @@ describe('d2l-insights-users-table', () => {
 
 				expect(pageSelector.pageNumber).to.equal(2);
 
-				displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
 				expect(displayedUsers.length).to.equal(10);
 				displayedUsers.forEach((user, idx) => {
 					expect(user.innerText).to.equal(data.userDataForDisplay[idx + 10][0]);
@@ -131,7 +131,7 @@ describe('d2l-insights-users-table', () => {
 
 				expect(pageSelector.pageNumber).to.equal(3);
 
-				displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
 				expect(displayedUsers.length).to.equal(3);
 				displayedUsers.forEach((user, idx) => {
 					expect(user.innerText).to.equal(data.userDataForDisplay[idx + 20][0]);
@@ -149,7 +149,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.maxPageNumber).to.equal(1);
 				expect(pageSelector.pageNumber).to.equal(1);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
 				expect(displayedUsers.length).to.equal(23);
 				displayedUsers.forEach((user, idx) => {
 					expect(user.innerText).to.equal(data.userDataForDisplay[idx][0]);
@@ -167,8 +167,23 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.maxPageNumber).to.equal(0);
 				expect(pageSelector.pageNumber).to.equal(0);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
 				expect(displayedUsers.length).to.equal(0);
+			});
+
+			it('should show 5 skeleton rows with zero pages if loading', async() => {
+				el.data = { userDataForDisplay: [], isLoading: true };
+				el.skeleton = true;
+				await new Promise(resolve => setTimeout(resolve, 200));
+				await innerTable.updateComplete;
+				await pageSelector.updateComplete;
+
+				expect(pageSelector.selectedCountOption).to.equal(50);
+				expect(pageSelector.maxPageNumber).to.equal(0);
+				expect(pageSelector.pageNumber).to.equal(0);
+
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
+				expect(displayedUsers.length).to.equal(5);
 			});
 		});
 	});

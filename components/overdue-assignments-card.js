@@ -3,6 +3,7 @@ import { html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../model/data.js';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const OverdueAssignmentsCardFilter = {
 	id: 'd2l-insights-overdue-assignments-card',
@@ -10,7 +11,7 @@ export const OverdueAssignmentsCardFilter = {
 	filter: (record) => record[RECORD.OVERDUE] > 0
 };
 
-class OverdueAssignmentsCard extends Localizer(MobxLitElement) {
+class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
@@ -44,8 +45,8 @@ class OverdueAssignmentsCard extends Localizer(MobxLitElement) {
 				card-title="${this._cardTitle}"
 				card-value="${this._cardValue}"
 				card-message="${this._cardMessage}"
-				?loading="${this.data.isLoading}"
 				@d2l-labs-summary-card-value-click=${this._valueClickHandler}
+				?skeleton="${this.skeleton}"
 			></d2l-labs-summary-card>
 		`;
 	}

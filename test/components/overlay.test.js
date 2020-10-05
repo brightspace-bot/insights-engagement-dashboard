@@ -25,12 +25,10 @@ describe('d2l-insights-overlay', () => {
 
 			expect(el.clientHeight).to.equal(100);
 			expect(el.clientWidth).to.equal(100);
-			expect(getComputedStyle(el, null).zIndex).equal('1');
 
 			el.removeAttribute('loading');
 			await elementUpdated(el);
 			expect(el.isLoading).to.equal(false);
-			expect(getComputedStyle(el, null).zIndex).equal('auto');
 		});
 	});
 });

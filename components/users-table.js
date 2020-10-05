@@ -5,6 +5,7 @@ import './table.js';
 import { css, html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const TABLE_USER = {
 	LAST_FIRST_NAME: 0,
@@ -22,7 +23,7 @@ export const TABLE_USER = {
  * @property {Number} _currentPage
  * @property {Number} _pageSize
  */
-class UsersTable extends Localizer(MobxLitElement) {
+class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
@@ -61,18 +62,37 @@ class UsersTable extends Localizer(MobxLitElement) {
 		};
 		this._currentPage = 1;
 		this._pageSize = 20;
+		// must have the same number of columns as this.data.userDataForDisplay to display skeleton correctly
+		this._loadingData = [...Array(5).keys()].map(() => this._getColumnsDataWhenLoading({ numberOfColumns: 4 }));
+	}
+
+	_getColumnsDataWhenLoading({ numberOfColumns }) {
+		// the text does not matter here. The empty text leads to empty div which in turn does not render skeleton rectangle
+		return [...Array(numberOfColumns).keys()].map(() => 'Loading');
 	}
 
 	get _itemsCount() {
+		if (this.skeleton) {
+			return this._loadingData.length;
+		}
+
 		return this.data.userDataForDisplay.length;
 	}
 
 	get _maxPages() {
+		if (this.skeleton) {
+			return 0;
+		}
+
 		const itemsCount = this._itemsCount;
 		return itemsCount ? Math.ceil(itemsCount / this._pageSize) : 0;
 	}
 
 	get _displayData() {
+		if (this.skeleton) {
+			return this._loadingData;
+		}
+
 		if (this._itemsCount) {
 			const start = this._pageSize * (this._currentPage - 1);
 			const end = this._pageSize * (this._currentPage); // it's ok if this is larger than the size of the array
@@ -97,6 +117,7 @@ class UsersTable extends Localizer(MobxLitElement) {
 	render() {
 		return html`
 			<d2l-insights-table
+				?skeleton="${this.skeleton}"
 				title="${this.localize('components.insights-users-table.title')}"
 				.columnHeaders=${this.columnHeaders}
 				.data="${this._displayData}"></d2l-insights-table>
@@ -111,13 +132,26 @@ class UsersTable extends Localizer(MobxLitElement) {
 				@pagination-item-counter-change="${this._handlePageSizeChange}"
 			></d2l-labs-pagination>
 
+			${this._renderTotalUsers()}
+		`;
+	}
+
+	_renderTotalUsers() {
+		const itemCounts = this.skeleton ? 0 : this._itemsCount;
+
+		return html`
 			<div class="d2l-insights-users-table-total-users">
-				${this.localize('components.insights-users-table.totalUsers', { num: this._itemsCount })}
+				${this.localize('components.insights-users-table.totalUsers', { num: itemCounts })}
 			</div>
 		`;
 	}
 
 	updated() {
+		if (this.skeleton) {
+			this._currentPage = 0;
+			return;
+		}
+
 		if (this._itemsCount === 0) {
 			this._currentPage = 0;
 		} else if (this._currentPage === 0) {

@@ -1,8 +1,10 @@
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
+import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../model/data';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const CurrentFinalGradeCardFilter  = {
 	id: 'd2l-insights-current-final-grade-card',
@@ -10,7 +12,7 @@ export const CurrentFinalGradeCardFilter  = {
 	filter: (record, data) => data.selectedGradesCategories.has(data.gradeCategory(record[RECORD.CURRENT_FINAL_GRADE]))
 };
 
-class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
+class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
@@ -24,7 +26,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, bodyStandardStyles, css`
 			:host {
 				display: inline-block;
 			}
@@ -51,7 +53,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
-		`;
+		`];
 	}
 
 	get _cardTitle() {
@@ -123,7 +125,7 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		const options = this.chartOptions;
-		if (!this.data.isLoading && !options.series[1].data.length) {
+		if (!this.skeleton && !options.series[1].data.length) {
 			return html`<div class="d2l-insights-final-grade-container">
 				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
 				<div class="d2l-insights-summary-card-body">
@@ -134,8 +136,8 @@ class CurrentFinalGradeCard extends Localizer(MobxLitElement) {
 			</div>`;
 		} else {
 			return html`<div class="d2l-insights-final-grade-container">
-				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
-				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}" ?loading="${this.data.isLoading}" ></d2l-labs-chart>
+				<div class="d2l-insights-current-final-grade-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
+				<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${options}" ?skeleton="${this.skeleton}" ></d2l-labs-chart>
 			</div>`;
 		}
 	}

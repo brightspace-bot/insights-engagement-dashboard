@@ -1,8 +1,10 @@
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
+import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../model/data';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const CourseLastAccessCardFilter  = {
 	id: 'd2l-insights-course-last-access-card',
@@ -12,7 +14,7 @@ export const CourseLastAccessCardFilter  = {
 	)
 };
 
-class CourseLastAccessCard extends Localizer(MobxLitElement) {
+class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
@@ -26,7 +28,7 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, bodyStandardStyles, css`
 			:host {
 				display: inline-block;
 			}
@@ -53,7 +55,7 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
-		`;
+		`];
 	}
 
 	get _cardTitle() {
@@ -161,8 +163,8 @@ class CourseLastAccessCard extends Localizer(MobxLitElement) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-course-last-access-container">
-		<div class="d2l-insights-course-last-access-title">${this._cardTitle}</div>
-		<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?loading="${this.data.isLoading}"></d2l-labs-chart>
+			<div class="d2l-insights-course-last-access-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
+			<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?skeleton="${this.skeleton}"></d2l-labs-chart>
 		</div>`;
 	}
 
