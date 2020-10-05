@@ -62,9 +62,13 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		};
 		this._currentPage = 1;
 		this._pageSize = 20;
-		// should be compatible with this.data.userDataForDisplay
+		// must have the same number of columns as this.data.userDataForDisplay to display skeleton correctly
+		this._loadingData = [...Array(5).keys()].map(() => this._getColumnsDataWhenLoading({ numberOfColumns: 4 }));
+	}
+
+	_getColumnsDataWhenLoading({ numberOfColumns }) {
 		// the text does not matter here. The empty text leads to empty div which in turn does not render skeleton rectangle
-		this._loadingData = [...Array(5).keys()].map(() => ['Loading']);
+		return [...Array(numberOfColumns).keys()].map(() => 'Loading');
 	}
 
 	get _itemsCount() {

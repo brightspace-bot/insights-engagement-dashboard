@@ -1,4 +1,5 @@
 import { css, html, LitElement } from 'lit-element';
+import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
@@ -21,7 +22,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	}
 
 	static get styles() {
-		return [super.styles, css`
+		return [super.styles, bodyStandardStyles, css`
 			:host {
 				display: block;
 			}
@@ -121,19 +122,6 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-left-radius: 8px;
 			}
-
-			:host([skeleton]) .d2l-insights-table-cell > div {
-				line-height: normal;
-				max-width: 300px;
-				width: 45%;
-			}
-
-			@media (max-width: 713px) {
-				:host([skeleton]) .d2l-insights-table-cell > div {
-					max-width: 100%;
-					width: 100%;
-				}
-			}
 		`];
 	}
 
@@ -205,7 +193,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 		return html`
 			<td class="${classMap(styles)}">
-				<div class="d2l-skeletize">${value}</div>
+				<div class="d2l-skeletize d2l-body-standard">${value}</div>
 			</td>
 		`;
 	}
