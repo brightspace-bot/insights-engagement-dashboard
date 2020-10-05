@@ -596,6 +596,8 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	}
 
 	_fireSearchEvent(searchString, bookmark) {
+		if (!searchString) return;
+
 		this._isLoadingSearch = true;
 
 		/**
