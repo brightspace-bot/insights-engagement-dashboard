@@ -122,6 +122,16 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-left-radius: 8px;
 			}
+
+			:host([skeleton]) .d2l-insights-table-cell > div {
+				width: 45%;
+			}
+
+			@media (max-width: 1024px) {
+				:host([skeleton]) .d2l-insights-table-cell > div {
+					width: 100%;
+				}
+			}
 		`];
 	}
 
