@@ -1,6 +1,7 @@
 import 'highcharts';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
+import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../model/data';
@@ -43,7 +44,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 	}
 
 	static get styles() {
-		return [super.styles, css`
+		return [super.styles, bodyStandardStyles, css`
 			:host {
 				border-color: var(--d2l-color-mica);
 				border-radius: 15px;
@@ -65,9 +66,6 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				font-size: smaller;
 				font-weight: bold;
 				text-indent: 3%;
-			}
-			:host([skeleton]) .d2l-insights-time-in-content-vs-grade-title {
-				line-height: normal;
 			}
 		`];
 	}
@@ -178,7 +176,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`
-			<div class="d2l-insights-time-in-content-vs-grade-title d2l-skeletize d2l-skeletize-45">${this._cardTitle}</div>
+			<div class="d2l-insights-time-in-content-vs-grade-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
 			<d2l-labs-chart class="d2l-insights-summary-card-body" .options="${this.chartOptions}" ?skeleton="${this.skeleton}"></d2l-labs-chart>`;
 	}
 
