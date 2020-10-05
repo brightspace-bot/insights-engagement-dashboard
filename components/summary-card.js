@@ -1,5 +1,6 @@
 import './overlay';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
+import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 /**
@@ -19,7 +20,7 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 	}
 
 	static get styles() {
-		return [super.styles, css`
+		return [super.styles, bodyStandardStyles, css`
 			:host {
 				display: inline-block;
 			}
@@ -88,10 +89,6 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 				max-width: 180px;
 			}
 
-			:host([skeleton]) .d2l-insights-summary-card-title {
-				line-height: normal;
-			}
-
 			:host([skeleton]) .d2l-insights-summary-card-body > div {
 				height: 70px;
 				margin-right: 10px;
@@ -111,12 +108,12 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
-			<div class="d2l-insights-summary-card-title d2l-skeletize d2l-skeletize-45">${this.title}</div>
+			<div class="d2l-insights-summary-card-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this.title}</div>
 			<div class="d2l-insights-summary-card-body" aria-hidden="${this.skeleton}">
 				<div class="d2l-skeletize">
 					${this.isValueClickable ?
 						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
-						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-fiel">${this.value}</span>`}
+						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
 				</div>
 			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field d2l-skeletize-paragraph-3">${this.message}</span>
 			</div>
