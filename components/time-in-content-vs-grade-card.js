@@ -132,14 +132,16 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 	}
 
 	_colorAllPointsInAmethyst(series) {
-		series.forEach(series => { series.update({
-			marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
+		series.forEach(series => {
+			if (series.name !== 'midPoint') {
+				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
+			}
 		});
 	}
 
 	_colorNonSelectedPointsInMica(series) {
 		series.forEach(series => {
-			if (series.name !== this._quadrant) {
+			if ((series.name !== this._quadrant) && (series.name !== 'midPoint')) {
 				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
 			}
 		});
@@ -147,7 +149,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 
 	_colorSelectedQuadrantPointsInAmethyst(series) {
 		series.forEach(series => {
-			if (series.name === this._quadrant) {
+			if ((series.name === this._quadrant) && (series.name !== 'midPoint')) {
 				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
 			}
 		});
@@ -231,7 +233,7 @@ class TimeInContentVsGradeCard extends Localizer(MobxLitElement) {
 					color: 'white',
 					width: 375
 				},
-				shared: true
+				shared: false
 			},
 			title: {
 				text: this._cardTitle, // override default title
