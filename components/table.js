@@ -154,9 +154,14 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	}
 
 	_renderThead() {
+		const styles = {
+			['d2l-insights-table-row-first']: true,
+			['d2l-insights-table-row-last']: this.data.length === 0
+		};
+
 		return html`
 			<thead class="d2l-insights-table-header">
-				<tr class="d2l-insights-table-row-first ${ (this.data.length === 0) ? 'd2l-insights-table-row-last' : '' }">
+				<tr class="${classMap(styles)}">
 					${this.columnHeaders.map(this._renderHeaderCell)}
 				</tr>
 			</thead>
@@ -164,24 +169,26 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	}
 
 	_renderHeaderCell(name, idx, cols) {
-		let styles = 'd2l-insights-table-cell';
-		if (idx === 0) {
-			styles += ' d2l-insights-table-cell-first';
-		}
+		const styles = {
+			['d2l-insights-table-cell']: true,
+			['d2l-insights-table-cell-first']: idx === 0,
+			['d2l-insights-table-cell-last']: idx === cols.length - 1
+		};
 
-		if (idx === cols.length - 1) {
-			styles += ' d2l-insights-table-cell-last';
-		}
 		return html`
-			<th class="${styles}" scope="col">${name}</th>
+			<th class="${classMap(styles)}" scope="col">${name}</th>
 		`;
 	}
 
 	_renderTbody() {
+		const styles = (rowIdx) => ({
+			['d2l-insights-table-row-last']: rowIdx === this.data.length - 1
+		});
+
 		return html`
 			<tbody>
 				${this.data.map((row, rowIdx) => html`
-					<tr class="${ (rowIdx === this.data.length - 1) ? 'd2l-insights-table-row-last' : '' }">
+					<tr class="${classMap(styles(rowIdx))}">
 						${row.map(this._renderBodyCell, this)}
 					</tr>
 				`)}
@@ -190,16 +197,14 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	}
 
 	_renderBodyCell(value, idx, row) {
-		const styles = {};
-		if (idx === 0) {
-			styles['d2l-insights-table-cell-first'] = true;
-		}
+		const styles = {
+			['d2l-insights-table-cell']: true,
+			['d2l-insights-table-cell-first']: idx === 0,
+			['d2l-insights-table-cell-last']: idx === row.length - 1
+		};
 
-		if (idx === row.length - 1) {
-			styles['d2l-insights-table-cell-last'] = true;
-		}
 		return html`
-			<td class="d2l-insights-table-cell ${classMap(styles)}">
+			<td class="${classMap(styles)}">
 				<div class="d2l-skeletize">${value}</div>
 			</td>
 		`;
