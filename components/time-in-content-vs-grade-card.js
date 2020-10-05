@@ -112,6 +112,16 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		return this.data.tiCVsGradesAvgValues[AVG.TIME];
 	}
 
+	get _dataMidPoints() {
+		const maxTimeInContent = this.data.tiCVsGrades.reduce((max, arr) => {
+			return Math.max(max, arr[0]);
+		}, -Infinity);
+		return [[this._avgTimeInContent / 2, 25],
+			[this._avgTimeInContent / 2, 75],
+			[(maxTimeInContent + this._avgTimeInContent) / 2, 25],
+			[(maxTimeInContent + this._avgTimeInContent) / 2, 75]];
+	}
+
 	_setQuadrant(quadrant) {
 		this.data.setTiCVsGradesQuadrant(quadrant);
 	}
@@ -159,6 +169,11 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		this.data.setApplied('d2l-insights-time-in-content-vs-grade-card', true);
 	}
 
+	_toolTipTextByQuadrant(quadrant, numberOfUsers) {
+		const quadrantTerm = `components.insights-time-in-content-vs-grade-card.${quadrant}`;
+		return this.localize(quadrantTerm, { numberOfUsers });
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -193,7 +208,35 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				}
 			},
 			animation: false,
-			tooltip: { enabled: false },
+			tooltip: {
+				formatter: function() {
+					if (this.series.name === 'midPoint') {
+						const midPoints = that._dataMidPoints;
+						const currentMidPoint = [this.x, this.y];
+						if (currentMidPoint.toString() === midPoints[0].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[0].name, this.series.chart.series[0].data.length);
+						}
+						if (currentMidPoint.toString() === midPoints[1].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[1].name, this.series.chart.series[1].data.length);
+						}
+						if (currentMidPoint.toString() === midPoints[2].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[2].name, this.series.chart.series[2].data.length);
+						}
+						if (currentMidPoint.toString() === midPoints[3].toString()) {
+							return that._toolTipTextByQuadrant(this.series.chart.series[3].name, this.series.chart.series[3].data.length);
+						}
+					}
+					return false;
+				},
+				backgroundColor: 'var(--d2l-color-ferrite)',
+				borderColor: 'var(--d2l-color-ferrite)',
+				borderRadius: 12,
+				style: {
+					color: 'white',
+					width: 375
+				},
+				shared: true
+			},
 			title: {
 				text: this._cardTitle, // override default title
 				style: {
@@ -284,7 +327,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 						pointDescriptionFormatter: function(point) {
 							return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
 						}
-					}
+					},
 				}
 			},
 			accessibility: {
@@ -306,7 +349,20 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 			},
 			{
 				name: 'rightBottom',
-				data: this._plotDataForRightBottomQuadrant
+				data: this._plotDataForRightBottomQuadrant,
+			},
+			{
+				name: 'midPoint',
+				data: that._dataMidPoints,
+				lineColor: 'transparent',
+				marker: {
+					fillColor: 'transparent',
+					states: {
+						hover: {
+							enabled: false
+						}
+					}
+				},
 			}]
 		};
 	}

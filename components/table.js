@@ -15,7 +15,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	static get properties() {
 		return {
 			title: { type: String, attribute: true },
-			columns: { type: Array, attribute: false },
+			columnHeaders: { type: Array, attribute: false },
 			data: { type: Array, attribute: false }
 		};
 	}
@@ -139,7 +139,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	constructor() {
 		super();
-		this.columns = [];
+		this.columnHeaders = [];
 		this.data = [];
 		this.title = '';
 	}
@@ -157,7 +157,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		return html`
 			<thead class="d2l-insights-table-header">
 				<tr class="d2l-insights-table-row-first ${ (this.data.length === 0) ? 'd2l-insights-table-row-last' : '' }">
-					${this.columns.map(this._renderHeaderCell)}
+					${this.columnHeaders.map(this._renderHeaderCell)}
 				</tr>
 			</thead>
 		`;

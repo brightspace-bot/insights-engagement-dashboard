@@ -6,7 +6,7 @@ import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-help
 describe('d2l-insights-users-table', () => {
 	const data = {
 		// returns [ ['0First', '0Last'], ['1First', '1Last'], ..., ['22First', '22Last'] ]
-		userDataForDisplay: Array.from({ length: 23 }, (val, idx) => [`${idx}First`, `${idx}Last`])
+		userDataForDisplay: Array.from({ length: 23 }, (val, idx) => [`${idx}First`, `${idx}Last`, '', '', ''])
 	};
 
 	describe('constructor', () => {
