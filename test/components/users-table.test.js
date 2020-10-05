@@ -182,7 +182,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.maxPageNumber).to.equal(0);
 				expect(pageSelector.pageNumber).to.equal(0);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div[skeleton]'));
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
 				expect(displayedUsers.length).to.equal(5);
 			});
 		});
