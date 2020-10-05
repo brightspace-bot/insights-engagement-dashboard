@@ -44,7 +44,7 @@ describe('d2l-insights-table', () => {
 			expect(rows.length).to.equal(4);
 
 			rows.forEach((row, idx) => {
-				const cells = Array.from(row.querySelectorAll('td'));
+				const cells = Array.from(row.querySelectorAll('td>div'));
 				expect(cells.length).to.equal(3);
 
 				cells.forEach((cell, jdx) => {

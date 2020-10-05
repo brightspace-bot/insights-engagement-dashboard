@@ -63,7 +63,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.pageNumber).to.equal(1);
 
 				// since there are 23 users, the first (default) page should show the first 20 users, in order, on it
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
 				expect(displayedUsers.length).to.equal(20);
 				displayedUsers.forEach((user, idx) => {
 					expect(user.innerText).to.equal(data.userDataForDisplay[idx][0]);
