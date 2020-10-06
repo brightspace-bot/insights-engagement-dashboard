@@ -4,7 +4,7 @@ import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
-const rolesEndpoint = '/d2l/api/lp/1.23/roles/';
+const rolesEndpoint = '/d2l/api/ap/unstable/insights/data/roles';
 
 describe('d2l-insights-role-filter', () => {
 	beforeEach(() => {
