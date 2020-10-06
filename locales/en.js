@@ -21,6 +21,8 @@ export default {
 	"components.tree-filter.node-name": "{orgUnitName} (Id: {id})",
 	"components.tree-filter.node-name.root": "root",
 	"components.tree-selector.search-label": "Search",
+	"components.tree-selector.load-more-label": "Load More",
+	"components.tree-selector.search-load-more.aria-label": "Load more search results",
 	"components.tree-selector.search-placeholder": "Search...",
 	"components.tree-selector.dropdown-action": "Open {name} filter",
 	"components.tree-selector.arrow-label.closed": "Expand {name} at level {level}, child of {parentName}",

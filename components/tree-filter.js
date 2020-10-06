@@ -552,7 +552,8 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		if (this.isLoadMoreSearch)  {
 			return html`<d2l-button slot="search-results"
 				@click="${this._onSearchLoadMore}"
-			>Load More</d2l-button>`;
+				description="${this.localize('components.tree-selector.search-load-more.aria-label')}"
+			>${this.localize('components.tree-selector.load-more-label')}</d2l-button>`;
 		}
 	}
 
