@@ -1,5 +1,5 @@
 import { computed, decorate, observable } from 'mobx';
-import { RECORD } from './data';
+import { RECORD } from '../consts';
 
 function hasSelections(selectedIds) {
 	return selectedIds.length > 0;

@@ -1,8 +1,7 @@
-
 import { html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { RECORD } from '../model/data.js';
+import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const OverdueAssignmentsCardFilter = {
