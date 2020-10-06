@@ -172,14 +172,14 @@ export class Data {
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as the lastFirstName
 		// then sort by lastFirstName
-
+		const recordsByUser = this.recordsByUser;
 		return this.users
 			.map(user => [
 				// When add/remove column here DO NOT forget to update `user-table._lodaingData` to show skeleton properly
 
 				`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, // last first name
 				// 'N/A', // last accessed system
-				'', // courses
+				recordsByUser.get(user[USER.ID]).length, // courses
 				'', // average grade
 				'', // average time in content
 				// 'N/A', // average discussion activity
@@ -187,6 +187,17 @@ export class Data {
 			.sort((user1, user2) => {
 				return user1[TABLE_USER.LAST_FIRST_NAME].localeCompare(user2[TABLE_USER.LAST_FIRST_NAME]);
 			});
+	}
+
+	get recordsByUser() {
+		const recordsByUser = new Map();
+		this.getRecordsInView().forEach(r => {
+			if (!recordsByUser.has(r[RECORD.USER_ID])) {
+				recordsByUser.set(r[RECORD.USER_ID], []);
+			}
+			recordsByUser.get(r[RECORD.USER_ID]).push(r);
+		});
+		return recordsByUser;
 	}
 
 	get currentFinalGrades() {
