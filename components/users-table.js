@@ -3,18 +3,19 @@ import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
 
 import { css, html } from 'lit-element';
+import { COLUMN_TYPES } from './table';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin';
 
 export const TABLE_USER = {
-	LAST_FIRST_NAME: 0,
-	// LAST_ACCESSED_SYSTEM: 1,
+	NAME_INFO: 0,
 	COURSES: 1,
 	AVG_GRADE: 2,
 	AVG_TIME_IN_CONTENT: 3
-	// AVG_DISCUSSION_ACTIVITY: 4
 };
+
+const DEFAULT_PAGE_SIZE = 20;
 
 /**
  * At the moment the mobx data object is doing sorting / filtering logic
@@ -61,41 +62,31 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			userDataForDisplay: []
 		};
 		this._currentPage = 1;
-		this._pageSize = 20;
-		// must have the same number of columns as this.data.userDataForDisplay to display skeleton correctly
-		this._loadingData = [...Array(5).keys()].map(() => this._getColumnsDataWhenLoading({ numberOfColumns: 4 }));
-	}
-
-	_getColumnsDataWhenLoading({ numberOfColumns }) {
-		// the text does not matter here. The empty text leads to empty div which in turn does not render skeleton rectangle
-		return [...Array(numberOfColumns).keys()].map(() => 'Loading');
+		this._pageSize = DEFAULT_PAGE_SIZE;
 	}
 
 	get _itemsCount() {
-		if (this.skeleton) {
-			return this._loadingData.length;
-		}
-
 		return this.data.userDataForDisplay.length;
 	}
 
 	get _maxPages() {
-		if (this.skeleton) {
-			return 0;
-		}
-
 		const itemsCount = this._itemsCount;
 		return itemsCount ? Math.ceil(itemsCount / this._pageSize) : 0;
 	}
 
+	// don't use displayData.length to get the itemsCount. When we display a skeleton view, displayData.length is
+	// the number of skeleton rows we're displaying, but the Total Users count should still be 0
 	get _displayData() {
 		if (this.skeleton) {
-			return this._loadingData;
+			const loadingPlaceholderText = this.localize('components.insights-users-table.loadingPlaceholder');
+
+			// a DEFAULT_PAGE_SIZE x columnInfoLength 2D array filled with a generic string
+			return Array(DEFAULT_PAGE_SIZE).fill(Array(this.columnInfo.length).fill(loadingPlaceholderText));
 		}
 
 		if (this._itemsCount) {
 			const start = this._pageSize * (this._currentPage - 1);
-			const end = this._pageSize * (this._currentPage); // it's ok if this is larger than the size of the array
+			const end = this._pageSize * (this._currentPage); // it's ok if this goes over the end of the array
 
 			return this.data.userDataForDisplay.slice(start, end);
 		}
@@ -103,24 +94,34 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return [];
 	}
 
-	get columnHeaders() {
+	get columnInfo() {
 		return [
-			this.localize('components.insights-users-table.lastFirstName'),
-			// this.localize('components.insights-users-table.lastAccessedSystem'),
-			this.localize('components.insights-users-table.courses'),
-			this.localize('components.insights-users-table.avgGrade'),
-			this.localize('components.insights-users-table.avgTimeInContent')
-			// this.localize('components.insights-users-table.avgDiscussionActivity')
+			{
+				headerText: this.localize('components.insights-users-table.lastFirstName'),
+				columnType: COLUMN_TYPES.TEXT_SUB_TEXT
+			},
+			{
+				headerText: this.localize('components.insights-users-table.courses'),
+				columnType: COLUMN_TYPES.NORMAL_TEXT
+			},
+			{
+				headerText: this.localize('components.insights-users-table.avgGrade'),
+				columnType: COLUMN_TYPES.NORMAL_TEXT
+			},
+			{
+				headerText: this.localize('components.insights-users-table.avgTimeInContent'),
+				columnType: COLUMN_TYPES.NORMAL_TEXT
+			}
 		];
 	}
 
 	render() {
 		return html`
 			<d2l-insights-table
-				?skeleton="${this.skeleton}"
 				title="${this.localize('components.insights-users-table.title')}"
-				.columnHeaders=${this.columnHeaders}
-				.data="${this._displayData}"></d2l-insights-table>
+				.columnInfo=${this.columnInfo}
+				.data="${this._displayData}"
+				?skeleton="${this.skeleton}"></d2l-insights-table>
 
 			<d2l-labs-pagination
 				show-item-count-select

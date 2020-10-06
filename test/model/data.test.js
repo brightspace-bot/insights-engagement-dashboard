@@ -99,10 +99,10 @@ describe('Data', () => {
 			[6606, 400, mockRoleIds.student, 0, null, 0, null], // this user has a cascading admin role on dept and sem levels
 		],
 		users: [
-			[100, 'John', 'Lennon'],
-			[200, 'Paul', 'McCartney'],
-			[300, 'George', 'Harrison'],
-			[400, 'Ringo', 'Starr']
+			[100, 'John', 'Lennon', 'jlennon'],
+			[200, 'Paul', 'McCartney', 'pmccartney'],
+			[300, 'George', 'Harrison', 'gharrison'],
+			[400, 'Ringo', 'Starr', 'rstarr']
 		],
 		selectedRolesIds: null,
 		selectedSemestersIds: null,
@@ -371,10 +371,10 @@ describe('Data', () => {
 	describe('userDataForDisplay', () => {
 		it('should return an array of arrays sorted by lastFirstName', async() => {
 			const expected = [
-				['Harrison, George', '', '', ''],
-				['Lennon, John', '', '', ''],
-				['McCartney, Paul', '', '', ''],
-				['Starr, Ringo', '', '', '']
+				[['Harrison, George', 'gharrison - 300'], '', '', ''],
+				[['Lennon, John', 'jlennon - 100'], '', '', ''],
+				[['McCartney, Paul', 'pmccartney - 200'], '', '', ''],
+				[['Starr, Ringo', 'rstarr - 400'], '', '', '']
 			];
 
 			expect(sut.userDataForDisplay).to.deep.equal(expected);
@@ -383,8 +383,8 @@ describe('Data', () => {
 		it('should only display users in view', async() => {
 			const roleFilters = [mockRoleIds.instructor];
 			const expectedUsers = [
-				['Harrison, George', '', '', ''],
-				['McCartney, Paul', '', '', '']
+				[['Harrison, George', 'gharrison - 300'], '', '', ''],
+				[['McCartney, Paul', 'pmccartney - 200'], '', '', '']
 			];
 
 			sut.selectedRoleIds = roleFilters;
