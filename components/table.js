@@ -127,16 +127,6 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-left-radius: 8px;
 			}
-
-			:host([skeleton]) .d2l-insights-table-cell > div {
-				width: 45%;
-			}
-
-			@media (max-width: 1024px) {
-				:host([skeleton]) .d2l-insights-table-cell > div {
-					width: 100%;
-				}
-			}
 		`];
 	}
 
@@ -163,6 +153,8 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	_renderThead() {
 		const styles = {
 			'd2l-insights-table-row-first': true,
+			// if skeleton view is displayed, then there will definitely be skeleton rows in the table,
+			// even if data.length is 0. Therefore if skeleton is true, don't apply the "last row" style to header
 			'd2l-insights-table-row-last': !this.skeleton && this.data.length === 0
 		};
 
@@ -217,18 +209,22 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			</td>
 		`;
 
-		if (!this.skeleton) {
-			if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
-				return html`
-					<td class="${classMap(styles)}">
-						<div class="d2l-body-standard">${value[0]}</div>
-						<div class="d2l-body-small">${value[1]}</div>
-					</td>
-				`;
-			} // future work: else if COLUMN_TYPES.SUBCOLUMNS...
+		if (this.skeleton) {
+			return defaultHtml; // regardless of the column type, because the data hasn't been loaded yet
 		}
 
-		return defaultHtml;
+		if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
+			return html`
+				<td class="${classMap(styles)}">
+					<div class="d2l-body-standard">${value[0]}</div>
+					<div class="d2l-body-small">${value[1]}</div>
+				</td>
+			`;
+		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT) {
+			return defaultHtml;
+		} // future work: else if COLUMN_TYPES.SUBCOLUMNS...
+
+		throw new Error('Users table: unknown column type');
 	}
 }
 customElements.define('d2l-insights-table', Table);

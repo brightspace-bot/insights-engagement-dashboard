@@ -33,6 +33,7 @@ export default {
 	"components.dropdown-filter.opener-text-single": '{filterName}: {selectedItemName}',
 
 	"components.insights-users-table.title": "User Details",
+	"components.insights-users-table.loadingPlaceholder": "Loading",
 	"components.insights-users-table.lastFirstName": "Name",
 	"components.insights-users-table.lastAccessedSystem": "Last Accessed System",
 	"components.insights-users-table.courses": "Course(s)",

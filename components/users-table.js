@@ -76,10 +76,10 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	get _displayData() {
 		if (this.skeleton) {
+			const loadingPlaceholderText = this.localize('components.insights-users-table.loadingPlaceholder');
+
 			// a DEFAULT_PAGE_SIZE x columnInfoLength 2D array filled with a generic string
-			// the text does not matter here, as long as it's not an empty string.
-			// (an empty string leads to an empty div which in turn does not render skeleton rectangle)
-			return Array(DEFAULT_PAGE_SIZE).fill(Array(this.columnInfo.length).fill('Loading'));
+			return Array(DEFAULT_PAGE_SIZE).fill(Array(this.columnInfo.length).fill(loadingPlaceholderText));
 		}
 
 		if (this._itemsCount) {
