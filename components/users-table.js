@@ -74,6 +74,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return itemsCount ? Math.ceil(itemsCount / this._pageSize) : 0;
 	}
 
+	// don't use displayData.length to get the itemsCount. When we display a skeleton view, displayData.length is
+	// the number of skeleton rows we're displaying, but the Total Users count should still be 0
 	get _displayData() {
 		if (this.skeleton) {
 			const loadingPlaceholderText = this.localize('components.insights-users-table.loadingPlaceholder');

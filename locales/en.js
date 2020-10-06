@@ -36,7 +36,7 @@ export default {
 	"components.insights-users-table.loadingPlaceholder": "Loading",
 	"components.insights-users-table.lastFirstName": "Name",
 	"components.insights-users-table.lastAccessedSystem": "Last Accessed System",
-	"components.insights-users-table.courses": "Course(s)",
+	"components.insights-users-table.courses": "Courses",
 	"components.insights-users-table.avgGrade": "Average Grade",
 	"components.insights-users-table.avgTimeInContent": "Average Time in Content (mins)",
 	"components.insights-users-table.avgDiscussionActivity": "Average Discussion Activity",
