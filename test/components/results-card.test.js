@@ -3,7 +3,7 @@ import '../../components/users-table.js';
 import { expect, fixture, html } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
-describe('d2l-insights-users-table', () => {
+describe('d2l-insights-results-card', () => {
 	const data = {
 		userDataForDisplay: [
 			'Lennon, John',

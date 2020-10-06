@@ -20,7 +20,8 @@ export const RECORD = {
 export const USER = {
 	ID: 0,
 	FIRST_NAME: 1,
-	LAST_NAME: 2
+	LAST_NAME: 2,
+	USERNAME: 3
 };
 
 function unique(array) {
@@ -170,22 +171,19 @@ export class Data {
 
 	// @computed
 	get userDataForDisplay() {
-		// map to a 2D userData array, with column 0 as the lastFirstName
+		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
 		// then sort by lastFirstName
 		const recordsByUser = this.recordsByUser;
 		return this.users
 			.map(user => [
-				// When add/remove column here DO NOT forget to update `user-table._lodaingData` to show skeleton properly
-
-				`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, // last first name
-				// 'N/A', // last accessed system
+				[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
 				recordsByUser.get(user[USER.ID]).length, // courses
 				'', // average grade
 				'', // average time in content
-				// 'N/A', // average discussion activity
 			])
 			.sort((user1, user2) => {
-				return user1[TABLE_USER.LAST_FIRST_NAME].localeCompare(user2[TABLE_USER.LAST_FIRST_NAME]);
+				// sort by lastFirstName
+				return user1[TABLE_USER.NAME_INFO][0].localeCompare(user2[TABLE_USER.NAME_INFO][0]);
 			});
 	}
 

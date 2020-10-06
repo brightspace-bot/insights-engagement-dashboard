@@ -3,11 +3,20 @@ import '../../components/users-table.js';
 import { expect, fixture, html } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
+const data = {
+	// returns [
+	//   [['0Last, 0First', 'user0 - 0'], '', '', ''],
+	//   [['1Last, 1First', 'user1 - 1'], '', '', ''],
+	//   ...,
+	//   [['22Last, 22First', 'user22 - 22'], '', '', ''],
+	// ]
+	userDataForDisplay: Array.from(
+		{ length: 23 },
+		(val, idx) => [[`${idx}Last, ${idx}First`, `user${idx} - ${idx}`], '', '', '']
+	)
+};
+
 describe('d2l-insights-users-table', () => {
-	const data = {
-		// returns [ ['0First', '0Last'], ['1First', '1Last'], ..., ['22First', '22Last'] ]
-		userDataForDisplay: Array.from({ length: 23 }, (val, idx) => [`${idx}First`, `${idx}Last`, '', '', ''])
-	};
 
 	describe('constructor', () => {
 		it('should construct', () => {
@@ -41,6 +50,12 @@ describe('d2l-insights-users-table', () => {
 			let pageSelector;
 			let innerTable;
 
+			async function finishUpdate() {
+				await new Promise(resolve => setTimeout(resolve, 200));
+				await innerTable.updateComplete;
+				await pageSelector.updateComplete;
+			}
+
 			before(async function() {
 				this.timeout(10000);
 
@@ -55,7 +70,7 @@ describe('d2l-insights-users-table', () => {
 
 			// this test is randomly very flaky. When testing locally, I was able to reproduce the error by
 			// minimizing my browser, so I think the browsers are also being minimized on the Sauce servers.
-			// I don't see any options to force maximized windows though, so I'm increasing timeout in before instead
+			// I don't see any options to force maximized windows though, so I'm increasing timeout in `before` instead
 			it('should show the first 20 users in order on the first page, if there are more than 20 users', () => {
 				// the default page size is 20
 				expect(pageSelector.selectedCountOption).to.equal(20);
@@ -63,11 +78,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.pageNumber).to.equal(1);
 
 				// since there are 23 users, the first (default) page should show the first 20 users, in order, on it
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
-				expect(displayedUsers.length).to.equal(20);
-				displayedUsers.forEach((user, idx) => {
-					expect(user.innerText).to.equal(data.userDataForDisplay[idx][0]);
-				});
+				verifyUserInfoColumn(innerTable, 20, 0);
 			});
 
 			it('should show the correct number of users on the last page', async() => {
@@ -75,116 +86,91 @@ describe('d2l-insights-users-table', () => {
 					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
 					.shadowRoot.querySelector('button')
 					.click();
-				await new Promise(resolve => setTimeout(resolve, 200));
-				await innerTable.updateComplete;
-				await pageSelector.updateComplete;
+				await finishUpdate();
 
 				expect(pageSelector.pageNumber).to.equal(2);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
-				expect(displayedUsers.length).to.equal(3);
-				displayedUsers.forEach((user, idx) => {
-					expect(user.innerText).to.equal(data.userDataForDisplay[idx + 20][0]);
-				});
+				verifyUserInfoColumn(innerTable, 3, 20);
 			});
 
 			it('should change number of users shown and total number of pages if the page size changes', async() => {
 				pageSizeSelector.value = '10';
 				pageSizeSelector.dispatchEvent(new Event('change'));
-				await new Promise(resolve => setTimeout(resolve, 200));
-				await innerTable.updateComplete;
-				await pageSelector.updateComplete;
+				await finishUpdate();
 
 				expect(pageSelector.selectedCountOption).to.equal(10);
 				expect(pageSelector.maxPageNumber).to.equal(3);
 				expect(pageSelector.pageNumber).to.equal(1);
 
-				let displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
-				expect(displayedUsers.length).to.equal(10);
-				displayedUsers.forEach((user, idx) => {
-					expect(user.innerText).to.equal(data.userDataForDisplay[idx][0]);
-				});
+				verifyUserInfoColumn(innerTable, 10, 0);
 
 				pageSelector
 					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
 					.shadowRoot.querySelector('button')
 					.click();
-				await new Promise(resolve => setTimeout(resolve, 200));
-				await innerTable.updateComplete;
-				await pageSelector.updateComplete;
+				await finishUpdate();
 
 				expect(pageSelector.pageNumber).to.equal(2);
 
-				displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
-				expect(displayedUsers.length).to.equal(10);
-				displayedUsers.forEach((user, idx) => {
-					expect(user.innerText).to.equal(data.userDataForDisplay[idx + 10][0]);
-				});
+				verifyUserInfoColumn(innerTable, 10, 10);
 
 				pageSelector
 					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
 					.shadowRoot.querySelector('button')
 					.click();
-				await new Promise(resolve => setTimeout(resolve, 200));
-				await innerTable.updateComplete;
-				await pageSelector.updateComplete;
+				await finishUpdate();
 
 				expect(pageSelector.pageNumber).to.equal(3);
 
-				displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
-				expect(displayedUsers.length).to.equal(3);
-				displayedUsers.forEach((user, idx) => {
-					expect(user.innerText).to.equal(data.userDataForDisplay[idx + 20][0]);
-				});
+				verifyUserInfoColumn(innerTable, 3, 20);
 			});
 
 			it('should show all users on a single page if there are fewer users than the page size', async() => {
 				pageSizeSelector.value = '50';
 				pageSizeSelector.dispatchEvent(new Event('change'));
-				await new Promise(resolve => setTimeout(resolve, 200));
-				await innerTable.updateComplete;
-				await pageSelector.updateComplete;
+				await finishUpdate();
 
 				expect(pageSelector.selectedCountOption).to.equal(50);
 				expect(pageSelector.maxPageNumber).to.equal(1);
 				expect(pageSelector.pageNumber).to.equal(1);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
-				expect(displayedUsers.length).to.equal(23);
-				displayedUsers.forEach((user, idx) => {
-					expect(user.innerText).to.equal(data.userDataForDisplay[idx][0]);
-				});
-
+				verifyUserInfoColumn(innerTable, 23, 0);
 			});
 
 			it('should show zero pages if there are no users to display', async() => {
 				el.data = { userDataForDisplay: [] };
-				await new Promise(resolve => setTimeout(resolve, 200));
-				await innerTable.updateComplete;
-				await pageSelector.updateComplete;
+				await finishUpdate();
 
 				expect(pageSelector.selectedCountOption).to.equal(50);
 				expect(pageSelector.maxPageNumber).to.equal(0);
 				expect(pageSelector.pageNumber).to.equal(0);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
-				expect(displayedUsers.length).to.equal(0);
+				verifyUserInfoColumn(innerTable, 0, 0);
 			});
 
-			it('should show 5 skeleton rows with zero pages if loading', async() => {
+			it('should show 20 skeleton rows with zero pages if loading', async() => {
 				el.data = { userDataForDisplay: [], isLoading: true };
 				el.skeleton = true;
-				await new Promise(resolve => setTimeout(resolve, 200));
-				await innerTable.updateComplete;
-				await pageSelector.updateComplete;
+				await finishUpdate();
 
 				expect(pageSelector.selectedCountOption).to.equal(50);
 				expect(pageSelector.maxPageNumber).to.equal(0);
 				expect(pageSelector.pageNumber).to.equal(0);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child > div'));
-				expect(displayedUsers.length).to.equal(5);
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				expect(displayedUsers.length).to.equal(20);
 			});
 		});
 	});
 });
+
+function verifyUserInfoColumn(table, expectedNumDisplayedRows, startRowNum) {
+	const displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+	expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
+	displayedUserInfo.forEach((cell, rowIdx) => {
+		const mainText = cell.querySelector('div:first-child');
+		const subText = cell.querySelector('div:last-child');
+		expect(mainText.innerText).to.equal(data.userDataForDisplay[rowIdx + startRowNum][0][0]);
+		expect(subText.innerText).to.equal(data.userDataForDisplay[rowIdx + startRowNum][0][1]);
+	});
+}
