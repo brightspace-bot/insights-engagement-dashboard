@@ -10,6 +10,7 @@ import './components/current-final-grade-card.js';
 import './components/applied-filters';
 import './components/aria-loading-progress';
 import './components/course-last-access-card.js';
+import './components/default-view-popup.js';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { CourseLastAccessCardFilter } from './components/course-last-access-card';
@@ -125,11 +126,16 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				</div>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 				<d2l-insights-users-table .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-users-table>
+				<d2l-insights-default-view-popup .data="${this._data}" ?opened="${!this._isLoading && this._isDefaultView}"></d2l-insights-default-view-popup>
 		`;
 	}
 
 	get _isLoading() {
 		return this._data.isLoading;
+	}
+
+	get _isDefaultView() {
+		return this._data.serverData.defaultViewOrgUnitIds && this._data.serverData.defaultViewOrgUnitIds.length;
 	}
 
 	get _data() {
