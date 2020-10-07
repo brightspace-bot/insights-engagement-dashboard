@@ -60,16 +60,20 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.localize('components.insights-current-final-grade-card.currentGrade');
 	}
 
-	get _numberOfStudentsText() {
-		return this.localize('components.insights-current-final-grade-card.numberOfStudents');
-	}
-
 	get _chartDescriptionTextLabel() {
 		return this.localize('components.insights-current-final-grade-card.textLabel');
 	}
 
 	get _preparedHistogramData() {
 		return this.data.currentFinalGrades;
+	}
+
+	get _xAxisLabel() {
+		return this.localize('components.insights-current-final-grade-card.xAxisLabel');
+	}
+
+	get _yAxisLabel() {
+		return this.localize('components.insights-current-final-grade-card.numberOfStudents');
 	}
 
 	setCategoryEmpty() {
@@ -187,7 +191,16 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				}
 			},
 			xAxis: {
-				title: { text: '' }, // override default title
+				title: {
+					text: this._xAxisLabel,
+					x: -24, // needed due to compensate for width override below
+					style: {
+						color: 'var(--d2l-color-ferrite)',
+						fontSize: '9px',
+						fontWeight: 'bold',
+						fontFamily: 'Lato'
+					}
+				},
 				min: 0,
 				allowDecimals: false,
 				alignTicks: false,
@@ -200,12 +213,12 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 					align: 'center',
 					reserveSpace: true
 				},
-				width: '108%',
+				width: '108%', // move extra space at end of x-axis out of the container
 			},
 			yAxis: {
 				tickAmount: 4,
 				title: {
-					text: this._numberOfStudentsText,
+					text: this._yAxisLabel,
 					style: {
 						color: 'var(--d2l-color-ferrite)',
 						fontSize: '10px',

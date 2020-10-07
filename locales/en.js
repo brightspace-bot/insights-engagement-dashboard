@@ -54,7 +54,8 @@ export default {
 	"components.insights-time-in-content-vs-grade-card.rightBottom": "{numberOfUsers} user enrollments are getting a below average grade and spending above average time in content.",
 
 	"components.insights-current-final-grade-card.currentGrade": "Current Grade",
-	"components.insights-current-final-grade-card.numberOfStudents": "Number of Students",
+	"components.insights-current-final-grade-card.numberOfStudents": "Number of Users",
+	"components.insights-current-final-grade-card.xAxisLabel": "Current Grade (%)",
 	"components.insights-current-final-grade-card.textLabel": "This chart displays the current final grade for each user per course",
 	"components.insights-current-final-grade-card.emptyMessage": "There are no results available that match your filters.",
 	"components.insights-current-final-grade-card.gradeBetween": "{numberOfUsers} users have a current grade between {range}%",
