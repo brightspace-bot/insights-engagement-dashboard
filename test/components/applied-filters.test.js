@@ -18,20 +18,23 @@ describe('d2l-insights-applied-filters', () => {
 	});
 
 	describe('accessibility', () => {
-		it('should pass all axe tests', async() => {
+		it('should pass all axe tests', async function() {
+			this.timeout(3000);
 			const el = await fixture(html`<d2l-insights-applied-filters .data="${data}"></d2l-insights-applied-filters>`);
 			await expect(el).to.be.accessible();
 		});
 	});
 
 	describe('render', () => {
-		it('should not render if there are no card filters', async() => {
+		it('should not render if there are no card filters', async function() {
+			this.timeout(3000);
 			const el = await fixture(html`<d2l-insights-applied-filters .data="${data}"></d2l-insights-applied-filters>`);
 			const appliedFilters = el.shadowRoot.querySelector('d2l-applied-filters');
 			expect(appliedFilters).to.be.null;
 		});
 
-		it('should not render if card filters are not applied', async() => {
+		it('should not render if card filters are not applied', async function() {
+			this.timeout(3000);
 			data.cardFilters = {
 				'filter-key-1':	{ id: '1', title: 'filter 1', isApplied: false }
 			};
