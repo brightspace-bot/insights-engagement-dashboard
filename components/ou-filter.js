@@ -1,5 +1,5 @@
 import { css, html } from 'lit-element/lit-element.js';
-import { fetchRelevantChildren } from '../model/lms';
+import { fetchRelevantChildren, orgUnitSearch } from '../model/lms';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 
@@ -35,6 +35,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 				opener-text-selected="${this.localize('components.org-unit-filter.name-some-selected')}"
 				@d2l-insights-tree-filter-select="${this._onChange}"
 				@d2l-insights-tree-filter-request-children="${this._onRequestChildren}"
+				@d2l-insights-tree-filter-search="${this._onSearch}"
 			>
 			</d2l-insights-tree-filter>
 		</div>`;
@@ -55,9 +56,18 @@ class OuFilter extends Localizer(MobxLitElement) {
 	}
 
 	async _onRequestChildren(event) {
+		const el = event.target;
 		const id = event.detail.id;
 		const children = await fetchRelevantChildren(id, this.data.selectedSemesterIds);
-		this.data.orgUnitTree.addNodes(id, children);
+		el.addChildren(id, children);
+	}
+
+	async _onSearch(event) {
+		const el = event.target;
+		const searchString = event.detail.searchString;
+		const bookmark = event.detail.bookmark;
+		const results = await orgUnitSearch(searchString, this.data.selectedSemesterIds, bookmark);
+		el.addSearchResults(results.Items, results.PagingInfo.HasMoreItems, results.PagingInfo.Bookmark);
 	}
 }
 customElements.define('d2l-insights-ou-filter', OuFilter);

@@ -1,8 +1,8 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
 import { COURSE_OFFERING, RECORD, USER } from '../consts';
+import { fetchCachedChildren, fetchLastSearch } from './lms.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 import { CardFilter } from './cardFilter.js';
-import { fetchCachedChildren } from './lms.js';
 import { TABLE_USER } from '../components/users-table';
 import { Tree } from '../components/tree-filter';
 
@@ -77,8 +77,11 @@ export class Data {
 
 	// @action
 	onServerDataReload(newServerData) {
+		const lastSearchResults = fetchLastSearch(newServerData.selectedSemestersIds);
 		this.orgUnitTree = new Tree({
-			nodes: newServerData.orgUnits,
+			// add in any nodes from the most recent search (if the semester filter didn't change); otherwise
+			// the search will blink out and come back, and also drop any "load more" results
+			nodes: lastSearchResults ? [...newServerData.orgUnits, ...lastSearchResults] : newServerData.orgUnits,
 			leafTypes: [COURSE_OFFERING],
 			invisibleTypes: [newServerData.semesterTypeId],
 			selectedIds: newServerData.defaultViewOrgUnitIds || newServerData.selectedOrgUnitIds || [],

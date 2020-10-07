@@ -51,15 +51,7 @@ export class Tree {
 		this._populated = isDynamic ? new Set() : null;
 
 		// fill in children (parents are provided by the caller, and ancestors will be generated on demand)
-		this.ids.forEach(id => {
-			this.getParentIds(id).forEach(parentId => {
-				if (this._children.has(parentId)) {
-					this._children.get(parentId).push(id);
-				} else {
-					this._children.set(parentId, [id]);
-				}
-			});
-		});
+		this._updateChildren(this.ids);
 
 		if (extraChildren) {
 			extraChildren.forEach((children, orgUnitId) => {
@@ -121,7 +113,7 @@ export class Tree {
 		newChildren.forEach(x => this._nodes.set(x[ID], x));
 
 		// replace all of parent's children
-		this._children.set(parentId, newChildren.map(x => x[ID]));
+		this._children.set(parentId, new Set(newChildren.map(x => x[ID])));
 
 		// caller should only provide visible nodes
 		if (this._visible) {
@@ -141,6 +133,36 @@ export class Tree {
 		if (this._populated) {
 			this._populated.add(parentId);
 		}
+	}
+
+	/**
+	 * Merges the given nodes into the tree.
+	 * @param {[][]} [nodes=[]] - Array of arrays, including all ancestors up to root, in the same format as for the constructor
+	 */
+	addTree(nodes) {
+		nodes.forEach(x => this._nodes.set(x[ID], x));
+
+		// invariant: the tree must always contain all ancestors of all nodes.
+		// This means existing nodes cannot be new children of any node: we only need to update children for parents of new nodes.
+		this._updateChildren(nodes.map(x => x[ID]));
+
+		// Set selected state for ancestors and descendants if a new node should be selected because its
+		// parent is.
+		// This could perform poorly if the tree being merged in is large and deep, but in the expected use case
+		// (search with load more), we should only be adding a handful of nodes at a time.
+		nodes.forEach(node => {
+			if (node[PARENTS].some(parentId => this.getState(parentId) === 'explicit')) {
+				this.setSelected(node[ID], true);
+			}
+		});
+
+		// caller should only provide visible nodes
+		if (this._visible) {
+			nodes.forEach(x => this._visible.add(x[ID]));
+		}
+
+		// refresh ancestors
+		this._ancestors = new Map();
 	}
 
 	getAncestorIds(id) {
@@ -166,13 +188,16 @@ export class Tree {
 	getChildIds(id) {
 		if (!id) id = this.rootId;
 		if (!id) return [];
-		return this._children.get(id) || [];
+		const children = this._children.get(id);
+		return children ? [...children] : [];
 	}
 
 	getMatchingIds(searchString) {
 		return this.ids
 			.filter(x => this._isVisible(x))
-			.filter(x => !this._isRoot(x) && this._nameForSort(x).toLowerCase().includes(searchString.toLowerCase()));
+			.filter(x => !this._isRoot(x) && this._nameForSort(x).toLowerCase().includes(searchString.toLowerCase()))
+			// reverse order by id so the order is consistent and (most likely) newer items are on top
+			.sort((x, y) => y - x);
 	}
 
 	getName(id) {
@@ -301,6 +326,18 @@ export class Tree {
 		this.getChildIds(id).forEach(childId => this._setSubtreeSelected(childId, isSelected));
 	}
 
+	_updateChildren(ids) {
+		ids.forEach(id => {
+			this.getParentIds(id).forEach(parentId => {
+				if (this._children.has(parentId)) {
+					this._children.get(parentId).add(id);
+				} else {
+					this._children.set(parentId, new Set([id]));
+				}
+			});
+		});
+	}
+
 	_updateSelected(id) {
 		// never select the root (user can clear the selection instead)
 		if (this._isRoot(id)) return;
@@ -350,7 +387,9 @@ decorate(Tree, {
  * @property {String} openerText - appears on the dropdown opener if no items are selected
  * @property {String} openerTextSelected - appears on the dropdown opener if one or more items are selected
  * @fires d2l-insights-tree-filter-select - selection has changed; selected property of this element is the list of selected ids
- * @fires d2l-insights-tree-filter-request-children - owner should call addNodes with children of event.detail.id
+ * @fires d2l-insights-tree-filter-request-children - (dynamic tree only) owner should call tree.addNodes with children of event.detail.id
+ * @fires d2l-insights-tree-filter-search - (dynamic tree only) owner may call this.addSearchResults with nodes and ancestors matching
+ * event.detail.searchString and event.detail.bookmark (arbitrary data previously passed to this.addSearchResults)
  */
 class TreeFilter extends Localizer(MobxLitElement) {
 
@@ -359,7 +398,10 @@ class TreeFilter extends Localizer(MobxLitElement) {
 			tree: { type: Object, attribute: false },
 			openerText: { type: String, attribute: 'opener-text' },
 			openerTextSelected: { type: String, attribute: 'opener-text-selected' },
-			searchString: { type: String, attribute: 'search-string', reflect: true }
+			searchString: { type: String, attribute: 'search-string', reflect: true },
+			isLoadMoreSearch: { type: Boolean, attribute: 'load-more-search', reflect: true },
+			_loadingParent: { type: Boolean, attribute: false },
+			_isLoadingSearch: { type: Boolean, attribute: false }
 		};
 	}
 
@@ -380,8 +422,10 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		this.openerText = 'MISSING NAME';
 		this.openerTextSelected = 'MISSING NAME';
 		this.searchString = '';
+		this.isLoadMoreSearch = false;
 
 		this._needResize = false;
+		this._searchBookmark = null;
 	}
 
 	get selected() {
@@ -393,6 +437,31 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	 */
 	get treeUpdateComplete() {
 		return this.updateComplete.then(() => this.shadowRoot.querySelector('d2l-insights-tree-selector').treeUpdateComplete);
+	}
+
+	/**
+	 * Adds the given children to the given parent. See Tree.addNodes().
+	 * @param parent
+	 * @param children
+	 */
+	addChildren(parent, children) {
+		this._needResize = true;
+		this.tree.addNodes(parent, children);
+		this._loadingParent = null;
+	}
+
+	/**
+	 * Merges the given nodes into the tree and may display a load more control.
+	 * @param {[][]} [nodes=[]] - Array of arrays, including all ancestors up to root, in the same format as for the constructor
+	 * @param {Boolean}hasMore - Will display a "load more" button in the search if true
+	 * @param {Object}bookmark - Opaque data that will be sent in the search event if the user asks to load more results
+	 */
+	addSearchResults(nodes, hasMore, bookmark) {
+		this._needResize = true;
+		this.tree.addTree(nodes);
+		this.isLoadMoreSearch = hasMore;
+		this._searchBookmark = bookmark;
+		this._isLoadingSearch = false;
 	}
 
 	render() {
@@ -409,6 +478,7 @@ class TreeFilter extends Localizer(MobxLitElement) {
 				@d2l-insights-tree-selector-search="${this._onSearch}"
 			>
 				${this._renderSearchResults()}
+				${this._renderSearchLoadingControls()}
 				${this._renderChildren(this.tree.rootId)}
 			</d2l-insights-tree-selector>
 		</div>`;
@@ -439,9 +509,13 @@ class TreeFilter extends Localizer(MobxLitElement) {
 			this._requestChildren(id);
 		}
 
-		return this.tree
-			.getChildIdsForDisplay(id)
-			.map(id => this._renderNode(id, parentName, indentLevel + 1));
+		return [
+			...this.tree
+				.getChildIdsForDisplay(id)
+				.map(id => this._renderNode(id, parentName, indentLevel + 1)),
+
+			this._loadingParent === id ? this._renderLoadingIndicator() : ''
+		];
 	}
 
 	_renderNode(id, parentName, indentLevel) {
@@ -462,6 +536,25 @@ class TreeFilter extends Localizer(MobxLitElement) {
 				>
 					${isOpen ? this._renderChildren(id, orgUnitName, indentLevel) : ''}
 				</d2l-insights-tree-selector-node>`;
+	}
+
+	_renderLoadingIndicator() {
+		return html`<d2l-loading-spinner slot="tree"></d2l-loading-spinner>`;
+	}
+
+	_renderSearchLoadingControls() {
+		if (!this._isSearch) return html``;
+
+		if (this._isLoadingSearch) {
+			return html`<d2l-loading-spinner slot="search-results"></d2l-loading-spinner>`;
+		}
+
+		if (this.isLoadMoreSearch)  {
+			return html`<d2l-button slot="search-results"
+				@click="${this._onSearchLoadMore}"
+				description="${this.localize('components.tree-selector.search-load-more.aria-label')}"
+			>${this.localize('components.tree-selector.load-more-label')}</d2l-button>`;
+		}
 	}
 
 	_renderSearchResults() {
@@ -492,6 +585,33 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		event.stopPropagation();
 		this._needResize = true;
 		this.searchString = event.detail.value;
+
+		if (this.tree.isDynamic) {
+			this._fireSearchEvent(this.searchString);
+		}
+	}
+
+	_onSearchLoadMore(event) {
+		event.stopPropagation();
+		this._fireSearchEvent(this.searchString, this._searchBookmark);
+	}
+
+	_fireSearchEvent(searchString, bookmark) {
+		if (!searchString) return;
+
+		this._isLoadingSearch = true;
+
+		/**
+		 * @event d2l-insights-tree-filter-search
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-filter-search',
+			{
+				bubbles: true,
+				composed: false,
+				detail: { searchString, bookmark }
+			}
+		));
 	}
 
 	_onSelect(event) {
@@ -508,6 +628,8 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	}
 
 	_requestChildren(id) {
+		this._loadingParent = id;
+
 		/**
 		 * @event d2l-insights-tree-filter-request-children
 		 */

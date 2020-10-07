@@ -68,10 +68,13 @@ class TreeSelector extends Localizer(LitElement) {
 	}
 
 	render() {
+		// Using no-auto-fit on d2l-dropdown-content to avoid having the component jump to the top on every
+		// node open and load. The tradeoff is that the user has to scroll the whole page now.
+		// We have a defect logged to improve this in future.
 		return html`
 			<d2l-dropdown>
 				<d2l-dropdown-button-subtle text="${this.name}">
-					<d2l-dropdown-content align="start">
+					<d2l-dropdown-content align="start" no-auto-fit>
 						<div class="d2l-insights-tree-selector-search" slot="header">
 							<d2l-input-search
 								label="${this.localize('components.tree-selector.search-label')}"

@@ -295,6 +295,60 @@ describe('Tree', () => {
 		});
 	});
 
+	describe('addTree', () => {
+		const searchResults = [
+			[6606, 'Org', mockOuTypes.organization, [0]],
+			[1002, 'Department 2', mockOuTypes.department, [6606]],
+			[1003, 'Department 3', mockOuTypes.department, [6606]],
+
+			[3, 'Course 3', mockOuTypes.course, [1001, 1002]], // already present
+			[94, 'Course 5', mockOuTypes.course, [1003, 1002]], // new
+
+			[11, 'Semester 1', mockOuTypes.semester, [6606]],
+
+			[511, 'Course 5 / Semester 1', mockOuTypes.courseOffering, [94, 11]], // new
+			[113, 'Course 1 / Semester 3', mockOuTypes.courseOffering, [1, 13]] // new, not selected
+		];
+		it('should add the given nodes', () => {
+			dynamicTree.addTree(searchResults);
+
+			expect(dynamicTree.getName(94)).to.equal('Course 5');
+			expect(dynamicTree.getName(511)).to.equal('Course 5 / Semester 1');
+			expect(dynamicTree.getType(94)).to.equal(mockOuTypes.course);
+			expect(dynamicTree.getType(511)).to.equal(mockOuTypes.courseOffering);
+			expect(dynamicTree.isOpenable(94)).to.be.true;
+			expect(dynamicTree.isOpenable(511)).to.be.false;
+		});
+
+		it('should not mark parents as populated', () => {
+			dynamicTree.addTree(searchResults);
+			expect(dynamicTree.isPopulated(1003)).to.be.false;
+			expect(dynamicTree.isPopulated(94)).to.be.false;
+		});
+
+		it('should update children', () => {
+			dynamicTree.addTree(searchResults);
+			expect(dynamicTree.getChildIdsForDisplay(1003)).to.deep.equal([4, 94]);
+			expect(dynamicTree.getChildIdsForDisplay(94)).to.deep.equal([511]);
+		});
+
+		it('should select based on parent state', () => {
+			// 1003 was selected, but not 1002
+			// because 94 is child of both, it will be selected, and 1002 will be partially selected
+			expect(dynamicTree.getState(1002)).to.equal('none');
+			dynamicTree.addTree(searchResults);
+			expect(dynamicTree.getState(94)).to.equal('indeterminate'); // because it may have other children
+			expect(dynamicTree.getState(511)).to.equal('explicit');
+			expect(dynamicTree.getState(113)).to.equal('none');
+			expect(dynamicTree.getState(1002)).to.equal('indeterminate');
+		});
+
+		it('should report the correct ancestors for a new node', () => {
+			dynamicTree.addTree(searchResults);
+			expect([...dynamicTree.getAncestorIds(511)].sort()).to.deep.equal([1002, 1003, 11, 511, 6606, 94]);
+		});
+	});
+
 	describe('getAncestorIds', () => {
 		it('builds the ancestors map correctly', () => {
 			const expectedAncestorsMap = {
@@ -695,6 +749,16 @@ describe('d2l-insights-tree-filter', () => {
 			await el.treeUpdateComplete;
 			expect(el.searchString).to.equal('forastring');
 		});
+
+		it('should add dynamic search results', async() => {
+			el.searchString = 'asdf'; // get into search mode
+			el.addSearchResults([[9876, 'asdf', mockOuTypes.courseOffering, [6606]]], false);
+			await el.treeUpdateComplete;
+
+			const resultNodes = el.shadowRoot.querySelectorAll('d2l-insights-tree-selector-node[slot="search-results"]');
+			expect(resultNodes.length).to.equal(1);
+			expect([...resultNodes].map(x => x.dataId).sort()).to.deep.equal([9876]);
+		});
 	});
 
 	describe('events', () => {
@@ -740,6 +804,35 @@ describe('d2l-insights-tree-filter', () => {
 			expect(event.type).to.equal('d2l-insights-tree-filter-request-children');
 			expect(event.target).to.equal(el);
 			expect(event.detail.id).to.equal(5);
+		});
+
+		it('should fire d2l-insights-tree-filter-search on search in dynamic tree', async() => {
+			el.tree._populated = new Set(); // shortcut to make tree dynamic
+			const listener = oneEvent(el, 'd2l-insights-tree-filter-search');
+			const filter = el.shadowRoot.querySelector('d2l-insights-tree-selector');
+			filter.simulateSearch('asdf');
+			const event = await listener;
+			expect(event.type).to.equal('d2l-insights-tree-filter-search');
+			expect(event.target).to.equal(el);
+			expect(event.detail.searchString).to.equal('asdf');
+			expect(event.detail.bookmark).to.not.exist;
+		});
+
+		it('should fire d2l-insights-tree-filter-search on click of load more button', async() => {
+			el.searchString = 'asdf'; // get into search mode
+			el.addSearchResults([[9876, 'asdf', mockOuTypes.courseOffering, [6606]]], true, 'bookmark');
+			await el.treeUpdateComplete;
+
+			const resultNodes = el.shadowRoot.querySelectorAll('d2l-button[slot="search-results"]');
+			expect(resultNodes.length).to.equal(1);
+
+			const listener = oneEvent(el, 'd2l-insights-tree-filter-search');
+			resultNodes[0].click();
+			const event = await listener;
+			expect(event.type).to.equal('d2l-insights-tree-filter-search');
+			expect(event.target).to.equal(el);
+			expect(event.detail.searchString).to.equal('asdf');
+			expect(event.detail.bookmark).to.equal('bookmark');
 		});
 	});
 });
