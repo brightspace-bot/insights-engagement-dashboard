@@ -1,10 +1,13 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
 import { COURSE_OFFERING, RECORD, USER } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
+import { formatNumber, formatPercent } from '@brightspace-ui/intl/lib/number.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 import { CardFilter } from './cardFilter.js';
 import { TABLE_USER } from '../components/users-table';
 import { Tree } from '../components/tree-filter';
+
+const numberFormatOptions = { maximumFractionDigits: 2 };
 
 function unique(array) {
 	return [...new Set(array)];
@@ -17,6 +20,11 @@ const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
 const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
 const CourseLastAccessFilterId = 'd2l-insights-course-last-access-card';
 const CurrentFinalGradeFilterId = 'd2l-insights-current-final-grade-card';
+
+function avgOf(records, field) {
+	const total = records.reduce((sum, r) => sum + r[field], 0);
+	return total / records.length;
+}
 
 export class Data {
 	constructor({ recordProvider, cardFilters }) {
@@ -160,12 +168,17 @@ export class Data {
 		// then sort by lastFirstName
 		const recordsByUser = this.recordsByUser;
 		return this.users
-			.map(user => [
-				[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
-				recordsByUser.get(user[USER.ID]).length, // courses
-				'', // average grade
-				'', // average time in content
-			])
+			.map(user => {
+				const records = recordsByUser.get(user[USER.ID]);
+				const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
+				const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
+				return [
+					[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
+					records.length, // courses
+					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
+					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions)
+				];
+			})
 			.sort((user1, user2) => {
 				// sort by lastFirstName
 				return user1[TABLE_USER.NAME_INFO][0].localeCompare(user2[TABLE_USER.NAME_INFO][0]);
