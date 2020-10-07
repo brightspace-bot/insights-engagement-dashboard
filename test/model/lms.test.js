@@ -2,7 +2,7 @@ import { fetchCachedChildren, fetchLastSearch, fetchRelevantChildren, fetchRoles
 import { expect } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
 
-const rolesEndpoint = '/d2l/api/lp/1.23/roles/';
+const rolesEndpoint = '/d2l/api/ap/unstable/insights/data/roles';
 
 describe('Lms', () => {
 	afterEach(() => {
