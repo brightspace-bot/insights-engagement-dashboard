@@ -46,6 +46,7 @@
     "@adobe/lit-mobx": "0.0.x",
     "@brightspace-ui-labs/pagination": "^0.0.8",
     "@brightspace-ui/core": "^1.83.1",
+    "@brightspace-ui/intl": "^3.0.11",
     "@webcomponents/webcomponentsjs": "^2",
     "array-flat-polyfill": "^1.0.1",
     "d2l-facet-filter-sort": "BrightspaceUI/facet-filter-sort#semver:^3",

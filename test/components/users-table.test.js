@@ -5,14 +5,19 @@ import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-help
 
 const data = {
 	// returns [
-	//   [['0Last, 0First', 'user0 - 0'], '', '', ''],
-	//   [['1Last, 1First', 'user1 - 1'], '', '', ''],
+	//   [['0Last, 0First', 'user0 - 0'], ...],
+	//   [['1Last, 1First', 'user1 - 1'], ...],
 	//   ...,
-	//   [['22Last, 22First', 'user22 - 22'], '', '', ''],
+	//   [['22Last, 22First', 'user22 - 22'], ...],
 	// ]
 	userDataForDisplay: Array.from(
 		{ length: 23 },
-		(val, idx) => [[`${idx}Last, ${idx}First`, `user${idx} - ${idx}`], Math.floor(Math.random() * 10), '', '']
+		(val, idx) => [
+			[`${idx}Last, ${idx}First`, `user${idx} - ${idx}`],
+			Math.floor(Math.random() * 10),
+			`${(Math.random() * 100).toFixed(1) } %`,
+			(Math.random() * 20).toFixed(2)
+		]
 	)
 };
 
@@ -78,8 +83,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.pageNumber).to.equal(1);
 
 				// since there are 23 users, the first (default) page should show the first 20 users, in order, on it
-				verifyUserInfoColumn(innerTable, 20, 0);
-				verifyCourseCountColumn(innerTable, 20, 0);
+				verifyColumns(innerTable, 20, 0);
 			});
 
 			it('should show the correct number of users on the last page', async() => {
@@ -91,8 +95,7 @@ describe('d2l-insights-users-table', () => {
 
 				expect(pageSelector.pageNumber).to.equal(2);
 
-				verifyUserInfoColumn(innerTable, 3, 20);
-				verifyCourseCountColumn(innerTable, 3, 20);
+				verifyColumns(innerTable, 3, 20);
 			});
 
 			it('should change number of users shown and total number of pages if the page size changes', async() => {
@@ -104,8 +107,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.maxPageNumber).to.equal(3);
 				expect(pageSelector.pageNumber).to.equal(1);
 
-				verifyUserInfoColumn(innerTable, 10, 0);
-				verifyCourseCountColumn(innerTable, 10, 0);
+				verifyColumns(innerTable, 10, 0);
 
 				pageSelector
 					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
@@ -115,8 +117,7 @@ describe('d2l-insights-users-table', () => {
 
 				expect(pageSelector.pageNumber).to.equal(2);
 
-				verifyUserInfoColumn(innerTable, 10, 10);
-				verifyCourseCountColumn(innerTable, 10, 10);
+				verifyColumns(innerTable, 10, 10);
 
 				pageSelector
 					.shadowRoot.querySelector('d2l-button-icon[text="Next page"]')
@@ -126,8 +127,7 @@ describe('d2l-insights-users-table', () => {
 
 				expect(pageSelector.pageNumber).to.equal(3);
 
-				verifyUserInfoColumn(innerTable, 3, 20);
-				verifyCourseCountColumn(innerTable, 3, 20);
+				verifyColumns(innerTable, 3, 20);
 			});
 
 			it('should show all users on a single page if there are fewer users than the page size', async() => {
@@ -139,8 +139,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.maxPageNumber).to.equal(1);
 				expect(pageSelector.pageNumber).to.equal(1);
 
-				verifyUserInfoColumn(innerTable, 23, 0);
-				verifyCourseCountColumn(innerTable, 23, 0);
+				verifyColumns(innerTable, 23, 0);
 			});
 
 			it('should show zero pages if there are no users to display', async() => {
@@ -151,8 +150,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.maxPageNumber).to.equal(0);
 				expect(pageSelector.pageNumber).to.equal(0);
 
-				verifyUserInfoColumn(innerTable, 0, 0);
-				verifyCourseCountColumn(innerTable, 0, 0);
+				verifyColumns(innerTable, 0, 0);
 			});
 
 			it('should show 20 skeleton rows with zero pages if loading', async() => {
@@ -171,8 +169,8 @@ describe('d2l-insights-users-table', () => {
 	});
 });
 
-function verifyUserInfoColumn(table, expectedNumDisplayedRows, startRowNum) {
-	const displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
+	let displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
 	expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
 	displayedUserInfo.forEach((cell, rowIdx) => {
 		const mainText = cell.querySelector('div:first-child');
@@ -180,13 +178,14 @@ function verifyUserInfoColumn(table, expectedNumDisplayedRows, startRowNum) {
 		expect(mainText.innerText).to.equal(data.userDataForDisplay[rowIdx + startRowNum][0][0]);
 		expect(subText.innerText).to.equal(data.userDataForDisplay[rowIdx + startRowNum][0][1]);
 	});
-}
 
-function verifyCourseCountColumn(table, expectedNumDisplayedRows, startRowNum) {
-	const displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll('tbody > tr > td:nth-child(2)'));
-	expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
-	displayedUserInfo.forEach((cell, rowIdx) => {
-		const mainText = cell.querySelector('div');
-		expect(mainText.innerText).to.equal(data.userDataForDisplay[rowIdx + startRowNum][1].toString());
+	[2, 3, 4].forEach(child => {
+
+		displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll(`tbody > tr > td:nth-child(${child})`));
+		expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
+		displayedUserInfo.forEach((cell, rowIdx) => {
+			const mainText = cell.querySelector('div');
+			expect(mainText.innerText).to.equal(data.userDataForDisplay[rowIdx + startRowNum][child - 1].toString());
+		});
 	});
 }

@@ -371,10 +371,10 @@ describe('Data', () => {
 	describe('userDataForDisplay', () => {
 		it('should return an array of arrays sorted by lastFirstName', async() => {
 			const expected = [
-				[['Harrison, George', 'gharrison - 300'], 14, '', ''],
-				[['Lennon, John', 'jlennon - 100'], 12, '', ''],
-				[['McCartney, Paul', 'pmccartney - 200'], 13, '', ''],
-				[['Starr, Ringo', 'rstarr - 400'], 9, '', '']
+				[['Harrison, George', 'gharrison - 300'], 14, '71.42 %', '19.64'],
+				[['Lennon, John', 'jlennon - 100'], 12, '22 %', '2.78'],
+				[['McCartney, Paul', 'pmccartney - 200'], 13, '74 %', '23.72'],
+				[['Starr, Ringo', 'rstarr - 400'], 9, '55 %', '8.33']
 			];
 
 			expect(sut.userDataForDisplay).to.deep.equal(expected);
@@ -383,8 +383,8 @@ describe('Data', () => {
 		it('should only display users in view', async() => {
 			const roleFilters = [mockRoleIds.instructor];
 			const expectedUsers = [
-				[['Harrison, George', 'gharrison - 300'], 1, '', ''],
-				[['McCartney, Paul', 'pmccartney - 200'], 3, '', '']
+				[['Harrison, George', 'gharrison - 300'], 1, '', '0'],
+				[['McCartney, Paul', 'pmccartney - 200'], 3, '', '0']
 			];
 
 			sut.selectedRoleIds = roleFilters;
