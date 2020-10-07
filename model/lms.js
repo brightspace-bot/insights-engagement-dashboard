@@ -2,6 +2,7 @@ const rolesEndpoint = '/d2l/api/lp/1.23/roles/';
 const semestersEndpoint = '/d2l/api/ap/unstable/insights/data/semesters';
 const dataEndpoint = '/d2l/api/ap/unstable/insights/data/engagement';
 const relevantChildrenEndpoint = orgUnitId => `/d2l/api/ap/unstable/insights/data/orgunits/${orgUnitId}/children`;
+const ouSearchEndpoint = '/d2l/api/ap/unstable/insights/data/orgunits';
 
 /**
  * @param {[Number]} roleIds
@@ -78,4 +79,41 @@ export async function fetchRelevantChildren(orgUnitId, selectedSemesterIds) {
 
 export function fetchCachedChildren(selectedSemesterIds) {
 	return relevantChildrenCache.get(cacheKey(selectedSemesterIds));
+}
+
+const orgUnitSearchCache = {
+	searchString: null,
+	selectedSemesterIds: cacheKey(),
+	nodes: null
+};
+export async function orgUnitSearch(searchString, selectedSemesterIds, bookmark) {
+	const url = new URL(ouSearchEndpoint, window.location.origin);
+	url.searchParams.set('search', searchString);
+	if (selectedSemesterIds) {
+		url.searchParams.set('selectedSemestersCsv', selectedSemesterIds.join(','));
+	}
+	if (bookmark) {
+		url.searchParams.set('bookmark', bookmark);
+	}
+	const response = await fetch(url.toString());
+	const results = await response.json();
+
+	const key = cacheKey(selectedSemesterIds);
+	if (orgUnitSearchCache.searchString === searchString && orgUnitSearchCache.selectedSemesterIds === key) {
+		orgUnitSearchCache.nodes = [...orgUnitSearchCache.nodes, ...results.Items];
+	} else {
+		orgUnitSearchCache.searchString = searchString;
+		orgUnitSearchCache.selectedSemesterIds = key;
+		orgUnitSearchCache.nodes = results.Items;
+	}
+
+	return results;
+}
+
+export function fetchLastSearch(selectedSemesterIds) {
+	if (orgUnitSearchCache.selectedSemesterIds === cacheKey(selectedSemesterIds)) {
+		return orgUnitSearchCache.nodes;
+	}
+
+	return null;
 }

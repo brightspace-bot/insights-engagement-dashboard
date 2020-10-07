@@ -1,4 +1,4 @@
-import { fetchCachedChildren, fetchRelevantChildren, fetchRoles } from '../../model/lms';
+import { fetchCachedChildren, fetchLastSearch, fetchRelevantChildren, fetchRoles, orgUnitSearch } from '../../model/lms';
 import { expect } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
 
@@ -101,6 +101,144 @@ describe('Lms', () => {
 			expect([...fetchCachedChildren(null)]).to.deep.equal([
 				[6612, mockLmsResponseData.Items]
 			]);
+		});
+	});
+
+	describe('orgUnitSearch', () => {
+		it('should search without a semester filter', async() => {
+			const mockLmsResponseData = {
+				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+			};
+
+			fetchMock.get('end:/d2l/api/ap/unstable/insights/data/orgunits?search=asdf', mockLmsResponseData);
+
+			expect(await orgUnitSearch('asdf')).to.deep.equal(mockLmsResponseData);
+		});
+
+		it('should search with a semester filter', async() => {
+			const mockLmsResponseData = {
+				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+			};
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=c23&selectedSemestersCsv=4%2C500%2C8',
+				mockLmsResponseData
+			);
+
+			expect(await orgUnitSearch('c23', [4, 500, 8])).to.deep.equal(mockLmsResponseData);
+		});
+
+		it('should search with a semester filter and bookmark', async() => {
+			const mockLmsResponseData = {
+				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+			};
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=c23&selectedSemestersCsv=4%2C500%2C8&bookmark=234',
+				mockLmsResponseData
+			);
+
+			expect(await orgUnitSearch('c23', [4, 500, 8], '234')).to.deep.equal(mockLmsResponseData);
+		});
+
+		it('should cache result for matching semester filter', async() => {
+			const mockLmsResponseData = {
+				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+			};
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=new+search&selectedSemestersCsv=4%2C500%2C8',
+				mockLmsResponseData
+			);
+			await orgUnitSearch('new search', [4, 500, 8]);
+
+			expect(fetchLastSearch([4, 500, 8])).to.deep.equal(mockLmsResponseData.Items);
+		});
+
+		it('should cache null for different semester filter', async() => {
+			const mockLmsResponseData = {
+				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+			};
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=new+search&selectedSemestersCsv=4%2C500%2C8',
+				mockLmsResponseData
+			);
+			await orgUnitSearch('new search', [4, 500, 8]);
+
+			expect(fetchLastSearch([1, 2, 3])).to.deep.equal(null);
+		});
+
+		it('should add pages from the same search to the cache', async() => {
+			const mockLmsResponseData1 = {
+				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+			};
+			const mockLmsResponseData2 = {
+				Items: [12, 14, 17, 18, 19] // not representative; just for matching
+			};
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=paged+search&selectedSemestersCsv=4%2C500%2C8',
+				mockLmsResponseData1
+			);
+			await orgUnitSearch('paged search', [4, 500, 8]);
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=paged+search&selectedSemestersCsv=4%2C500%2C8&bookmark=9',
+				mockLmsResponseData2
+			);
+			await orgUnitSearch('paged search', [4, 500, 8], '9');
+
+			expect(fetchLastSearch([4, 500, 8])).to.deep.equal(
+				[...mockLmsResponseData1.Items, ...mockLmsResponseData2.Items]
+			);
+		});
+
+		it('should refresh the cache when a new search begins', async() => {
+			const mockLmsResponseData1 = {
+				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+			};
+			const mockLmsResponseData2 = {
+				Items: [12, 14, 17, 18, 19] // not representative; just for matching
+			};
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=first+search&selectedSemestersCsv=4%2C500%2C8',
+				mockLmsResponseData1
+			);
+			await orgUnitSearch('first search', [4, 500, 8]);
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=second+search&selectedSemestersCsv=4%2C500%2C8',
+				mockLmsResponseData2
+			);
+			await orgUnitSearch('second search', [4, 500, 8]);
+
+			expect(fetchLastSearch([4, 500, 8])).to.deep.equal(mockLmsResponseData2.Items);
+		});
+
+		it('should refresh the cache when the semester filter changes', async() => {
+			const mockLmsResponseData1 = {
+				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+			};
+			const mockLmsResponseData2 = {
+				Items: [12, 14, 17, 18, 19] // not representative; just for matching
+			};
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=same+search&selectedSemestersCsv=4%2C500%2C8',
+				mockLmsResponseData1
+			);
+			await orgUnitSearch('same search', [4, 500, 8]);
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits?search=same+search&selectedSemestersCsv=1%2C2%2C3',
+				mockLmsResponseData2
+			);
+			await orgUnitSearch('same search', [1, 2, 3]);
+
+			expect(fetchLastSearch([4, 500, 8])).to.deep.equal(null);
+			expect(fetchLastSearch([1, 2, 3])).to.deep.equal(mockLmsResponseData2.Items);
 		});
 	});
 });
