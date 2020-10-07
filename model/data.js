@@ -158,11 +158,11 @@ export class Data {
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
 		// then sort by lastFirstName
-
+		const recordsByUser = this.recordsByUser;
 		return this.users
 			.map(user => [
 				[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
-				'', // courses
+				recordsByUser.get(user[USER.ID]).length, // courses
 				'', // average grade
 				'', // average time in content
 			])
@@ -170,6 +170,17 @@ export class Data {
 				// sort by lastFirstName
 				return user1[TABLE_USER.NAME_INFO][0].localeCompare(user2[TABLE_USER.NAME_INFO][0]);
 			});
+	}
+
+	get recordsByUser() {
+		const recordsByUser = new Map();
+		this.getRecordsInView().forEach(r => {
+			if (!recordsByUser.has(r[RECORD.USER_ID])) {
+				recordsByUser.set(r[RECORD.USER_ID], []);
+			}
+			recordsByUser.get(r[RECORD.USER_ID]).push(r);
+		});
+		return recordsByUser;
 	}
 
 	get currentFinalGrades() {
