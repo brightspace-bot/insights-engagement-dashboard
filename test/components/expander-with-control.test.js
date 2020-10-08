@@ -75,8 +75,13 @@ describe('d2l-insights-expander-with-control', () => {
 
 			const listener = oneEvent(elExpanded, 'd2l-insights-expander-with-control-collapsed');
 
+			const expandContent = elExpanded.shadowRoot.querySelector('d2l-expand-collapse-content');
+			console.log(`content expanded: ${expandContent.expanded}`);
+
 			const controlDiv = elExpanded.shadowRoot.querySelector('div');
 			controlDiv.click();
+
+			console.log(`content expanded: ${expandContent.expanded}`);
 
 			await listener; // will time out if event is not fired
 		});
@@ -88,28 +93,6 @@ describe('d2l-insights-expander-with-control', () => {
 
 			const controlDiv = elCollapsed.shadowRoot.querySelector('div');
 			controlDiv.click();
-
-			await listener; // will time out if event is not fired
-		});
-
-		it('should fire collapsed event if element is expanded and user hits Enter', async function() {
-			this.timeout(3000);
-
-			const listener = oneEvent(elExpanded, 'd2l-insights-expander-with-control-collapsed');
-
-			const controlDiv = elExpanded.shadowRoot.querySelector('div');
-			controlDiv.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-
-			await listener; // will time out if event is not fired
-		});
-
-		it('should fire expanded event if element is collapsed and user hits Enter', async function() {
-			this.timeout(3000);
-
-			const listener = oneEvent(elCollapsed, 'd2l-insights-expander-with-control-expanded');
-
-			const controlDiv = elCollapsed.shadowRoot.querySelector('div');
-			controlDiv.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
 			await listener; // will time out if event is not fired
 		});

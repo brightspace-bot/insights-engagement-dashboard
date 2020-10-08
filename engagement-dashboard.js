@@ -126,16 +126,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				</div>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 				<d2l-insights-users-table .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-users-table>
-				<d2l-insights-default-view-popup .data="${this._data}" ?opened="${!this._isLoading && this._isDefaultView}"></d2l-insights-default-view-popup>
+				<d2l-insights-default-view-popup .data="${this._data}" ?opened="${this._data.isDefaultView}"></d2l-insights-default-view-popup>
 		`;
 	}
 
 	get _isLoading() {
 		return this._data.isLoading;
-	}
-
-	get _isDefaultView() {
-		return this._data.serverData.defaultViewOrgUnitIds && this._data.serverData.defaultViewOrgUnitIds.length;
 	}
 
 	get _data() {

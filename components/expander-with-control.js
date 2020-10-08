@@ -40,13 +40,16 @@ class ExpanderWithControl extends Localizer(LitElement) {
 
 	render() {
 		const controlText = this.expanded ? this.controlExpandedText : this.controlCollapsedText;
+
+		// having events be handled on the div makes the whole div clickable, as specified in the spec
+		// the div's click handler also handles any events fired by the d2l-button-icon, including Enter
+		// and Spacebar keypress events. When Enter/Spacebar is pressed on a focused button, it fires
+		// a MouseEvent which can be handled by the click handler
 		return html`
-			<!-- having events be handled on the div makes the whole div clickable, as specified in the spec -->
 			<div
 				role="button"
 				class="d2l-insights-expand-collapse-control"
-				@click="${this._toggleExpanded}"
-				@keydown="${this._handleKeydown}">
+				@click="${this._toggleExpanded}">
 
 				<p class="d2l-insights-expand-collapse-control-text">${ controlText }</p>
 				<d2l-button-icon
@@ -75,14 +78,6 @@ class ExpanderWithControl extends Localizer(LitElement) {
 		event.detail.collapseComplete.then(() => {
 			this.dispatchEvent(new Event('d2l-insights-expander-with-control-collapsed'));
 		});
-	}
-
-	_handleKeydown(event) {
-		if (event.key === 'Enter') {
-			event.stopPropagation();
-			event.preventDefault(); // I have no idea why this is necessary, but without it keyboard interactions fail
-			this._toggleExpanded();
-		}
 	}
 
 	_toggleExpanded() {

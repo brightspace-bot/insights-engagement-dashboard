@@ -32,10 +32,7 @@ class DefaultViewPopup extends Localizer(LitElement) {
 	}
 
 	get _displayData() {
-		if (!this.data.serverData
-			|| !this.data.serverData.defaultViewOrgUnitIds
-			|| !this.data.serverData.defaultViewOrgUnitIds.length
-		) {
+		if (!this.data.isDefaultView) {
 			return [];
 		}
 
