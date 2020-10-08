@@ -17,6 +17,8 @@ describe('d2l-insights-expander-with-control', () => {
 
 				</d2l-insights-expander-with-control>`);
 
+		await elExpanded.updateComplete;
+
 		elCollapsed = await fixture(html`
 				<d2l-insights-expander-with-control
 					control-collapsed-text="collapsed"
@@ -26,6 +28,8 @@ describe('d2l-insights-expander-with-control', () => {
 					<span>to know when expand/collapse animations are done</span>
 
 				</d2l-insights-expander-with-control>`);
+
+		await elCollapsed.updateComplete;
 	});
 
 	describe('constructor', () => {
@@ -66,7 +70,9 @@ describe('d2l-insights-expander-with-control', () => {
 	});
 
 	describe('interactions/eventing', () => {
-		it('should fire collapsed event if element is expanded and control is clicked', async() => {
+		it('should fire collapsed event if element is expanded and control is clicked', async function() {
+			this.timeout(3000); // adding timeouts to these tests because OSX (specifically Chrome) on sauce has issues
+
 			const listener = oneEvent(elExpanded, 'd2l-insights-expander-with-control-collapsed');
 
 			const controlDiv = elExpanded.shadowRoot.querySelector('div');
@@ -75,7 +81,9 @@ describe('d2l-insights-expander-with-control', () => {
 			await listener; // will time out if event is not fired
 		});
 
-		it('should fire expanded event if element is collapsed and control is clicked', async() => {
+		it('should fire expanded event if element is collapsed and control is clicked', async function() {
+			this.timeout(3000);
+
 			const listener = oneEvent(elCollapsed, 'd2l-insights-expander-with-control-expanded');
 
 			const controlDiv = elCollapsed.shadowRoot.querySelector('div');
@@ -84,7 +92,9 @@ describe('d2l-insights-expander-with-control', () => {
 			await listener; // will time out if event is not fired
 		});
 
-		it('should fire collapsed event if element is expanded and user hits Enter', async() => {
+		it('should fire collapsed event if element is expanded and user hits Enter', async function() {
+			this.timeout(3000);
+
 			const listener = oneEvent(elExpanded, 'd2l-insights-expander-with-control-collapsed');
 
 			const controlDiv = elExpanded.shadowRoot.querySelector('div');
@@ -93,7 +103,9 @@ describe('d2l-insights-expander-with-control', () => {
 			await listener; // will time out if event is not fired
 		});
 
-		it('should fire expanded event if element is collapsed and user hits Enter', async() => {
+		it('should fire expanded event if element is collapsed and user hits Enter', async function() {
+			this.timeout(3000);
+
 			const listener = oneEvent(elCollapsed, 'd2l-insights-expander-with-control-expanded');
 
 			const controlDiv = elCollapsed.shadowRoot.querySelector('div');

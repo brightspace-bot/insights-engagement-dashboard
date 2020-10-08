@@ -79,6 +79,8 @@ class ExpanderWithControl extends Localizer(LitElement) {
 
 	_handleKeydown(event) {
 		if (event.key === 'Enter') {
+			event.stopPropagation();
+			event.preventDefault(); // I have no idea why this is necessary, but without it keyboard interactions fail
 			this._toggleExpanded();
 		}
 	}

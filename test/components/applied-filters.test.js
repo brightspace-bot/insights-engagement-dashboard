@@ -19,7 +19,7 @@ describe('d2l-insights-applied-filters', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async function() {
-			this.timeout(3000);
+			this.timeout(3500);
 			const el = await fixture(html`<d2l-insights-applied-filters .data="${data}"></d2l-insights-applied-filters>`);
 			await expect(el).to.be.accessible();
 		});

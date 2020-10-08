@@ -16,7 +16,7 @@ describe('d2l-insights-course-last-access-card', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async function() {
-			this.timeout(3000);
+			this.timeout(3500);
 
 			const el = await fixture(html`<d2l-insights-course-last-access-card .data="${data}"></d2l-insights-course-last-access-card>`);
 			await expect(el).to.be.accessible();
