@@ -16,17 +16,17 @@ class ExpanderWithControl extends Localizer(LitElement) {
 
 	static get styles() {
 		return css`
-			.expand-collapse-control {
-				display: flex;
+			.d2l-insights-expand-collapse-control {
 				align-items: center;
+				display: flex;
 				justify-content: space-between;
 				margin: 1em 0 0.5em 0;
 			}
 
-			.expand-collapse-control-text {
+			.d2l-insights-expand-collapse-control-text {
 				color: var(--d2l-color-celestine);
-				margin: 0;
 				display: inline-flex;
+				margin: 0;
 			}
 		`;
 	}
@@ -44,11 +44,11 @@ class ExpanderWithControl extends Localizer(LitElement) {
 			<!-- having events be handled on the div makes the whole div clickable, as specified in the spec -->
 			<div
 				role="button"
-				class="expand-collapse-control"
+				class="d2l-insights-expand-collapse-control"
 				@click="${this._toggleExpanded}"
 				@keydown="${this._handleKeydown}">
 
-				<p class="expand-collapse-control-text">${ controlText }</p>
+				<p class="d2l-insights-expand-collapse-control-text">${ controlText }</p>
 				<d2l-button-icon
 					icon="tier1:${ this.expanded ? 'arrow-collapse' : 'arrow-expand' }"
 					aria-label="${ controlText }"

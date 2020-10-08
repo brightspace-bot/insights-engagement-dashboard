@@ -15,7 +15,11 @@ class DefaultViewPopup extends Localizer(LitElement) {
 
 	static get styles() {
 		return css`
-			.default-view-description {
+			.d2l-insights-default-view-popup-description {
+				margin: 0;
+			}
+
+			.d2l-insights-default-view-popup-course-list {
 				margin: 0;
 			}
 		`;
@@ -28,11 +32,10 @@ class DefaultViewPopup extends Localizer(LitElement) {
 	}
 
 	get _displayData() {
-		if (this.data.isLoading) {
-			return [];
-		}
-
-		if (!this.data.serverData.defaultViewOrgUnitIds || !this.data.serverData.defaultViewOrgUnitIds.length) {
+		if (!this.data.serverData
+			|| !this.data.serverData.defaultViewOrgUnitIds
+			|| !this.data.serverData.defaultViewOrgUnitIds.length
+		) {
 			return [];
 		}
 
@@ -51,10 +54,10 @@ class DefaultViewPopup extends Localizer(LitElement) {
 					width="615"
 					@d2l-dialog-close="${this._closeDialog}">
 
-				<p class="default-view-description">
+				<p class="d2l-insights-default-view-popup-description">
 					${this.localize('components.insights-default-view-popup.defaultViewDescription1', { numDefaultCourses: displayData.length })}
 				</p>
-				<p class="default-view-description">
+				<p class="d2l-insights-default-view-popup-description">
 					${this.localize('components.insights-default-view-popup.defaultViewDescription2')}
 				</p>
 
@@ -64,7 +67,7 @@ class DefaultViewPopup extends Localizer(LitElement) {
 					@d2l-insights-expander-with-control-expanded="${this._resize}"
 					@d2l-insights-expander-with-control-collapsed="${this._resize}">
 
-					<ul>
+					<ul class="d2l-insights-default-view-popup-course-list">
 						${displayData.map(data => html`
 							<li>${data}</li>
 						`)}
