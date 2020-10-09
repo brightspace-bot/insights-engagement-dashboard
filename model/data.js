@@ -43,7 +43,11 @@ export class Data {
 			records: [],
 			orgUnits: [],
 			users: [],
+
+			// NB: isDefaultView just means that data was loaded using the defaultViewDataProvider. It does not
+			// necessarily mean that the client-side has preselected OUs - also see get defaultViewPopupDisplayData
 			isDefaultView: false,
+
 			isRecordsTruncated: false,
 			isOrgUnitsTruncated: false,
 			semesterTypeId: null,
@@ -150,6 +154,9 @@ export class Data {
 		return this._selectorFilters.orgUnit.selected;
 	}
 
+	// returns OU ids (and respective names) that have been preselected to create the client-side default view, if any.
+	// NB: it's possible for isDefaultView to be true but for there to be no preselected ids; this happens if the
+	// defaultCourses and defaultSemesters config variables are set to 0
 	get defaultViewPopupDisplayData() {
 		let courseIdsToDisplay = [];
 
