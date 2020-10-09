@@ -122,6 +122,8 @@ class Chart extends SkeletonMixin(LitElement) {
 				}
 			});
 			this.chart = H[constructorType](this.chartContainer, this.options, this.chartCreated.bind(this));
+			// force highcharts to recalculate the chart position incase the filter move the graph
+			this.chartContainer.addEventListener('click', (e) => (delete this.chart.pointer.chartPosition));
 		}
 	}
 

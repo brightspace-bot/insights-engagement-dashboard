@@ -59,7 +59,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				.d2l-insights-summary-container-applied-filters {
 					height: auto;
-					min-height: 30px;
 					width: 100%;
 				}
 
