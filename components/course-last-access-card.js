@@ -157,7 +157,7 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	_pointUpdateColor(point, colorForPoint) {
 		point.update({ color: colorForPoint }, false);
 	}
- 
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
