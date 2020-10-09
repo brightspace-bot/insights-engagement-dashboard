@@ -4,6 +4,11 @@ import '@brightspace-ui/core/components/button/button-icon';
 import { css, html, LitElement } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 
+/**
+ * @property {String} controlExpandedText - The text to display in the control div when the control is expanded
+ * @property {String} controlCollapsedText - The text to display in the control div when the control is collapsed
+ * @property {Boolean} expanded - whether the content is expanded or not
+ */
 class ExpanderWithControl extends Localizer(LitElement) {
 
 	static get properties() {
@@ -43,8 +48,8 @@ class ExpanderWithControl extends Localizer(LitElement) {
 
 		// having events be handled on the div makes the whole div clickable, as specified in the spec
 		// the div's click handler also handles any events fired by the d2l-button-icon, including Enter
-		// and Spacebar keypress events. When Enter/Spacebar is pressed on a focused button, it fires
-		// a MouseEvent which can be handled by the click handler
+		// and Spacebar keypress events.
+		// Note: when Enter/Spacebar is pressed on a focused button, it fires a KeyboardEvent, as well as a MouseEvent
 		return html`
 			<div
 				role="button"

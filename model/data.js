@@ -43,6 +43,7 @@ export class Data {
 			records: [],
 			orgUnits: [],
 			users: [],
+			isDefaultView: false,
 			isRecordsTruncated: false,
 			isOrgUnitsTruncated: false,
 			semesterTypeId: null,
@@ -149,8 +150,20 @@ export class Data {
 		return this._selectorFilters.orgUnit.selected;
 	}
 
-	get isDefaultView() {
-		return this.serverData.defaultViewOrgUnitIds && this.serverData.defaultViewOrgUnitIds.length;
+	get defaultViewPopupDisplayData() {
+		let courseIdsToDisplay = [];
+
+		if (this.serverData.isDefaultView) {
+			if (this.serverData.defaultViewOrgUnitIds && this.serverData.defaultViewOrgUnitIds.length) {
+				courseIdsToDisplay = this.serverData.defaultViewOrgUnitIds;
+			} else if (this.serverData.selectedOrgUnitIds && this.serverData.selectedOrgUnitIds.length) {
+				courseIdsToDisplay = this.serverData.selectedOrgUnitIds;
+			}
+		} // else return empty array
+
+		return courseIdsToDisplay.map(id => {
+			return { id, name: this.orgUnitTree.getName(id) };
+		});
 	}
 
 	// @computed

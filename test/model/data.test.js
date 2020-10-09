@@ -107,23 +107,21 @@ describe('Data', () => {
 		selectedRolesIds: null,
 		selectedSemestersIds: null,
 		selectedOrgUnitIds: null,
+		isDefaultView: false,
 		isRecordsTruncated: false,
 		isOrgUnitsTruncated: false
 	};
 
 	const TRUNCATE_IF_THIS_ROLE_IS_PRESENT = 999999;
-	const recordProvider = async({ roleIds = null, semesterIds = null, orgUnitIds = null }) => {
-		return new Promise((resolve) => {
-			resolve({
-				...serverData,
-				semesterTypeId: mockOuTypes.semester,
-				selectedRolesIds: roleIds,
-				selectedSemestersIds: semesterIds,
-				selectedOrgUnitIds: orgUnitIds,
-				isOrgUnitsTruncated: roleIds.includes(TRUNCATE_IF_THIS_ROLE_IS_PRESENT)
-			});
-		});
-	};
+	const recordProvider = async({ roleIds = null, semesterIds = null, orgUnitIds = null, defaultView = false }) => ({
+		...serverData,
+		semesterTypeId: mockOuTypes.semester,
+		selectedRolesIds: roleIds,
+		selectedSemestersIds: semesterIds,
+		selectedOrgUnitIds: orgUnitIds,
+		defaultView,
+		isOrgUnitsTruncated: roleIds.includes(TRUNCATE_IF_THIS_ROLE_IS_PRESENT)
+	});
 
 	const cardFilters = [];
 	let sut;
@@ -251,6 +249,58 @@ describe('Data', () => {
 			sut.selectedOrgUnitIds = [1001];
 
 			sinon.assert.notCalled(recordProvider);
+		});
+	});
+
+	describe('get defaultViewPopupDisplayData', () => {
+		const getRecordProvider = ({ defaultViewOrgUnitIds = null, selectedOrgUnitIds = null, isDefaultView = false }) => {
+			return async() => ({
+				orgUnits: [
+					[1, 'Course 1', mockOuTypes.course, [0]],
+					[2, 'Course 2', mockOuTypes.course, [0]],
+					[3, 'Course 3', mockOuTypes.course, [0]]
+				],
+				users: [],
+				defaultViewOrgUnitIds,
+				selectedOrgUnitIds,
+				isDefaultView
+			});
+		};
+
+		it('should return an empty array if isDefaultView is false', async() => {
+			sut.recordProvider = getRecordProvider({ defaultViewOrgUnitIds: [1], selectedOrgUnitIds: [2] });
+			sut.loadData({});
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+
+			expect(sut.defaultViewPopupDisplayData).to.deep.equal([]);
+		});
+
+		it('should return defaultViewOrgUnitIds and names if isDefaultView is true', async() => {
+			sut.recordProvider = getRecordProvider({
+				defaultViewOrgUnitIds: [1, 3],
+				selectedOrgUnitIds: [2],
+				isDefaultView: true
+			});
+			sut.loadData({});
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+
+			expect(sut.defaultViewPopupDisplayData).to.deep.equal([{ id: 1, name: 'Course 1' }, { id: 3, name: 'Course 3' }]);
+		});
+
+		it('should return selectedOrgUnitIds and names if isDefaultView is true and defaultViewOrgUnitIds is null', async() => {
+			sut.recordProvider = getRecordProvider({ selectedOrgUnitIds: [2], isDefaultView: true });
+			sut.loadData({});
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+
+			expect(sut.defaultViewPopupDisplayData).to.deep.equal([{ id: 2, name: 'Course 2' }]);
+		});
+
+		it('should return an empty array if isDefaultView is true but there are no ids to show', async() => {
+			sut.recordProvider = getRecordProvider({ isDefaultView: true });
+			sut.loadData({});
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+
+			expect(sut.defaultViewPopupDisplayData).to.deep.equal([]);
 		});
 	});
 
