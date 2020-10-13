@@ -25,7 +25,8 @@ export class Tree {
 	 * @param {Tree} [oldTree] - tree to copy previous state from (e.g. which nodes are open)
 	 * @param {Boolean} isDynamic - if true, the tree is assumed to be incomplete, and tree-filter will fire events as needed
 	 * to request children
-	 * @param {Map}[extraChildren] - Map from parent node ids to arrays of nodes; these will be added to the tree before
+	 * @param {Map}[extraChildren] - Map from parent node ids to arrays of
+	 * {Items: <nodes>, PagingInfo: {HasMoreItems: boolean, Bookmark}}; these will be added to the tree before
 	 * any selections are applied and the parents marked as populated. Useful for adding cached lookups to a dynamic tree.
 	 */
 	constructor({
@@ -50,12 +51,17 @@ export class Tree {
 		this._visible = null;
 		this._populated = isDynamic ? new Set() : null;
 
+		// for dynamic trees; see addNodes
+		this._loading = new Set();
+		this._hasMore = new Set();
+		this._bookmarks = new Map();
+
 		// fill in children (parents are provided by the caller, and ancestors will be generated on demand)
 		this._updateChildren(this.ids);
 
 		if (extraChildren) {
-			extraChildren.forEach((children, orgUnitId) => {
-				this.addNodes(orgUnitId, children);
+			extraChildren.forEach((data, orgUnitId) => {
+				this.addNodes(orgUnitId, data.Items, data.PagingInfo.HasMoreItems, data.PagingInfo.Bookmark);
 			});
 		}
 
@@ -97,12 +103,21 @@ export class Tree {
 	 * was already in the tree). The new nodes are assumed to match the ancestorFilter, if any;
 	 * future changes to that filter are not supported (i.e. it is assumed the caller will reload data
 	 * and create a new tree in that case). See also note on setAncestorFilter().
-	 * @param {number} parentId The parent of the new nodes. The new nodes *replace* any existing children.
+	 * @param {number} parentId The parent of the new nodes. The new nodes supplement any existing children.
 	 * @param newChildren Array of nodes to be added to the tree; name and type will be updated if the id already exists.
+	 * @param hasMore - if true, the node is not considered fully populated
+	 * @param bookmark - Opaque data that will be stored with the parent if hasMore is true (or cleared if hasMore is falsy)
 	 */
-	addNodes(parentId, newChildren) {
-		const parent = this._nodes.get(parentId);
-		if (!parent) return;
+	addNodes(parentId, newChildren, hasMore, bookmark) {
+		this._loading.delete(parentId);
+
+		if (hasMore) {
+			this._hasMore.add(parentId);
+			this._bookmarks.set(parentId, bookmark);
+		} else {
+			this._hasMore.delete(parentId);
+			this._bookmarks.delete(parentId);
+		}
 
 		// add parentId to any existing parents of these nodes (before replacing the nodes and losing this info)
 		newChildren.forEach(x => {
@@ -112,8 +127,8 @@ export class Tree {
 		});
 		newChildren.forEach(x => this._nodes.set(x[ID], x));
 
-		// replace all of parent's children
-		this._children.set(parentId, new Set(newChildren.map(x => x[ID])));
+		// merge the new children in to the parent
+		this._children.set(parentId, new Set([...newChildren.map(x => x[ID]), ...this.getChildIds(parentId)]));
 
 		// caller should only provide visible nodes
 		if (this._visible) {
@@ -179,6 +194,10 @@ export class Tree {
 		return this._ancestors.get(id);
 	}
 
+	getBookmark(id) {
+		return this._bookmarks.get(id);
+	}
+
 	getChildIdsForDisplay(id) {
 		return this.getChildIds(id)
 			.filter(x => this._isVisible(x))
@@ -232,6 +251,14 @@ export class Tree {
 		return listToCheck.some(potentialAncestor => ancestorsSet.has(potentialAncestor));
 	}
 
+	hasMore(id) {
+		return this._hasMore.has(id);
+	}
+
+	isLoading(id) {
+		return this._loading.has(id);
+	}
+
 	isOpen(id) {
 		return this._open.has(id);
 	}
@@ -273,6 +300,10 @@ export class Tree {
 				this.getAncestorIds(id).forEach(ancestorId => this._visible.add(ancestorId));
 			}
 		});
+	}
+
+	setLoading(id) {
+		this._loading.add(id);
 	}
 
 	setOpen(id, isOpen) {
@@ -349,7 +380,7 @@ export class Tree {
 		// Note that if this node hasn't been populated, we don't know if all children are selected,
 		// so it is indeterminate at most.
 		const childIds = this.getChildIds(id).filter(x => !this.invisibleTypes.includes(this.getType(x)));
-		const state = (this.isPopulated(id) && childIds.every(childId => this.getState(childId) === 'explicit'))
+		const state = (this.isPopulated(id) && !this.hasMore(id) && childIds.every(childId => this.getState(childId) === 'explicit'))
 			? 'explicit'
 			: childIds.every(childId => this.getState(childId) === 'none')
 				? 'none'
@@ -373,9 +404,13 @@ decorate(Tree, {
 	_open: observable,
 	_visible: observable,
 	_populated: observable,
+	_loading: observable,
+	_bookmarks: observable,
+	_hasMore: observable,
 	selected: computed,
 	addNodes: action,
 	setAncestorFilter: action,
+	setLoading: action,
 	setOpen: action,
 	setSelected: action
 });
@@ -400,7 +435,6 @@ class TreeFilter extends Localizer(MobxLitElement) {
 			openerTextSelected: { type: String, attribute: 'opener-text-selected' },
 			searchString: { type: String, attribute: 'search-string', reflect: true },
 			isLoadMoreSearch: { type: Boolean, attribute: 'load-more-search', reflect: true },
-			_loadingParent: { type: Boolean, attribute: false },
 			_isLoadingSearch: { type: Boolean, attribute: false }
 		};
 	}
@@ -443,11 +477,12 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	 * Adds the given children to the given parent. See Tree.addNodes().
 	 * @param parent
 	 * @param children
+	 * @param hasMore - Will display a "load more" button in the tree if true
+	 * @param bookmark - Opaque data that will be sent in the request-children event if the user asks to load more results
 	 */
-	addChildren(parent, children) {
+	addChildren(parent, children, hasMore, bookmark) {
 		this._needResize = true;
-		this.tree.addNodes(parent, children);
-		this._loadingParent = null;
+		this.tree.addNodes(parent, children, hasMore, bookmark);
 	}
 
 	/**
@@ -514,7 +549,7 @@ class TreeFilter extends Localizer(MobxLitElement) {
 				.getChildIdsForDisplay(id)
 				.map(id => this._renderNode(id, parentName, indentLevel + 1)),
 
-			this._loadingParent === id ? this._renderLoadingIndicator() : ''
+			this._renderParentLoadingControls(id)
 		];
 	}
 
@@ -538,8 +573,20 @@ class TreeFilter extends Localizer(MobxLitElement) {
 				</d2l-insights-tree-selector-node>`;
 	}
 
-	_renderLoadingIndicator() {
-		return html`<d2l-loading-spinner slot="tree"></d2l-loading-spinner>`;
+	_renderParentLoadingControls(id) {
+		if (this.tree.isLoading(id)) {
+			return html`<d2l-loading-spinner slot="tree"></d2l-loading-spinner>`;
+		}
+
+		if (this.tree.hasMore(id)) {
+			return html`<d2l-button slot="tree"
+				@click="${this._onParentLoadMore}"
+				data-id="${id}"
+				description="${this.localize('components.tree-selector.parent-load-more.aria-label')}"
+			>${this.localize('components.tree-selector.load-more-label')}</d2l-button>`;
+		}
+
+		return html``;
 	}
 
 	_renderSearchLoadingControls() {
@@ -627,8 +674,14 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		));
 	}
 
-	_requestChildren(id) {
-		this._loadingParent = id;
+	_onParentLoadMore(event) {
+		const id = Number(event.target.getAttribute('data-id'));
+		const bookmark = this.tree.getBookmark(id);
+		this._requestChildren(id, bookmark);
+	}
+
+	_requestChildren(id, bookmark) {
+		this.tree.setLoading(id);
 
 		/**
 		 * @event d2l-insights-tree-filter-request-children
@@ -638,9 +691,10 @@ class TreeFilter extends Localizer(MobxLitElement) {
 			{
 				bubbles: true,
 				composed: false,
-				detail: { id }
+				detail: { id, bookmark }
 			}
 		));
 	}
 }
+
 customElements.define('d2l-insights-tree-filter', TreeFilter);
