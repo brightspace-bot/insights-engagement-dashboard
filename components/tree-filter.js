@@ -448,7 +448,7 @@ class TreeFilter extends Localizer(MobxLitElement) {
 				display: none;
 			}
 
-			d2l-button.tree-load-more {
+			d2l-button.d2l-tree-load-more {
 				padding-bottom: 12px;
 			}
 		`;
@@ -584,7 +584,7 @@ class TreeFilter extends Localizer(MobxLitElement) {
 
 		if (this.tree.hasMore(id)) {
 			return html`<d2l-button slot="tree"
-				class="tree-load-more"
+				class="d2l-tree-load-more"
 				@click="${this._onParentLoadMore}"
 				data-id="${id}"
 				description="${this.localize('components.tree-selector.parent-load-more.aria-label')}"
