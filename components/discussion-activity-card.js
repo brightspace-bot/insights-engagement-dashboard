@@ -121,13 +121,13 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 				colorByPoint: true,
 				data:[{
 					name: that._legendLabels[0],
-					y: 61.41,
+					y: 61.41, // manual data for now, will populate from server once ready
 				}, {
 					name: that._legendLabels[1],
-					y: 11.84
+					y: 11.84 // manual data for now, will populate from server once ready
 				}, {
 					name: that._legendLabels[2],
-					y: 10.85
+					y: 10.85 // manual data for now, will populate from server once ready
 				}]
 			},
 			credits: {
