@@ -25,7 +25,7 @@ import { OverdueAssignmentsCardFilter } from './components/overdue-assignments-c
 import { TimeInContentVsGradeCardFilter } from './components/time-in-content-vs-grade-card';
 
 /**
- * @property {Boolean} useTestData - if true, use canned data; otherwise call the LMS
+ * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
  */
 class EngagementDashboard extends Localizer(MobxLitElement) {
 
@@ -126,7 +126,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				</div>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 				<d2l-insights-users-table .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-users-table>
-				<d2l-insights-default-view-popup .data="${this._data}" ?opened="${this._data.isDefaultView}"></d2l-insights-default-view-popup>
+
+				<d2l-insights-default-view-popup
+					?opened=${Boolean(this._data.defaultViewPopupDisplayData.length)}
+					.data="${this._data.defaultViewPopupDisplayData}">
+				</d2l-insights-default-view-popup>
 		`;
 	}
 

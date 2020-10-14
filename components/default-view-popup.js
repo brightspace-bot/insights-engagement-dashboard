@@ -4,6 +4,10 @@ import './expander-with-control';
 import { css, html, LitElement } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 
+/**
+ * @property {Array} data - [{id: orgUnitId, name: orgUnitName}]
+ * @property {Boolean} opened - whether or not the dialog should be opened
+ */
 class DefaultViewPopup extends Localizer(LitElement) {
 
 	static get properties() {
@@ -27,18 +31,13 @@ class DefaultViewPopup extends Localizer(LitElement) {
 
 	constructor() {
 		super();
-		this.data = {};
+		this.data = [];
 		this.opened = false;
 	}
 
 	get _displayData() {
-		if (!this.data.isDefaultView) {
-			return [];
-		}
-
-		return this.data.serverData.defaultViewOrgUnitIds.map(id => {
-			const name = this.data.orgUnitTree.getName(id);
-			return this.localize('components.tree-filter.node-name', { orgUnitName: name, id });
+		return this.data.map((item) => {
+			return this.localize('components.tree-filter.node-name', { orgUnitName: item.name, id: item.id });
 		});
 	}
 

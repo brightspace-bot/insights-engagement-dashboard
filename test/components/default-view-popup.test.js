@@ -4,12 +4,11 @@ import { expect, fixture, html } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper';
 
 describe('d2l-insights-default-view-popup', () => {
-	const data = {
-		serverData: {
-			defaultViewOrgUnitIds: [1, 2, 3, 4]
-		},
-		orgUnitTree: { getName: (id) => `Name for ${id}` }
-	};
+	const data = [
+		{ id: 1, name: 'Course 1' },
+		{ id: 2, name: 'Course 2' },
+		{ id: 3, name: 'Course 3' }
+	];
 	let el;
 
 	beforeEach(async() => {
@@ -37,8 +36,8 @@ describe('d2l-insights-default-view-popup', () => {
 		it('should have the correct entries for the courses list', () => {
 			const listEntries = Array.from(el.shadowRoot.querySelectorAll('li'));
 			listEntries.forEach((entry, idx) => {
-				const id = data.serverData.defaultViewOrgUnitIds[idx];
-				expect(entry.innerText).to.equal(`Name for ${id} (Id: ${id})`);
+				const expected = data[idx];
+				expect(entry.innerText).to.equal(`${expected.name} (Id: ${expected.id})`);
 			});
 		});
 	});
