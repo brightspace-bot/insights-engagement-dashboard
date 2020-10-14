@@ -85,6 +85,11 @@ export default {
 	"components.insights-course-last-access-card.toolTipOneToFiveDaysSingleUser": "1 user last accessed the course 1 to 5 days ago",
 	"components.insights-course-last-access-card.toolTipLessThanOneDaySingleUser": "1 user last accessed the course less than 1 day ago",
 
+	"components.insights-discussion-activity-card.cardTitle": "Discussion Activity",
+	"components.insights-discussion-activity-card.threads": "Threads",
+	"components.insights-discussion-activity-card.replies": "Replies",
+	"components.insights-discussion-activity-card.reads": "Reads",
+
 	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 
 	"components.insights-applied-filters.clear-all": "Clear all",

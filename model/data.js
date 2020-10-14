@@ -102,7 +102,7 @@ export class Data {
 				fetchCachedChildren(newServerData.selectedSemestersIds) || new Map() :
 				null
 		});
-
+		console.log(newServerData);
 		this._userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
 		this.isLoading = false;
 		this.serverData = newServerData;
