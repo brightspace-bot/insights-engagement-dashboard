@@ -6,11 +6,19 @@ describe('d2l-insights-engagement-dashboard', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async function() {
-			this.timeout(4000);
+			this.timeout(5000);
 
 			const el = await fixture(html`<d2l-insights-engagement-dashboard demo></d2l-insights-engagement-dashboard>`);
 			// need for this delay might be tied to the mock data async loading in engagement-dashboard.js
 			await new Promise(resolve => setTimeout(resolve, 1500));
+
+			// close the default view dialog that shows up. It causes browsers on OSX to assign aria-attributes and
+			// roles to buttons in the background that are not normally allowed
+			const defaultViewDialog = el.shadowRoot.querySelector('d2l-insights-default-view-popup');
+			defaultViewDialog.opened = false;
+			// wait for the dialog closing animation to finish
+			await new Promise(resolve => setTimeout(resolve, 500));
+
 			await expect(el).to.be.accessible();
 		});
 	});

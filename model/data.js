@@ -149,6 +149,10 @@ export class Data {
 		return this._selectorFilters.orgUnit.selected;
 	}
 
+	get isDefaultView() {
+		return this.serverData.defaultViewOrgUnitIds && this.serverData.defaultViewOrgUnitIds.length;
+	}
+
 	// @computed
 	get records() {
 		return this.serverData.records.filter(record => {
