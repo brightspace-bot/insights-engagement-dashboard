@@ -65,6 +65,10 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 		];
 	}
 
+	get _discussionActivityStats() {
+		return this.data.discussionActivityStats;
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -121,13 +125,13 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 				colorByPoint: true,
 				data:[{
 					name: that._legendLabels[0],
-					y: 61.41, // manual data for now, will populate from server once ready
+					y: that._discussionActivityStats[0]
 				}, {
 					name: that._legendLabels[1],
-					y: 11.84 // manual data for now, will populate from server once ready
+					y: that._discussionActivityStats[1]
 				}, {
 					name: that._legendLabels[2],
-					y: 10.85 // manual data for now, will populate from server once ready
+					y: that._discussionActivityStats[2]
 				}]
 			},
 			credits: {

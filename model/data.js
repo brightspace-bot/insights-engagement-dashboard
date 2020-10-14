@@ -1,5 +1,5 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
-import { COURSE_OFFERING, RECORD, USER } from '../consts';
+import { COURSE_OFFERING, DISCUSSION_ACTIVITY, RECORD, USER } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl/lib/number.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
@@ -297,6 +297,25 @@ export class Data {
 			}, 	new Set()).size;
 	}
 
+	get discussionActivityStats() {
+		const discussionActivity = this.getRecordsInView()
+			.filter(record => record[RECORD.DISCUSSION_ACTIVITY] !== null && record[RECORD.DISCUSSION_ACTIVITY] !== undefined)
+			.map(record => [record[RECORD.DISCUSSION_ACTIVITY]]);
+
+		if (discussionActivity === undefined || discussionActivity.length === 0) {
+			return [0, 0, 0];
+		}
+
+		let threadSum, replySum, readSum;
+		threadSum = replySum = readSum = 0;
+		discussionActivity.forEach(item => {
+			threadSum += item[0][DISCUSSION_ACTIVITY.THREADS];
+			replySum += item[0][DISCUSSION_ACTIVITY.REPLIES];
+			readSum += item[0][DISCUSSION_ACTIVITY.READS];
+		});
+		return [threadSum, replySum, readSum];
+	}
+
 	getRecordsInView(id) {
 		// if id is omitted, all applied filters will be used
 		const otherFilters = Object.values(this.cardFilters).filter(f => f.isApplied && f.id !== id);
@@ -353,6 +372,7 @@ decorate(Data, {
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
 	courseLastAccessDates: computed,
+	discussionActivityStats: computed,
 	tiCVsGrades: computed,
 	currentFinalGrades: computed,
 	cardFilters: observable,
