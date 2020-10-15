@@ -58,8 +58,9 @@ class OuFilter extends Localizer(MobxLitElement) {
 	async _onRequestChildren(event) {
 		const el = event.target;
 		const id = event.detail.id;
-		const children = await fetchRelevantChildren(id, this.data.selectedSemesterIds);
-		el.addChildren(id, children);
+		const bookmark = event.detail.bookmark;
+		const results = await fetchRelevantChildren(id, this.data.selectedSemesterIds, bookmark);
+		el.addChildren(id, results.Items, results.PagingInfo.HasMoreItems, results.PagingInfo.Bookmark);
 	}
 
 	async _onSearch(event) {
