@@ -9,6 +9,7 @@ describe('d2l-insights-applied-filters', () => {
 	beforeEach(() => {
 		data.cardFilters = {};
 		data.setApplied = (key, isApplied) => data.cardFilters[key].isApplied = isApplied;
+		data.getFilter = id => data.cardFilters[id];
 	});
 
 	describe('constructor', () => {
@@ -45,8 +46,8 @@ describe('d2l-insights-applied-filters', () => {
 
 		it('should render Clear All button and filter title for applied filters', async() => {
 			data.cardFilters = {
-				'filter-key-1':	{ id: '1', title: 'filter 1', isApplied: false },
-				'filter-key-2':	{ id: '2', title: 'filter 2', isApplied: true }
+				'filter-key-1':	{ id: '1', title: 'components.simple-filter.search-label', isApplied: false },
+				'filter-key-2':	{ id: '2', title: 'components.insights-engagement-dashboard.title', isApplied: true }
 			};
 			const el = await fixture(html`<d2l-insights-applied-filters .data="${data}"></d2l-insights-applied-filters>`);
 			const appliedFilters = el.shadowRoot.querySelector('d2l-applied-filters');
@@ -54,7 +55,7 @@ describe('d2l-insights-applied-filters', () => {
 
 			const filters = appliedFilters.shadowRoot.querySelectorAll('d2l-labs-multi-select-list-item');
 			expect(filters.length).to.equal(2);
-			expect(filters[0].text).to.equal('filter 2');
+			expect(filters[0].text).to.equal('Engagement Dashboard');
 			expect(filters[1].text).to.equal('Clear all');
 		});
 

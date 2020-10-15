@@ -1,3 +1,4 @@
+import { action, computed, decorate, observable } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
@@ -6,11 +7,51 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
-export const CurrentFinalGradeCardFilter  = {
-	id: 'd2l-insights-current-final-grade-card',
-	title: 'components.insights-current-final-grade-card.currentGrade',
-	filter: (record, data) => data.selectedGradesCategories.has(data.gradeCategory(record[RECORD.CURRENT_FINAL_GRADE]))
-};
+const filterId = 'd2l-insights-current-final-grade-card';
+
+function gradeCategory(grade) {
+	if (grade === null || grade === 0) {
+		return grade;
+	}
+	else if (grade === 100) {
+		return 90; // put grade 100 in bin 90-100
+	}
+	else {
+		return Math.floor(grade / 10) * 10;
+	}
+}
+
+export class CurrentFinalGradesFilter {
+	constructor() {
+		this.selectedCategories = new Set();
+	}
+
+	get id() { return filterId; }
+
+	get isApplied() {
+		return this.selectedCategories.size > 0;
+	}
+
+	set isApplied(isApplied) {
+		if (!isApplied) this.selectedCategories.clear();
+	}
+
+	get title() { return 'components.insights-current-final-grade-card.currentGrade'; }
+
+	selectCategory(category) {
+		this.selectedCategories.add(category);
+	}
+
+	filter(record) {
+		return this.selectedCategories.has(gradeCategory(record[RECORD.CURRENT_FINAL_GRADE]));
+	}
+}
+
+decorate(CurrentFinalGradesFilter, {
+	isApplied: computed,
+	selectCategory: action,
+	selectedCategories: observable
+});
 
 class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -64,8 +105,13 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.localize('components.insights-current-final-grade-card.textLabel');
 	}
 
+	// @computed
 	get _preparedHistogramData() {
-		return this.data.currentFinalGrades;
+		return this.data.getRecordsInView(filterId)
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
+			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
+			.filter(item => item[0] || item[1])
+			.map(item => gradeCategory(item[1]));
 	}
 
 	get _xAxisLabel() {
@@ -76,24 +122,20 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.localize('components.insights-current-final-grade-card.numberOfStudents');
 	}
 
-	setCategoryEmpty() {
-		this.data.setGradesCategoryEmpty();
-	}
-
 	addToCategory(category) {
-		this.data.addToGradesCategory(category);
+		this.filter.selectCategory(category);
 	}
 
 	get category() {
-		return this.data.selectedGradesCategories;
+		return this.filter.selectedCategories;
 	}
 
 	get isApplied() {
-		return this.data.cardFilters['d2l-insights-current-final-grade-card'].isApplied;
+		return this.filter.isApplied;
 	}
 
-	_valueClickHandler() {
-		this.data.setApplied('d2l-insights-current-final-grade-card', true);
+	get filter() {
+		return this.data.getFilter(filterId);
 	}
 
 	_colorNonSelectedPoints(seriesData, color) {
@@ -160,7 +202,6 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 							that._colorNonSelectedPoints(this.series[0].data, 'var(--d2l-color-mica)');
 							that._colorSelectedPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
 						} else {
-							that.setCategoryEmpty();
 							that._colorAllPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
 						}
 						this.render(false);
@@ -260,7 +301,6 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 						events: {
 							select: function() {
 								that.addToCategory(Math.ceil(this.category));
-								that._valueClickHandler();
 								that._colorSelectedPoints(this.series.data, 'var(--d2l-color-amethyst)');
 							}
 						}
@@ -287,5 +327,8 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		};
 	}
 }
+decorate(CurrentFinalGradeCard, {
+	_preparedHistogramData: computed
+});
 
 customElements.define('d2l-insights-current-final-grade-card', CurrentFinalGradeCard);

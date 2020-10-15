@@ -1,14 +1,14 @@
 import 'highcharts';
 import { css, html } from 'lit-element/lit-element.js';
+import { RECORD, TiCVsGradesFilterId } from '../consts';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const TimeInContentVsGradeCardFilter  = {
-	id: 'd2l-insights-time-in-content-vs-grade-card',
+	id: TiCVsGradesFilterId,
 	title: 'components.insights-time-in-content-vs-grade-card.timeInContentVsGrade',
 	filter: (record, data) => {
 		let result;

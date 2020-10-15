@@ -28,8 +28,8 @@ class AppliedFilters extends SkeletonMixin(Localizer(MobxLitElement)) {
 	render() {
 		const filters = Object.keys(this.data.cardFilters).map(id => ({
 			id: id,
-			title: this.data.cardFilters[id].title,
-			isApplied: this.data.cardFilters[id].isApplied
+			title: this.localize(this.data.cardFilters[id].title),
+			isApplied: this.data.getFilter(id).isApplied
 		}));
 
 		if (filters.filter(f => f.isApplied).length < 1) {

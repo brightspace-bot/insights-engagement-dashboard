@@ -1,11 +1,11 @@
+import { OverdueAssignmentsFilterId, RECORD } from '../consts';
 import { html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const OverdueAssignmentsCardFilter = {
-	id: 'd2l-insights-overdue-assignments-card',
+	id: OverdueAssignmentsFilterId,
 	title: 'components.insights-engagement-dashboard.overdueAssignmentsHeading',
 	filter: (record) => record[RECORD.OVERDUE] > 0
 };
