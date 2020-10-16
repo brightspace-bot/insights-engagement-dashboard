@@ -211,20 +211,10 @@ export class Data {
 
 	get usersCountsWithLastAccessMoreThanFourteenDays() {
 		const fourteenDayMillis = 1209600000;
-		const userIdsSet = new Set();
-		this.getRecordsInView().forEach(r => {
-			if (!userIdsSet.has(r[RECORD.USER_ID])) {
-				userIdsSet.add(r[RECORD.USER_ID]);
-			}
-		});
 
 		return this.users
-			.reduce((acc, user) => {
-				if (userIdsSet.has(user[USER.ID]) && !acc.has(user[USER.ID]) && user[USER.LAST_SYS_ACCESS] && (Date.now() - user[USER.LAST_SYS_ACCESS]) > fourteenDayMillis) {
-					acc.add(user[USER.ID]);
-				}
-				return acc;
-			}, 	new Set()).size;
+			.filter(user => user[USER.LAST_SYS_ACCESS] && (Date.now() - user[USER.LAST_SYS_ACCESS] > fourteenDayMillis))
+			.length;
 	}
 
 	get recordsByUser() {
