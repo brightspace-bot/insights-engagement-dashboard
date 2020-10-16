@@ -220,7 +220,7 @@ export class Data {
 
 		return this.users
 			.reduce((acc, user) => {
-				if (userIdsSet.has(user[USER.ID]) && !acc.has(user[USER.ID]) && (Date.now() - user[USER.LAST_SYS_ACCESS]) > fourteenDayMillis) {
+				if (userIdsSet.has(user[USER.ID]) && !acc.has(user[USER.ID]) && user[USER.LAST_SYS_ACCESS] && (Date.now() - user[USER.LAST_SYS_ACCESS]) > fourteenDayMillis) {
 					acc.add(user[USER.ID]);
 				}
 				return acc;

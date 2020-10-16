@@ -100,7 +100,7 @@ describe('Data', () => {
 		],
 		users: [
 			[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
-			[200, 'Paul', 'McCartney', 'pmccartney', 0],
+			[200, 'Paul', 'McCartney', 'pmccartney', null],
 			[300, 'George', 'Harrison', 'gharrison', Date.now()],
 			[400, 'Ringo', 'Starr', 'rstarr', Date.now()]
 		],
@@ -490,7 +490,7 @@ describe('Data', () => {
 
 	describe('usersCountsWithLastAccessMoreThanFourteenDays', () => {
 		it('should render the number of users who have no system access in the last 14 days', async() => {
-			const expected = 2;
+			const expected = 1;
 			expect(sut.usersCountsWithLastAccessMoreThanFourteenDays).to.deep.equal(expected);
 		});
 	});
