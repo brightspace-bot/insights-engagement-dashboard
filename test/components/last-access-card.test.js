@@ -27,7 +27,7 @@ describe('d2l-insights-last-access-card', () => {
 	describe('render', () => {
 		it('should render the proper number of users who have no system access in the last 14 days', async() => {
 			const el = await fixture(html`<d2l-insights-last-access-card .data="${data}"></d2l-insights-last-access-card>`);
-			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').value).to.deep.equal('1');
+			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').value).to.deep.equal('2');
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').title).to.deep.equal('System Access');
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').message).to.deep.equal('Users have no system access in the last 14 days.');
 			expect(el.shadowRoot.querySelector('d2l-labs-summary-card').isValueClickable).to.deep.equal(true);

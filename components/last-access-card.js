@@ -30,7 +30,7 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		const fourteenDayMillis = 1209600000;
 
 		return this.data.users
-			.filter(user => user[USER.LAST_SYS_ACCESS] && (Date.now() - user[USER.LAST_SYS_ACCESS] > fourteenDayMillis))
+			.filter(user => user[USER.LAST_SYS_ACCESS] === null || user[USER.LAST_SYS_ACCESS] === undefined || (Date.now() - user[USER.LAST_SYS_ACCESS] > fourteenDayMillis))
 			.length;
 	}
 
