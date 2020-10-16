@@ -289,23 +289,6 @@ export class Data {
 			}, 	new Set()).size;
 	}
 
-	get discussionActivityStats() {
-		const discussionActivity = this.getRecordsInView()
-			.map(record => [record[RECORD.DISCUSSION_ACTIVITY_THREADS], record[RECORD.DISCUSSION_ACTIVITY_REPLIES], record[RECORD.DISCUSSION_ACTIVITY_READS]]);
-
-		if (discussionActivity === undefined || discussionActivity.length === 0) {
-			return [0, 0, 0];
-		}
-		let threadSum, replySum, readSum;
-		threadSum = replySum = readSum = 0;
-		discussionActivity.forEach(item => {
-			threadSum += item[0];
-			replySum += item[1];
-			readSum += item[2];
-		});
-		return [threadSum, replySum, readSum];
-	}
-
 	getRecordsInView(id) {
 		// if id is omitted, all applied filters will be used
 		const otherFilters = Object.values(this.cardFilters).filter(f => f.isApplied && f.id !== id);
@@ -340,7 +323,6 @@ decorate(Data, {
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
 	courseLastAccessDates: computed,
-	discussionActivityStats: computed,
 	tiCVsGrades: computed,
 	cardFilters: observable,
 	isLoading: observable,

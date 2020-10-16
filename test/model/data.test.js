@@ -470,11 +470,4 @@ describe('Data', () => {
 			expect(sut.tiCVsGradesAvgValues).to.deep.equal(expected);
 		});
 	});
-
-	describe('discussionActivityStats', () => {
-		it('should return the correct sum of threads, replies, and reads', async() => {
-			const expected = [83, 52, 17];
-			expect(sut.discussionActivityStats).to.deep.equal(expected);
-		});
-	});
 });

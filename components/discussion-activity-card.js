@@ -1,13 +1,15 @@
 import './overlay';
 import 'highcharts';
+import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
-class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
+class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	static get properties() {
 		return {
 			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' }
@@ -66,8 +68,16 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 		];
 	}
 
+	// @computed
 	get _discussionActivityStats() {
-		return this.data.discussionActivityStats;
+		let threadSum, replySum, readSum;
+		threadSum = replySum = readSum = 0;
+		this.data.getRecordsInView().forEach(record => {
+			threadSum += record[RECORD.DISCUSSION_ACTIVITY_THREADS];
+			replySum += record[RECORD.DISCUSSION_ACTIVITY_REPLIES];
+			readSum += record[RECORD.DISCUSSION_ACTIVITY_READS];
+		});
+		return { threadSum, replySum, readSum };
 	}
 
 	get _chartDescriptionTextLabel() {
@@ -108,14 +118,7 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 					dataLabels: {
 						enabled: false
 					},
-					showInLegend: true,
-					point: {
-						events: {
-							legendItemClick: function() {
-								return false;
-							}
-						}
-					}
+					showInLegend: true
 				}
 			},
 			legend: {
@@ -137,13 +140,13 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 				colorByPoint: true,
 				data:[{
 					name: that._legendLabels[0],
-					y: that._discussionActivityStats[0]
+					y: that._discussionActivityStats.threadSum
 				}, {
 					name: that._legendLabels[1],
-					y: that._discussionActivityStats[1]
+					y: that._discussionActivityStats.replySum
 				}, {
 					name: that._legendLabels[2],
-					y: that._discussionActivityStats[2]
+					y: that._discussionActivityStats.readSum
 				}],
 				accessibility: {
 					description: that._chartDescriptionTextLabel,
@@ -165,4 +168,8 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 }
 
-customElements.define('d2l-insights-discussion-activity-card', DiscussionActivity);
+decorate(DiscussionActivityCard, {
+	_discussionActivityStats: computed
+});
+
+customElements.define('d2l-insights-discussion-activity-card', DiscussionActivityCard);
