@@ -135,6 +135,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		this.columnInfo = [];
 		this.data = [];
 		this.title = '';
+		this.selectedSort = { column: 0, order: 'desc' };
 	}
 
 	render() {
@@ -161,7 +162,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		return html`
 			<thead class="d2l-insights-table-header">
 				<tr class="${classMap(styles)}">
-					${this.columnInfo.map(this._renderHeaderCell, this)}
+					${this.columnInfo.map(this._renderHeaderCell, this)} ${this.selectedSort.row}
 				</tr>
 			</thead>
 		`;
@@ -175,7 +176,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		};
 
 		return html`
-			<th class="${classMap(styles)}" scope="col">${info.headerText}</th>
+			<th class="${classMap(styles)}" scope="col" @click="${this._handleHeaderClicked}">${info.headerText}</th>
 		`;
 	}
 
@@ -225,6 +226,60 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		} // future work: else if COLUMN_TYPES.SUBCOLUMNS...
 
 		throw new Error('Users table: unknown column type');
+	}
+
+	_dataToFloat(d) {
+		if (typeof(d) === 'string') {
+			return parseFloat(d.replace('%', '').trim());
+		}
+		return d;
+	}
+	_getLastName(s) {
+		return s[0].split(',')[1];
+	}
+
+	_handleHeaderClicked(e) {
+		const children = e.target.parentElement.children;
+		const colmnNumber = Array.from(children).indexOf(e.target);
+		const ORDER = {
+			'asc': [1, -1, 0],
+			'desc': [-1, 1, 0],
+		};
+
+		if (colmnNumber !== this.selectedSort.column) {
+			this.selectedSort = {
+				column: colmnNumber,
+				order: 'asc'
+			};
+		} else {
+			if (this.selectedSort.order === 'asc') {
+				this.selectedSort = {
+					column: colmnNumber,
+					order: 'desc'
+				};
+			} else {
+				this.selectedSort = {
+					column: colmnNumber,
+					order: 'asc'
+				};
+			}
+		}
+
+		const order = this.selectedSort.order;
+
+		if (colmnNumber === 0) {
+			this.data = [ ...this.data.sort((a, b) => {
+				if (this._getLastName(a[colmnNumber]) > this._getLastName(b[colmnNumber])) return ORDER[order][0];
+				else if (this._getLastName(a[colmnNumber]) < this._getLastName(b[colmnNumber])) return ORDER[order][1];
+				else ORDER[order][2];
+			})];
+		} else {
+			this.data = [ ...this.data.sort((a, b) => {
+				if (this._dataToFloat(a[colmnNumber]) < this._dataToFloat(b[colmnNumber])) return ORDER[order][0];
+				else if (this._dataToFloat(a[colmnNumber]) > this._dataToFloat(b[colmnNumber])) return ORDER[order][1];
+				else return ORDER[order][2];
+			})];
+		}
 	}
 }
 customElements.define('d2l-insights-table', Table);
