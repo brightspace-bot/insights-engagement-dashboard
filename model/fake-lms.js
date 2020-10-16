@@ -36,17 +36,17 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds, defaultView 
 			[6606, 'Dev', 1, [0]]
 		],
 		users: [ // some of which are out of order
-			[100,  'ATest', 'AStudent', 'AStudent'],
-			[300,  'CTest', 'CStudent', 'CStudent'],
-			[200,  'BTest', 'BStudent', 'BStudent'],
-			[400,  'DTest', 'DStudent', 'DStudent'],
-			[500,  'ETest', 'EStudent', 'EStudent'],
-			[600,  'GTest', 'GStudent', 'GStudent'],
-			[700,  'FTest', 'FStudent', 'FStudent'],
-			[800,  'HTest', 'HStudent', 'HStudent'],
-			[900,  'ITest', 'IStudent', 'IStudent'],
-			[1000, 'KTest', 'KStudent', 'KStudent'],
-			[1100, 'JTest', 'JStudent', 'JStudent']
+			[100,  'ATest', 'AStudent', 'AStudent', Date.now() - 2000000000],
+			[300,  'CTest', 'CStudent', 'CStudent', null],
+			[200,  'BTest', 'BStudent', 'BStudent', null],
+			[400,  'DTest', 'DStudent', 'DStudent', null],
+			[500,  'ETest', 'EStudent', 'EStudent', Date.now()],
+			[600,  'GTest', 'GStudent', 'GStudent', Date.now()],
+			[700,  'FTest', 'FStudent', 'FStudent', Date.now()],
+			[800,  'HTest', 'HStudent', 'HStudent', Date.now()],
+			[900,  'ITest', 'IStudent', 'IStudent', Date.now()],
+			[1000, 'KTest', 'KStudent', 'KStudent', Date.now()],
+			[1100, 'JTest', 'JStudent', 'JStudent', Date.now()]
 		],
 		semesterTypeId: 25,
 		selectedSemestersIds: semesterIds,

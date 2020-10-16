@@ -16,5 +16,10 @@ export const USER = {
 	ID: 0,
 	FIRST_NAME: 1,
 	LAST_NAME: 2,
-	USERNAME: 3
+	USERNAME: 3,
+	LAST_SYS_ACCESS: 4
 };
+
+export const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
+export const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
+export const CourseLastAccessFilterId = 'd2l-insights-course-last-access-card';

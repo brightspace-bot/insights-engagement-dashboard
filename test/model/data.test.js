@@ -99,10 +99,10 @@ describe('Data', () => {
 			[6606, 400, mockRoleIds.student, 0, null, 0, null, 0, 4, 0], // this user has a cascading admin role on dept and sem levels
 		],
 		users: [
-			[100, 'John', 'Lennon', 'jlennon'],
-			[200, 'Paul', 'McCartney', 'pmccartney'],
-			[300, 'George', 'Harrison', 'gharrison'],
-			[400, 'Ringo', 'Starr', 'rstarr']
+			[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
+			[200, 'Paul', 'McCartney', 'pmccartney', null],
+			[300, 'George', 'Harrison', 'gharrison', Date.now()],
+			[400, 'Ringo', 'Starr', 'rstarr', Date.now()]
 		],
 		selectedRolesIds: null,
 		selectedSemestersIds: null,
@@ -440,23 +440,6 @@ describe('Data', () => {
 			sut.selectedRoleIds = roleFilters;
 
 			expect(sut.userDataForDisplay).to.deep.equal(expectedUsers);
-		});
-	});
-
-	describe('currentFinalGrades', () => {
-		it('should return the current final grades for users', async() => {
-			const expected = [20, 30, 40, 50, 30, 90, 90, 90, 70, 70, 40, 50, 30, 90, 70, 80, 90, 80, 90, 80, 90, 40, 60];
-			expect(sut.currentFinalGrades.toString()).to.deep.equal(expected.toString());
-		});
-	});
-
-	describe('gradeCategory', () => {
-		it('should return the corresponding category bin for grade', async() => {
-			const expected = [10, 90, null, 0];
-			expect(sut.gradeCategory(19)).to.deep.equal(expected[0]);
-			expect(sut.gradeCategory(100)).to.deep.equal(expected[1]);
-			expect(sut.gradeCategory(null)).to.deep.equal(expected[2]);
-			expect(sut.gradeCategory(0)).to.deep.equal(expected[3]);
 		});
 	});
 

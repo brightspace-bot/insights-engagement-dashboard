@@ -4,7 +4,10 @@ export default {
 	"components.insights-engagement-dashboard.title": "Engagement Dashboard",
 	"components.insights-engagement-dashboard.summaryHeading": "Summary View",
 	"components.insights-engagement-dashboard.resultsHeading": "Results",
+	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 	"components.insights-engagement-dashboard.overdueAssignmentsHeading": "Overdue Assignments",
+	"components.insights-engagement-dashboard.lastSystemAccess": "Users have no system access in the last 14 days.",
+	"components.insights-engagement-dashboard.lastSystemAccessHeading": "System Access",
 
 	"components.insights-role-filter.name": "Role",
 
@@ -91,8 +94,6 @@ export default {
 	"components.insights-discussion-activity-card.replies": "Replies",
 	"components.insights-discussion-activity-card.reads": "Reads",
 	"components.insights-discussion-activity-card.textLabel": "This chart displays the total number of threads, replies, and reads in discussion forums for all users in the selected courses",
-
-	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 
 	"components.insights-applied-filters.clear-all": "Clear all",
 
