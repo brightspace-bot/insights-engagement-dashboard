@@ -99,10 +99,10 @@ describe('Data', () => {
 			[6606, 400, mockRoleIds.student, 0, null, 0, null], // this user has a cascading admin role on dept and sem levels
 		],
 		users: [
-			[100, 'John', 'Lennon', 'jlennon'],
-			[200, 'Paul', 'McCartney', 'pmccartney'],
-			[300, 'George', 'Harrison', 'gharrison'],
-			[400, 'Ringo', 'Starr', 'rstarr']
+			[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
+			[200, 'Paul', 'McCartney', 'pmccartney', null],
+			[300, 'George', 'Harrison', 'gharrison', Date.now()],
+			[400, 'Ringo', 'Starr', 'rstarr', Date.now()]
 		],
 		selectedRolesIds: null,
 		selectedSemestersIds: null,
