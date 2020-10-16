@@ -443,23 +443,6 @@ describe('Data', () => {
 		});
 	});
 
-	describe('currentFinalGrades', () => {
-		it('should return the current final grades for users', async() => {
-			const expected = [20, 30, 40, 50, 30, 90, 90, 90, 70, 70, 40, 50, 30, 90, 70, 80, 90, 80, 90, 80, 90, 40, 60];
-			expect(sut.currentFinalGrades.toString()).to.deep.equal(expected.toString());
-		});
-	});
-
-	describe('gradeCategory', () => {
-		it('should return the corresponding category bin for grade', async() => {
-			const expected = [10, 90, null, 0];
-			expect(sut.gradeCategory(19)).to.deep.equal(expected[0]);
-			expect(sut.gradeCategory(100)).to.deep.equal(expected[1]);
-			expect(sut.gradeCategory(null)).to.deep.equal(expected[2]);
-			expect(sut.gradeCategory(0)).to.deep.equal(expected[3]);
-		});
-	});
-
 	describe('tiCVsGrades', () => {
 		it('should return the array of tuples: current final grade vs time in content, mins', async() => {
 			const expected = [[33, 22], [41, 33], [66, 44], [75, 55], [0, 33], [0, 100], [0, 100], [0, 100], [0, 73], [0, 73], [58, 41], [83, 55], [50, 39], [116, 93], [100, 75], [66, 84], [0, 98], [0, 89], [0, 98], [0, 88], [0, 99], [0, 42], [0, 66]];

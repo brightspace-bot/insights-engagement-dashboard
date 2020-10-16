@@ -1,13 +1,13 @@
+import { CourseLastAccessFilterId, RECORD } from '../consts';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const CourseLastAccessCardFilter  = {
-	id: 'd2l-insights-course-last-access-card',
+	id: CourseLastAccessFilterId,
 	title: 'components.insights-course-last-access-card.courseAccess',
 	filter: (record, data) => data.selectedLastAccessCategory.has(
 		data._bucketCourseLastAccessDates(record[RECORD.COURSE_LAST_ACCESS] === null ? -1 : (Date.now() - record[RECORD.COURSE_LAST_ACCESS]))

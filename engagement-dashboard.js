@@ -14,7 +14,7 @@ import './components/default-view-popup.js';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { CourseLastAccessCardFilter } from './components/course-last-access-card';
-import { CurrentFinalGradeCardFilter } from './components/current-final-grade-card';
+import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
@@ -119,7 +119,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
 				</div>
 				<div class="d2l-insights-chart-container">
-					<div><d2l-insights-current-final-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>
+					<div><d2l-insights-current-final-grade-card	.data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>
 					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
 					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
 				</div>
@@ -143,8 +143,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				OverdueAssignmentsCardFilter,
 				TimeInContentVsGradeCardFilter,
 				CourseLastAccessCardFilter,
-				CurrentFinalGradeCardFilter
-			].map(filter => ({ ...filter, title: this.localize(filter.title) }));
+				new CurrentFinalGradesFilter()
+			];
 
 			this.__data = new Data({
 				recordProvider: this.isDemo ? fetchDemoData : fetchData,
