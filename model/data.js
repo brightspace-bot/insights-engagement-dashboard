@@ -209,14 +209,6 @@ export class Data {
 			});
 	}
 
-	get usersCountsWithLastAccessMoreThanFourteenDays() {
-		const fourteenDayMillis = 1209600000;
-
-		return this.users
-			.filter(user => user[USER.LAST_SYS_ACCESS] && (Date.now() - user[USER.LAST_SYS_ACCESS] > fourteenDayMillis))
-			.length;
-	}
-
 	get recordsByUser() {
 		const recordsByUser = new Map();
 		this.getRecordsInView().forEach(r => {
@@ -384,7 +376,6 @@ decorate(Data, {
 	users: computed,
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
-	usersCountsWithLastAccessMoreThanFourteenDays: computed,
 	courseLastAccessDates: computed,
 	tiCVsGrades: computed,
 	currentFinalGrades: computed,

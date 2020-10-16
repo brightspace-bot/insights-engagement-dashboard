@@ -487,11 +487,4 @@ describe('Data', () => {
 			expect(sut.tiCVsGradesAvgValues).to.deep.equal(expected);
 		});
 	});
-
-	describe('usersCountsWithLastAccessMoreThanFourteenDays', () => {
-		it('should render the number of users who have no system access in the last 14 days', async() => {
-			const expected = 1;
-			expect(sut.usersCountsWithLastAccessMoreThanFourteenDays).to.deep.equal(expected);
-		});
-	});
 });

@@ -1,7 +1,9 @@
+import { computed, decorate } from 'mobx';
 import { html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
+import { USER } from '../consts';
 
 class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -25,7 +27,11 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardValue() {
-		return this.data.usersCountsWithLastAccessMoreThanFourteenDays;
+		const fourteenDayMillis = 1209600000;
+
+		return this.data.users
+			.filter(user => user[USER.LAST_SYS_ACCESS] && (Date.now() - user[USER.LAST_SYS_ACCESS] > fourteenDayMillis))
+			.length;
 	}
 
 	render() {
@@ -48,3 +54,7 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 }
 customElements.define('d2l-insights-last-access-card', LastAccessCard);
+
+decorate(LastAccessCard, {
+	_cardValue: computed,
+});
