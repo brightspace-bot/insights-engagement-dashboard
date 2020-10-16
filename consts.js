@@ -13,5 +13,6 @@ export const USER = {
 	ID: 0,
 	FIRST_NAME: 1,
 	LAST_NAME: 2,
-	USERNAME: 3
+	USERNAME: 3,
+	LAST_SYS_ACCESS: 4
 };

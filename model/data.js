@@ -209,6 +209,24 @@ export class Data {
 			});
 	}
 
+	get usersCountsWithLastAccessMoreThanFourteenDays() {
+		const fourteenDayMillis = 1209600000;
+		const userIdsSet = new Set();
+		this.getRecordsInView().forEach(r => {
+			if (!userIdsSet.has(r[RECORD.USER_ID])) {
+				userIdsSet.add(r[RECORD.USER_ID]);
+			}
+		});
+
+		return this.users
+			.reduce((acc, user) => {
+				if (userIdsSet.has(user[USER.ID]) && !acc.has(user[USER.ID]) && (Date.now() - user[USER.LAST_SYS_ACCESS]) > fourteenDayMillis) {
+					acc.add(user[USER.ID]);
+				}
+				return acc;
+			}, 	new Set()).size;
+	}
+
 	get recordsByUser() {
 		const recordsByUser = new Map();
 		this.getRecordsInView().forEach(r => {
@@ -376,6 +394,7 @@ decorate(Data, {
 	users: computed,
 	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
+	usersCountsWithLastAccessMoreThanFourteenDays: computed,
 	courseLastAccessDates: computed,
 	tiCVsGrades: computed,
 	currentFinalGrades: computed,

@@ -11,6 +11,7 @@ import './components/applied-filters';
 import './components/aria-loading-progress';
 import './components/course-last-access-card.js';
 import './components/default-view-popup.js';
+import './components/last-access-card';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { CourseLastAccessCardFilter } from './components/course-last-access-card';
@@ -117,6 +118,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
 					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
+					<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
 				</div>
 				<div class="d2l-insights-chart-container">
 					<div><d2l-insights-current-final-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>

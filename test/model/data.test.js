@@ -99,10 +99,10 @@ describe('Data', () => {
 			[6606, 400, mockRoleIds.student, 0, null, 0, null], // this user has a cascading admin role on dept and sem levels
 		],
 		users: [
-			[100, 'John', 'Lennon', 'jlennon'],
-			[200, 'Paul', 'McCartney', 'pmccartney'],
-			[300, 'George', 'Harrison', 'gharrison'],
-			[400, 'Ringo', 'Starr', 'rstarr']
+			[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
+			[200, 'Paul', 'McCartney', 'pmccartney', 0],
+			[300, 'George', 'Harrison', 'gharrison', Date.now()],
+			[400, 'Ringo', 'Starr', 'rstarr', Date.now()]
 		],
 		selectedRolesIds: null,
 		selectedSemestersIds: null,
@@ -485,6 +485,13 @@ describe('Data', () => {
 		it('should set and return a average time and grades', async() => {
 			const expected = [29, 69];
 			expect(sut.tiCVsGradesAvgValues).to.deep.equal(expected);
+		});
+	});
+
+	describe('usersCountsWithLastAccessMoreThanFourteenDays', () => {
+		it('should render the number of users who have no system access in the last 14 days', async() => {
+			const expected = 2;
+			expect(sut.usersCountsWithLastAccessMoreThanFourteenDays).to.deep.equal(expected);
 		});
 	});
 });
