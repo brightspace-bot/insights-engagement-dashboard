@@ -22,6 +22,7 @@ export default {
 	"components.tree-filter.node-name.root": "root",
 	"components.tree-selector.search-label": "Search",
 	"components.tree-selector.load-more-label": "Load More",
+	"components.tree-selector.parent-load-more.aria-label": "Load more child org units",
 	"components.tree-selector.search-load-more.aria-label": "Load more search results",
 	"components.tree-selector.search-placeholder": "Search...",
 	"components.tree-selector.dropdown-action": "Open {name} filter",
@@ -89,11 +90,19 @@ export default {
 	"components.insights-discussion-activity-card.threads": "Threads",
 	"components.insights-discussion-activity-card.replies": "Replies",
 	"components.insights-discussion-activity-card.reads": "Reads",
+	"components.insights-discussion-activity-card.textLabel": "This chart displays the total number of threads, replies, and reads in discussion forums for all users in the selected courses",
 
 	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 
 	"components.insights-applied-filters.clear-all": "Clear all",
 
 	"components.insights-aria-loading-progress.loading-start": "Loading is in progress",
-	"components.insights-aria-loading-progress.loading-finish": "Loading is finished"
+	"components.insights-aria-loading-progress.loading-finish": "Loading is finished",
+
+	"components.insights-default-view-popup.title": "Engagement Dashboard Default View",
+	"components.insights-default-view-popup.defaultViewDescription1": "This dashboard is designed to look at portions of your organization's engagement. Results showing are from {numDefaultCourses} recently accessed courses to get you started.",
+	"components.insights-default-view-popup.defaultViewDescription2": "Use the dashboard filters to change the results displayed.",
+	"components.insights-default-view-popup.expandDefaultCourseList": "Expand to see the courses included in your default view",
+	"components.insights-default-view-popup.collapseDefaultCourseList": "Collapse the list of courses included in your default view",
+	"components.insights-default-view-popup.buttonOk": "Ok"
 };

@@ -61,20 +61,28 @@ export async function fetchSemesters(pageSize, bookmark, search) {
 const relevantChildrenCache = new Map();
 const cacheKey = selectedSemesterIds => JSON.stringify(selectedSemesterIds || []);
 
-export async function fetchRelevantChildren(orgUnitId, selectedSemesterIds) {
+export async function fetchRelevantChildren(orgUnitId, selectedSemesterIds, bookmark) {
 	const url = new URL(relevantChildrenEndpoint(orgUnitId), window.location.origin);
 	if (selectedSemesterIds) {
 		url.searchParams.set('selectedSemestersCsv', selectedSemesterIds.join(','));
 	}
+	if (bookmark) {
+		url.searchParams.set('bookmark', bookmark);
+	}
 	const response = await fetch(url.toString());
-	// Paging not handled yet (work is in backlog)
-	const items = (await response.json()).Items;
+	const results = await response.json();
 
 	const key = cacheKey(selectedSemesterIds);
 	if (!relevantChildrenCache.has(key)) relevantChildrenCache.set(key, new Map());
-	relevantChildrenCache.get(key).set(orgUnitId, items);
+	if (!relevantChildrenCache.get(key).has(orgUnitId)) {
+		relevantChildrenCache.get(key).set(orgUnitId, results);
+	} else {
+		const cached = relevantChildrenCache.get(key).get(orgUnitId);
+		cached.Items.push(...results.Items);
+		cached.PagingInfo = results.PagingInfo;
+	}
 
-	return items;
+	return results;
 }
 
 export function fetchCachedChildren(selectedSemesterIds) {

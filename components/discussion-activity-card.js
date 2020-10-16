@@ -1,6 +1,7 @@
 import './overlay';
 import 'highcharts';
 import { css, html } from 'lit-element/lit-element.js';
+import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -40,8 +41,8 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 				align-items: center;
 				display: flex;
 				height: 100%;
-				position: relative;
 				margin-bottom: 25px;
+				position: relative;
 			}
 
 			.d2l-insights-discussion-activity-card-title {
@@ -67,6 +68,10 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	get _discussionActivityStats() {
 		return this.data.discussionActivityStats;
+	}
+
+	get _chartDescriptionTextLabel() {
+		return this.localize('components.insights-discussion-activity-card.textLabel');
 	}
 
 	render() {
@@ -103,7 +108,14 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 					dataLabels: {
 						enabled: false
 					},
-					showInLegend: true
+					showInLegend: true,
+					point: {
+						events: {
+							legendItemClick: function() {
+								return false;
+							}
+						}
+					}
 				}
 			},
 			legend: {
@@ -132,7 +144,19 @@ class DiscussionActivity extends SkeletonMixin(Localizer(MobxLitElement)) {
 				}, {
 					name: that._legendLabels[2],
 					y: that._discussionActivityStats[2]
-				}]
+				}],
+				accessibility: {
+					description: that._chartDescriptionTextLabel,
+					pointDescriptionFormatter: function(point) {
+						const ix = that._legendLabels[point.index];
+						return `${ix}, ${point.y}.`;
+					}
+				},
+			},
+			accessibility: {
+				screenReaderSection: {
+					beforeChartFormat: BEFORE_CHART_FORMAT
+				}
 			},
 			credits: {
 				enabled: false,

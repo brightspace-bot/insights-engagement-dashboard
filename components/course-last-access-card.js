@@ -35,7 +35,6 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			:host([hidden]) {
 				display: none;
 			}
-
 			.d2l-insights-course-last-access-container {
 				border-color: var(--d2l-color-mica);
 				border-radius: 15px;

@@ -37,66 +37,66 @@ describe('Data', () => {
 			[313, 'Course 3 / Semester 3', mockOuTypes.courseOffering, [3, 13]]
 		],
 		records: [
-			[6606, 100, mockRoleIds.student, 0, 22, 2000, 10293819283], // this user has a cascading admin role on dept and sem levels
-			[6606, 200, mockRoleIds.student, 0, 33, 2500, 10293819283],
-			[6606, 300, mockRoleIds.student, 0, 44, 4000, 10293819283],
-			[6606, 400, mockRoleIds.student, 0, 55, 4500, 10293819283], // this user has a cascading admin role on dept and sem levels
+			[6606, 100, mockRoleIds.student, 0, 22, 2000, 10293819283, 0, 0, 0], // this user has a cascading admin role on dept and sem levels
+			[6606, 200, mockRoleIds.student, 0, 33, 2500, 10293819283, 0, 0, 0],
+			[6606, 300, mockRoleIds.student, 0, 44, 4000, 10293819283, 0, 0, 0],
+			[6606, 400, mockRoleIds.student, 0, 55, 4500, 10293819283, 0, 0, 0], // this user has a cascading admin role on dept and sem levels
 
 			// semesters
-			[11, 100, mockRoleIds.admin, 0, null, 0, null],
-			[12, 100, mockRoleIds.admin, 0, null, 0, null],
-			[13, 100, mockRoleIds.admin, 0, null, 0, null],
+			[11, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
+			[12, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
+			[13, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
 
-			[11, 200, mockRoleIds.student, 0, 33, 0, null],
-			[12, 200, mockRoleIds.instructor, 0, null, 0, null],
+			[11, 200, mockRoleIds.student, 0, 33, 0, null, 0, 0, 0],
+			[12, 200, mockRoleIds.instructor, 0, null, 0, null, 0, 0, 0],
 
-			[11, 300, mockRoleIds.student, 0, 100, 0, null],
-			[12, 300, mockRoleIds.student, 0, 100, 0, null],
-			[13, 300, mockRoleIds.student, 0, 100, 0, null],
+			[11, 300, mockRoleIds.student, 0, 100, 0, null, 0, 0, 0],
+			[12, 300, mockRoleIds.student, 0, 100, 0, null, 0, 0, 0],
+			[13, 300, mockRoleIds.student, 0, 100, 0, null, 0, 0, 0],
 
-			[11, 400, mockRoleIds.admin, 0, null, 0, 12392838182],
-			[12, 400, mockRoleIds.admin, 0, null, 0, 12392838182],
-			[13, 400, mockRoleIds.admin, 0, null, 0, null],
+			[11, 400, mockRoleIds.admin, 0, null, 0, 12392838182, 0, 0, 0],
+			[12, 400, mockRoleIds.admin, 0, null, 0, 12392838182, 0, 0, 0],
+			[13, 400, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
 
 			// dept 1
-			[1001, 100, mockRoleIds.admin, 0, null, 0, null],
-			[1001, 200, mockRoleIds.student, 0, 73, 0, null],
-			[1001, 300, mockRoleIds.student, 0, 73, 0, null],
+			[1001, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
+			[1001, 200, mockRoleIds.student, 0, 73, 0, null, 0, 0, 0],
+			[1001, 300, mockRoleIds.student, 0, 73, 0, null, 0, 0, 0],
 			// courses
-			[1, 100, mockRoleIds.admin, 0, null, 0, null],
-			[1, 200, mockRoleIds.instructor, 0, null, 0, null],
-			[1, 300, mockRoleIds.student, 1, 41, 3500, null],
-			[2, 100, mockRoleIds.admin, 0, null, 0, null],
-			[2, 200, mockRoleIds.student, 0, 55, 5000, null],
-			[2, 300, mockRoleIds.student, 0, 39, 3000, null],
+			[1, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
+			[1, 200, mockRoleIds.instructor, 0, null, 0, null, 0, 0, 0],
+			[1, 300, mockRoleIds.student, 1, 41, 3500, null, 0, 0, 0],
+			[2, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
+			[2, 200, mockRoleIds.student, 0, 55, 5000, null, 0, 0, 0],
+			[2, 300, mockRoleIds.student, 0, 39, 3000, null, 0, 0, 0],
 			// course 1 offerings
-			[111, 100, mockRoleIds.admin, 0, null, 0, null],
-			[111, 200, mockRoleIds.student, 1, 93, 7000, null],
-			[112, 100, mockRoleIds.admin, 0, null, 0, null],
-			[112, 200, mockRoleIds.instructor, 0, null, 0, null], // this person was promoted from student to instructor
-			[113, 100, mockRoleIds.admin, 0, null, 0, null],
-			[113, 300, mockRoleIds.student, 0, 75, 6000, null],
+			[111, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
+			[111, 200, mockRoleIds.student, 1, 93, 7000, null, 0, 0, 0],
+			[112, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
+			[112, 200, mockRoleIds.instructor, 0, null, 0, null, 0, 0, 0], // this person was promoted from student to instructor
+			[113, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
+			[113, 300, mockRoleIds.student, 0, 75, 6000, null, 0, 0, 0],
 			// course 2 offerings
-			[212, 100, mockRoleIds.admin, 0, null, 0, 0],
-			[212, 200, mockRoleIds.student, 0, 84, 4000, null],
-			[212, 300, mockRoleIds.instructor, 0, null, 0, null],
+			[212, 100, mockRoleIds.admin, 0, null, 0, 0, 0, 0, 0],
+			[212, 200, mockRoleIds.student, 0, 84, 4000, null, 0, 0, 0],
+			[212, 300, mockRoleIds.instructor, 0, null, 0, null, 0, 0, 0],
 
 			// dept 2
-			[1002, 200, mockRoleIds.student, 0, 98, 0, null],
-			[1002, 300, mockRoleIds.student, 0, 89, 0, null],
-			[1002, 400, mockRoleIds.admin, 0, null, 0, null],
-			[3, 200, mockRoleIds.student, 0, 98, 0, Date.now() - 299],
-			[3, 300, mockRoleIds.student, 0, 88, 0, Date.now() - 86500000],
-			[3, 400, mockRoleIds.admin, 0, null, 0, null],
-			[311, 200, mockRoleIds.student, 0, 99, 0, null],
-			[311, 300, mockRoleIds.student, 0, 42, 0, null],
-			[311, 400, mockRoleIds.admin, 0, null, 0, null],
-			[313, 300, mockRoleIds.student, 0, 66, 0, null],
-			[313, 400, mockRoleIds.admin, 0, null, 0, null],
-			[6606, 100, mockRoleIds.student, 0, null, 0, null], // this user has a cascading admin role on dept and sem levels
-			[6606, 200, mockRoleIds.student, 0, null, 0, null],
-			[6606, 300, mockRoleIds.student, 0, null, 0, null],
-			[6606, 400, mockRoleIds.student, 0, null, 0, null], // this user has a cascading admin role on dept and sem levels
+			[1002, 200, mockRoleIds.student, 0, 98, 0, null, 44, 0, 0],
+			[1002, 300, mockRoleIds.student, 0, 89, 0, null, 0, 31, 0],
+			[1002, 400, mockRoleIds.admin, 0, null, 0, null, 1, 0, 0],
+			[3, 200, mockRoleIds.student, 0, 98, 0, Date.now() - 299, 0, 0, 0],
+			[3, 300, mockRoleIds.student, 0, 88, 0, Date.now() - 86500000, 0, 0, 0],
+			[3, 400, mockRoleIds.admin, 0, null, 0, null, 0, 1, 0],
+			[311, 200, mockRoleIds.student, 0, 99, 0, null, 0, 0, 2],
+			[311, 300, mockRoleIds.student, 0, 42, 0, null, 2, 2, 2],
+			[311, 400, mockRoleIds.admin, 0, null, 0, null, 0, 12, 0],
+			[313, 300, mockRoleIds.student, 0, 66, 0, null, 1, 0, 4],
+			[313, 400, mockRoleIds.admin, 0, null, 0, null, 0, 1, 5],
+			[6606, 100, mockRoleIds.student, 0, null, 0, null, 0, 0, 3], // this user has a cascading admin role on dept and sem levels
+			[6606, 200, mockRoleIds.student, 0, null, 0, null, 1, 1, 1],
+			[6606, 300, mockRoleIds.student, 0, null, 0, null, 34, 0, 0],
+			[6606, 400, mockRoleIds.student, 0, null, 0, null, 0, 4, 0], // this user has a cascading admin role on dept and sem levels
 		],
 		users: [
 			[100, 'John', 'Lennon', 'jlennon'],
@@ -107,23 +107,21 @@ describe('Data', () => {
 		selectedRolesIds: null,
 		selectedSemestersIds: null,
 		selectedOrgUnitIds: null,
+		isDefaultView: false,
 		isRecordsTruncated: false,
 		isOrgUnitsTruncated: false
 	};
 
 	const TRUNCATE_IF_THIS_ROLE_IS_PRESENT = 999999;
-	const recordProvider = async({ roleIds = null, semesterIds = null, orgUnitIds = null }) => {
-		return new Promise((resolve) => {
-			resolve({
-				...serverData,
-				semesterTypeId: mockOuTypes.semester,
-				selectedRolesIds: roleIds,
-				selectedSemestersIds: semesterIds,
-				selectedOrgUnitIds: orgUnitIds,
-				isOrgUnitsTruncated: roleIds.includes(TRUNCATE_IF_THIS_ROLE_IS_PRESENT)
-			});
-		});
-	};
+	const recordProvider = async({ roleIds = null, semesterIds = null, orgUnitIds = null, defaultView = false }) => ({
+		...serverData,
+		semesterTypeId: mockOuTypes.semester,
+		selectedRolesIds: roleIds,
+		selectedSemestersIds: semesterIds,
+		selectedOrgUnitIds: orgUnitIds,
+		defaultView,
+		isOrgUnitsTruncated: roleIds.includes(TRUNCATE_IF_THIS_ROLE_IS_PRESENT)
+	});
 
 	const cardFilters = [];
 	let sut;
@@ -251,6 +249,58 @@ describe('Data', () => {
 			sut.selectedOrgUnitIds = [1001];
 
 			sinon.assert.notCalled(recordProvider);
+		});
+	});
+
+	describe('get defaultViewPopupDisplayData', () => {
+		const getRecordProvider = ({ defaultViewOrgUnitIds = null, selectedOrgUnitIds = null, isDefaultView = false }) => {
+			return async() => ({
+				orgUnits: [
+					[1, 'Course 1', mockOuTypes.course, [0]],
+					[2, 'Course 2', mockOuTypes.course, [0]],
+					[3, 'Course 3', mockOuTypes.course, [0]]
+				],
+				users: [],
+				defaultViewOrgUnitIds,
+				selectedOrgUnitIds,
+				isDefaultView
+			});
+		};
+
+		it('should return an empty array if isDefaultView is false', async() => {
+			sut.recordProvider = getRecordProvider({ defaultViewOrgUnitIds: [1], selectedOrgUnitIds: [2] });
+			sut.loadData({});
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+
+			expect(sut.defaultViewPopupDisplayData).to.deep.equal([]);
+		});
+
+		it('should return defaultViewOrgUnitIds and names if isDefaultView is true', async() => {
+			sut.recordProvider = getRecordProvider({
+				defaultViewOrgUnitIds: [1, 3],
+				selectedOrgUnitIds: [2],
+				isDefaultView: true
+			});
+			sut.loadData({});
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+
+			expect(sut.defaultViewPopupDisplayData).to.deep.equal([{ id: 1, name: 'Course 1' }, { id: 3, name: 'Course 3' }]);
+		});
+
+		it('should return selectedOrgUnitIds and names if isDefaultView is true and defaultViewOrgUnitIds is null', async() => {
+			sut.recordProvider = getRecordProvider({ selectedOrgUnitIds: [2], isDefaultView: true });
+			sut.loadData({});
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+
+			expect(sut.defaultViewPopupDisplayData).to.deep.equal([{ id: 2, name: 'Course 2' }]);
+		});
+
+		it('should return an empty array if isDefaultView is true but there are no ids to show', async() => {
+			sut.recordProvider = getRecordProvider({ isDefaultView: true });
+			sut.loadData({});
+			await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
+
+			expect(sut.defaultViewPopupDisplayData).to.deep.equal([]);
 		});
 	});
 
@@ -435,6 +485,13 @@ describe('Data', () => {
 		it('should set and return a average time and grades', async() => {
 			const expected = [29, 69];
 			expect(sut.tiCVsGradesAvgValues).to.deep.equal(expected);
+		});
+	});
+
+	describe('discussionActivityStats', () => {
+		it('should return the correct sum of threads, replies, and reads', async() => {
+			const expected = [83, 52, 17];
+			expect(sut.discussionActivityStats).to.deep.equal(expected);
 		});
 	});
 });

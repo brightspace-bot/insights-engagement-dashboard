@@ -83,8 +83,8 @@ class Chart extends SkeletonMixin(LitElement) {
 	render() {
 		return html`
 			<div id="chart-container" tabindex="${this.skeleton ? -1 : 0}"></div>
-			<d2l-insights-overlay spinner-size="200" ?loading="${this.skeleton}"></d2l-insights-overlay>
-      	`;
+			<d2l-insights-overlay spinner-size="150" ?loading="${this.skeleton}"></d2l-insights-overlay>
+		`;
 	}
 
 	updated() {
@@ -122,6 +122,8 @@ class Chart extends SkeletonMixin(LitElement) {
 				}
 			});
 			this.chart = H[constructorType](this.chartContainer, this.options, this.chartCreated.bind(this));
+			// force highcharts to recalculate the chart position incase the filter move the graph
+			this.chartContainer.addEventListener('click', () => (delete this.chart.pointer.chartPosition));
 		}
 	}
 

@@ -52,7 +52,8 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds, defaultView 
 		selectedSemestersIds: semesterIds,
 		selectedRolesIds: roleIds,
 		selectedOrgUnitIds: orgUnitIds,
-		defaultViewOrgUnitIds: defaultView ? [1, 2] : null
+		defaultViewOrgUnitIds: defaultView ? [1, 2] : null,
+		isDefaultView: defaultView
 	};
 	return new Promise(resolve => setTimeout(() => resolve(demoData), 100));
 }

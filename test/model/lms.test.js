@@ -39,17 +39,19 @@ describe('Lms', () => {
 	describe('fetchRelevantChildren', () => {
 		it('should fetch children from the LMS without a semester filter', async() => {
 			const mockLmsResponseData = {
-				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+				Items: [2, 4, 7, 8, 9], // not representative; just for matching
+				PagingInfo: { HashMoreItems: false, Bookmark: '9' }
 			};
 
 			fetchMock.get('path:/d2l/api/ap/unstable/insights/data/orgunits/6612/children', mockLmsResponseData);
 
-			expect(await fetchRelevantChildren(6612)).to.deep.equal(mockLmsResponseData.Items);
+			expect(await fetchRelevantChildren(6612)).to.deep.equal(mockLmsResponseData);
 		});
 
 		it('should fetch children from the LMS with a semester filter', async() => {
 			const mockLmsResponseData = {
-				Items: [2, 4, 7, 8, 9] // not representative; just for matching
+				Items: [2, 4, 7, 8, 9], // not representative; just for matching
+				PagingInfo: { HashMoreItems: true, Bookmark: '9' }
 			};
 
 			fetchMock.get(
@@ -57,7 +59,7 @@ describe('Lms', () => {
 				mockLmsResponseData
 			);
 
-			expect(await fetchRelevantChildren(6612, [4, 500, 8])).to.deep.equal(mockLmsResponseData.Items);
+			expect(await fetchRelevantChildren(6612, [4, 500, 8])).to.deep.equal(mockLmsResponseData);
 		});
 
 		it('should cache by semester ids', async() => {
@@ -69,20 +71,50 @@ describe('Lms', () => {
 			};
 
 			fetchMock.get(
-				'end:/d2l/api/ap/unstable/insights/data/orgunits/9619/children?selectedSemestersCsv=4%2C500%2C8',
+				'end:/d2l/api/ap/unstable/insights/data/orgunits/9619/children?selectedSemestersCsv=9%2C500%2C8',
 				mockLmsResponseData1
 			);
-			await fetchRelevantChildren(9619, [4, 500, 8]);
+			await fetchRelevantChildren(9619, [9, 500, 8]);
 
 			fetchMock.get(
-				'end:/d2l/api/ap/unstable/insights/data/orgunits/6612/children?selectedSemestersCsv=4%2C500%2C8',
+				'end:/d2l/api/ap/unstable/insights/data/orgunits/6612/children?selectedSemestersCsv=9%2C500%2C8',
 				mockLmsResponseData2
 			);
-			await fetchRelevantChildren(6612, [4, 500, 8]);
+			await fetchRelevantChildren(6612, [9, 500, 8]);
 
-			expect([...fetchCachedChildren([4, 500, 8])]).to.deep.equal([
-				[6612, mockLmsResponseData2.Items],
-				[9619, mockLmsResponseData1.Items]
+			expect([...fetchCachedChildren([9, 500, 8])].sort((x, y) => x[0] - y[0])).to.deep.equal([
+				[6612, mockLmsResponseData2],
+				[9619, mockLmsResponseData1]
+			]);
+		});
+
+		it('should append to cache and update paging info', async() => {
+			const mockLmsResponseData1 = {
+				Items: [2, 4, 7, 8, 9], // not representative; just for matching
+				PagingInfo: { HasMoreItems: true, Bookmark: '9' }
+			};
+			const mockLmsResponseData2 = {
+				Items: [10, 11, 100], // not representative; just for matching
+				PagingInfo: { HasMoreItems: false, Bookmark: '100' }
+			};
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits/9619/children?selectedSemestersCsv=14%2C500%2C8',
+				mockLmsResponseData1
+			);
+			await fetchRelevantChildren(9619, [14, 500, 8]);
+
+			fetchMock.get(
+				'end:/d2l/api/ap/unstable/insights/data/orgunits/9619/children?selectedSemestersCsv=14%2C500%2C8&bookmark=9',
+				mockLmsResponseData2
+			);
+			await fetchRelevantChildren(9619, [14, 500, 8], '9');
+
+			expect([...fetchCachedChildren([14, 500, 8])]).to.deep.equal([
+				[9619, {
+					Items: [...mockLmsResponseData1.Items, ...mockLmsResponseData2.Items],
+					PagingInfo: mockLmsResponseData2.PagingInfo
+				}]
 			]);
 		});
 
@@ -92,15 +124,13 @@ describe('Lms', () => {
 			};
 
 			fetchMock.get(
-				'end:/d2l/api/ap/unstable/insights/data/orgunits/6612/children?selectedSemestersCsv=',
+				'end:/d2l/api/ap/unstable/insights/data/orgunits/6613/children?selectedSemestersCsv=',
 				mockLmsResponseData
 			);
 
-			await fetchRelevantChildren(6612, []);
+			await fetchRelevantChildren(6613, []);
 
-			expect([...fetchCachedChildren(null)]).to.deep.equal([
-				[6612, mockLmsResponseData.Items]
-			]);
+			expect(fetchCachedChildren(null).get(6613)).to.deep.equal(mockLmsResponseData);
 		});
 	});
 

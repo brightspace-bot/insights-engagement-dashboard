@@ -188,30 +188,55 @@ describe('Tree', () => {
 			expect(staticTree.isPopulated(4)).to.be.true;
 		});
 
-		it('should add the given nodes', () => {
-			dynamicTree.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
+		[true, false].forEach(hasBookmark => {
+			it(`should add the given nodes ${hasBookmark ? 'with a bookmark' : ''}`, () => {
+				dynamicTree.addNodes(
+					1001,
+					[[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]],
+					hasBookmark,
+					'bookmark'
+				);
 
-			expect(dynamicTree.getName(991)).to.equal('new1');
-			expect(dynamicTree.getName(992)).to.equal('new2');
-			expect(dynamicTree.getType(991)).to.equal(mockOuTypes.course);
-			expect(dynamicTree.getType(992)).to.equal(mockOuTypes.courseOffering);
-			expect(dynamicTree.isOpenable(991)).to.be.true;
-			expect(dynamicTree.isOpenable(992)).to.be.false;
-		});
+				expect(dynamicTree.getName(991)).to.equal('new1');
+				expect(dynamicTree.getName(992)).to.equal('new2');
+				expect(dynamicTree.getType(991)).to.equal(mockOuTypes.course);
+				expect(dynamicTree.getType(992)).to.equal(mockOuTypes.courseOffering);
+				expect(dynamicTree.isOpenable(991)).to.be.true;
+				expect(dynamicTree.isOpenable(992)).to.be.false;
 
-		it('should add the given nodes (constructor)', () => {
-			const tree = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: true,
-				extraChildren: new Map([
-					[1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]]
-				])
+				expect(dynamicTree.hasMore(1001)).to.equal(hasBookmark);
+				if (hasBookmark) expect(dynamicTree.getBookmark(1001)).to.equal('bookmark');
 			});
 
-			expect(tree.getName(991)).to.equal('new1');
-			expect(tree.getName(992)).to.equal('new2');
-			expect(tree.getType(991)).to.equal(mockOuTypes.course);
-			expect(tree.getType(992)).to.equal(mockOuTypes.courseOffering);
-			expect(tree.isOpenable(991)).to.be.true;
-			expect(tree.isOpenable(992)).to.be.false;
+			it(`should add the given nodes ${hasBookmark ? 'with a bookmark' : ''} (constructor)`, () => {
+				const tree = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: true,
+					extraChildren: new Map([
+						[1001, {
+							Items: [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]],
+							PagingInfo: { HasMoreItems: hasBookmark, Bookmark: 'bookmark' }
+						}]
+					])
+				});
+
+				expect(tree.getName(991)).to.equal('new1');
+				expect(tree.getName(992)).to.equal('new2');
+				expect(tree.getType(991)).to.equal(mockOuTypes.course);
+				expect(tree.getType(992)).to.equal(mockOuTypes.courseOffering);
+				expect(tree.isOpenable(991)).to.be.true;
+				expect(tree.isOpenable(992)).to.be.false;
+
+				expect(tree.hasMore(1001)).to.equal(hasBookmark);
+				if (hasBookmark) expect(tree.getBookmark(1001)).to.equal('bookmark');
+			});
+		});
+
+		it('should turn off loading for the parent node', () => {
+			dynamicTree.setLoading(1001);
+			expect(dynamicTree.isLoading(1001)).to.be.true;
+
+			dynamicTree.addNodes(1001, [[991, 'new1', mockOuTypes.course]]);
+
+			expect(dynamicTree.isLoading(1001)).to.be.false;
 		});
 
 		it('should add the nodes to a previously childless parent', () => {
@@ -222,13 +247,13 @@ describe('Tree', () => {
 
 		it('should add the nodes to root (possible corner case)', () => {
 			dynamicTree.addNodes(6606, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect([...dynamicTree.getChildIds(6606)].sort()).to.deep.equal([991, 992]);
+			expect([...dynamicTree.getChildIds(6606)].sort()).to.deep.equal([1001, 1002, 1003, 11, 12, 13, 991, 992]);
 			expect(dynamicTree.isPopulated(6606)).to.be.true;
 		});
 
-		it('should replace existing children', () => {
-			dynamicTree.addNodes(1001, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]);
-			expect([...dynamicTree.getChildIds(1001)].sort()).to.deep.equal([991, 992]);
+		it('should merge with existing children', () => {
+			dynamicTree.addNodes(1001, [[991, 'new1', mockOuTypes.course], [2 /* already a child */, 'new2', mockOuTypes.courseOffering]]);
+			expect([...dynamicTree.getChildIds(1001)].sort()).to.deep.equal([1, 2, 3, 991]);
 			expect(dynamicTree.isPopulated(1001)).to.be.true;
 		});
 
@@ -240,7 +265,7 @@ describe('Tree', () => {
 
 		it('should make new children visible', () => {
 			dynamicTree.addNodes(1001, [[991, 'bnew1', mockOuTypes.course], [992, 'anew2', mockOuTypes.courseOffering]]);
-			expect(dynamicTree.getChildIdsForDisplay(1001)).to.deep.equal([992, 991]);
+			expect(dynamicTree.getChildIdsForDisplay(1001)).to.deep.equal([992, 991, 1, 2, 3]);
 		});
 
 		it('should select new nodes if the parent is selected', () => {
@@ -252,7 +277,10 @@ describe('Tree', () => {
 		it('should select new nodes if the parent is selected (constructor)', () => {
 			const tree = new Tree({ nodes, selectedIds, leafTypes, invisibleTypes, isDynamic: true,
 				extraChildren: new Map([
-					[1003, [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]]]
+					[1003, {
+						Items: [[991, 'new1', mockOuTypes.course], [992, 'new2', mockOuTypes.courseOffering]],
+						PagingInfo: { HasMoreItems: true, Bookmark: '992' }
+					}]
 				])
 			});
 			expect(tree.getState(991)).to.equal('explicit');

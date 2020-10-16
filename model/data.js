@@ -1,5 +1,5 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
-import { COURSE_OFFERING, DISCUSSION_ACTIVITY, RECORD, USER } from '../consts';
+import { COURSE_OFFERING, RECORD, USER } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl/lib/number.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
@@ -43,6 +43,11 @@ export class Data {
 			records: [],
 			orgUnits: [],
 			users: [],
+
+			// NB: isDefaultView just means that data was loaded using the defaultViewDataProvider. It does not
+			// necessarily mean that the client-side has preselected OUs - also see get defaultViewPopupDisplayData
+			isDefaultView: false,
+
 			isRecordsTruncated: false,
 			isOrgUnitsTruncated: false,
 			semesterTypeId: null,
@@ -102,7 +107,6 @@ export class Data {
 				fetchCachedChildren(newServerData.selectedSemestersIds) || new Map() :
 				null
 		});
-		console.log(newServerData);
 		this._userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
 		this.isLoading = false;
 		this.serverData = newServerData;
@@ -147,6 +151,25 @@ export class Data {
 
 	get selectedOrgUnitIds() {
 		return this._selectorFilters.orgUnit.selected;
+	}
+
+	// returns OU ids (and respective names) that have been preselected to create the client-side default view, if any.
+	// NB: it's possible for isDefaultView to be true but for there to be no preselected ids; this happens if the
+	// defaultCourses and defaultSemesters config variables are set to 0
+	get defaultViewPopupDisplayData() {
+		let courseIdsToDisplay = [];
+
+		if (this.serverData.isDefaultView) {
+			if (this.serverData.defaultViewOrgUnitIds && this.serverData.defaultViewOrgUnitIds.length) {
+				courseIdsToDisplay = this.serverData.defaultViewOrgUnitIds;
+			} else if (this.serverData.selectedOrgUnitIds && this.serverData.selectedOrgUnitIds.length) {
+				courseIdsToDisplay = this.serverData.selectedOrgUnitIds;
+			}
+		} // else return empty array
+
+		return courseIdsToDisplay.map(id => {
+			return { id, name: this.orgUnitTree.getName(id) };
+		});
 	}
 
 	// @computed
@@ -299,19 +322,17 @@ export class Data {
 
 	get discussionActivityStats() {
 		const discussionActivity = this.getRecordsInView()
-			.filter(record => record[RECORD.DISCUSSION_ACTIVITY] !== null && record[RECORD.DISCUSSION_ACTIVITY] !== undefined)
-			.map(record => [record[RECORD.DISCUSSION_ACTIVITY]]);
+			.map(record => [record[RECORD.DISCUSSION_ACTIVITY_THREADS], record[RECORD.DISCUSSION_ACTIVITY_REPLIES], record[RECORD.DISCUSSION_ACTIVITY_READS]]);
 
 		if (discussionActivity === undefined || discussionActivity.length === 0) {
 			return [0, 0, 0];
 		}
-
 		let threadSum, replySum, readSum;
 		threadSum = replySum = readSum = 0;
 		discussionActivity.forEach(item => {
-			threadSum += item[0][DISCUSSION_ACTIVITY.THREADS];
-			replySum += item[0][DISCUSSION_ACTIVITY.REPLIES];
-			readSum += item[0][DISCUSSION_ACTIVITY.READS];
+			threadSum += item[0];
+			replySum += item[1];
+			readSum += item[2];
 		});
 		return [threadSum, replySum, readSum];
 	}
