@@ -58,12 +58,12 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			}
 
 			.d2l-insights-table-cell {
-				position: relative;
 				border-bottom: 1px solid var(--d2l-color-mica);
 				display: table-cell;
 				font-weight: normal;
 				height: 41px; /* min-height to be 62px including border */
 				padding: 10px 20px;
+				position: relative;
 				vertical-align: middle;
 			}
 
@@ -71,7 +71,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				cursor: pointer;
 			}
 
-			.d2l-insights-table-cell-sort-indicator{
+			.d2l-insights-table-cell-sort-indicator {
 				position: absolute;
 				right: 10px;
 				top: 50%;
@@ -140,7 +140,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-left-radius: 8px;
 			}
-			.d2l-insights-table-arrow-spacing{
+			.d2l-insights-table-arrow-spacing {
 				padding-right: 30px;
 			}
 		`];
