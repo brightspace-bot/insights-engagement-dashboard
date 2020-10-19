@@ -12,7 +12,7 @@ import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton
 class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	static get properties() {
 		return {
-			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' }
+			isValueClickable: { type: Boolean, attribute: 'clickable' }
 		};
 	}
 
@@ -89,7 +89,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-discussion-activity-card">
 			<div class="d2l-insights-discussion-activity-card-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
-			<div class="d2l-insights-discussion-activity-card-body" aria-hidden="${this.skeleton}">
+			<div class="d2l-insights-discussion-activity-card-body">
 			<d2l-labs-chart class="d2l-insights-discussion-activity-card-body" .options="${this.chartOptions}" ?skeleton="${this.skeleton}"></d2l-labs-chart>
 			</div>
 		</div>`;
