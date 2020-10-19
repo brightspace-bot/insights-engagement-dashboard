@@ -1,3 +1,4 @@
+/* eslint-disable lit/no-template-bind */
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
@@ -85,13 +86,65 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		}
 
 		if (this._itemsCount) {
+
+			this._sortByColumn();
+
 			const start = this._pageSize * (this._currentPage - 1);
 			const end = this._pageSize * (this._currentPage); // it's ok if this goes over the end of the array
 
-			return this.data.userDataForDisplay.slice(start, end);
+			const data = this.data.sortedUserDataForDisplay ? this.data.sortedUserDataForDisplay : this.data.userDataForDisplay
+			return data.slice(start, end);
 		}
 
 		return [];
+	}
+
+	_dataToFloat(d) {
+		if (typeof(d) === 'string') {
+			return parseFloat(d.replace('%', '').trim());
+		}
+		return d;
+	}
+	_getLastName(s) {
+		return s[0].split(',')[1].toLowerCase();
+	}
+
+	/*
+	* @param selectedSort
+	*{
+	*	column: number,
+	*	order: 'asc' | 'desc'
+	*}
+	*
+	*/
+	setSelectedSort(selectedSort) {
+		this.selectedSort = selectedSort;
+		this.requestUpdate();
+	}
+
+	_sortByColumn() {
+
+		if (this.selectedSort === undefined) return;
+
+		const ORDER = {
+			'asc': [1, -1, 0],
+			'desc': [-1, 1, 0],
+		};
+		const colmnNumber = this.selectedSort.column;
+		const order = this.selectedSort.order;
+		if (colmnNumber === 0) {
+			this.data.sortedUserDataForDisplay = [ ...this.data.userDataForDisplay.sort((a, b) => {
+				if (this._getLastName(a[colmnNumber]) > this._getLastName(b[colmnNumber])) return ORDER[order][0];
+				else if (this._getLastName(a[colmnNumber]) < this._getLastName(b[colmnNumber])) return ORDER[order][1];
+				else ORDER[order][2];
+			})];
+		} else {
+			this.data.sortedUserDataForDisplay = [ ...this.data.userDataForDisplay.sort((a, b) => {
+				if (this._dataToFloat(a[colmnNumber]) < this._dataToFloat(b[colmnNumber])) return ORDER[order][0];
+				else if (this._dataToFloat(a[colmnNumber]) > this._dataToFloat(b[colmnNumber])) return ORDER[order][1];
+				else return ORDER[order][2];
+			})];
+		}
 	}
 
 	get columnInfo() {
@@ -121,6 +174,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 				title="${this.localize('components.insights-users-table.title')}"
 				.columnInfo=${this.columnInfo}
 				.data="${this._displayData}"
+				.filterColumns="${this.setSelectedSort.bind(this)}"
 				?skeleton="${this.skeleton}"></d2l-insights-table>
 
 			<d2l-labs-pagination

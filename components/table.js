@@ -18,6 +18,8 @@ export const COLUMN_TYPES = {
  */
 class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
+	selectedSort = { column: undefined, order: 'desc' };
+
 	static get properties() {
 		return {
 			title: { type: String, attribute: true },
@@ -53,16 +55,27 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				color: var(--d2l-color-ferrite);
 				height: 27px; /* min-height to be 48px including border */
 				line-height: 1.4rem;
-				padding: 10px 20px;
 			}
 
 			.d2l-insights-table-cell {
+				position: relative;
 				border-bottom: 1px solid var(--d2l-color-mica);
 				display: table-cell;
 				font-weight: normal;
 				height: 41px; /* min-height to be 62px including border */
 				padding: 10px 20px;
 				vertical-align: middle;
+			}
+
+			.d2l-insights-table-cell-header {
+				cursor: pointer;
+			}
+
+			.d2l-insights-table-cell-sort-indicator{
+				position: absolute;
+				right: 10px;
+				top: 50%;
+				transform: translateY(-50%);
 			}
 
 			/* Table cell borders - to get exactly 1px inner borders in all cells */
@@ -127,6 +140,9 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-left-radius: 8px;
 			}
+			.d2l-insights-table-arrow-spacing{
+				padding-right: 30px;
+			}
 		`];
 	}
 
@@ -135,7 +151,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		this.columnInfo = [];
 		this.data = [];
 		this.title = '';
-		this.selectedSort = { column: 0, order: 'desc' };
+		this.filterColumns = () => {};
 	}
 
 	render() {
@@ -162,21 +178,30 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		return html`
 			<thead class="d2l-insights-table-header">
 				<tr class="${classMap(styles)}">
-					${this.columnInfo.map(this._renderHeaderCell, this)} ${this.selectedSort.row}
+					${this.columnInfo.map(this._renderHeaderCell, this)}
 				</tr>
 			</thead>
 		`;
 	}
 
 	_renderHeaderCell(info, idx) {
+
+		const isSortedColumn = idx === this.selectedSort.column;
+
 		const styles = {
 			'd2l-insights-table-cell': true,
+			'd2l-insights-table-cell-header': true,
 			'd2l-insights-table-cell-first': idx === 0,
-			'd2l-insights-table-cell-last': idx === this._numColumns - 1
+			'd2l-insights-table-cell-last': idx === this._numColumns - 1,
+			'd2l-insights-table-arrow-spacing': isSortedColumn
 		};
+		const spaceArrow =  isSortedColumn ? 'd2l-insights-table-cell-sort-indicator' : '';
 
 		return html`
-			<th class="${classMap(styles)}" scope="col" @click="${this._handleHeaderClicked}">${info.headerText}</th>
+			<th class="${classMap(styles)}" scope="col" @click="${this._handleHeaderClicked}">
+				${info.headerText}
+				<span class="${spaceArrow}">${isSortedColumn ? this.selectedSort.order === 'desc' ? '▼' : '▲' : ''}</span>
+			</th>
 		`;
 	}
 
@@ -228,23 +253,9 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		throw new Error('Users table: unknown column type');
 	}
 
-	_dataToFloat(d) {
-		if (typeof(d) === 'string') {
-			return parseFloat(d.replace('%', '').trim());
-		}
-		return d;
-	}
-	_getLastName(s) {
-		return s[0].split(',')[1];
-	}
-
 	_handleHeaderClicked(e) {
 		const children = e.target.parentElement.children;
 		const colmnNumber = Array.from(children).indexOf(e.target);
-		const ORDER = {
-			'asc': [1, -1, 0],
-			'desc': [-1, 1, 0],
-		};
 
 		if (colmnNumber !== this.selectedSort.column) {
 			this.selectedSort = {
@@ -264,22 +275,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				};
 			}
 		}
-
-		const order = this.selectedSort.order;
-
-		if (colmnNumber === 0) {
-			this.data = [ ...this.data.sort((a, b) => {
-				if (this._getLastName(a[colmnNumber]) > this._getLastName(b[colmnNumber])) return ORDER[order][0];
-				else if (this._getLastName(a[colmnNumber]) < this._getLastName(b[colmnNumber])) return ORDER[order][1];
-				else ORDER[order][2];
-			})];
-		} else {
-			this.data = [ ...this.data.sort((a, b) => {
-				if (this._dataToFloat(a[colmnNumber]) < this._dataToFloat(b[colmnNumber])) return ORDER[order][0];
-				else if (this._dataToFloat(a[colmnNumber]) > this._dataToFloat(b[colmnNumber])) return ORDER[order][1];
-				else return ORDER[order][2];
-			})];
-		}
+		this.filterColumns(this.selectedSort);
 	}
 }
 customElements.define('d2l-insights-table', Table);
