@@ -5,7 +5,7 @@ import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-help
 
 describe('d2l-insights-results-card', () => {
 	const data = {
-		userDataForDisplay: [
+		users: [
 			'Lennon, John',
 			'McCartney, Paul',
 			'Harrison, George',

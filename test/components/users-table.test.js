@@ -1,25 +1,52 @@
 import '../../components/users-table.js';
 
 import { expect, fixture, html } from '@open-wc/testing';
+import { mockRoleIds, records } from '../model/mocks';
+import { RECORD } from '../../consts';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 const data = {
-	// returns [
-	//   [['0Last, 0First', 'user0 - 0'], ...],
-	//   [['1Last, 1First', 'user1 - 1'], ...],
-	//   ...,
-	//   [['22Last, 22First', 'user22 - 22'], ...],
-	// ]
-	userDataForDisplay: Array.from(
-		{ length: 23 },
-		(val, idx) => [
-			[`${idx}Last, ${idx}First`, `user${idx} - ${idx}`],
-			Math.floor(Math.random() * 10),
-			`${(Math.random() * 100).toFixed(1) } %`,
-			(Math.random() * 20).toFixed(2)
-		]
-	)
+	users: [
+		[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
+		[200, 'Paul', 'McCartney', 'pmccartney', null],
+		[300, 'George', 'Harrison', 'gharrison', Date.now()],
+		[400, 'Ringo', 'Starr', 'rstarr', Date.now()],
+		...Array.from(
+			{ length: 19 },
+			(val, idx) => [
+				idx,
+				`zz${idx}First`,
+				`zz${idx}Last`,
+				`username${idx}`,
+				null
+			]
+		)
+	],
+	records: [
+		...records,
+		...Array.from({ length: 19 }, (val, idx) => [111, idx, mockRoleIds.student, 1, 93, 7000, null])
+	]
 };
+data.recordsByUser = new Map();
+data.records.forEach(r => {
+	if (!data.recordsByUser.has(r[RECORD.USER_ID])) {
+		data.recordsByUser.set(r[RECORD.USER_ID], []);
+	}
+	data.recordsByUser.get(r[RECORD.USER_ID]).push(r);
+});
+
+const expected = [
+	[['Harrison, George', 'gharrison - 300'], 14, '71.42 %', '19.64'],
+	[['Lennon, John', 'jlennon - 100'], 12, '22 %', '2.78'],
+	[['McCartney, Paul', 'pmccartney - 200'], 13, '74 %', '23.72'],
+	[['Starr, Ringo', 'rstarr - 400'], 9, '55 %', '8.33'],
+	...Array.from({ length: 19 }, (val, idx) => [
+		[`zz${idx}Last, zz${idx}First`, `username${idx} - ${idx}`],
+		1,
+		'93 %',
+		'116.67'
+	]).sort((u1, u2) => u1[0][0].localeCompare(u2[0][0]))
+];
 
 describe('d2l-insights-users-table', () => {
 
@@ -143,7 +170,7 @@ describe('d2l-insights-users-table', () => {
 			});
 
 			it('should show zero pages if there are no users to display', async() => {
-				el.data = { userDataForDisplay: [] };
+				el.data = { users: [] };
 				await finishUpdate();
 
 				expect(pageSelector.selectedCountOption).to.equal(50);
@@ -154,7 +181,7 @@ describe('d2l-insights-users-table', () => {
 			});
 
 			it('should show 20 skeleton rows with zero pages if loading', async() => {
-				el.data = { userDataForDisplay: [], isLoading: true };
+				el.data = { users: [], isLoading: true };
 				el.skeleton = true;
 				await finishUpdate();
 
@@ -175,8 +202,8 @@ function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
 	displayedUserInfo.forEach((cell, rowIdx) => {
 		const mainText = cell.querySelector('div:first-child');
 		const subText = cell.querySelector('div:last-child');
-		expect(mainText.innerText).to.equal(data.userDataForDisplay[rowIdx + startRowNum][0][0]);
-		expect(subText.innerText).to.equal(data.userDataForDisplay[rowIdx + startRowNum][0][1]);
+		expect(mainText.innerText).to.equal(expected[rowIdx + startRowNum][0][0]);
+		expect(subText.innerText).to.equal(expected[rowIdx + startRowNum][0][1]);
 	});
 
 	[2, 3, 4].forEach(child => {
@@ -185,7 +212,7 @@ function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
 		expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
 		displayedUserInfo.forEach((cell, rowIdx) => {
 			const mainText = cell.querySelector('div');
-			expect(mainText.innerText).to.equal(data.userDataForDisplay[rowIdx + startRowNum][child - 1].toString());
+			expect(mainText.innerText).to.equal(expected[rowIdx + startRowNum][child - 1].toString());
 		});
 	});
 }
