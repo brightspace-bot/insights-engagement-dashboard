@@ -27,7 +27,7 @@ class ResultsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardValue() {
-		return this.data.userDataForDisplay.length;
+		return this.data.users.length;
 	}
 
 	render() {
