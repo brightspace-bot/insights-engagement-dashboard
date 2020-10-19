@@ -18,13 +18,13 @@ export const COLUMN_TYPES = {
  */
 class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
-	selectedSort = { column: undefined, order: 'desc' };
-
 	static get properties() {
 		return {
 			title: { type: String, attribute: true },
 			columnInfo: { type: Array, attribute: false },
-			data: { type: Array, attribute: false }
+			data: { type: Array, attribute: false },
+			sortColumn: { type: Number, attribute: true },
+			sortOrder: { type: String, attribute: true },
 		};
 	}
 
@@ -151,11 +151,15 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		this.columnInfo = [];
 		this.data = [];
 		this.title = '';
-		this.filterColumns = () => {};
+		this.sortColumn = 0;
+		this.sortOrder = 'desc';
 	}
 
 	render() {
 		return html`
+			<script type="module">
+				import '@brightspace-ui/core/components/icons/icon.js';
+			</script>
 			<table class="d2l-insights-table-table" aria-label="${this.title}">
 				${this._renderThead()}
 				${this._renderTbody()}
@@ -186,7 +190,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	_renderHeaderCell(info, idx) {
 
-		const isSortedColumn = idx === this.selectedSort.column;
+		const isSortedColumn = idx === this.sortColumn;
 
 		const styles = {
 			'd2l-insights-table-cell': true,
@@ -200,7 +204,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		return html`
 			<th class="${classMap(styles)}" scope="col" @click="${this._handleHeaderClicked}">
 				${info.headerText}
-				<span class="${spaceArrow}">${isSortedColumn ? this.selectedSort.order === 'desc' ? '▼' : '▲' : ''}</span>
+				<d2l-icon icon="tier1:${isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : ''}" class="${spaceArrow}"></span>
 			</th>
 		`;
 	}
@@ -257,25 +261,19 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		const children = e.target.parentElement.children;
 		const colmnNumber = Array.from(children).indexOf(e.target);
 
-		if (colmnNumber !== this.selectedSort.column) {
-			this.selectedSort = {
-				column: colmnNumber,
-				order: 'asc'
-			};
+		if (colmnNumber !== this.sortColumn) {
+			this.sortOrder = 'asc';
 		} else {
-			if (this.selectedSort.order === 'asc') {
-				this.selectedSort = {
-					column: colmnNumber,
-					order: 'desc'
-				};
+			if (this.sortOrder === 'asc') {
+				this.sortOrder = 'desc';
 			} else {
-				this.selectedSort = {
-					column: colmnNumber,
-					order: 'asc'
-				};
+				this.sortOrder = 'asc';
 			}
 		}
-		this.filterColumns(this.selectedSort);
+
+		this.sortColumn = colmnNumber;
+
+		dispatchEvent(new CustomEvent('columnSort', { detail: { column: this.sortColumn, order: this.sortOrder } }));
 	}
 }
 customElements.define('d2l-insights-table', Table);

@@ -40,7 +40,9 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return {
 			data: { type: Object, attribute: false },
 			_currentPage: { type: Number, attribute: false },
-			_pageSize: { type: Number, attribute: false }
+			_pageSize: { type: Number, attribute: false },
+			_sortColumn: { type: Number, attribute: false },
+			_sortOrder: { type: String, attribute: false },
 		};
 	}
 
@@ -73,6 +75,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		};
 		this._currentPage = 1;
 		this._pageSize = DEFAULT_PAGE_SIZE;
+		addEventListener('columnSort', this.setColumnSort.bind(this));
 	}
 
 	get _itemsCount() {
@@ -126,21 +129,22 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	*}
 	*
 	*/
-	setSelectedSort(selectedSort) {
-		this.selectedSort = selectedSort;
-		this.requestUpdate();
+	setColumnSort(e) {
+		this._sortOrder = e.detail.order;
+		this._sortColumn = e.detail.column;
+		//this.requestUpdate();
 	}
 
 	_sortByColumn() {
 
-		if (this.selectedSort === undefined) return;
+		if (this._sortOrder === undefined || this._sortColumn === undefined) return;
 
 		const ORDER = {
 			'asc': [1, -1, 0],
 			'desc': [-1, 1, 0],
 		};
-		const colmnNumber = this.selectedSort.column;
-		const order = this.selectedSort.order;
+		const colmnNumber = this._sortColumn;
+		const order = this._sortOrder;
 		if (colmnNumber === 0) {
 			this.sortedUserDataForDisplay = [ ...this.userDataForDisplay.sort((a, b) => {
 				if (this._getLastName(a[colmnNumber]) > this._getLastName(b[colmnNumber])) return ORDER[order][0];
@@ -161,6 +165,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
 		// then sort by lastFirstName
 		const recordsByUser = this.data.recordsByUser;
+		console.log(recordsByUser);
 		return this.data.users
 			.map(user => {
 				const records = recordsByUser.get(user[USER.ID]);
@@ -206,7 +211,6 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 				title="${this.localize('components.insights-users-table.title')}"
 				.columnInfo=${this.columnInfo}
 				.data="${this._displayData}"
-				.filterColumns="${this.setSelectedSort.bind(this)}"
 				?skeleton="${this.skeleton}"></d2l-insights-table>
 
 			<d2l-labs-pagination
