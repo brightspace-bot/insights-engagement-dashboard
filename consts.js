@@ -18,4 +18,3 @@ export const USER = {
 };
 
 export const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
-export const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';

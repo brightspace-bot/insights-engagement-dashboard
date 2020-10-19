@@ -1,7 +1,7 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
 import {
 	COURSE_OFFERING,
-	OverdueAssignmentsFilterId, RECORD, TiCVsGradesFilterId, USER
+	RECORD, TiCVsGradesFilterId, USER
 } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
@@ -205,16 +205,6 @@ export class Data {
 		return [this.avgTimeInContent, this.avgGrades];
 	}
 
-	get usersCountsWithOverdueAssignments() {
-		return this.getRecordsInView(OverdueAssignmentsFilterId)
-			.reduce((acc, record) => {
-				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
-					acc.add(record[RECORD.USER_ID]);
-				}
-				return acc;
-			}, 	new Set()).size;
-	}
-
 	getRecordsInView(id) {
 		// if id is omitted, all applied filters will be used
 		const otherFilters = Object.values(this.cardFilters).filter(f => f.isApplied && f.id !== id);
@@ -246,7 +236,6 @@ decorate(Data, {
 	orgUnitTree: observable,
 	records: computed,
 	users: computed,
-	usersCountsWithOverdueAssignments: computed,
 	tiCVsGrades: computed,
 	tiCVsGradesAvgValues: computed,
 	cardFilters: observable,
