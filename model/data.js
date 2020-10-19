@@ -32,7 +32,6 @@ export class Data {
 
 		// @observables
 		this.selectedLastAccessCategory = new Set();
-		this.selectedGradesCategories = new Set();
 		this.tiCVsGradesQuadrant = 'leftBottom';
 		this.avgTimeInContent = 0;
 		this.avgGrades = 0;
@@ -330,7 +329,6 @@ decorate(Data, {
 	isLoading: observable,
 	tiCVsGradesQuadrant: observable,
 	selectedLastAccessCategory: observable,
-	selectedGradesCategories: observable,
 	onServerDataReload: action,
 	setApplied: action,
 	addToLastAccessCategory: action,
