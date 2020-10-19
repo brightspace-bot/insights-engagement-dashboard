@@ -4,20 +4,11 @@ import {
 	OverdueAssignmentsFilterId, RECORD, TiCVsGradesFilterId, USER
 } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
-import { formatNumber, formatPercent } from '@brightspace-ui/intl/lib/number.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
-import { TABLE_USER } from '../components/users-table';
 import { Tree } from '../components/tree-filter';
-
-const numberFormatOptions = { maximumFractionDigits: 2 };
 
 function unique(array) {
 	return [...new Set(array)];
-}
-
-function avgOf(records, field) {
-	const total = records.reduce((sum, r) => sum + r[field], 0);
-	return total / records.length;
 }
 
 // cardFilters must be an array of filters; a filter must have fields id, title, and isApplied,
@@ -184,29 +175,6 @@ export class Data {
 		return userIdsInView.map(userId => this._userDictionary.get(userId));
 	}
 
-	// @computed
-	get userDataForDisplay() {
-		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
-		// then sort by lastFirstName
-		const recordsByUser = this.recordsByUser;
-		return this.users
-			.map(user => {
-				const records = recordsByUser.get(user[USER.ID]);
-				const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
-				const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
-				return [
-					[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
-					records.length, // courses
-					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
-					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions)
-				];
-			})
-			.sort((user1, user2) => {
-				// sort by lastFirstName
-				return user1[TABLE_USER.NAME_INFO][0].localeCompare(user2[TABLE_USER.NAME_INFO][0]);
-			});
-	}
-
 	get recordsByUser() {
 		const recordsByUser = new Map();
 		this.getRecordsInView().forEach(r => {
@@ -321,7 +289,6 @@ decorate(Data, {
 	orgUnitTree: observable,
 	records: computed,
 	users: computed,
-	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
 	courseLastAccessDates: computed,
 	tiCVsGrades: computed,
