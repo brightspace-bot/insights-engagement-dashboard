@@ -1,16 +1,11 @@
-import { OverdueAssignmentsFilterId, RECORD } from '../consts';
+import { computed, decorate } from 'mobx';
 import { html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
+import { USER } from '../consts';
 
-export const OverdueAssignmentsCardFilter = {
-	id: OverdueAssignmentsFilterId,
-	title: 'components.insights-engagement-dashboard.overdueAssignmentsHeading',
-	filter: (record) => record[RECORD.OVERDUE] > 0
-};
-
-class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
+class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
@@ -24,21 +19,25 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardMessage() {
-		return this.localize('components.insights-engagement-dashboard.overdueAssignments');
+		return this.localize('components.insights-engagement-dashboard.lastSystemAccess');
 	}
 
 	get _cardTitle() {
-		return this.localize('components.insights-engagement-dashboard.overdueAssignmentsHeading');
+		return this.localize('components.insights-engagement-dashboard.lastSystemAccessHeading');
 	}
 
 	get _cardValue() {
-		return this.data.usersCountsWithOverdueAssignments;
+		const fourteenDayMillis = 1209600000;
+
+		return this.data.users
+			.filter(user => user[USER.LAST_SYS_ACCESS] === null || user[USER.LAST_SYS_ACCESS] === undefined || (Date.now() - user[USER.LAST_SYS_ACCESS] > fourteenDayMillis))
+			.length;
 	}
 
 	render() {
 		return html`
 			<d2l-labs-summary-card
-				id="d2l-insights-engagement-overdue-assignments"
+				id="d2l-insights-engagement-last-access"
 				is-value-clickable
 				.data="${this.data}"
 				card-title="${this._cardTitle}"
@@ -51,7 +50,11 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	_valueClickHandler() {
-		this.data.setApplied('d2l-insights-overdue-assignments-card', true);
+		console.log('click'); // out of scope
 	}
 }
-customElements.define('d2l-insights-overdue-assignments-card', OverdueAssignmentsCard);
+customElements.define('d2l-insights-last-access-card', LastAccessCard);
+
+decorate(LastAccessCard, {
+	_cardValue: computed,
+});

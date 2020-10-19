@@ -1,31 +1,20 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
-import { COURSE_OFFERING, RECORD, USER } from '../consts';
+import {
+	COURSE_OFFERING, CourseLastAccessFilterId,
+	OverdueAssignmentsFilterId, RECORD, TiCVsGradesFilterId, USER
+} from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
-import { formatNumber, formatPercent } from '@brightspace-ui/intl/lib/number.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
-import { CardFilter } from './cardFilter.js';
-import { TABLE_USER } from '../components/users-table';
 import { Tree } from '../components/tree-filter';
-
-const numberFormatOptions = { maximumFractionDigits: 2 };
 
 function unique(array) {
 	return [...new Set(array)];
 }
 
-function countUnique(records, field) {
-	return new Set(records.map(r => r[field])).size;
-}
-const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
-const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
-const CourseLastAccessFilterId = 'd2l-insights-course-last-access-card';
-const CurrentFinalGradeFilterId = 'd2l-insights-current-final-grade-card';
-
-function avgOf(records, field) {
-	const total = records.reduce((sum, r) => sum + r[field], 0);
-	return total / records.length;
-}
-
+// cardFilters must be an array of filters; a filter must have fields id, title, and isApplied,
+// and a filter(record, data) method; beyond that, it can keep state however it wishes.
+// Ideally, these should be classes, filter should not use the data parameter (to be removed in future), and the id need not
+// be known outside the defining file (see, e.g., current-final-grade-card).
 export class Data {
 	constructor({ recordProvider, cardFilters }) {
 		this.recordProvider = recordProvider;
@@ -64,11 +53,7 @@ export class Data {
 		};
 
 		this.cardFilters = {};
-
-		// additional setup
-		cardFilters
-			.map(params => new CardFilter(params, this))
-			.forEach(f => this.cardFilters[f.id] = f);
+		cardFilters.forEach(f => this.cardFilters[f.id] = f);
 
 		this._restore();
 
@@ -76,6 +61,10 @@ export class Data {
 		autorun(() => this._persist());
 
 		this.loadData({ defaultView: true });
+	}
+
+	getFilter(filterId) {
+		return this.cardFilters[filterId];
 	}
 
 	loadData({ newRoleIds = null, newSemesterIds = null, newOrgUnitIds = null, defaultView = false }) {
@@ -186,29 +175,6 @@ export class Data {
 		return userIdsInView.map(userId => this._userDictionary.get(userId));
 	}
 
-	// @computed
-	get userDataForDisplay() {
-		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
-		// then sort by lastFirstName
-		const recordsByUser = this.recordsByUser;
-		return this.users
-			.map(user => {
-				const records = recordsByUser.get(user[USER.ID]);
-				const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
-				const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
-				return [
-					[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
-					records.length, // courses
-					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
-					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions)
-				];
-			})
-			.sort((user1, user2) => {
-				// sort by lastFirstName
-				return user1[TABLE_USER.NAME_INFO][0].localeCompare(user2[TABLE_USER.NAME_INFO][0]);
-			});
-	}
-
 	get recordsByUser() {
 		const recordsByUser = new Map();
 		this.getRecordsInView().forEach(r => {
@@ -218,35 +184,6 @@ export class Data {
 			recordsByUser.get(r[RECORD.USER_ID]).push(r);
 		});
 		return recordsByUser;
-	}
-
-	get currentFinalGrades() {
-		//keep in count students with 0 grade, but remove with null
-		return this.getRecordsInView(CurrentFinalGradeFilterId)
-			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
-			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
-			.filter(item => item[0] || item[1])
-			.map(item => this.gradeCategory(item[1]));
-	}
-
-	gradeCategory(grade) {
-		if (grade === null || grade === 0) {
-			return grade;
-		}
-		else if (grade === 100) {
-			return 90; // put grade 100 in bin 90-100
-		}
-		else {
-			return Math.floor(grade / 10) * 10;
-		}
-	}
-
-	setGradesCategoryEmpty() {
-		this.selectedGradesCategories.clear();
-	}
-
-	addToGradesCategory(category) {
-		this.selectedGradesCategories.add(category);
 	}
 
 	get courseLastAccessDates() {
@@ -324,29 +261,7 @@ export class Data {
 	getRecordsInView(id) {
 		// if id is omitted, all applied filters will be used
 		const otherFilters = Object.values(this.cardFilters).filter(f => f.isApplied && f.id !== id);
-		return this.records.filter(r => otherFilters.every(f => f.shouldInclude(r)));
-	}
-
-	getStats(id) {
-		const recordsInView = this.getRecordsInView(id);
-
-		const filter = this.cardFilters[id];
-
-		// NB: due to compact API response, we'll need to map field names to array indices
-		const matchingRecords = recordsInView.filter(r => !filter.filter || filter.shouldInclude(r));
-		const value = countUnique(matchingRecords, filter.countUniqueField);
-
-		let delta = null;
-		if (filter.deltaField) {
-			const deltaMatchingRecords = recordsInView.filter(r => r[filter.deltaField] < filter.threshold);
-			const oldValue = countUnique(deltaMatchingRecords, filter.countUniqueField);
-			delta = value - oldValue;
-		}
-
-		return {
-			value,
-			delta
-		};
+		return this.records.filter(r => otherFilters.every(f => f.filter(r, this)));
 	}
 
 	// @action
@@ -374,11 +289,10 @@ decorate(Data, {
 	orgUnitTree: observable,
 	records: computed,
 	users: computed,
-	userDataForDisplay: computed,
 	usersCountsWithOverdueAssignments: computed,
 	courseLastAccessDates: computed,
 	tiCVsGrades: computed,
-	currentFinalGrades: computed,
+	tiCVsGradesAvgValues: computed,
 	cardFilters: observable,
 	isLoading: observable,
 	tiCVsGradesQuadrant: observable,
@@ -386,8 +300,6 @@ decorate(Data, {
 	selectedGradesCategories: observable,
 	onServerDataReload: action,
 	setApplied: action,
-	setGradesCategoryEmpty: action,
-	addToGradesCategory: action,
 	addToLastAccessCategory: action,
 	setLastAccessCategoryEmpty: action
 });

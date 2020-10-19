@@ -4,7 +4,10 @@ export default {
 	"components.insights-engagement-dashboard.title": "Engagement Dashboard",
 	"components.insights-engagement-dashboard.summaryHeading": "Summary View",
 	"components.insights-engagement-dashboard.resultsHeading": "Results",
+	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 	"components.insights-engagement-dashboard.overdueAssignmentsHeading": "Overdue Assignments",
+	"components.insights-engagement-dashboard.lastSystemAccess": "Users have no system access in the last 14 days.",
+	"components.insights-engagement-dashboard.lastSystemAccessHeading": "System Access",
 
 	"components.insights-role-filter.name": "Role",
 
@@ -85,8 +88,6 @@ export default {
 	"components.insights-course-last-access-card.toolTipFiveToSevenDaysSingleUser": "1 user last accessed the course 5 to 7 days ago",
 	"components.insights-course-last-access-card.toolTipOneToFiveDaysSingleUser": "1 user last accessed the course 1 to 5 days ago",
 	"components.insights-course-last-access-card.toolTipLessThanOneDaySingleUser": "1 user last accessed the course less than 1 day ago",
-
-	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 
 	"components.insights-applied-filters.clear-all": "Clear all",
 

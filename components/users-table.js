@@ -2,24 +2,33 @@
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
-
+import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element';
+import { formatNumber, formatPercent } from '@brightspace-ui/intl';
+import { RECORD, USER } from '../consts';
 import { COLUMN_TYPES } from './table';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin';
 
-export const TABLE_USER = {
+const TABLE_USER = {
 	NAME_INFO: 0,
 	COURSES: 1,
 	AVG_GRADE: 2,
 	AVG_TIME_IN_CONTENT: 3
 };
 
+const numberFormatOptions = { maximumFractionDigits: 2 };
+
 const DEFAULT_PAGE_SIZE = 20;
 
+function avgOf(records, field) {
+	const total = records.reduce((sum, r) => sum + r[field], 0);
+	return total / records.length;
+}
+
 /**
- * At the moment the mobx data object is doing sorting / filtering logic
+ * The mobx data object is doing filtering logic
  *
  * @property {Object} data - an instance of Data from model/data.js
  * @property {Number} _currentPage
@@ -60,14 +69,14 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	constructor() {
 		super();
 		this.data = {
-			userDataForDisplay: []
+			users: []
 		};
 		this._currentPage = 1;
 		this._pageSize = DEFAULT_PAGE_SIZE;
 	}
 
 	get _itemsCount() {
-		return this.data.userDataForDisplay.length;
+		return this.userDataForDisplay.length;
 	}
 
 	get _maxPages() {
@@ -92,7 +101,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			const start = this._pageSize * (this._currentPage - 1);
 			const end = this._pageSize * (this._currentPage); // it's ok if this goes over the end of the array
 
-			const data = this.data.sortedUserDataForDisplay ? this.data.sortedUserDataForDisplay : this.data.userDataForDisplay;
+			const data = this.sortedUserDataForDisplay ? this.sortedUserDataForDisplay : this.userDataForDisplay;
 			return data.slice(start, end);
 		}
 
@@ -133,18 +142,41 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		const colmnNumber = this.selectedSort.column;
 		const order = this.selectedSort.order;
 		if (colmnNumber === 0) {
-			this.data.sortedUserDataForDisplay = [ ...this.data.userDataForDisplay.sort((a, b) => {
+			this.sortedUserDataForDisplay = [ ...this.userDataForDisplay.sort((a, b) => {
 				if (this._getLastName(a[colmnNumber]) > this._getLastName(b[colmnNumber])) return ORDER[order][0];
 				else if (this._getLastName(a[colmnNumber]) < this._getLastName(b[colmnNumber])) return ORDER[order][1];
 				else ORDER[order][2];
 			})];
 		} else {
-			this.data.sortedUserDataForDisplay = [ ...this.data.userDataForDisplay.sort((a, b) => {
+			this.sortedUserDataForDisplay = [ ...this.userDataForDisplay.sort((a, b) => {
 				if (this._dataToFloat(a[colmnNumber]) < this._dataToFloat(b[colmnNumber])) return ORDER[order][0];
 				else if (this._dataToFloat(a[colmnNumber]) > this._dataToFloat(b[colmnNumber])) return ORDER[order][1];
 				else return ORDER[order][2];
 			})];
 		}
+	}
+
+	// @computed
+	get userDataForDisplay() {
+		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
+		// then sort by lastFirstName
+		const recordsByUser = this.data.recordsByUser;
+		return this.data.users
+			.map(user => {
+				const records = recordsByUser.get(user[USER.ID]);
+				const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
+				const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
+				return [
+					[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
+					records.length, // courses
+					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
+					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions)
+				];
+			})
+			.sort((user1, user2) => {
+				// sort by lastFirstName
+				return user1[TABLE_USER.NAME_INFO][0].localeCompare(user2[TABLE_USER.NAME_INFO][0]);
+			});
 	}
 
 	get columnInfo() {
@@ -223,4 +255,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this._pageSize = Number(event.detail.itemCount); // itemCount comes back as a string
 	}
 }
+decorate(UsersTable, {
+	userDataForDisplay: computed
+});
 customElements.define('d2l-insights-users-table', UsersTable);
