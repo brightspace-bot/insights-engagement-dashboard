@@ -37,8 +37,8 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds, defaultView 
 		],
 		users: [ // some of which are out of order
 			[100,  'ATest', 'AStudent', 'AStudent', Date.now() - 2000000000],
-			[300,  'CTest', 'CStudent', 'CStudent', null],
-			[200,  'BTest', 'BStudent', 'BStudent', null],
+			[300,  'CTest', 'CStudent', 'CStudent', 1603193037132],
+			[200,  'BTest', 'BStudent', 'BStudent', Date.now()],
 			[400,  'DTest', 'DStudent', 'DStudent', null],
 			[500,  'ETest', 'EStudent', 'EStudent', Date.now()],
 			[600,  'GTest', 'GStudent', 'GStudent', Date.now()],

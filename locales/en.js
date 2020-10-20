@@ -47,6 +47,8 @@ export default {
 	"components.insights-users-table.avgTimeInContent": "Average Time in Content (mins)",
 	"components.insights-users-table.avgDiscussionActivity": "Average Discussion Activity",
 	"components.insights-users-table.totalUsers": "Total Users: {num}",
+	"components.insights-users-table.lastAccessedSys" : "Last Accessed System",
+	"components.insights-users-table.null" : "NULL",
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
 
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
