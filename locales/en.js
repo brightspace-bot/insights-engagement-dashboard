@@ -98,6 +98,7 @@ export default {
 	"components.insights-discussion-activity-card.textLabel": "This chart displays the total number of threads, replies, and reads in discussion forums for all users in the selected courses",
 
 	"components.insights-applied-filters.clear-all": "Clear all",
+	"components.insights-applied-filters.label-text": "Showing only:",
 
 	"components.insights-aria-loading-progress.loading-start": "Loading is in progress",
 	"components.insights-aria-loading-progress.loading-finish": "Loading is finished",
