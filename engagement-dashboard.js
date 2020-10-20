@@ -24,7 +24,7 @@ import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { OverdueAssignmentsCardFilter } from './components/overdue-assignments-card';
+import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeCardFilter } from './components/time-in-content-vs-grade-card';
 
 /**
@@ -145,7 +145,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	get _data() {
 		if (!this.__data) {
 			const cardFilters = [
-				OverdueAssignmentsCardFilter,
+				new OverdueAssignmentsFilter(),
 				TimeInContentVsGradeCardFilter,
 				new CourseLastAccessFilter(),
 				new CurrentFinalGradesFilter()

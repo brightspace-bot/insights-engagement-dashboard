@@ -351,13 +351,6 @@ describe('Data', () => {
 		});
 	});
 
-	describe('overdueAssignments', () => {
-		it('should return a number of users with overdue assignments', async() => {
-			const expected = 2;
-			expect(sut.usersCountsWithOverdueAssignments).to.deep.equal(expected);
-		});
-	});
-
 	describe('tiCVsGradesAvgValues', () => {
 		it('should set and return a average time and grades', async() => {
 			const expected = [29, 69];
