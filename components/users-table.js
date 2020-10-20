@@ -75,7 +75,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		};
 		this._currentPage = 1;
 		this._pageSize = DEFAULT_PAGE_SIZE;
-		addEventListener('d2l-table-column-sort', this.setColumnSort.bind(this));
+		this._sortOrder = 'desc';
+		addEventListener('d2l-insights-table-sort', this.setColumnSort.bind(this));
 	}
 
 	get _itemsCount() {
@@ -99,13 +100,10 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 		if (this._itemsCount) {
 
-			this._sortByColumn();
-
 			const start = this._pageSize * (this._currentPage - 1);
 			const end = this._pageSize * (this._currentPage); // it's ok if this goes over the end of the array
 
-			const data = this.sortedUserDataForDisplay ? this.sortedUserDataForDisplay : this.userDataForDisplay;
-			return data.slice(start, end);
+			return this.userDataForDisplay.slice(start, end);
 		}
 
 		return [];
@@ -121,67 +119,69 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return s[0].split(',')[1].toLowerCase();
 	}
 
-	/*
-	* @param selectedSort
-	*{
-	*	column: number,
-	*	order: 'asc' | 'desc'
-	*}
-	*
-	*/
 	setColumnSort(e) {
 		this._sortOrder = e.detail.order;
 		this._sortColumn = e.detail.column;
-		//this.requestUpdate();
 	}
 
-	_sortByColumn() {
+	_preProcessData(user) {
+		const recordsByUser = this.data.recordsByUser;
 
-		if (this._sortOrder === undefined || this._sortColumn === undefined) return;
+		const records = recordsByUser.get(user[USER.ID]);
+		const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
+		const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
+		return [
+			[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
+			records.length, // courses
+			avgFinalGrade,
+			avgOf(records, RECORD.TIME_IN_CONTENT)
+		];
+	}
 
+	_choseSortFunction() {
 		const ORDER = {
-			'asc': [1, -1, 0],
-			'desc': [-1, 1, 0],
+			'asc': [-1, 1, 0],
+			'desc': [1, -1, 0]
 		};
-		const colmnNumber = this._sortColumn;
-		const order = this._sortOrder;
-		if (colmnNumber === 0) {
-			this.sortedUserDataForDisplay = [ ...this.userDataForDisplay.sort((a, b) => {
-				if (this._getLastName(a[colmnNumber]) > this._getLastName(b[colmnNumber])) return ORDER[order][0];
-				else if (this._getLastName(a[colmnNumber]) < this._getLastName(b[colmnNumber])) return ORDER[order][1];
-				else ORDER[order][2];
-			})];
-		} else {
-			this.sortedUserDataForDisplay = [ ...this.userDataForDisplay.sort((a, b) => {
-				if (this._dataToFloat(a[colmnNumber]) < this._dataToFloat(b[colmnNumber])) return ORDER[order][0];
-				else if (this._dataToFloat(a[colmnNumber]) > this._dataToFloat(b[colmnNumber])) return ORDER[order][1];
-				else return ORDER[order][2];
-			})];
+		if (this._sortColumn === 0 || this._sortColumn === undefined) {
+			// sorting the last name requires a slightly different sort function
+			return (user1, user2) => {
+				const lastName1 = user1[0][0].toLowerCase();
+				const lastName2 = user2[0][0].toLowerCase();
+				return (lastName1 > lastName2 ? ORDER[this._sortOrder][0] :
+					lastName1 < lastName2 ? ORDER[this._sortOrder][1] :
+						ORDER[this._sortOrder][2]);
+			};
 		}
+
+		return (user1, user2) => {
+			const record1 = user1[this._sortColumn];
+			const record2 = user2[this._sortColumn];
+			return (record1 > record2 ? ORDER[this._sortOrder][1] :
+				record1 < record2 ? ORDER[this._sortOrder][0] :
+					ORDER[this._sortOrder][2]);
+		};
+	}
+
+	_formatDataForDisplay(user) {
+		return [
+			user[TABLE_USER.NAME_INFO],
+			user[TABLE_USER.COURSES], // courses
+			user[TABLE_USER.AVG_GRADE] ? formatPercent(user[TABLE_USER.AVG_GRADE] / 100, numberFormatOptions) : '',
+			formatNumber(user[TABLE_USER.AVG_TIME_IN_CONTENT] / 60, numberFormatOptions)
+		];
 	}
 
 	// @computed
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
 		// then sort by lastFirstName
-		const recordsByUser = this.data.recordsByUser;
-		console.log(recordsByUser);
+		delete this.userDataForDisplay;
+		const sortFunction = this._choseSortFunction();
 		return this.data.users
-			.map(user => {
-				const records = recordsByUser.get(user[USER.ID]);
-				const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
-				const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
-				return [
-					[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
-					records.length, // courses
-					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
-					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions)
-				];
-			})
-			.sort((user1, user2) => {
-				// sort by lastFirstName
-				return user1[TABLE_USER.NAME_INFO][0].localeCompare(user2[TABLE_USER.NAME_INFO][0]);
-			});
+			.map(this._preProcessData.bind(this))
+			.sort(sortFunction.bind(this))
+			.map(this._formatDataForDisplay.bind(this));
 	}
 
 	get columnInfo() {
@@ -260,6 +260,6 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 }
 decorate(UsersTable, {
-	userDataForDisplay: computed
+	//userDataForDisplay: computed
 });
 customElements.define('d2l-insights-users-table', UsersTable);
