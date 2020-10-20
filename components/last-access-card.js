@@ -6,20 +6,21 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const filterId = 'd2l-insights-last-access-card';
+const fourteenDayMillis = 1209600000;
 
 export class LastAccessFilter {
 	constructor() {
-		this.usersWithSysLastAccessMoreThanFourteenDays = new Set();
+		this.usersWithoutRecentAccess = new Set();
 	}
 
 	get id() { return filterId; }
 
 	get isApplied() {
-		return this.usersWithSysLastAccessMoreThanFourteenDays.size > 0;
+		return this.usersWithoutRecentAccess.size > 0;
 	}
 
 	set isApplied(isApplied) {
-		if (!isApplied) this.usersWithSysLastAccessMoreThanFourteenDays.clear();
+		if (!isApplied) this.usersWithoutRecentAccess.clear();
 	}
 
 	get title() {
@@ -27,18 +28,18 @@ export class LastAccessFilter {
 	}
 
 	addUsersToSet(userIds) {
-		userIds.forEach(item => this.usersWithSysLastAccessMoreThanFourteenDays.add(item));
+		userIds.forEach(item => this.usersWithoutRecentAccess.add(item));
 	}
 
 	filter(record) {
-		return this.usersWithSysLastAccessMoreThanFourteenDays.has(record[RECORD.USER_ID]);
+		return this.usersWithoutRecentAccess.has(record[RECORD.USER_ID]);
 	}
 }
 
 decorate(LastAccessFilter, {
 	isApplied: computed,
 	addUsersToSet: action,
-	usersWithSysLastAccessMoreThanFourteenDays: observable
+	usersWithoutRecentAccess: observable
 });
 
 class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
@@ -67,18 +68,18 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardValue() {
-		return this._usersWithSysLastAccessMoreThanFourteenDays.length;
+		return this._usersWithoutRecentAccess.length;
 	}
 
-	get _usersWithSysLastAccessMoreThanFourteenDays() {
-		const fourteenDayMillis = 1209600000;
-
+	get _usersWithoutRecentAccess() {
 		return this.data.users
-			.filter(user => user[USER.LAST_SYS_ACCESS] === null || user[USER.LAST_SYS_ACCESS] === undefined || (Date.now() - user[USER.LAST_SYS_ACCESS] > fourteenDayMillis));
+			.filter(user => !user[USER.LAST_SYS_ACCESS] || ((Date.now() - user[USER.LAST_SYS_ACCESS]) > fourteenDayMillis));
 	}
 
-	_addUsersToSet() {
-		const userIds = this._usersWithSysLastAccessMoreThanFourteenDays.map(user => user[USER.ID]);
+	_addUsersToSetWithoutRecentAccess() {
+		const userIds = [...this.data._userDictionary]
+			.filter(user => !user[1][USER.LAST_SYS_ACCESS] || ((Date.now() - user[1][USER.LAST_SYS_ACCESS]) > fourteenDayMillis))
+			.map(user => user[0]);
 		this.filter.addUsersToSet(userIds);
 	}
 
@@ -98,12 +99,12 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	_valueClickHandler() {
-		this._addUsersToSet();
+		this._addUsersToSetWithoutRecentAccess();
 	}
 }
 customElements.define('d2l-insights-last-access-card', LastAccessCard);
 
 decorate(LastAccessCard, {
 	_cardValue: computed,
-	_usersWithSysLastAccessMoreThanFourteenDays: computed
+	_usersWithoutRecentAccess: computed
 });
