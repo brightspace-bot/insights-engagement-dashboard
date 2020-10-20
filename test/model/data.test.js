@@ -1,21 +1,8 @@
+import { mockOuTypes, mockRoleIds, records } from './mocks';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from '../../model/selectorFilters';
 import { Data } from '../../model/data.js';
 import { expect } from '@open-wc/testing';
 import sinon from 'sinon/pkg/sinon-esm.js';
-
-const mockOuTypes = {
-	organization: 0,
-	department: 1,
-	course: 2,
-	courseOffering: 3,
-	semester: 5
-};
-
-const mockRoleIds = {
-	admin: 100,
-	instructor: 200,
-	student: 300
-};
 
 describe('Data', () => {
 	const serverData = {
@@ -36,68 +23,7 @@ describe('Data', () => {
 			[311, 'Course 3 / Semester 1', mockOuTypes.courseOffering, [3, 11]],
 			[313, 'Course 3 / Semester 3', mockOuTypes.courseOffering, [3, 13]]
 		],
-		records: [
-			[6606, 100, mockRoleIds.student, 0, 22, 2000, 10293819283, 0, 0, 0], // this user has a cascading admin role on dept and sem levels
-			[6606, 200, mockRoleIds.student, 0, 33, 2500, 10293819283, 0, 0, 0],
-			[6606, 300, mockRoleIds.student, 0, 44, 4000, 10293819283, 0, 0, 0],
-			[6606, 400, mockRoleIds.student, 0, 55, 4500, 10293819283, 0, 0, 0], // this user has a cascading admin role on dept and sem levels
-
-			// semesters
-			[11, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-			[12, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-			[13, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-
-			[11, 200, mockRoleIds.student, 0, 33, 0, null, 0, 0, 0],
-			[12, 200, mockRoleIds.instructor, 0, null, 0, null, 0, 0, 0],
-
-			[11, 300, mockRoleIds.student, 0, 100, 0, null, 0, 0, 0],
-			[12, 300, mockRoleIds.student, 0, 100, 0, null, 0, 0, 0],
-			[13, 300, mockRoleIds.student, 0, 100, 0, null, 0, 0, 0],
-
-			[11, 400, mockRoleIds.admin, 0, null, 0, 12392838182, 0, 0, 0],
-			[12, 400, mockRoleIds.admin, 0, null, 0, 12392838182, 0, 0, 0],
-			[13, 400, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-
-			// dept 1
-			[1001, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-			[1001, 200, mockRoleIds.student, 0, 73, 0, null, 0, 0, 0],
-			[1001, 300, mockRoleIds.student, 0, 73, 0, null, 0, 0, 0],
-			// courses
-			[1, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-			[1, 200, mockRoleIds.instructor, 0, null, 0, null, 0, 0, 0],
-			[1, 300, mockRoleIds.student, 1, 41, 3500, null, 0, 0, 0],
-			[2, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-			[2, 200, mockRoleIds.student, 0, 55, 5000, null, 0, 0, 0],
-			[2, 300, mockRoleIds.student, 0, 39, 3000, null, 0, 0, 0],
-			// course 1 offerings
-			[111, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-			[111, 200, mockRoleIds.student, 1, 93, 7000, null, 0, 0, 0],
-			[112, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-			[112, 200, mockRoleIds.instructor, 0, null, 0, null, 0, 0, 0], // this person was promoted from student to instructor
-			[113, 100, mockRoleIds.admin, 0, null, 0, null, 0, 0, 0],
-			[113, 300, mockRoleIds.student, 0, 75, 6000, null, 0, 0, 0],
-			// course 2 offerings
-			[212, 100, mockRoleIds.admin, 0, null, 0, 0, 0, 0, 0],
-			[212, 200, mockRoleIds.student, 0, 84, 4000, null, 0, 0, 0],
-			[212, 300, mockRoleIds.instructor, 0, null, 0, null, 0, 0, 0],
-
-			// dept 2
-			[1002, 200, mockRoleIds.student, 0, 98, 0, null, 44, 0, 0],
-			[1002, 300, mockRoleIds.student, 0, 89, 0, null, 0, 31, 0],
-			[1002, 400, mockRoleIds.admin, 0, null, 0, null, 1, 0, 0],
-			[3, 200, mockRoleIds.student, 0, 98, 0, Date.now() - 299, 0, 0, 0],
-			[3, 300, mockRoleIds.student, 0, 88, 0, Date.now() - 86500000, 0, 0, 0],
-			[3, 400, mockRoleIds.admin, 0, null, 0, null, 0, 1, 0],
-			[311, 200, mockRoleIds.student, 0, 99, 0, null, 0, 0, 2],
-			[311, 300, mockRoleIds.student, 0, 42, 0, null, 2, 2, 2],
-			[311, 400, mockRoleIds.admin, 0, null, 0, null, 0, 12, 0],
-			[313, 300, mockRoleIds.student, 0, 66, 0, null, 1, 0, 4],
-			[313, 400, mockRoleIds.admin, 0, null, 0, null, 0, 1, 5],
-			[6606, 100, mockRoleIds.student, 0, null, 0, null, 0, 0, 3], // this user has a cascading admin role on dept and sem levels
-			[6606, 200, mockRoleIds.student, 0, null, 0, null, 1, 1, 1],
-			[6606, 300, mockRoleIds.student, 0, null, 0, null, 34, 0, 0],
-			[6606, 400, mockRoleIds.student, 0, null, 0, null, 0, 4, 0], // this user has a cascading admin role on dept and sem levels
-		],
+		records,
 		users: [
 			[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
 			[200, 'Paul', 'McCartney', 'pmccartney', null],
@@ -415,31 +341,6 @@ describe('Data', () => {
 			sut.selectedRoleIds = roleFilters;
 
 			expect(sut.users).to.deep.equal(expectedUsers);
-		});
-	});
-
-	describe('userDataForDisplay', () => {
-		it('should return an array of arrays sorted by lastFirstName', async() => {
-			const expected = [
-				[['Harrison, George', 'gharrison - 300'], 14, '71.42 %', '19.64'],
-				[['Lennon, John', 'jlennon - 100'], 12, '22 %', '2.78'],
-				[['McCartney, Paul', 'pmccartney - 200'], 13, '74 %', '23.72'],
-				[['Starr, Ringo', 'rstarr - 400'], 9, '55 %', '8.33']
-			];
-
-			expect(sut.userDataForDisplay).to.deep.equal(expected);
-		});
-
-		it('should only display users in view', async() => {
-			const roleFilters = [mockRoleIds.instructor];
-			const expectedUsers = [
-				[['Harrison, George', 'gharrison - 300'], 1, '', '0'],
-				[['McCartney, Paul', 'pmccartney - 200'], 3, '', '0']
-			];
-
-			sut.selectedRoleIds = roleFilters;
-
-			expect(sut.userDataForDisplay).to.deep.equal(expectedUsers);
 		});
 	});
 
