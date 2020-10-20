@@ -131,6 +131,16 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 						enabled: false
 					},
 					showInLegend: true
+				},
+				series: {
+					states: {
+						hover: {
+							enabled: true,
+							halo: {
+								size: 0
+							}
+						}
+					}
 				}
 			},
 			legend: {
@@ -166,7 +176,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 						const ix = that._legendLabels[point.index];
 						return `${ix}, ${point.y}.`;
 					}
-				},
+				}
 			},
 			accessibility: {
 				screenReaderSection: {
@@ -189,7 +199,8 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				style: {
 					color: 'white',
 				},
-				followPointer: false
+				followPointer: false,
+				width: 40
 			},
 			credits: {
 				enabled: false,
