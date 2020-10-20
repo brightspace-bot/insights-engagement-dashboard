@@ -72,7 +72,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	get _discussionActivityStats() {
 		let threadSum, replySum, readSum;
 		threadSum = replySum = readSum = 0;
-		this.data.getRecordsInView().forEach(record => {
+		this.data.records.forEach(record => {
 			threadSum += record[RECORD.DISCUSSION_ACTIVITY_THREADS];
 			replySum += record[RECORD.DISCUSSION_ACTIVITY_REPLIES];
 			readSum += record[RECORD.DISCUSSION_ACTIVITY_READS];

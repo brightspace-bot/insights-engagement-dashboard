@@ -1,4 +1,4 @@
-import { computed, decorate, observable } from 'mobx';
+import { action, computed, decorate, observable } from 'mobx';
 import { RECORD } from '../consts';
 
 function unique(array) {
@@ -7,25 +7,40 @@ function unique(array) {
 
 /**
  * A wrapper for Data that can add and exclude filters. Allows building up collections of
- * filters, some of which depend not just on individual row values but on aggregates across
- * the results of other filters.
+ * filters with specific dependencies.
  */
 export class FilteredData {
-	constructor(data, _filters, _filterId) {
+	/**
+	 * Call with a Data object; to get a FilteredData with filters and exclusions, call "filter" and "excluding"
+	 * @param {Object}data - a Data object
+	 * @param {Object[]}[filters]
+	 */
+	constructor(data, filters = []) {
 		this._data = data;
-		this._filters = new Map(_filters.map(filter => [filter.id, filter]));
-		this._filterId = _filterId;
-		this.__ticVsGradesQuadrant = 'leftBottom';
+		this.filters = filters;
 		this.avgTimeInContent = 0;
 		this.avgGrades = 0;
 	}
 
+	/**
+	 * @param {Object}filter - a filter must have fields id, title, and isApplied,
+	 * and a filter(record, data) method; beyond that, it can keep state however it wishes.
+	 * Ideally, these should be classes, filter should not use the data parameter
+	 * (to be removed in future and just userDictionary passed), and the id need not
+	 * be known outside the defining file (see, e.g., current-final-grade-card).
+	 * @returns {FilteredData}
+	 */
 	filter(filter) {
-		return new FilteredData(this._data, [this._filters, filter], this._filterId);
+		return new FilteredData(this._data, [...this.filters, filter]);
 	}
 
+	/**
+	 * @param filterId - a filter to exclude: generally, filter components should exclude their own filters
+	 * when rendering
+	 * @returns {FilteredData}
+	 */
 	excluding(filterId) {
-		return new FilteredData(this._data, this._filters, filterId);
+		return new FilteredData(this._data, this.filters.filter(f => f.id !== filterId));
 	}
 
 	get isLoading() {
@@ -33,15 +48,18 @@ export class FilteredData {
 	}
 
 	get records() {
-		// if filterId is not set, all applied filters will be used
-		const otherFilters = Object.values(this._filters).filter(f => f.isApplied && f.id !== this._filterId);
-		return this._data.records.filter(r => otherFilters.every(f => f.filter(r, this)));
+		const appliedFilters = this.filters.filter(f => f.isApplied);
+		// coming soon: pass (r, this.userDictionary) so filters can't accidentally have bad dependencies
+		return this._data.records.filter(r => appliedFilters.every(f => f.filter(r, this)));
 	}
 
-	// @computed
+	get userDictionary() {
+		return this._data.userDictionary;
+	}
+
 	get users() {
 		const userIdsInView = unique(this.records.map(record => record[RECORD.USER_ID]));
-		return userIdsInView.map(userId => this._data.userDictionary.get(userId));
+		return userIdsInView.map(userId => this.userDictionary.get(userId));
 	}
 
 	get recordsByUser() {
@@ -55,40 +73,19 @@ export class FilteredData {
 		return recordsByUser;
 	}
 
+	clearFilters() {
+		this.filters.forEach(f => f.isApplied = false);
+	}
+
 	getFilter(id) {
-		return this._filters.get(id);
-	}
-
-	// these tic vs grade methods are here temporarily; having this class will allow
-	// a refactor to build a ticvsgrades filter that depends on a FilteredData with just the other filters
-	get tiCVsGrades() {
-		return this.records
-			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
-			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
-			.filter(item => item[0] || item[1])
-			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]); //keep in count students either without grade or without time in content
-	}
-
-	setTiCVsGradesQuadrant(quadrant) {
-		this._ticVsGradesQuadrant = quadrant;
-	}
-
-	get tiCVsGradesAvgValues() {
-		const arrayOfTimeInContent =  this.tiCVsGrades.map(item => item[0]);
-		this.avgTimeInContent = arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
-
-		const arrayOfGrades = this.tiCVsGrades.map(item => item[1]);
-		this.avgGrades = arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
-		return [this.avgTimeInContent, this.avgGrades];
+		return this.filters.find(f => f.id === id);
 	}
 }
 decorate(FilteredData, {
 	_data: observable,
-	_filters: observable,
-	_ticVsGradesQuadrant: observable,
+	filters: observable,
 	records: computed,
 	recordsByUser: computed,
-	tiCVsGrades: computed,
-	tiCVsGradesAvgValues: computed,
-	users: computed
+	users: computed,
+	clearFilters: action
 });

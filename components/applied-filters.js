@@ -26,10 +26,10 @@ class AppliedFilters extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	render() {
-		const filters = Object.keys(this.data.cardFilters).map(id => ({
-			id: id,
-			title: this.localize(this.data.cardFilters[id].title),
-			isApplied: this.data.getFilter(id).isApplied
+		const filters = this.data.filters.map(f => ({
+			id: f.id,
+			title: this.localize(f.title),
+			isApplied: f.isApplied
 		}));
 
 		if (filters.filter(f => f.isApplied).length < 1) {
@@ -60,21 +60,17 @@ class AppliedFilters extends SkeletonMixin(Localizer(MobxLitElement)) {
 				</d2l-filter-dropdown>
 			</div>
 
-			${!this.skeleton
-				? html`<d2l-applied-filters for="d2l-insights-applied-filters-dropdown"></d2l-applied-filters>`
-				: html``
-			}
+			${!this.skeleton ? html`<d2l-applied-filters for="d2l-insights-applied-filters-dropdown"></d2l-applied-filters>` : html`` }
 		`;
 	}
 
 	_filterChangeHandler(event) {
 		if (event.detail.menuItemKey === clearAllOptionId) {
-			Object.keys(this.data.cardFilters)
-				.forEach(f => this.data.setApplied(f, false));
+			this.data.clearFilters();
 			return;
 		}
 
-		this.data.setApplied(event.detail.menuItemKey, event.detail.selected);
+		this.data.getFilter(event.detail.menuItemKey).isApplied = event.detail.selected;
 	}
 }
 customElements.define('d2l-insights-applied-filters', AppliedFilters);

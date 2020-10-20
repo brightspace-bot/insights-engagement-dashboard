@@ -1,13 +1,12 @@
-import { action, autorun, computed, decorate, observable } from 'mobx';
+import { action, computed, decorate, observable } from 'mobx';
 import { COURSE_OFFERING, USER } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 import { Tree } from '../components/tree-filter';
 
-// cardFilters must be an array of filters; a filter must have fields id, title, and isApplied,
-// and a filter(record, data) method; beyond that, it can keep state however it wishes.
-// Ideally, these should be classes, filter should not use the data parameter (to be removed in future), and the id need not
-// be known outside the defining file (see, e.g., current-final-grade-card).
+/**
+ * Data from the server, along with filter settings that are passed in server calls.
+ */
 export class Data {
 	constructor({ recordProvider }) {
 		this.recordProvider = recordProvider;
@@ -39,11 +38,6 @@ export class Data {
 			semester: new SemesterSelectorFilter(this.serverData, this.orgUnitTree),
 			orgUnit: new OrgUnitSelectorFilter(this.serverData, this.orgUnitTree)
 		};
-
-		this._restore();
-
-		// mobx will run _persist() whenever relevant state changes
-		autorun(() => this._persist());
 
 		this.loadData({ defaultView: true });
 	}
@@ -149,32 +143,12 @@ export class Data {
 			return Object.values(this._selectorFilters).every(filter => filter.shouldInclude(record));
 		});
 	}
-
-	_persist() {
-		//It's save only the list of filters, then will be a separate story for keep state
-		// localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
-		// 	Object.keys(this.cardFilters)
-		// 		.map(f => ({ id: f }))
-		// ));
-	}
-
-	_restore() {
-		// this might be better handled by url-rewriting
-		// const state = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.state') || '[]');
-		// state.forEach(filterState => this.setApplied(filterState.id));
-	}
 }
 
 decorate(Data, {
 	serverData: observable,
 	orgUnitTree: observable,
-	records: computed,
-	users: computed,
-	tiCVsGrades: computed,
-	tiCVsGradesAvgValues: computed,
-	cardFilters: observable,
 	isLoading: observable,
-	tiCVsGradesQuadrant: observable,
-	onServerDataReload: action,
-	setApplied: action
+	records: computed,
+	onServerDataReload: action
 });
