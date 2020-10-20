@@ -84,6 +84,18 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.localize('components.insights-discussion-activity-card.textLabel');
 	}
 
+	toolTipTextThreads(numberOfUsers) {
+		return this.localize('components.insights-discussion-activity-card.toolTipThreads', { numberOfUsers });
+	}
+
+	toolTipTextReplies(numberOfUsers) {
+		return this.localize('components.insights-discussion-activity-card.toolTipReplies', { numberOfUsers });
+	}
+
+	toolTipTextReads(numberOfUsers) {
+		return this.localize('components.insights-discussion-activity-card.toolTipReads', { numberOfUsers });
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -160,6 +172,24 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				screenReaderSection: {
 					beforeChartFormat: BEFORE_CHART_FORMAT
 				}
+			},
+			tooltip: {
+				formatter: function() {
+					const seriesIndex = that._legendLabels.indexOf(this.key);
+					if (seriesIndex === 0) {
+						return that.toolTipTextThreads(this.point.y);
+					} else if (seriesIndex === 1) {
+						return that.toolTipTextReplies(this.point.y);
+					}
+					return that.toolTipTextReads(this.point.y);
+				},
+				backgroundColor: 'var(--d2l-color-ferrite)',
+				borderColor: 'var(--d2l-color-ferrite)',
+				borderRadius: 12,
+				style: {
+					color: 'white',
+				},
+				followPointer: false
 			},
 			credits: {
 				enabled: false,
