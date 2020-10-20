@@ -2,7 +2,7 @@
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
-import { computed, decorate } from 'mobx';
+import { computed, decorate, observable } from 'mobx';
 import { css, html } from 'lit-element';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl';
 import { RECORD, USER } from '../consts';
@@ -76,7 +76,6 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this._currentPage = 1;
 		this._pageSize = DEFAULT_PAGE_SIZE;
 		this._sortOrder = 'desc';
-		addEventListener('d2l-insights-table-sort', this.setColumnSort.bind(this));
 	}
 
 	get _itemsCount() {
@@ -109,9 +108,10 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return [];
 	}
 
-	setColumnSort(e) {
+	_handleColumnSort(e) {
 		this._sortOrder = e.detail.order;
 		this._sortColumn = e.detail.column;
+		this._currentPage = 0;
 	}
 
 	_preProcessData(user) {
@@ -128,28 +128,28 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		];
 	}
 
-	_choseSortFunction() {
+	_choseSortFunction(column, order) {
 		const ORDER = {
 			'asc': [-1, 1, 0],
 			'desc': [1, -1, 0]
 		};
-		if (this._sortColumn === 0 || this._sortColumn === undefined) {
+		if (column === 0 || column === undefined) {
 			// sorting the last name requires a slightly different sort function
 			return (user1, user2) => {
 				const lastName1 = user1[0][0].toLowerCase();
 				const lastName2 = user2[0][0].toLowerCase();
-				return (lastName1 > lastName2 ? ORDER[this._sortOrder][0] :
-					lastName1 < lastName2 ? ORDER[this._sortOrder][1] :
-						ORDER[this._sortOrder][2]);
+				return (lastName1 > lastName2 ? ORDER[order][0] :
+					lastName1 < lastName2 ? ORDER[order][1] :
+						ORDER[order][2]);
 			};
 		}
 
 		return (user1, user2) => {
-			const record1 = user1[this._sortColumn];
-			const record2 = user2[this._sortColumn];
-			return (record1 > record2 ? ORDER[this._sortOrder][1] :
-				record1 < record2 ? ORDER[this._sortOrder][0] :
-					ORDER[this._sortOrder][2]);
+			const record1 = user1[column];
+			const record2 = user2[column];
+			return (record1 > record2 ? ORDER[order][1] :
+				record1 < record2 ? ORDER[order][0] :
+					ORDER[order][2]);
 		};
 	}
 
@@ -166,7 +166,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
 		// then sort by lastFirstName
-		const sortFunction = this._choseSortFunction();
+		const sortFunction = this._choseSortFunction(this._sortColumn, this._sortOrder);
 		return this.data.users
 			.map(this._preProcessData.bind(this))
 			.sort(sortFunction.bind(this))
@@ -198,9 +198,11 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return html`
 			<d2l-insights-table
 				title="${this.localize('components.insights-users-table.title')}"
+				@d2l-insights-table-sort="${this._handleColumnSort}"
 				.columnInfo=${this.columnInfo}
 				.data="${this._displayData}"
-				?skeleton="${this.skeleton}"></d2l-insights-table>
+				?skeleton="${this.skeleton}"
+			></d2l-insights-table>
 
 			<d2l-labs-pagination
 				show-item-count-select
@@ -249,6 +251,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 }
 decorate(UsersTable, {
-	//userDataForDisplay: computed
+	userDataForDisplay: computed,
+	_sortColumn: observable,
+	_sortOrder: observable,
 });
 customElements.define('d2l-insights-users-table', UsersTable);
