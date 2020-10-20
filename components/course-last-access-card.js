@@ -1,18 +1,72 @@
-import { CourseLastAccessFilterId, RECORD } from '../consts';
+import { action, computed, decorate, observable } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
-export const CourseLastAccessCardFilter  = {
-	id: CourseLastAccessFilterId,
-	title: 'components.insights-course-last-access-card.courseAccess',
-	filter: (record, data) => data.selectedLastAccessCategory.has(
-		data._bucketCourseLastAccessDates(record[RECORD.COURSE_LAST_ACCESS] === null ? -1 : (Date.now() - record[RECORD.COURSE_LAST_ACCESS]))
-	)
-};
+const filterId = 'd2l-insights-course-last-access-card';
+
+function lastAccessDateBucket(record) {
+	const courseLastAccessDateRange = record[RECORD.COURSE_LAST_ACCESS] === null
+		? -1
+		: Date.now() - record[RECORD.COURSE_LAST_ACCESS];
+	const fourteenDayMillis = 1209600000;
+	const sevenDayMillis = 604800000;
+	const fiveDayMillis = 432000000;
+	const oneDayMillis = 86400000;
+	if (courseLastAccessDateRange < 0) {
+		return 0;
+	}
+	if (courseLastAccessDateRange >= fourteenDayMillis) {
+		return 1;
+	}
+	if (courseLastAccessDateRange <= oneDayMillis) {
+		return 5;
+	}
+	if (courseLastAccessDateRange <= fiveDayMillis) {
+		return 4;
+	}
+	if (courseLastAccessDateRange <= sevenDayMillis) {
+		return 3;
+	}
+	if (courseLastAccessDateRange <= fourteenDayMillis) {
+		return 2;
+	}
+}
+
+export class CourseLastAccessFilter {
+	constructor() {
+		this.selectedCategories = new Set();
+	}
+
+	get id() { return filterId; }
+
+	get isApplied() {
+		return this.selectedCategories.size > 0;
+	}
+
+	set isApplied(isApplied) {
+		if (!isApplied) this.selectedCategories.clear();
+	}
+
+	get title() { return 'components.insights-course-last-access-card.courseAccess'; }
+
+	filter(record) {
+		return this.selectedCategories.has(lastAccessDateBucket(record));
+	}
+
+	selectCategory(category) {
+		this.selectedCategories.add(category);
+	}
+}
+decorate(CourseLastAccessFilter, {
+	isApplied: computed,
+	selectCategory: action,
+	selectedCategories: observable
+});
 
 class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -61,10 +115,6 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.localize('components.insights-course-last-access-card.courseAccess');
 	}
 
-	get _numberOfUsersText() {
-		return this.localize('components.insights-course-last-access-card.numberOfUsers');
-	}
-
 	get _chartDescriptionTextLabel() {
 		return this.localize('components.insights-course-last-access-card.textLabel');
 	}
@@ -78,7 +128,10 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _preparedBarChartData() {
-		return this.data.courseLastAccessDates;
+		// return an array of size 6, each element mapping to a category on the course last access bar chart
+		const dateBucketCounts = [0, 0, 0, 0, 0, 0];
+		this.data.getRecordsInView(filterId).forEach(record => dateBucketCounts[ lastAccessDateBucket(record) ]++);
+		return dateBucketCounts;
 	}
 
 	get _accessibilityLessThanOneLabel() {
@@ -118,24 +171,20 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		];
 	}
 
-	_valueClickHandler() {
-		this.data.setApplied('d2l-insights-course-last-access-card', true);
-	}
-
 	get isApplied() {
-		return this.data.cardFilters['d2l-insights-course-last-access-card'].isApplied;
+		return this.filter.isApplied;
 	}
 
-	setCategoryEmpty() {
-		this.data.setLastAccessCategoryEmpty();
+	get filter() {
+		return this.data.getFilter(filterId);
 	}
 
 	addToCategory(category) {
-		this.data.addToLastAccessCategory(category);
+		this.filter.selectCategory(category);
 	}
 
 	get category() {
-		return this.data.selectedLastAccessCategory;
+		return this.filter.selectedCategories;
 	}
 
 	_colorNonSelectedPoints(seriesData, color) {
@@ -181,9 +230,9 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 							that._colorNonSelectedPoints(this.series[0].data, 'var(--d2l-color-mica)');
 							that._colorSelectedPoints(this.series[0].data, 'var(--d2l-color-celestine)');
 						} else {
-							that.setCategoryEmpty();
 							that._colorAllPoints(this.series[0].data, 'var(--d2l-color-celestine)');
 						}
+						// noinspection JSPotentiallyInvalidUsageOfClassThis
 						this.render(false);
 					}
 				}
@@ -278,7 +327,6 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 						events: {
 							select: function() {
 								that.addToCategory(this.index);
-								that._valueClickHandler();
 								that._colorSelectedPoints(this.series.data, 'var(--d2l-color-celestine)');
 							}
 						}
@@ -291,10 +339,13 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				}
 			},
 			series: [{
-				data: this._preparedBarChartData
+				// Highcharts modifies this array, which MobX has cached, so make a copy to be safe
+				data: [...this._preparedBarChartData]
 			}]
 		};
 	}
 }
-
+decorate(CourseLastAccessCard, {
+	_preparedBarChartData: computed
+});
 customElements.define('d2l-insights-course-last-access-card', CourseLastAccessCard);

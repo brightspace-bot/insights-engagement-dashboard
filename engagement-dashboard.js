@@ -16,7 +16,7 @@ import './components/default-view-popup.js';
 import './components/last-access-card';
 
 import { css, html } from 'lit-element/lit-element.js';
-import { CourseLastAccessCardFilter } from './components/course-last-access-card';
+import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { fetchData } from './model/lms.js';
@@ -147,7 +147,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			const cardFilters = [
 				OverdueAssignmentsCardFilter,
 				TimeInContentVsGradeCardFilter,
-				CourseLastAccessCardFilter,
+				new CourseLastAccessFilter(),
 				new CurrentFinalGradesFilter()
 			];
 
