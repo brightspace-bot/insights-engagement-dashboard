@@ -75,7 +75,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		};
 		this._currentPage = 1;
 		this._pageSize = DEFAULT_PAGE_SIZE;
-		addEventListener('columnSort', this.setColumnSort.bind(this));
+		addEventListener('d2l-table-column-sort', this.setColumnSort.bind(this));
 	}
 
 	get _itemsCount() {

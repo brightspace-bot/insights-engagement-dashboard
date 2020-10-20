@@ -273,7 +273,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 		this.sortColumn = colmnNumber;
 
-		dispatchEvent(new CustomEvent('columnSort', { detail: { column: this.sortColumn, order: this.sortOrder } }));
+		dispatchEvent(new CustomEvent('d2l-table-column-sort', { detail: { column: this.sortColumn, order: this.sortOrder } }));
 	}
 }
 customElements.define('d2l-insights-table', Table);
