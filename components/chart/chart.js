@@ -83,8 +83,8 @@ class Chart extends SkeletonMixin(LitElement) {
 	render() {
 		return html`
 			<div id="chart-container" tabindex="${this.skeleton ? -1 : 0}"></div>
-			<d2l-insights-overlay spinner-size="200" ?loading="${this.skeleton}"></d2l-insights-overlay>
-      	`;
+			<d2l-insights-overlay spinner-size="150" ?loading="${this.skeleton}"></d2l-insights-overlay>
+		`;
 	}
 
 	updated() {
