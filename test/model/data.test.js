@@ -351,13 +351,6 @@ describe('Data', () => {
 		});
 	});
 
-	describe('courseLastAccess', () => {
-		it('should return the correct current final grade bucket counts', async() => {
-			const expected = [39, 7, 0, 0, 1, 1];
-			expect(sut.courseLastAccessDates.toString()).to.deep.equal(expected.toString());
-		});
-	});
-
 	describe('tiCVsGradesAvgValues', () => {
 		it('should set and return a average time and grades', async() => {
 			const expected = [29, 69];

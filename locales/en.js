@@ -89,6 +89,12 @@ export default {
 	"components.insights-course-last-access-card.toolTipOneToFiveDaysSingleUser": "1 user last accessed the course 1 to 5 days ago",
 	"components.insights-course-last-access-card.toolTipLessThanOneDaySingleUser": "1 user last accessed the course less than 1 day ago",
 
+	"components.insights-discussion-activity-card.cardTitle": "Discussion Activity",
+	"components.insights-discussion-activity-card.threads": "Threads",
+	"components.insights-discussion-activity-card.replies": "Replies",
+	"components.insights-discussion-activity-card.reads": "Reads",
+	"components.insights-discussion-activity-card.textLabel": "This chart displays the total number of threads, replies, and reads in discussion forums for all users in the selected courses",
+
 	"components.insights-applied-filters.clear-all": "Clear all",
 
 	"components.insights-aria-loading-progress.loading-start": "Loading is in progress",

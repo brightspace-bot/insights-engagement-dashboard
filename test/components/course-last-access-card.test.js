@@ -1,11 +1,13 @@
-import '../../components/course-last-access-card.js';
-
 import { expect, fixture, html } from '@open-wc/testing';
+import { CourseLastAccessFilter } from '../../components/course-last-access-card';
+import { records } from '../model/mocks';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-course-last-access-card', () => {
+	const filter = new CourseLastAccessFilter();
 	const data = {
-		courseLastAccessDates: [1, 3, 4, 2, 4, 3]
+		getFilter: id => (id === filter.id ? filter : null),
+		getRecordsInView: id => (id === filter.id ? records : null)
 	};
 
 	describe('constructor', () => {
@@ -29,7 +31,7 @@ describe('d2l-insights-course-last-access-card', () => {
 			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run
 			const title = (el.shadowRoot.querySelectorAll('div.d2l-insights-course-last-access-title'));
 			expect(title[0].innerText).to.equal('Course Access');
-			expect(el._preparedBarChartData.toString()).to.equal(data.courseLastAccessDates.toString());
+			expect(el._preparedBarChartData.toString()).to.equal([39, 7, 0, 0, 1, 1].toString());
 		});
 	});
 
