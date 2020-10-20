@@ -1,30 +1,20 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
-import {
-	COURSE_OFFERING,
-	RECORD, TiCVsGradesFilterId, USER
-} from '../consts';
+import { COURSE_OFFERING, USER } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 import { Tree } from '../components/tree-filter';
-
-function unique(array) {
-	return [...new Set(array)];
-}
 
 // cardFilters must be an array of filters; a filter must have fields id, title, and isApplied,
 // and a filter(record, data) method; beyond that, it can keep state however it wishes.
 // Ideally, these should be classes, filter should not use the data parameter (to be removed in future), and the id need not
 // be known outside the defining file (see, e.g., current-final-grade-card).
 export class Data {
-	constructor({ recordProvider, cardFilters }) {
+	constructor({ recordProvider }) {
 		this.recordProvider = recordProvider;
 		this.orgUnitTree = new Tree({});
-		this._userDictionary = null;
+		this.userDictionary = null;
 
 		// @observables
-		this.tiCVsGradesQuadrant = 'leftBottom';
-		this.avgTimeInContent = 0;
-		this.avgGrades = 0;
 		this.isLoading = true;
 		this.serverData = {
 			records: [],
@@ -50,19 +40,12 @@ export class Data {
 			orgUnit: new OrgUnitSelectorFilter(this.serverData, this.orgUnitTree)
 		};
 
-		this.cardFilters = {};
-		cardFilters.forEach(f => this.cardFilters[f.id] = f);
-
 		this._restore();
 
 		// mobx will run _persist() whenever relevant state changes
 		autorun(() => this._persist());
 
 		this.loadData({ defaultView: true });
-	}
-
-	getFilter(filterId) {
-		return this.cardFilters[filterId];
 	}
 
 	loadData({ newRoleIds = null, newSemesterIds = null, newOrgUnitIds = null, defaultView = false }) {
@@ -95,7 +78,7 @@ export class Data {
 				null
 		});
 
-		this._userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
+		this.userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
 		this.isLoading = false;
 		this.serverData = newServerData;
 
@@ -167,67 +150,18 @@ export class Data {
 		});
 	}
 
-	// @computed
-	get users() {
-		const userIdsInView = unique(this.getRecordsInView().map(record => record[RECORD.USER_ID]));
-		return userIdsInView.map(userId => this._userDictionary.get(userId));
-	}
-
-	get recordsByUser() {
-		const recordsByUser = new Map();
-		this.getRecordsInView().forEach(r => {
-			if (!recordsByUser.has(r[RECORD.USER_ID])) {
-				recordsByUser.set(r[RECORD.USER_ID], []);
-			}
-			recordsByUser.get(r[RECORD.USER_ID]).push(r);
-		});
-		return recordsByUser;
-	}
-
-	get tiCVsGrades() {
-		return this.getRecordsInView(TiCVsGradesFilterId)
-			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
-			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
-			.filter(item => item[0] || item[1])
-			.map(item => [item[0] !== 0 ? Math.floor(item[0] / 60) : 0, item[1]]); //keep in count students either without grade or without time in content
-	}
-
-	setTiCVsGradesQuadrant(quadrant) {
-		this.tiCVsGradesQuadrant = quadrant;
-	}
-
-	get tiCVsGradesAvgValues() {
-		const arrayOfTimeInContent =  this.tiCVsGrades.map(item => item[0]);
-		this.avgTimeInContent = arrayOfTimeInContent.length ? Math.floor(arrayOfTimeInContent.reduce((a, b) => a + b, 0) / arrayOfTimeInContent.length) : 0;
-
-		const arrayOfGrades = this.tiCVsGrades.map(item => item[1]);
-		this.avgGrades = arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
-		return [this.avgTimeInContent, this.avgGrades];
-	}
-
-	getRecordsInView(id) {
-		// if id is omitted, all applied filters will be used
-		const otherFilters = Object.values(this.cardFilters).filter(f => f.isApplied && f.id !== id);
-		return this.records.filter(r => otherFilters.every(f => f.filter(r, this)));
-	}
-
-	// @action
-	setApplied(id, isApplied) {
-		if (this.cardFilters[id]) this.cardFilters[id].isApplied = isApplied;
-	}
-
 	_persist() {
 		//It's save only the list of filters, then will be a separate story for keep state
-		localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
-			Object.keys(this.cardFilters)
-				.map(f => ({ id: f }))
-		));
+		// localStorage.setItem('d2l-insights-engagement-dashboard.state', JSON.stringify(
+		// 	Object.keys(this.cardFilters)
+		// 		.map(f => ({ id: f }))
+		// ));
 	}
 
 	_restore() {
 		// this might be better handled by url-rewriting
-		const state = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.state') || '[]');
-		state.forEach(filterState => this.setApplied(filterState.id));
+		// const state = JSON.parse(localStorage.getItem('d2l-insights-engagement-dashboard.state') || '[]');
+		// state.forEach(filterState => this.setApplied(filterState.id));
 	}
 }
 
