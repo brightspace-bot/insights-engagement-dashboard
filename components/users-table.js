@@ -121,7 +121,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 					records.length, // courses
 					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
 					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions),
-					date ? formatDateTime(new Date(date), { format: 'medium' }) : 'NULL'
+					date ? formatDateTime(new Date(date), { format: 'medium' }) : this.localize('components.insights-users-table.null')
 				];
 			})
 			.sort((user1, user2) => {

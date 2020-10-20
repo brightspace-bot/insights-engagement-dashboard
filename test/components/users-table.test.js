@@ -214,7 +214,6 @@ function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
 		displayedUserInfo.forEach((cell, rowIdx) => {
 			const mainText = cell.querySelector('div');
 			expect(mainText.innerText).to.equal(expected[rowIdx + startRowNum][child - 1].toString());
-			//console.log('mainText.innerText', mainText.innerText);
 		});
 	});
 }
