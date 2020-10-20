@@ -109,16 +109,6 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return [];
 	}
 
-	_dataToFloat(d) {
-		if (typeof(d) === 'string') {
-			return parseFloat(d.replace('%', '').trim());
-		}
-		return d;
-	}
-	_getLastName(s) {
-		return s[0].split(',')[1].toLowerCase();
-	}
-
 	setColumnSort(e) {
 		this._sortOrder = e.detail.order;
 		this._sortColumn = e.detail.column;
@@ -176,7 +166,6 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
 		// then sort by lastFirstName
-		delete this.userDataForDisplay;
 		const sortFunction = this._choseSortFunction();
 		return this.data.users
 			.map(this._preProcessData.bind(this))
