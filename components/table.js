@@ -201,12 +201,12 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			'd2l-insights-table-cell-last': idx === this._numColumns - 1,
 			'd2l-insights-table-arrow-spacing': isSortedColumn
 		};
-		const spaceArrow =  isSortedColumn ? 'd2l-insights-table-cell-sort-indicator' : '';
+		const spaceArrow = { 'd2l-insights-table-cell-sort-indicator' : isSortedColumn };
 
 		return html`
 			<th class="${classMap(styles)}" scope="col" @click="${this._handleHeaderClicked}">
 				${info.headerText}
-				<d2l-icon icon="tier1:${isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : ''}" class="${spaceArrow}"></span>
+				<d2l-icon icon="tier1:${isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : ''}" class="${classMap(spaceArrow)}"></span>
 			</th>
 		`;
 	}
