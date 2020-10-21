@@ -4,15 +4,63 @@ import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
+import { CategoryFilter } from '../model/CategoryFilter';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
+const filterId = 'd2l-insights-discussion-activity-card';
+
+export class DiscussionActivityFilter extends CategoryFilter {
+	constructor() {
+		super(
+			filterId,
+			'components.insights-discussion-activity-card.cardTitle',
+			record => [...this.selectedCategories].some(category => record[category] > 0)
+		);
+	}
+}
+
+function drawCustomHalo(point, chart) {
+	if ((!point.selected || point.y !== point.haloY) && point.customHalo) {
+		point.customHalo.destroy();
+		point.customHalo = null;
+	}
+
+	if (point.selected && !point.customHalo && point.y > 0) {
+		const shapeArgs = point.shapeArgs,
+			size = 7,
+			opacity = 1,
+			path = point.series.chart.renderer
+				.symbols
+				.arc(
+					shapeArgs.x + chart.plotLeft,
+					shapeArgs.y + chart.plotTop,
+					shapeArgs.r + size,
+					shapeArgs.r + size, {
+						innerR: shapeArgs.r + 1,
+						start: shapeArgs.start,
+						end: shapeArgs.end
+					}
+				);
+
+		point.customHalo = chart.renderer
+			.path(path)
+			.attr({
+				fill: point.color,
+				opacity: opacity
+			}).add();
+		point.hasHalo = true;
+		point.haloY = point.y;
+
+	}
+}
+
 class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	static get properties() {
 		return {
-			isValueClickable: { type: Boolean, attribute: 'clickable' }
+			data: { type: Object, attribute: false }
 		};
 	}
 
@@ -56,6 +104,10 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		`];
 	}
 
+	get filter() {
+		return this.data.getFilter(filterId);
+	}
+
 	get _cardTitle() {
 		return this.localize('components.insights-discussion-activity-card.cardTitle');
 	}
@@ -72,7 +124,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	get _discussionActivityStats() {
 		let threadSum, replySum, readSum;
 		threadSum = replySum = readSum = 0;
-		this.data.records.forEach(record => {
+		this.data.excluding(filterId).records.forEach(record => {
 			threadSum += record[RECORD.DISCUSSION_ACTIVITY_THREADS];
 			replySum += record[RECORD.DISCUSSION_ACTIVITY_REPLIES];
 			readSum += record[RECORD.DISCUSSION_ACTIVITY_READS];
@@ -114,6 +166,15 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				type: 'pie',
 				height: 100,
 				width: 245,
+				events: {
+					render: function() {
+						if (!this.series || !this.series[0]) return;
+						for (const point of this.series[0].data) {
+							const chart = this;
+							drawCustomHalo(point, chart);
+						}
+					}
+				}
 			},
 			title: {
 				text: this._cardTitle, // override default title
@@ -130,9 +191,26 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 					dataLabels: {
 						enabled: false
 					},
-					showInLegend: true
+					showInLegend: true,
+					slicedOffset: 0 // don't "pull out" selected slices
 				},
 				series: {
+					point: {
+						events: {
+							click: function(/*event*/) {
+								const point = this;
+								that.filter.toggleCategory(point.id);
+								// const chart = point.series.chart;
+								// point.select(null, true); // toggles; can check this.selected to avoid
+								// drawCustomHalo(point, chart);
+								// if (point.selected) {
+								// 	that.filter.selectCategory(point.id);
+								// } else {
+								// 	that.filter.clearCategory(point.id);
+								// }
+							}
+						}
+					},
 					states: {
 						hover: {
 							enabled: true,
@@ -160,16 +238,28 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			},
 			series: {
 				colorByPoint: true,
-				data:[{
+				data: [{
 					name: that._legendLabels[0],
-					y: that._discussionActivityStats.threadSum
+					y: that._discussionActivityStats.threadSum,
+					id: RECORD.DISCUSSION_ACTIVITY_THREADS,
+					unselectedColor: 'var(--d2l-color-tungsten)'
 				}, {
 					name: that._legendLabels[1],
-					y: that._discussionActivityStats.replySum
+					y: that._discussionActivityStats.replySum,
+					id: RECORD.DISCUSSION_ACTIVITY_REPLIES,
+					unselectedColor: 'var(--d2l-color-gypsum)'
 				}, {
 					name: that._legendLabels[2],
-					y: that._discussionActivityStats.readSum
-				}],
+					y: that._discussionActivityStats.readSum,
+					id: RECORD.DISCUSSION_ACTIVITY_READS,
+					unselectedColor: 'var(--d2l-color-mica)'
+				}].map(slice => {
+					const selected = that.filter.selectedCategories.has(slice.id);
+					return Object.assign(slice, {
+						selected,
+						color: (that.filter.isApplied && !selected) ? slice.unselectedColor : undefined
+					});
+				}),
 				accessibility: {
 					description: that._chartDescriptionTextLabel,
 					pointDescriptionFormatter: function(point) {
