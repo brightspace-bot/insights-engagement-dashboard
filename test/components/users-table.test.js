@@ -224,22 +224,15 @@ describe('d2l-insights-users-table', () => {
 			return date;
 		};
 
-		const checkIfSorted = (data, order) => {
+		const checkIfSorted = (records, order) => {
 
-			const records = data;
 			records.forEach((record, i) => {
 				if (i > 0) {
 					const previous = records[i - 1];
-					if (order === 'desc' && !(record <= previous)) {
-						expect(false).to.equal(true);
-					}
-					else if (order === 'asc' && !(record >= previous)) {
-						expect(false).to.equal(true);
-					}
+					if (order === 'desc') expect(record <= previous, 'out of order').to.be.true;
+					else if (order === 'asc') expect(record >= previous, 'out of order').to.be.true;
 				}
 			});
-			expect(true).to.equal(true);
-
 		};
 
 		it('should sort by last name when header is clicked', async() => {
