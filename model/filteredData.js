@@ -22,9 +22,8 @@ export class FilteredData {
 
 	/**
 	 * @param {Object}filter - a filter must have fields id, title, and isApplied,
-	 * and a filter(record, data) method; beyond that, it can keep state however it wishes.
-	 * Ideally, these should be classes, filter should not use the data parameter
-	 * (to be removed in future and just userDictionary passed), and the id need not
+	 * and a filter(record, userDictionary) method; beyond that, it can keep state however it wishes.
+	 * Ideally, these should be classes and the id need not
 	 * be known outside the defining file (see, e.g., current-final-grade-card).
 	 * @returns {FilteredData}
 	 */
