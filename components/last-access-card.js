@@ -84,5 +84,6 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 customElements.define('d2l-insights-last-access-card', LastAccessCard);
 
 decorate(LastAccessCard, {
-	_cardValue: computed
+	_cardValue: computed,
+	filter: computed
 });
