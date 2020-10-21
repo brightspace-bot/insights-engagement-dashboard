@@ -6,6 +6,7 @@ import { css, html } from 'lit-element';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl';
 import { RECORD, USER } from '../consts';
 import { COLUMN_TYPES } from './table';
+import { formatDateTime } from '@brightspace-ui/intl/lib/dateTime.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin';
@@ -14,7 +15,8 @@ const TABLE_USER = {
 	NAME_INFO: 0,
 	COURSES: 1,
 	AVG_GRADE: 2,
-	AVG_TIME_IN_CONTENT: 3
+	AVG_TIME_IN_CONTENT: 3,
+	LAST_ACCESSED_SYS: 4
 };
 
 const numberFormatOptions = { maximumFractionDigits: 2 };
@@ -113,11 +115,13 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 				const records = recordsByUser.get(user[USER.ID]);
 				const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
 				const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
+				const date = user[USER.LAST_SYS_ACCESS] ? new Date(user[USER.LAST_SYS_ACCESS]).toISOString() : null;
 				return [
 					[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
 					records.length, // courses
 					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
-					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions)
+					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions),
+					date ? formatDateTime(new Date(date), { format: 'medium' }) : this.localize('components.insights-users-table.null')
 				];
 			})
 			.sort((user1, user2) => {
@@ -142,6 +146,10 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			},
 			{
 				headerText: this.localize('components.insights-users-table.avgTimeInContent'),
+				columnType: COLUMN_TYPES.NORMAL_TEXT
+			},
+			{
+				headerText: this.localize('components.insights-users-table.lastAccessedSys'),
 				columnType: COLUMN_TYPES.NORMAL_TEXT
 			}
 		];

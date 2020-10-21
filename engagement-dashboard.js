@@ -13,7 +13,6 @@ import './components/course-last-access-card.js';
 import './components/discussion-activity-card.js';
 
 import './components/default-view-popup.js';
-import './components/last-access-card';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
@@ -23,6 +22,7 @@ import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
+import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
@@ -152,6 +152,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			// on the results of the other: we avoid this by building them on specific sets of filters.
 			const rowFilteredData = new FilteredData(this._serverData)
 				.filter(new OverdueAssignmentsFilter())
+				.filter(new LastAccessFilter())
 				.filter(new CourseLastAccessFilter())
 				.filter(new CurrentFinalGradesFilter());
 

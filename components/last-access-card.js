@@ -1,9 +1,37 @@
-import { computed, decorate } from 'mobx';
+import { computed, decorate, observable } from 'mobx';
+import { RECORD, USER } from '../consts';
 import { html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
-import { USER } from '../consts';
+
+export const filterId = 'd2l-insights-last-access-card';
+const fourteenDayMillis = 1209600000;
+
+function isWithoutRecentAccess(user) {
+	return !user[USER.LAST_SYS_ACCESS] || ((Date.now() - user[USER.LAST_SYS_ACCESS]) > fourteenDayMillis);
+}
+
+export class LastAccessFilter {
+	constructor() {
+		this.isApplied = false;
+	}
+
+	get id() { return filterId; }
+
+	get title() {
+		return 'components.insights-engagement-dashboard.lastSystemAccessHeading';
+	}
+
+	filter(record, data) {
+		const user = data._userDictionary.get(record[RECORD.USER_ID]);
+		return isWithoutRecentAccess(user);
+	}
+}
+
+decorate(LastAccessFilter, {
+	isApplied: observable
+});
 
 class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -26,12 +54,13 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.localize('components.insights-engagement-dashboard.lastSystemAccessHeading');
 	}
 
-	get _cardValue() {
-		const fourteenDayMillis = 1209600000;
+	get filter() {
+		return this.data.getFilter(filterId);
+	}
 
+	get _cardValue() {
 		return this.data.users
-			.filter(user => user[USER.LAST_SYS_ACCESS] === null || user[USER.LAST_SYS_ACCESS] === undefined || (Date.now() - user[USER.LAST_SYS_ACCESS] > fourteenDayMillis))
-			.length;
+			.filter(user => isWithoutRecentAccess(user)).length;
 	}
 
 	render() {
@@ -50,11 +79,11 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	_valueClickHandler() {
-		console.log('click'); // out of scope
+		this.filter.isApplied = true;
 	}
 }
 customElements.define('d2l-insights-last-access-card', LastAccessCard);
 
 decorate(LastAccessCard, {
-	_cardValue: computed,
+	_cardValue: computed
 });
