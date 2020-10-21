@@ -50,6 +50,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					display: none;
 				}
 
+				d2l-action-button-group {
+					float:right;
+					margin: 0.67em 0;
+				}
+
 				.d2l-insights-chart-container {
 					display: flex;
 					flex-wrap: wrap;
@@ -86,6 +91,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						padding: 0 18px;
 					}
 				}
+
+				.title-container {
+					float:left;
+					width: 80%;
+				}
 			`
 		];
 	}
@@ -93,8 +103,15 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	render() {
 		return html`
 				<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
-
-				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
+				<div class="title-container">
+					<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
+				</div>
+				<d2l-action-button-group min-to-show="1" max-to-show="4">
+					<d2l-button-subtle
+					icon="d2l-tier1:help"
+					text="Help"
+					onclick="location.href='https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide';"></d2l-button-subtle>
+				</d2l-action-button-group>
 
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter
