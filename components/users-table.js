@@ -1,4 +1,3 @@
-/* eslint-disable lit/no-template-bind */
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
