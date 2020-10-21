@@ -139,11 +139,6 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		return this.localize('components.insights-time-in-content-vs-grade-card.timeInContent');
 	}
 
-	// TODO: remove if not needed (only used by a test)
-	get _preparedPlotData() {
-		return this.data.tiCVsGrades;
-	}
-
 	get _plotDataForLeftBottomQuadrant() {
 		return this.filter.getDataForQuadrant('leftBottom');
 	}

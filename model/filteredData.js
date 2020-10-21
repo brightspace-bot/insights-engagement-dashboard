@@ -18,8 +18,6 @@ export class FilteredData {
 	constructor(data, filters = []) {
 		this._data = data;
 		this.filters = filters;
-		this.avgTimeInContent = 0;
-		this.avgGrades = 0;
 	}
 
 	/**
@@ -35,7 +33,7 @@ export class FilteredData {
 	}
 
 	/**
-	 * @param filterId - a filter to exclude: generally, filter components should exclude their own filters
+	 * @param filterId - a filter to exclude: generally, components for row filters should exclude their own filters
 	 * when rendering
 	 * @returns {FilteredData}
 	 */
@@ -49,17 +47,7 @@ export class FilteredData {
 
 	get records() {
 		const appliedFilters = this.filters.filter(f => f.isApplied);
-		// coming soon: pass (r, this.userDictionary) so filters can't accidentally have bad dependencies
-		return this._data.records.filter(r => appliedFilters.every(f => f.filter(r, this)));
-	}
-
-	get userDictionary() {
-		return this._data.userDictionary;
-	}
-
-	get users() {
-		const userIdsInView = unique(this.records.map(record => record[RECORD.USER_ID]));
-		return userIdsInView.map(userId => this.userDictionary.get(userId));
+		return this._data.records.filter(r => appliedFilters.every(f => f.filter(r, this.userDictionary)));
 	}
 
 	get recordsByUser() {
@@ -71,6 +59,15 @@ export class FilteredData {
 			recordsByUser.get(r[RECORD.USER_ID]).push(r);
 		});
 		return recordsByUser;
+	}
+
+	get userDictionary() {
+		return this._data.userDictionary;
+	}
+
+	get users() {
+		const userIdsInView = unique(this.records.map(record => record[RECORD.USER_ID]));
+		return userIdsInView.map(userId => this.userDictionary.get(userId));
 	}
 
 	clearFilters() {

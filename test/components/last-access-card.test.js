@@ -1,14 +1,18 @@
 import { expect, fixture, html } from '@open-wc/testing';
+import { LastAccessFilter } from '../../components/last-access-card';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-last-access-card', () => {
-
+	const filter = new LastAccessFilter();
 	const data = {
-		users : [
-			[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
-			[200, 'Paul', 'McCartney', 'pmccartney', null],
-			[300, 'Ringo', 'Starr', 'rstarr', Date.now()]
-		]
+		getFilter: id => (id === filter.id ? filter : null),
+		excluding: id => (id === filter.id ? {
+			users : [
+				[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
+				[200, 'Paul', 'McCartney', 'pmccartney', null],
+				[300, 'Ringo', 'Starr', 'rstarr', Date.now()]
+			]
+		} : null)
 	};
 
 	describe('constructor', () => {

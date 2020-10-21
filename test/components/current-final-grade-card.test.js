@@ -7,7 +7,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 	const filter = new CurrentFinalGradesFilter();
 	const data = {
 		getFilter: id => (id === filter.id ? filter : null),
-		getRecordsInView: id => (id === filter.id ? records : null)
+		excluding: id => (id === filter.id ? { records } : null)
 	};
 
 	describe('constructor', () => {
