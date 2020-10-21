@@ -47,6 +47,8 @@ export default {
 	"components.insights-users-table.avgTimeInContent": "Average Time in Content (mins)",
 	"components.insights-users-table.avgDiscussionActivity": "Average Discussion Activity",
 	"components.insights-users-table.totalUsers": "Total Users: {num}",
+	"components.insights-users-table.lastAccessedSys" : "Last Accessed System",
+	"components.insights-users-table.null" : "NULL",
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
 
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
@@ -88,6 +90,12 @@ export default {
 	"components.insights-course-last-access-card.toolTipFiveToSevenDaysSingleUser": "1 user last accessed the course 5 to 7 days ago",
 	"components.insights-course-last-access-card.toolTipOneToFiveDaysSingleUser": "1 user last accessed the course 1 to 5 days ago",
 	"components.insights-course-last-access-card.toolTipLessThanOneDaySingleUser": "1 user last accessed the course less than 1 day ago",
+
+	"components.insights-discussion-activity-card.cardTitle": "Discussion Activity",
+	"components.insights-discussion-activity-card.threads": "Threads",
+	"components.insights-discussion-activity-card.replies": "Replies",
+	"components.insights-discussion-activity-card.reads": "Reads",
+	"components.insights-discussion-activity-card.textLabel": "This chart displays the total number of threads, replies, and reads in discussion forums for all users in the selected courses",
 
 	"components.insights-applied-filters.clear-all": "Clear all",
 

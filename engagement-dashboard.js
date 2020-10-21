@@ -10,10 +10,12 @@ import './components/current-final-grade-card.js';
 import './components/applied-filters';
 import './components/aria-loading-progress';
 import './components/course-last-access-card.js';
+import './components/discussion-activity-card.js';
+
 import './components/default-view-popup.js';
 
 import { css, html } from 'lit-element/lit-element.js';
-import { CourseLastAccessCardFilter } from './components/course-last-access-card';
+import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { fetchData } from './model/lms.js';
@@ -22,7 +24,7 @@ import { heading3Styles } from '@brightspace-ui/core/components/typography/style
 import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { OverdueAssignmentsCardFilter } from './components/overdue-assignments-card';
+import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeCardFilter } from './components/time-in-content-vs-grade-card';
 
 /**
@@ -118,6 +120,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				<div class="d2l-insights-summary-container">
 					<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
 					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
+					<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
 					<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
 				</div>
 				<div class="d2l-insights-chart-container">
@@ -142,11 +145,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	get _data() {
 		if (!this.__data) {
 			const cardFilters = [
-				OverdueAssignmentsCardFilter,
+				new OverdueAssignmentsFilter(),
 				TimeInContentVsGradeCardFilter,
-				CourseLastAccessCardFilter,
-				new CurrentFinalGradesFilter(),
-				new LastAccessFilter()
+				new LastAccessFilter(),
+				new CourseLastAccessFilter(),
+				new CurrentFinalGradesFilter()
+
 			];
 
 			this.__data = new Data({
