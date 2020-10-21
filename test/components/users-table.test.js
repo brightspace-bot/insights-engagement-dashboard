@@ -194,6 +194,109 @@ describe('d2l-insights-users-table', () => {
 			});
 		});
 	});
+
+	describe('sorting', () => {
+
+		let headers;
+		let userTable;
+
+		before(async function() {
+			this.timeout(10000);
+
+			const table = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
+			await new Promise(resolve => setTimeout(resolve, 200));
+			await table.updateComplete;
+
+			userTable = table.shadowRoot.querySelector('d2l-insights-table');
+			headers = userTable.shadowRoot.querySelectorAll('th');
+		});
+
+		const checkIfSorted = (column, order, convertToNumber = false, convertToLower = false, data = undefined) => {
+
+			const records = data === undefined ? userTable.data.map(user => user[column]) : data;
+
+			console.log(records);
+
+			let inOrder = 'In Order';
+			records.forEach((record, i) => {
+
+				if (convertToNumber) {
+					record = Number.parseFloat(record.replace('%', '').trim());
+				}
+				if (convertToLower) {
+					record = record.toLowerCase();
+				}
+				if (i > 0) {
+					let previous = records[i - 1];
+					if (convertToNumber) {
+						previous = Number.parseFloat(previous.replace('%', '').trim());
+					}
+					console.log(`Before: ${previous} After: ${record}`);
+					if (order === 'desc' && !(record <= previous)) {
+						inOrder = 'Out of Order';
+					}
+					else if (order === 'asc' && !(record >= previous)) {
+						inOrder = 'Out of Order';
+					}
+				}
+			});
+			expect(inOrder).to.equal('In Order');
+
+		};
+
+		it('should sort by last name when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(0).click();
+			await userTable.updateComplete;
+			checkIfSorted(0, 'desc', false, true, userTable.data.map(record => record[0][0].split(',')[0]));
+
+			// then sort by ascending order
+			headers.item(0).click();
+			await userTable.updateComplete;
+			checkIfSorted(0, 'asc', false, true, userTable.data.map(record => record[0][0].split(',')[0]));
+		});
+
+		it('should sort by course total when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(1).click();
+			await userTable.updateComplete;
+			checkIfSorted(1, 'desc');
+
+			// then sort by ascending order
+			headers.item(1).click();
+			await userTable.updateComplete;
+			checkIfSorted(1, 'asc');
+		});
+
+		it('should sort by average grade when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(2).click();
+			await userTable.updateComplete;
+			checkIfSorted(2, 'desc', true);
+
+			// then sort by ascending order
+			headers.item(2).click();
+			await userTable.updateComplete;
+			checkIfSorted(2, 'asc', true);
+		});
+
+		it('should sort by average time in content when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(3).click();
+			await userTable.updateComplete;
+			checkIfSorted(3, 'desc', true);
+
+			// then sort by ascending order
+			headers.item(3).click();
+			await userTable.updateComplete;
+			checkIfSorted(3, 'asc', true);
+		});
+
+	});
 });
 
 function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
