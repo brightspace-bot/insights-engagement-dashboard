@@ -7,7 +7,10 @@ export const RECORD = {
 	OVERDUE: 3,
 	CURRENT_FINAL_GRADE: 4,
 	TIME_IN_CONTENT: 5,
-	COURSE_LAST_ACCESS: 6
+	COURSE_LAST_ACCESS: 6,
+	DISCUSSION_ACTIVITY_THREADS: 7,
+	DISCUSSION_ACTIVITY_REPLIES: 8,
+	DISCUSSION_ACTIVITY_READS: 9
 };
 export const USER = {
 	ID: 0,
@@ -18,5 +21,3 @@ export const USER = {
 };
 
 export const TiCVsGradesFilterId = 'd2l-insights-time-in-content-vs-grade-card';
-export const OverdueAssignmentsFilterId = 'd2l-insights-overdue-assignments-card';
-export const CourseLastAccessFilterId = 'd2l-insights-course-last-access-card';

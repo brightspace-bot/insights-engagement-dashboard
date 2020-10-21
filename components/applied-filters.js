@@ -61,7 +61,11 @@ class AppliedFilters extends SkeletonMixin(Localizer(MobxLitElement)) {
 			</div>
 
 			${!this.skeleton
-				? html`<d2l-applied-filters for="d2l-insights-applied-filters-dropdown"></d2l-applied-filters>`
+				? html`
+					<d2l-applied-filters
+						for="d2l-insights-applied-filters-dropdown"
+						label-text="${this.localize('components.insights-applied-filters.label-text')}">
+					</d2l-applied-filters>`
 				: html``
 			}
 		`;

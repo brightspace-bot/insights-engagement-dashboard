@@ -1,16 +1,16 @@
 import '../../components/users-table.js';
-
 import { expect, fixture, html } from '@open-wc/testing';
 import { mockRoleIds, records } from '../model/mocks';
-import { RECORD } from '../../consts';
+import { RECORD, USER } from '../../consts';
+import { formatDateTime } from '@brightspace-ui/intl/lib/dateTime.js';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 const data = {
 	users: [
-		[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
+		[100, 'John', 'Lennon', 'jlennon',  1600295350000],
 		[200, 'Paul', 'McCartney', 'pmccartney', null],
-		[300, 'George', 'Harrison', 'gharrison', Date.now()],
-		[400, 'Ringo', 'Starr', 'rstarr', Date.now()],
+		[300, 'George', 'Harrison', 'gharrison', 1603093368278],
+		[400, 'Ringo', 'Starr', 'rstarr', 1602295350000],
 		...Array.from(
 			{ length: 19 },
 			(val, idx) => [
@@ -36,15 +36,16 @@ data.records.forEach(r => {
 });
 
 const expected = [
-	[['Harrison, George', 'gharrison - 300'], 14, '71.42 %', '19.64'],
-	[['Lennon, John', 'jlennon - 100'], 12, '22 %', '2.78'],
-	[['McCartney, Paul', 'pmccartney - 200'], 13, '74 %', '23.72'],
-	[['Starr, Ringo', 'rstarr - 400'], 9, '55 %', '8.33'],
+	[['Harrison, George', 'gharrison - 300'], 14, '71.42 %', '19.64', getLocalDateTime(2)],
+	[['Lennon, John', 'jlennon - 100'], 12, '22 %', '2.78', getLocalDateTime(0)],
+	[['McCartney, Paul', 'pmccartney - 200'], 13, '74 %', '23.72', 'NULL'],
+	[['Starr, Ringo', 'rstarr - 400'], 9, '55 %', '8.33', getLocalDateTime(3)],
 	...Array.from({ length: 19 }, (val, idx) => [
 		[`zz${idx}Last, zz${idx}First`, `username${idx} - ${idx}`],
 		1,
 		'93 %',
-		'116.67'
+		'116.67',
+		'NULL'
 	]).sort((u1, u2) => u1[0][0].localeCompare(u2[0][0]))
 ];
 
@@ -309,7 +310,7 @@ function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
 		expect(subText.innerText).to.equal(expected[rowIdx + startRowNum][0][1]);
 	});
 
-	[2, 3, 4].forEach(child => {
+	[2, 3, 4, 5].forEach(child => {
 
 		displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll(`tbody > tr > td:nth-child(${child})`));
 		expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
@@ -318,4 +319,8 @@ function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
 			expect(mainText.innerText).to.equal(expected[rowIdx + startRowNum][child - 1].toString());
 		});
 	});
+}
+
+function getLocalDateTime(rowIndex) {
+	return formatDateTime(new Date(new Date(data.users[rowIndex][USER.LAST_SYS_ACCESS]).toISOString()), { format: 'medium' });
 }

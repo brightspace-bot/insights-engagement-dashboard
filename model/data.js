@@ -1,7 +1,6 @@
 import { action, autorun, computed, decorate, observable } from 'mobx';
 import {
-	COURSE_OFFERING, CourseLastAccessFilterId,
-	OverdueAssignmentsFilterId, RECORD, TiCVsGradesFilterId, USER
+	COURSE_OFFERING, RECORD, TiCVsGradesFilterId, USER
 } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
@@ -22,8 +21,6 @@ export class Data {
 		this._userDictionary = null;
 
 		// @observables
-		this.selectedLastAccessCategory = new Set();
-		this.selectedGradesCategories = new Set();
 		this.tiCVsGradesQuadrant = 'leftBottom';
 		this.avgTimeInContent = 0;
 		this.avgGrades = 0;
@@ -96,7 +93,6 @@ export class Data {
 				fetchCachedChildren(newServerData.selectedSemestersIds) || new Map() :
 				null
 		});
-
 		this._userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
 		this.isLoading = false;
 		this.serverData = newServerData;
@@ -186,47 +182,6 @@ export class Data {
 		return recordsByUser;
 	}
 
-	get courseLastAccessDates() {
-		// return an array of size 6, each element mapping to a category on the course last access bar chart
-		const dateBucketCounts = [0, 0, 0, 0, 0, 0];
-		const lastAccessDatesArray = this.getRecordsInView(CourseLastAccessFilterId).map(record => [record[RECORD.COURSE_LAST_ACCESS] === null ? -1 : (Date.now() - record[RECORD.COURSE_LAST_ACCESS])]);
-		lastAccessDatesArray.forEach(record => dateBucketCounts[ this._bucketCourseLastAccessDates(record) ]++);
-		return dateBucketCounts;
-	}
-
-	_bucketCourseLastAccessDates(courseLastAccessDateRange) {
-		const fourteenDayMillis = 1209600000;
-		const sevenDayMillis = 604800000;
-		const fiveDayMillis = 432000000;
-		const oneDayMillis = 86400000;
-		if (courseLastAccessDateRange < 0) {
-			return 0;
-		}
-		if (courseLastAccessDateRange >= fourteenDayMillis) {
-			return 1;
-		}
-		if (courseLastAccessDateRange <= oneDayMillis) {
-			return 5;
-		}
-		if (courseLastAccessDateRange <= fiveDayMillis) {
-			return 4;
-		}
-		if (courseLastAccessDateRange <= sevenDayMillis) {
-			return 3;
-		}
-		if (courseLastAccessDateRange <= fourteenDayMillis) {
-			return 2;
-		}
-	}
-
-	addToLastAccessCategory(category) {
-		this.selectedLastAccessCategory.add(category);
-	}
-
-	setLastAccessCategoryEmpty() {
-		this.selectedLastAccessCategory.clear();
-	}
-
 	get tiCVsGrades() {
 		return this.getRecordsInView(TiCVsGradesFilterId)
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
@@ -246,16 +201,6 @@ export class Data {
 		const arrayOfGrades = this.tiCVsGrades.map(item => item[1]);
 		this.avgGrades = arrayOfGrades.length ? Math.floor(arrayOfGrades.reduce((a, b) => a + b, 0) / arrayOfGrades.length) : 0;
 		return [this.avgTimeInContent, this.avgGrades];
-	}
-
-	get usersCountsWithOverdueAssignments() {
-		return this.getRecordsInView(OverdueAssignmentsFilterId)
-			.reduce((acc, record) => {
-				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
-					acc.add(record[RECORD.USER_ID]);
-				}
-				return acc;
-			}, 	new Set()).size;
 	}
 
 	getRecordsInView(id) {
@@ -289,17 +234,11 @@ decorate(Data, {
 	orgUnitTree: observable,
 	records: computed,
 	users: computed,
-	usersCountsWithOverdueAssignments: computed,
-	courseLastAccessDates: computed,
 	tiCVsGrades: computed,
 	tiCVsGradesAvgValues: computed,
 	cardFilters: observable,
 	isLoading: observable,
 	tiCVsGradesQuadrant: observable,
-	selectedLastAccessCategory: observable,
-	selectedGradesCategories: observable,
 	onServerDataReload: action,
-	setApplied: action,
-	addToLastAccessCategory: action,
-	setLastAccessCategoryEmpty: action
+	setApplied: action
 });

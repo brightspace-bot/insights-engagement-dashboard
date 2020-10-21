@@ -1,14 +1,28 @@
-import { OverdueAssignmentsFilterId, RECORD } from '../consts';
+import { computed, decorate, observable } from 'mobx';
 import { html } from 'lit-element';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
-export const OverdueAssignmentsCardFilter = {
-	id: OverdueAssignmentsFilterId,
-	title: 'components.insights-engagement-dashboard.overdueAssignmentsHeading',
-	filter: (record) => record[RECORD.OVERDUE] > 0
-};
+const filterId = 'd2l-insights-overdue-assignments-card';
+
+export class OverdueAssignmentsFilter {
+	constructor() {
+		this.isApplied = false;
+	}
+
+	get id() { return filterId; }
+
+	get title() { return 'components.insights-engagement-dashboard.overdueAssignmentsHeading'; }
+
+	filter(record) {
+		return record[RECORD.OVERDUE] > 0;
+	}
+}
+decorate(OverdueAssignmentsFilter, {
+	isApplied: observable
+});
 
 class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -32,7 +46,17 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardValue() {
-		return this.data.usersCountsWithOverdueAssignments;
+		return this.data.getRecordsInView(filterId)
+			.reduce((acc, record) => {
+				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
+					acc.add(record[RECORD.USER_ID]);
+				}
+				return acc;
+			}, 	new Set()).size;
+	}
+
+	get filter() {
+		return this.data.getFilter(filterId);
 	}
 
 	render() {
@@ -51,7 +75,10 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	_valueClickHandler() {
-		this.data.setApplied('d2l-insights-overdue-assignments-card', true);
+		this.filter.isApplied = true;
 	}
 }
+decorate(OverdueAssignmentsCard, {
+	_cardValue: computed
+});
 customElements.define('d2l-insights-overdue-assignments-card', OverdueAssignmentsCard);

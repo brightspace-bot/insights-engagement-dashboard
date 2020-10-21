@@ -1,11 +1,13 @@
-import '../../components/overdue-assignments-card';
-
 import { expect, fixture, html } from '@open-wc/testing';
+import { OverdueAssignmentsFilter } from '../../components/overdue-assignments-card';
+import { records } from '../model/mocks';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-overdue-assignments-card', () => {
+	const filter = new OverdueAssignmentsFilter();
 	const data = {
-		usersCountsWithOverdueAssignments: 2
+		getFilter: id => (id === filter.id ? filter : null),
+		getRecordsInView: id => (id === filter.id ? records : null)
 	};
 
 	describe('constructor', () => {

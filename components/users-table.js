@@ -6,6 +6,7 @@ import { css, html } from 'lit-element';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl';
 import { RECORD, USER } from '../consts';
 import { COLUMN_TYPES } from './table';
+import { formatDateTime } from '@brightspace-ui/intl/lib/dateTime.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin';
@@ -14,7 +15,8 @@ const TABLE_USER = {
 	NAME_INFO: 0,
 	COURSES: 1,
 	AVG_GRADE: 2,
-	AVG_TIME_IN_CONTENT: 3
+	AVG_TIME_IN_CONTENT: 3,
+	LAST_ACCESSED_SYS: 4
 };
 
 const numberFormatOptions = { maximumFractionDigits: 2 };
@@ -119,11 +121,13 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		const records = recordsByUser.get(user[USER.ID]);
 		const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
 		const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
+		const date = user[USER.LAST_SYS_ACCESS] ? new Date(user[USER.LAST_SYS_ACCESS]).toISOString() : null;
 		return [
 			[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
 			records.length, // courses
 			avgFinalGrade,
-			avgOf(records, RECORD.TIME_IN_CONTENT)
+			avgOf(records, RECORD.TIME_IN_CONTENT),
+			date ? new Date(date) : undefined
 		];
 	}
 
@@ -144,8 +148,9 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		}
 
 		return (user1, user2) => {
-			const record1 = user1[column];
-			const record2 = user2[column];
+			// undefined is neither greater or less then a value so we set it to -infinity
+			const record1 = user1[column] ? user1[column] : Number.NEGATIVE_INFINITY;
+			const record2 = user2[column] ? user2[column] : Number.NEGATIVE_INFINITY;
 			return (record1 > record2 ? ORDER[order][1] :
 				record1 < record2 ? ORDER[order][0] :
 					ORDER[order][2]);
@@ -153,11 +158,13 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	_formatDataForDisplay(user) {
+		const dateIsNull = user[TABLE_USER.LAST_ACCESSED_SYS] === undefined;
 		return [
 			user[TABLE_USER.NAME_INFO],
 			user[TABLE_USER.COURSES], // courses
 			user[TABLE_USER.AVG_GRADE] ? formatPercent(user[TABLE_USER.AVG_GRADE] / 100, numberFormatOptions) : '',
-			formatNumber(user[TABLE_USER.AVG_TIME_IN_CONTENT] / 60, numberFormatOptions)
+			formatNumber(user[TABLE_USER.AVG_TIME_IN_CONTENT] / 60, numberFormatOptions),
+			dateIsNull ? this.localize('components.insights-users-table.null') : formatDateTime(new Date(user[TABLE_USER.LAST_ACCESSED_SYS]), { format: 'medium' })
 		];
 	}
 
@@ -188,6 +195,10 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			},
 			{
 				headerText: this.localize('components.insights-users-table.avgTimeInContent'),
+				columnType: COLUMN_TYPES.NORMAL_TEXT
+			},
+			{
+				headerText: this.localize('components.insights-users-table.lastAccessedSys'),
 				columnType: COLUMN_TYPES.NORMAL_TEXT
 			}
 		];
