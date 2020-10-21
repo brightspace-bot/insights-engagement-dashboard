@@ -212,36 +212,33 @@ describe('d2l-insights-users-table', () => {
 			headers = userTable.shadowRoot.querySelectorAll('th');
 		});
 
-		const checkIfSorted = (column, order, convertToNumber = false, convertToLower = false, data = undefined) => {
+		const toNumberManipulator = (record) => Number.parseFloat(record.replace('%', '').trim());
 
-			const records = data === undefined ? userTable.data.map(user => user[column]) : data;
+		const toLowerManipulator = (record) => record.toLowerCase();
 
-			console.log(records);
+		const parseDate = (dateString) => {
+			const date = Date.parse(dateString);
+			if (isNaN(date)) {
+				return Number.NEGATIVE_INFINITY;
+			}
+			return date;
+		};
 
-			let inOrder = 'In Order';
+		const checkIfSorted = (data, order) => {
+
+			const records = data;
 			records.forEach((record, i) => {
-
-				if (convertToNumber) {
-					record = Number.parseFloat(record.replace('%', '').trim());
-				}
-				if (convertToLower) {
-					record = record.toLowerCase();
-				}
 				if (i > 0) {
-					let previous = records[i - 1];
-					if (convertToNumber) {
-						previous = Number.parseFloat(previous.replace('%', '').trim());
-					}
-					console.log(`Before: ${previous} After: ${record}`);
+					const previous = records[i - 1];
 					if (order === 'desc' && !(record <= previous)) {
-						inOrder = 'Out of Order';
+						expect(false).to.equal(true);
 					}
 					else if (order === 'asc' && !(record >= previous)) {
-						inOrder = 'Out of Order';
+						expect(false).to.equal(true);
 					}
 				}
 			});
-			expect(inOrder).to.equal('In Order');
+			expect(true).to.equal(true);
 
 		};
 
@@ -250,12 +247,14 @@ describe('d2l-insights-users-table', () => {
 			// first click for descending order
 			headers.item(0).click();
 			await userTable.updateComplete;
-			checkIfSorted(0, 'desc', false, true, userTable.data.map(record => record[0][0].split(',')[0]));
+			let data = userTable.data.map(record => toLowerManipulator(record[0][0].split(',')[0]));
+			checkIfSorted(data, 'desc');
 
 			// then sort by ascending order
 			headers.item(0).click();
 			await userTable.updateComplete;
-			checkIfSorted(0, 'asc', false, true, userTable.data.map(record => record[0][0].split(',')[0]));
+			data = userTable.data.map(record => toLowerManipulator(record[0][0].split(',')[0]));
+			checkIfSorted(data, 'asc');
 		});
 
 		it('should sort by course total when header is clicked', async() => {
@@ -263,12 +262,14 @@ describe('d2l-insights-users-table', () => {
 			// first click for descending order
 			headers.item(1).click();
 			await userTable.updateComplete;
-			checkIfSorted(1, 'desc');
+			let data = userTable.data.map(record => record[1]);
+			checkIfSorted(data, 'desc');
 
 			// then sort by ascending order
 			headers.item(1).click();
 			await userTable.updateComplete;
-			checkIfSorted(1, 'asc');
+			data = userTable.data.map(record => record[1]);
+			checkIfSorted(data, 'asc');
 		});
 
 		it('should sort by average grade when header is clicked', async() => {
@@ -276,12 +277,14 @@ describe('d2l-insights-users-table', () => {
 			// first click for descending order
 			headers.item(2).click();
 			await userTable.updateComplete;
-			checkIfSorted(2, 'desc', true);
+			let data = userTable.data.map(record => toNumberManipulator(record[2]));
+			checkIfSorted(data, 'desc');
 
 			// then sort by ascending order
 			headers.item(2).click();
 			await userTable.updateComplete;
-			checkIfSorted(2, 'asc', true);
+			data = userTable.data.map(record => toNumberManipulator(record[2]));
+			checkIfSorted(data, 'asc');
 		});
 
 		it('should sort by average time in content when header is clicked', async() => {
@@ -289,12 +292,29 @@ describe('d2l-insights-users-table', () => {
 			// first click for descending order
 			headers.item(3).click();
 			await userTable.updateComplete;
-			checkIfSorted(3, 'desc', true);
+			let data = userTable.data.map(record => toNumberManipulator(record[3]));
+			checkIfSorted(data, 'desc');
 
 			// then sort by ascending order
 			headers.item(3).click();
 			await userTable.updateComplete;
-			checkIfSorted(3, 'asc', true);
+			data = userTable.data.map(record => toNumberManipulator(record[3]));
+			checkIfSorted(data, 'asc');
+		});
+
+		it('should sort by system access when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(4).click();
+			await userTable.updateComplete;
+			let data = userTable.data.map(record => parseDate(record[4]));
+			checkIfSorted(data, 'desc');
+
+			// then sort by ascending order
+			headers.item(4).click();
+			await userTable.updateComplete;
+			data = userTable.data.map(record => parseDate(record[4]));
+			checkIfSorted(data, 'asc');
 		});
 
 	});
