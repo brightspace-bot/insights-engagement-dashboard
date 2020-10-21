@@ -51,7 +51,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				}
 
 				d2l-action-button-group {
-					float:right;
+					float: right;
 					margin: 0.67em 0;
 				}
 
@@ -69,6 +69,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.d2l-insights-summary-container-applied-filters {
 					height: auto;
 					width: 100%;
+				}
+
+				.title-container {
+					float: left;
+					width: 80%;
 				}
 
 				h1.d2l-heading-1 {
@@ -90,11 +95,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						display: block;
 						padding: 0 18px;
 					}
-				}
-
-				.title-container {
-					float:left;
-					width: 80%;
 				}
 			`
 		];
