@@ -105,9 +105,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				<d2l-action-button-group min-to-show="1" max-to-show="4">
 					<d2l-button-subtle
-					icon="d2l-tier1:help"
-					text="Learn More"
-					onclick="location.href='https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide';"></d2l-button-subtle>
+						icon="d2l-tier1:help"
+						text=${this.localize('components.insights-engagement-dashboard.learMore')}
+						onclick="location.href='https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide';">
+					</d2l-button-subtle>
 				</d2l-action-button-group>
 
 				<div class="view-filters-container">
