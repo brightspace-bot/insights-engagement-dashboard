@@ -93,6 +93,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	render() {
 		return html`
+
 				<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
 
 				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
