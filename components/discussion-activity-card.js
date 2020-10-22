@@ -217,6 +217,9 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 							halo: {
 								size: 0
 							}
+						},
+						inactive: {
+							enabled: false
 						}
 					}
 				}
