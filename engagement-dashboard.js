@@ -52,7 +52,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				d2l-action-button-group {
 					float: right;
-					margin: 0.9em;
+					margin: 2em;
 				}
 
 				.d2l-insights-chart-container {
@@ -72,11 +72,9 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				}
 
 				h1.d2l-heading-1 {
-					float: left;
 					font-weight: normal;	/* default for h1 is bold */
 					margin: 0.67em 0;		/* required to be explicitly defined for Edge Legacy */
 					padding: 0;				/* required to be explicitly defined for Edge Legacy */
-					width: 70%;
 				}
 
 				h2.d2l-heading-3 {
@@ -101,8 +99,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return html`
 				<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
 
-				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
-
 				<d2l-action-button-group min-to-show="1" max-to-show="4">
 					<d2l-button-subtle
 						icon="d2l-tier1:help"
@@ -110,6 +106,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						onclick="location.href='https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide';">
 					</d2l-button-subtle>
 				</d2l-action-button-group>
+
+				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
 
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter
