@@ -270,7 +270,6 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 		const children = e.target.parentElement.children;
 		let colmnNumber = Array.from(children).indexOf(e.target);
-		console.log(colmnNumber);
 		if (e.keyCode === 32 /* spacebar */ || e.key === 'Enter') {
 			e.preventDefault();
 			this._handleHeaderClicked(e);
