@@ -1,10 +1,10 @@
+import '@brightspace-ui/core/components/icons/icon.js';
 import { bodySmallStyles, bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { css, html, LitElement } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
-import '@brightspace-ui/core/components/icons/icon.js'
 
 export const COLUMN_TYPES = {
 	NORMAL_TEXT: 0,
@@ -224,7 +224,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			`;
 		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT) {
 			return defaultHtml;
-		} else if(columnType === COLUMN_TYPES.SUB_COLUMNS){
+		} else if (columnType === COLUMN_TYPES.SUB_COLUMNS) {
 			return html`
 				<td class="${classMap(styles)}">
 
@@ -253,7 +253,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 					</table>
 				</td>
 			`;
-		} 
+		}
 
 		throw new Error('Users table: unknown column type');
 	}
