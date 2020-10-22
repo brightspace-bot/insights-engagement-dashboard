@@ -52,7 +52,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				d2l-action-button-group {
 					float: right;
-					margin: 0.67em 0;
+					margin: 0.7em;
 				}
 
 				.d2l-insights-chart-container {
@@ -71,7 +71,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					width: 100%;
 				}
 
-				.title-container {
+				.d2l-insights-title-container {
 					float: left;
 					width: 80%;
 				}
@@ -103,7 +103,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	render() {
 		return html`
 				<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
-				<div class="title-container">
+				<div class="d2l-insights-title-container">
 					<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
 				</div>
 				<d2l-action-button-group min-to-show="1" max-to-show="4">
