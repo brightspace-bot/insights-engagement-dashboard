@@ -22,40 +22,42 @@ export class DiscussionActivityFilter extends CategoryFilter {
 	}
 }
 
-function drawCustomHalo(point, chart) {
-	if ((!point.selected || point.y !== point.haloY) && point.customHalo) {
-		point.customHalo.destroy();
-		point.customHalo = null;
-	}
-
-	if (point.selected && !point.customHalo && point.y > 0) {
-		const shapeArgs = point.shapeArgs,
-			size = 7,
-			opacity = 1,
-			path = point.series.chart.renderer
-				.symbols
-				.arc(
-					shapeArgs.x + chart.plotLeft,
-					shapeArgs.y + chart.plotTop,
-					shapeArgs.r + size,
-					shapeArgs.r + size, {
-						innerR: shapeArgs.r + 1,
-						start: shapeArgs.start,
-						end: shapeArgs.end
-					}
-				);
-
-		point.customHalo = chart.renderer
-			.path(path)
-			.attr({
-				fill: point.color,
-				opacity: opacity
-			}).add();
-		point.hasHalo = true;
-		point.haloY = point.y;
-
-	}
-}
+// todo: remove in another PR - we decided not to go with this, but I want to
+// get the code in the repo history in case we go back to it
+// function drawCustomHalo(point, chart) {
+// 	if ((!point.selected || point.y !== point.haloY) && point.customHalo) {
+// 		point.customHalo.destroy();
+// 		point.customHalo = null;
+// 	}
+//
+// 	if (point.selected && !point.customHalo && point.y > 0) {
+// 		const shapeArgs = point.shapeArgs,
+// 			size = 7,
+// 			opacity = 1,
+// 			path = point.series.chart.renderer
+// 				.symbols
+// 				.arc(
+// 					shapeArgs.x + chart.plotLeft,
+// 					shapeArgs.y + chart.plotTop,
+// 					shapeArgs.r + size,
+// 					shapeArgs.r + size, {
+// 						innerR: shapeArgs.r + 1,
+// 						start: shapeArgs.start,
+// 						end: shapeArgs.end
+// 					}
+// 				);
+//
+// 		point.customHalo = chart.renderer
+// 			.path(path)
+// 			.attr({
+// 				fill: point.color,
+// 				opacity: opacity
+// 			}).add();
+// 		point.hasHalo = true;
+// 		point.haloY = point.y;
+//
+// 	}
+// }
 
 class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	static get properties() {
@@ -124,7 +126,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	get _discussionActivityStats() {
 		let threadSum, replySum, readSum;
 		threadSum = replySum = readSum = 0;
-		this.data.excluding(filterId).records.forEach(record => {
+		this.data.withoutFilter(filterId).records.forEach(record => {
 			threadSum += record[RECORD.DISCUSSION_ACTIVITY_THREADS];
 			replySum += record[RECORD.DISCUSSION_ACTIVITY_REPLIES];
 			readSum += record[RECORD.DISCUSSION_ACTIVITY_READS];
@@ -165,16 +167,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			chart: {
 				type: 'pie',
 				height: 100,
-				width: 245,
-				events: {
-					render: function() {
-						if (!this.series || !this.series[0]) return;
-						for (const point of this.series[0].data) {
-							const chart = this;
-							drawCustomHalo(point, chart);
-						}
-					}
-				}
+				width: 245
 			},
 			title: {
 				text: this._cardTitle, // override default title
@@ -191,23 +184,24 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 					dataLabels: {
 						enabled: false
 					},
+					point: {
+						events: {
+							legendItemClick: function(e) {
+								const point = this;
+								that.filter.toggleCategory(point.id);
+								e.preventDefault();
+							}
+						}
+					},
 					showInLegend: true,
-					slicedOffset: 0 // don't "pull out" selected slices
+					slicedOffset: 7
 				},
 				series: {
 					point: {
 						events: {
-							click: function(/*event*/) {
+							click: function() {
 								const point = this;
 								that.filter.toggleCategory(point.id);
-								// const chart = point.series.chart;
-								// point.select(null, true); // toggles; can check this.selected to avoid
-								// drawCustomHalo(point, chart);
-								// if (point.selected) {
-								// 	that.filter.selectCategory(point.id);
-								// } else {
-								// 	that.filter.clearCategory(point.id);
-								// }
 							}
 						}
 					},
@@ -260,6 +254,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 					const selected = that.filter.selectedCategories.has(slice.id);
 					return Object.assign(slice, {
 						selected,
+						sliced: selected,
 						color: (that.filter.isApplied && !selected) ? slice.unselectedColor : undefined
 					});
 				}),
@@ -289,6 +284,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				backgroundColor: 'var(--d2l-color-ferrite)',
 				borderColor: 'var(--d2l-color-ferrite)',
 				borderRadius: 12,
+				hideDelay: 0,
 				style: {
 					color: 'white',
 				},
