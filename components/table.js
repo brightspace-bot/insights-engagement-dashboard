@@ -4,10 +4,12 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
+import '@brightspace-ui/core/components/icons/icon.js'
 
 export const COLUMN_TYPES = {
 	NORMAL_TEXT: 0,
-	TEXT_SUB_TEXT: 1
+	TEXT_SUB_TEXT: 1,
+	SUB_COLUMNS: 2
 };
 
 /**
@@ -222,7 +224,36 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			`;
 		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT) {
 			return defaultHtml;
-		} // future work: else if COLUMN_TYPES.SUBCOLUMNS...
+		} else if(columnType === COLUMN_TYPES.SUB_COLUMNS){
+			return html`
+				<td class="${classMap(styles)}">
+
+					<table>
+						<tr>
+							<td width="33%">
+								<div class="d2l-body-standard" style="text-align:center;">${value[0]}</div>
+								<div class="d2l-body-standard">Threads</div>
+							</td>
+							<td>
+								<d2l-icon icon="tier2:divider"></d2l-icon>
+							</td>
+							<td width="33%">
+								<div class="d2l-body-standard" style="text-align:center;">${value[1]}</div>
+								<div class="d2l-body-standard">Read</div>
+							</td>
+							<td>
+								<d2l-icon icon="tier2:divider"></d2l-icon>
+							</td>
+							<td width="33%">
+								<div class="d2l-body-standard" style="text-align:center;">${value[2]} </div>
+								<div class="d2l-body-standard">Replies</div>
+
+							</td>
+						</tr>
+					</table>
+				</td>
+			`;
+		} 
 
 		throw new Error('Users table: unknown column type');
 	}

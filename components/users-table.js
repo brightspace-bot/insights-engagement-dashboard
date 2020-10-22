@@ -1,6 +1,7 @@
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
+import './discussion-activity-card.js';
 import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl';
@@ -115,12 +116,16 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 				const records = recordsByUser.get(user[USER.ID]);
 				const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
 				const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
+				const threads = avgOf(records, RECORD.DISCUSSION_ACTIVITY_THREADS);
+				const read = avgOf(records, RECORD.DISCUSSION_ACTIVITY_READS);
+				const replies = avgOf(records, RECORD.DISCUSSION_ACTIVITY_REPLIES);
 				const date = user[USER.LAST_SYS_ACCESS] ? new Date(user[USER.LAST_SYS_ACCESS]).toISOString() : null;
 				return [
 					[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
 					records.length, // courses
 					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
 					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions),
+					[Math.round(threads/records.length), Math.round(read/records.length), Math.round(replies/records.length)],
 					date ? formatDateTime(new Date(date), { format: 'medium' }) : this.localize('components.insights-users-table.null')
 				];
 			})
@@ -147,6 +152,10 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			{
 				headerText: this.localize('components.insights-users-table.avgTimeInContent'),
 				columnType: COLUMN_TYPES.NORMAL_TEXT
+			},
+			{
+				headerText: this.localize('components.insights-users-table.avgDiscussionActivity'),
+				columnType: COLUMN_TYPES.SUB_COLUMNS
 			},
 			{
 				headerText: this.localize('components.insights-users-table.lastAccessedSys'),
