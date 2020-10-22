@@ -152,13 +152,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			// Aggregate filters are potentially ambiguous if there are more than one and each depends
 			// on the results of the other: we avoid this by building them on specific sets of filters.
 			const rowFilteredData = new FilteredData(this._serverData)
-				.filter(new OverdueAssignmentsFilter())
-				.filter(new LastAccessFilter())
-				.filter(new CourseLastAccessFilter())
-				.filter(new CurrentFinalGradesFilter())
-				.filter(new DiscussionActivityFilter());
+				.withFilter(new OverdueAssignmentsFilter())
+				.withFilter(new LastAccessFilter())
+				.withFilter(new CourseLastAccessFilter())
+				.withFilter(new CurrentFinalGradesFilter())
+				.withFilter(new DiscussionActivityFilter());
 
-			this.__data = rowFilteredData.filter(new TimeInContentVsGradeFilter(rowFilteredData));
+			this.__data = rowFilteredData.withFilter(new TimeInContentVsGradeFilter(rowFilteredData));
 		}
 
 		return this.__data;

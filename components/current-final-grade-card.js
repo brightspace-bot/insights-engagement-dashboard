@@ -86,7 +86,7 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	// @computed
 	get _preparedHistogramData() {
-		return this.data.excluding(filterId).records
+		return this.data.withoutFilter(filterId).records
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
 			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
 			.filter(item => item[0] || item[1])

@@ -46,7 +46,7 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardValue() {
-		return this.data.excluding(filterId).records
+		return this.data.withoutFilter(filterId).records
 			.reduce((acc, record) => {
 				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
 					acc.add(record[RECORD.USER_ID]);

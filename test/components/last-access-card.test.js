@@ -6,7 +6,7 @@ describe('d2l-insights-last-access-card', () => {
 	const filter = new LastAccessFilter();
 	const data = {
 		getFilter: id => (id === filter.id ? filter : null),
-		excluding: id => (id === filter.id ? {
+		withoutFilter: id => (id === filter.id ? {
 			users : [
 				[100, 'John', 'Lennon', 'jlennon',  Date.now() - 2000000000],
 				[200, 'Paul', 'McCartney', 'pmccartney', null],
