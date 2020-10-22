@@ -36,5 +36,6 @@ decorate(CategoryFilter, {
 	isApplied: computed,
 	clearCategory: action,
 	selectCategory: action,
+	toggleCategory: action,
 	selectedCategories: observable
 });
