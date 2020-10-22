@@ -17,7 +17,8 @@ const TABLE_USER = {
 	COURSES: 1,
 	AVG_GRADE: 2,
 	AVG_TIME_IN_CONTENT: 3,
-	LAST_ACCESSED_SYS: 4
+	AVG_DISCUSSION_ACTIVITY: 4,
+	LAST_ACCESSED_SYS: 5
 };
 
 const numberFormatOptions = { maximumFractionDigits: 2 };
@@ -125,7 +126,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 					records.length, // courses
 					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
 					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions),
-					[Math.round(threads / records.length), Math.round(read / records.length), Math.round(replies / records.length)],
+					[Math.round(threads), Math.round(read), Math.round(replies)],
 					date ? formatDateTime(new Date(date), { format: 'medium' }) : this.localize('components.insights-users-table.null')
 				];
 			})
