@@ -33,14 +33,14 @@ describe('FilteredData', () => {
 	let sut;
 	beforeEach(() => {
 		sut = new FilteredData(serverData)
-			.filter(new TestFilter('f1', r => r[4] > 0))
-			.filter(new TestFilter('f2', r => r[0] < 10))
-			.filter(new TestFilter('f3', r => r[1] === 200));
+			.withFilter(new TestFilter('f1', r => r[4] > 0))
+			.withFilter(new TestFilter('f2', r => r[0] < 10))
+			.withFilter(new TestFilter('f3', r => r[1] === 200));
 	});
 
-	describe('excluding', () => {
+	describe('withoutFilter', () => {
 		it('should return a FilteredData without the specified filter', () => {
-			const actual = sut.excluding('f2');
+			const actual = sut.withoutFilter('f2');
 			expect(actual.getFilter('f2')).to.be.undefined;
 			expect(actual.filters.map(f => f.id)).to.deep.equal(['f1', 'f3']);
 		});

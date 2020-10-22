@@ -131,7 +131,7 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// return an array of size 6, each element mapping to a category on the course last access bar chart
 		const dateBucketCounts = [0, 0, 0, 0, 0, 0];
 		this.data
-			.excluding(filterId)
+			.withoutFilter(filterId)
 			.records
 			.forEach(record => dateBucketCounts[ lastAccessDateBucket(record) ]++);
 		return dateBucketCounts;

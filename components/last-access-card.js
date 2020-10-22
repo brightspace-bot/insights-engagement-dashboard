@@ -59,7 +59,7 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardValue() {
-		return this.data.excluding(filterId).users
+		return this.data.withoutFilter(filterId).users
 			.filter(user => isWithoutRecentAccess(user)).length;
 	}
 

@@ -7,7 +7,7 @@ describe('d2l-insights-overdue-assignments-card', () => {
 	const filter = new OverdueAssignmentsFilter();
 	const data = {
 		getFilter: id => (id === filter.id ? filter : null),
-		excluding: id => (id === filter.id ? { records } : null)
+		withoutFilter: id => (id === filter.id ? { records } : null)
 	};
 
 	describe('constructor', () => {

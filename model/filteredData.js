@@ -11,7 +11,7 @@ function unique(array) {
  */
 export class FilteredData {
 	/**
-	 * Call with a Data object; to get a FilteredData with filters and exclusions, call "filter" and "excluding"
+	 * Call with a Data object; to get a FilteredData with filters and exclusions, call "withFilter" and "withoutFilter"
 	 * @param {Object}data - a Data object
 	 * @param {Object[]}[filters]
 	 */
@@ -27,7 +27,7 @@ export class FilteredData {
 	 * be known outside the defining file (see, e.g., current-final-grade-card).
 	 * @returns {FilteredData}
 	 */
-	filter(filter) {
+	withFilter(filter) {
 		return new FilteredData(this._data, [...this.filters, filter]);
 	}
 
@@ -36,7 +36,7 @@ export class FilteredData {
 	 * when rendering
 	 * @returns {FilteredData}
 	 */
-	excluding(filterId) {
+	withoutFilter(filterId) {
 		return new FilteredData(this._data, this.filters.filter(f => f.id !== filterId));
 	}
 
