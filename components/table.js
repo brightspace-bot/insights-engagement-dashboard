@@ -76,6 +76,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			}
 
 			.d2l-insights-table-cell-sort-indicator {
+				pointer-events: none;
 				position: absolute;
 				right: 10px;
 				top: 50%;
