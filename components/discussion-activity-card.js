@@ -156,7 +156,12 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return html`<div class="d2l-insights-discussion-activity-card">
 			<div class="d2l-insights-discussion-activity-card-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
 			<div class="d2l-insights-discussion-activity-card-body">
-			<d2l-labs-chart class="d2l-insights-discussion-activity-card-body" .options="${this.chartOptions}" ?skeleton="${this.skeleton}"></d2l-labs-chart>
+				<d2l-labs-chart
+					class="d2l-insights-discussion-activity-card-body"
+					.options="${this.chartOptions}"
+					.globalOptions="${this.globalHighchartsOptions}"
+					?skeleton="${this.skeleton}">
+				</d2l-labs-chart>
 			</div>
 		</div>`;
 	}
@@ -294,6 +299,20 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			credits: {
 				enabled: false,
 			},
+		};
+	}
+
+	get globalHighchartsOptions() {
+		return {
+			lang: {
+				accessibility: {
+					legend: {
+						// highcharts will substitute the actual item name, so we pass the placeholder to localize()
+						legendItem: this.localize('components.insights-discussion-activity-card.legendItem', { itemName: '{itemName}' }),
+						legendLabel: this.localize('components.insights-discussion-activity-card.legendLabel')
+					}
+				}
+			}
 		};
 	}
 }
