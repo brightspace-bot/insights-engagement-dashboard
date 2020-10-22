@@ -179,7 +179,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				pie: {
 					size: 80,
 					colors: ['var(--d2l-color-amethyst-plus-1)', 'var(--d2l-color-zircon-plus-1)', 'var(--d2l-color-zircon)'],
-					borderWidth: 0,
+					borderWidth: 1.5,
 					cursor: 'pointer',
 					dataLabels: {
 						enabled: false
