@@ -107,7 +107,7 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	// @computed
 	get _preparedHistogramData() {
-		return this.data.getRecordsInView(filterId)
+		return this.data.withoutFilter(filterId).records
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
 			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
 			.filter(item => item[0] || item[1])
@@ -204,6 +204,7 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 						} else {
 							that._colorAllPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
 						}
+						// noinspection JSPotentiallyInvalidUsageOfClassThis
 						this.render(false);
 					}
 				}
@@ -300,6 +301,7 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 					point: {
 						events: {
 							select: function() {
+								// noinspection JSPotentiallyInvalidUsageOfClassThis
 								that.addToCategory(Math.ceil(this.category));
 								that._colorSelectedPoints(this.series.data, 'var(--d2l-color-amethyst)');
 							}
@@ -328,6 +330,7 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 }
 decorate(CurrentFinalGradeCard, {
+	filter: computed,
 	_preparedHistogramData: computed
 });
 

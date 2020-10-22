@@ -1,34 +1,91 @@
 import 'highcharts';
+import { computed, decorate, observable } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
-import { RECORD, TiCVsGradesFilterId } from '../consts';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
-export const TimeInContentVsGradeCardFilter  = {
-	id: TiCVsGradesFilterId,
-	title: 'components.insights-time-in-content-vs-grade-card.timeInContentVsGrade',
-	filter: (record, data) => {
-		let result;
-		if (data.tiCVsGradesQuadrant === 'leftBottom') {
-			result = record[RECORD.TIME_IN_CONTENT] < data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] < data.tiCVsGradesAvgValues[1];
-		} else if (data.tiCVsGradesQuadrant === 'leftTop') {
-			result = record[RECORD.TIME_IN_CONTENT] <= data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] >= data.tiCVsGradesAvgValues[1];
-		} else if (data.tiCVsGradesQuadrant === 'rightTop') {
-			result = record[RECORD.TIME_IN_CONTENT] > data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] > data.tiCVsGradesAvgValues[1];
-		} else if (data.tiCVsGradesQuadrant === 'rightBottom') {
-			result =  record[RECORD.TIME_IN_CONTENT] >= data.tiCVsGradesAvgValues[0] * 60 && record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] < data.tiCVsGradesAvgValues[1];
-		} else (result = false);
-		return result;
-	}
-};
+const filterId = 'd2l-insights-time-in-content-vs-grade-card';
 
-export const AVG = {
-	TIME: 0,
-	GRADE: 1
-};
+const TIC = 0;
+const GRADE = 1;
+
+function avgOf(items, field) {
+	if (items.length === 0) return 0;
+	const total = items.reduce((sum, x) => sum + x[field], 0);
+	return Math.floor(total / items.length);
+}
+
+export class TimeInContentVsGradeFilter {
+	constructor(data) {
+		this._data = data;
+		this.quadrant = null;
+	}
+
+	get avgGrade() {
+		return avgOf(this.tiCVsGrades, GRADE);
+	}
+
+	get avgTimeInContent() {
+		return avgOf(this.tiCVsGrades, TIC);
+	}
+
+	get id() { return filterId; }
+
+	get isApplied() {
+		return this.quadrant !== null;
+	}
+
+	set isApplied(isApplied) {
+		if (!isApplied) this.quadrant = null;
+	}
+
+	get tiCVsGrades() {
+		return this._data.records
+			// keep in count students either with a zero grade or without time in content
+			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
+			.filter(item => item[RECORD.TIME_IN_CONTENT] || item[RECORD.CURRENT_FINAL_GRADE])
+			.map(item => [Math.floor(item[RECORD.TIME_IN_CONTENT] / 60), item[RECORD.CURRENT_FINAL_GRADE]]);
+	}
+
+	get title() { return 'components.insights-time-in-content-vs-grade-card.timeInContentVsGrade'; }
+
+	calculateQuadrant(tic, grade) {
+		// accept either a record or coordinates
+		if (Array.isArray(tic)) {
+			const record = tic;
+			if (record[RECORD.CURRENT_FINAL_GRADE] === null) return null;
+			tic = Math.floor(record[RECORD.TIME_IN_CONTENT] / 60);
+			grade = record[RECORD.CURRENT_FINAL_GRADE];
+		}
+
+		let quadrant;
+		if (tic < this.avgTimeInContent && grade < this.avgGrade) quadrant = 'leftBottom';
+		else if (tic <= this.avgTimeInContent && grade >= this.avgGrade) quadrant = 'leftTop';
+		else if (tic > this.avgTimeInContent && grade > this.avgGrade) quadrant = 'rightTop';
+		else quadrant = 'rightBottom';
+		return quadrant;
+	}
+
+	getDataForQuadrant(quadrant) {
+		return this.tiCVsGrades.filter(r => this.calculateQuadrant(r[TIC], r[GRADE]) === quadrant);
+	}
+
+	filter(record) {
+		return this.calculateQuadrant(record) === this.quadrant;
+	}
+}
+decorate(TimeInContentVsGradeFilter, {
+	_data: observable,
+	quadrant: observable,
+	isApplied: computed,
+	avgGrade: computed,
+	avgTimeInContent: computed,
+	tiCVsGrades: computed
+});
 
 class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -82,55 +139,30 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		return this.localize('components.insights-time-in-content-vs-grade-card.timeInContent');
 	}
 
-	get _preparedPlotData() {
-		return this.data.tiCVsGrades;
-	}
-
 	get _plotDataForLeftBottomQuadrant() {
-		return  this._preparedPlotData.filter(i => i[AVG.TIME] < this._avgTimeInContent && i[AVG.GRADE] < this._avgGrades);
+		return this.filter.getDataForQuadrant('leftBottom');
 	}
 
 	get _plotDataForLeftTopQuadrant() {
-		return this._preparedPlotData.filter(i => i[AVG.TIME] <= this._avgTimeInContent && i[AVG.GRADE] >= this._avgGrades);
+		return this.filter.getDataForQuadrant('leftTop');
 	}
 
 	get _plotDataForRightTopQuadrant() {
-		return this._preparedPlotData.filter(i => i[AVG.TIME] > this._avgTimeInContent && i[AVG.GRADE] > this._avgGrades);
+		return this.filter.getDataForQuadrant('rightTop');
 	}
 
 	get _plotDataForRightBottomQuadrant() {
-		return this._preparedPlotData.filter(i => i[AVG.TIME] >= this._avgTimeInContent && i[AVG.GRADE] < this._avgGrades);
-	}
-
-	get _avgGrades() {
-		return this.data.tiCVsGradesAvgValues[AVG.GRADE];
-	}
-
-	get _avgTimeInContent() {
-		return this.data.tiCVsGradesAvgValues[AVG.TIME];
+		return this.filter.getDataForQuadrant('rightBottom');
 	}
 
 	get _dataMidPoints() {
-		const maxTimeInContent = this.data.tiCVsGrades.reduce((max, arr) => {
+		const maxTimeInContent = this.filter.tiCVsGrades.reduce((max, arr) => {
 			return Math.max(max, arr[0]);
 		}, -Infinity);
-		return [[this._avgTimeInContent / 2, 25],
-			[this._avgTimeInContent / 2, 75],
-			[(maxTimeInContent + this._avgTimeInContent) / 2, 25],
-			[(maxTimeInContent + this._avgTimeInContent) / 2, 75]];
-	}
-
-	_setQuadrant(quadrant) {
-		this.data.setTiCVsGradesQuadrant(quadrant);
-	}
-
-	_calculateQuadrant(x, y) {
-		let quadrant;
-		if (x < this._avgTimeInContent && y < this._avgGrades) quadrant = 'leftBottom';
-		else if (x <= this._avgTimeInContent && y >= this._avgGrades) quadrant = 'leftTop';
-		else if (x > this._avgTimeInContent && y > this._avgGrades) quadrant = 'rightTop';
-		else quadrant = 'rightBottom';
-		return quadrant;
+		return [[this.filter.avgTimeInContent / 2, 25],
+			[this.filter.avgTimeInContent / 2, 75],
+			[(maxTimeInContent + this.filter.avgTimeInContent) / 2, 25],
+			[(maxTimeInContent + this.filter.avgTimeInContent) / 2, 75]];
 	}
 
 	_colorAllPointsInAmethyst(series) {
@@ -143,7 +175,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 
 	_colorNonSelectedPointsInMica(series) {
 		series.forEach(series => {
-			if ((series.name !== this._quadrant) && (series.name !== 'midPoint')) {
+			if ((series.name !== this.filter.quadrant) && (series.name !== 'midPoint')) {
 				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
 			}
 		});
@@ -151,22 +183,14 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 
 	_colorSelectedQuadrantPointsInAmethyst(series) {
 		series.forEach(series => {
-			if ((series.name === this._quadrant) && (series.name !== 'midPoint')) {
+			if ((series.name === this.filter.quadrant) && (series.name !== 'midPoint')) {
 				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
 			}
 		});
 	}
 
-	get _quadrant() {
-		return this.data.tiCVsGradesQuadrant;
-	}
-
-	get isApplied() {
-		return this.data.cardFilters['d2l-insights-time-in-content-vs-grade-card'].isApplied;
-	}
-
-	_valueClickHandler() {
-		this.data.setApplied('d2l-insights-time-in-content-vs-grade-card', true);
+	get filter() {
+		return this.data.getFilter(filterId);
 	}
 
 	_toolTipTextByQuadrant(quadrant, numberOfUsers) {
@@ -192,13 +216,11 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				events: {
 					click: function(event) {
 						that._colorAllPointsInAmethyst(this.series);
-						const quadrant = that._calculateQuadrant(Math.floor(event.xAxis[0].value), Math.floor(event.yAxis[0].value));
-						that._setQuadrant(quadrant);
+						that.filter.quadrant = that.filter.calculateQuadrant(Math.floor(event.xAxis[0].value), Math.floor(event.yAxis[0].value));
 						that._colorNonSelectedPointsInMica(this.series);
-						that._valueClickHandler();
 					},
 					update: function() {
-						if (that.isApplied) {
+						if (that.filter.isApplied) {
 							that._colorNonSelectedPointsInMica(this.series);
 							that._colorSelectedQuadrantPointsInAmethyst(this.series);
 						} else {
@@ -275,7 +297,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				plotLines: [{
 					color: 'var(--d2l-color-celestine)',
 					dashStyle: 'Dash',
-					value: this._avgTimeInContent,
+					value: this.filter.avgTimeInContent,
 					width: 1.5
 				}]
 			},
@@ -307,7 +329,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				plotLines: [{
 					color: 'var(--d2l-color-celestine)',
 					dashStyle: 'Dash',
-					value: this._avgGrades,
+					value: this.filter.avgGrade,
 					width: 1.5
 				}]
 			},
@@ -349,7 +371,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 			},
 			{
 				name: 'rightBottom',
-				data: this._plotDataForRightBottomQuadrant,
+				data: this._plotDataForRightBottomQuadrant
 			},
 			{
 				name: 'midPoint',
@@ -367,5 +389,12 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		};
 	}
 }
-
+decorate(TimeInContentVsGradeCard, {
+	filter: computed,
+	_dataMidPoints: computed,
+	_plotDataForLeftBottomQuadrant: computed,
+	_plotDataForLeftTopQuadrant: computed,
+	_plotDataForRightTopQuadrant: computed,
+	_plotDataForRightBottomQuadrant: computed
+});
 customElements.define('d2l-insights-time-in-content-vs-grade-card', TimeInContentVsGradeCard);

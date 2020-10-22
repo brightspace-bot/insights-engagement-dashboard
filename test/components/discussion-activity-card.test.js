@@ -25,7 +25,7 @@ describe('d2l-insights-discussion-activity-card', () => {
 		[1, 400, 700, 1, 75, 2000, null, 2, 1, 4]
 	];
 	const data = {
-		getRecordsInView: () => records
+		records
 	};
 
 	describe('constructor', () => {

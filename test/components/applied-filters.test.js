@@ -1,15 +1,14 @@
 import '../../components/applied-filters';
 
 import { expect, fixture, html } from '@open-wc/testing';
+import { FilteredData } from '../../model/filteredData';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-applied-filters', () => {
-	const data = {};
+	let data;
 
 	beforeEach(() => {
-		data.cardFilters = {};
-		data.setApplied = (key, isApplied) => data.cardFilters[key].isApplied = isApplied;
-		data.getFilter = id => data.cardFilters[id];
+		data = new FilteredData({});
 	});
 
 	describe('constructor', () => {
@@ -36,19 +35,19 @@ describe('d2l-insights-applied-filters', () => {
 
 		it('should not render if card filters are not applied', async function() {
 			this.timeout(3000);
-			data.cardFilters = {
-				'filter-key-1':	{ id: '1', title: 'filter 1', isApplied: false }
-			};
+			data.filters = [
+				{ id: 'filter-key-1', title: 'filter 1', isApplied: false }
+			];
 			const el = await fixture(html`<d2l-insights-applied-filters .data="${data}"></d2l-insights-applied-filters>`);
 			const appliedFilters = el.shadowRoot.querySelector('d2l-applied-filters');
 			expect(appliedFilters).to.be.null;
 		});
 
 		it('should render Clear All button and filter title for applied filters', async() => {
-			data.cardFilters = {
-				'filter-key-1':	{ id: '1', title: 'components.simple-filter.search-label', isApplied: false },
-				'filter-key-2':	{ id: '2', title: 'components.insights-engagement-dashboard.title', isApplied: true }
-			};
+			data.filters = [
+				{ id: 'filter-key-1', title: 'components.simple-filter.search-label', isApplied: false },
+				{ id: 'filter-key-2', title: 'components.insights-engagement-dashboard.title', isApplied: true }
+			];
 			const el = await fixture(html`<d2l-insights-applied-filters .data="${data}"></d2l-insights-applied-filters>`);
 			const appliedFilters = el.shadowRoot.querySelector('d2l-applied-filters');
 			expect(appliedFilters).to.exist;
@@ -60,33 +59,31 @@ describe('d2l-insights-applied-filters', () => {
 		});
 
 		it('should clear all card filters if click on Clear All button', async() => {
-			data.cardFilters = {
-				'filter-key-1':	{ id: '1', title: 'filter 1', isApplied: true },
-				'filter-key-2':	{ id: '2', title: 'filter 2', isApplied: true }
-			};
+			data.filters = [
+				{ id: 'filter-key-1', title: 'filter 1', isApplied: true },
+				{ id: 'filter-key-2', title: 'filter 2', isApplied: false }
+			];
 			const el = await fixture(html`<d2l-insights-applied-filters .data="${data}"></d2l-insights-applied-filters>`);
 			const appliedFilters = el.shadowRoot.querySelector('d2l-applied-filters');
 			expect(appliedFilters).to.exist;
 
 			const filters = appliedFilters.shadowRoot.querySelectorAll('d2l-labs-multi-select-list-item');
 			filters[1].shadowRoot.querySelector('.d2l-labs-multi-select-delete-icon').click();
-			expect(Object.entries(data.cardFilters).filter(f => f.isApplied)).to.be.empty;
+			expect(data.filters.filter(f => f.isApplied)).to.be.empty;
 		});
 
 		it('should clear a card filter if do a click on its clear button', async() => {
-			data.cardFilters = {
-				'filter-key-1':	{ id: '1', title: 'filter 1', isApplied: true },
-				'filter-key-2':	{ id: '2', title: 'filter 2', isApplied: true }
-			};
+			data.filters = [
+				{ id: 'filter-key-1', title: 'filter 1', isApplied: true },
+				{ id: 'filter-key-2', title: 'filter 2', isApplied: true }
+			];
 			const el = await fixture(html`<d2l-insights-applied-filters .data="${data}"></d2l-insights-applied-filters>`);
 			const appliedFilters = el.shadowRoot.querySelector('d2l-applied-filters');
 			expect(appliedFilters).to.exist;
 
 			const filters = appliedFilters.shadowRoot.querySelectorAll('d2l-labs-multi-select-list-item');
 			filters[0].shadowRoot.querySelector('.d2l-labs-multi-select-delete-icon').click();
-			const clearedFilters = Object.keys(data.cardFilters)
-				.map(key => data.cardFilters[key])
-				.filter(f => !f.isApplied);
+			const clearedFilters = data.filters.filter(f => !f.isApplied);
 
 			expect(clearedFilters.length).to.equal(1);
 			expect(clearedFilters[0].title).to.equal('filter 1');

@@ -20,12 +20,13 @@ import { CurrentFinalGradesFilter } from './components/current-final-grade-card'
 import { Data } from './model/data.js';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
+import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
 import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
-import { TimeInContentVsGradeCardFilter } from './components/time-in-content-vs-grade-card';
+import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -98,13 +99,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter
-						.data="${this._data}"
+						.data="${this._serverData}"
 						@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
 					></d2l-insights-ou-filter>
 					<d2l-insights-semester-filter
 						page-size="10000"
 						?demo="${this.isDemo}"
-						.preSelected="${this._data.selectedSemesterIds}"
+						.preSelected="${this._serverData.selectedSemesterIds}"
 						@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
 					></d2l-insights-semester-filter>
 					<d2l-insights-role-filter
@@ -132,8 +133,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				<d2l-insights-users-table .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-users-table>
 
 				<d2l-insights-default-view-popup
-					?opened=${Boolean(this._data.defaultViewPopupDisplayData.length)}
-					.data="${this._data.defaultViewPopupDisplayData}">
+					?opened=${Boolean(this._serverData.defaultViewPopupDisplayData.length)}
+					.data="${this._serverData.defaultViewPopupDisplayData}">
 				</d2l-insights-default-view-popup>
 		`;
 	}
@@ -144,37 +145,46 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	get _data() {
 		if (!this.__data) {
-			const cardFilters = [
-				new OverdueAssignmentsFilter(),
-				TimeInContentVsGradeCardFilter,
-				new LastAccessFilter(),
-				new CourseLastAccessFilter(),
-				new CurrentFinalGradesFilter()
+			// There are row filters - which look at each record individually when deciding to include or
+			// exclude it - and there are aggregate filters, which also look at all records selected by
+			// other filters (e.g. to include a record if it has an above-average value in some field).
+			// Aggregate filters are potentially ambiguous if there are more than one and each depends
+			// on the results of the other: we avoid this by building them on specific sets of filters.
+			const rowFilteredData = new FilteredData(this._serverData)
+				.withFilter(new OverdueAssignmentsFilter())
+				.withFilter(new LastAccessFilter())
+				.withFilter(new CourseLastAccessFilter())
+				.withFilter(new CurrentFinalGradesFilter());
 
-			];
-
-			this.__data = new Data({
-				recordProvider: this.isDemo ? fetchDemoData : fetchData,
-				cardFilters: cardFilters
-			});
+			this.__data = rowFilteredData.withFilter(new TimeInContentVsGradeFilter(rowFilteredData));
 		}
 
 		return this.__data;
 	}
 
+	get _serverData() {
+		if (!this.__serverData) {
+			this.__serverData = new Data({
+				recordProvider: this.isDemo ? fetchDemoData : fetchData
+			});
+		}
+
+		return this.__serverData;
+	}
+
 	_roleFilterChange(event) {
 		event.stopPropagation();
-		this._data.selectedRoleIds = event.target.selected;
+		this._serverData.selectedRoleIds = event.target.selected;
 	}
 
 	_orgUnitFilterChange(event) {
 		event.stopPropagation();
-		this._data.selectedOrgUnitIds = event.target.selected;
+		this._serverData.selectedOrgUnitIds = event.target.selected;
 	}
 
 	_semesterFilterChange(event) {
 		event.stopPropagation();
-		this._data.selectedSemesterIds = event.target.selected;
+		this._serverData.selectedSemesterIds = event.target.selected;
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);

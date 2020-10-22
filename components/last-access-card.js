@@ -23,8 +23,8 @@ export class LastAccessFilter {
 		return 'components.insights-engagement-dashboard.lastSystemAccessHeading';
 	}
 
-	filter(record, data) {
-		const user = data._userDictionary.get(record[RECORD.USER_ID]);
+	filter(record, userDictionary) {
+		const user = userDictionary.get(record[RECORD.USER_ID]);
 		return isWithoutRecentAccess(user);
 	}
 }
@@ -59,7 +59,7 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardValue() {
-		return this.data.users
+		return this.data.withoutFilter(filterId).users
 			.filter(user => isWithoutRecentAccess(user)).length;
 	}
 
@@ -68,7 +68,6 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			<d2l-labs-summary-card
 				id="d2l-insights-engagement-last-access"
 				is-value-clickable
-				.data="${this.data}"
 				card-title="${this._cardTitle}"
 				card-value="${this._cardValue}"
 				card-message="${this._cardMessage}"
@@ -85,5 +84,6 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 customElements.define('d2l-insights-last-access-card', LastAccessCard);
 
 decorate(LastAccessCard, {
-	_cardValue: computed
+	_cardValue: computed,
+	filter: computed
 });
