@@ -75,9 +75,9 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				cursor: pointer;
 			}
 
-			.d2l-insights-table-cell-header:focus-visible {
-				outline: solid 2px var(--d2l-color-celestine);
-				outline-offset: -1px;
+			.d2l-insights-table-cell-header:focus {
+				outline: solid 0;
+				text-decoration: underline;
 			}
 
 			.d2l-insights-table-cell-sort-indicator {
@@ -211,7 +211,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		const arrowDirection = isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : '';
 
 		return html`
-			<th class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : idx === 0 ? 0 : -1}">
+			<th class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : 0}">
 				${info.headerText}
 				${!isSortedColumn ? html`` : html`<d2l-icon icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
 			</th>
@@ -270,6 +270,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 		const children = e.target.parentElement.children;
 		let colmnNumber = Array.from(children).indexOf(e.target);
+		console.log(colmnNumber);
 		if (e.keyCode === 32 /* spacebar */ || e.key === 'Enter') {
 			e.preventDefault();
 			this._handleHeaderClicked(e);
@@ -286,6 +287,8 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			}
 		}
 		children[colmnNumber].focus();
+		if (e.keyCode === 'Tab') e.preventDefault();
+		return false;
 	}
 
 	_handleHeaderClicked(e) {
