@@ -232,21 +232,21 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 						<tr>
 							<td width="33%">
 								<div class="d2l-body-standard" style="text-align:center;">${value[0]}</div>
-								<div class="d2l-body-standard">Threads</div>
+								<div class="d2l-body-standard">${this.localize('components.insights-discussion-activity-card.threads')}</div>
 							</td>
 							<td>
 								<d2l-icon icon="tier2:divider"></d2l-icon>
 							</td>
 							<td width="33%">
 								<div class="d2l-body-standard" style="text-align:center;">${value[1]}</div>
-								<div class="d2l-body-standard">Read</div>
+								<div class="d2l-body-standard">${this.localize('components.insights-discussion-activity-card.reads')}</div>
 							</td>
 							<td>
 								<d2l-icon icon="tier2:divider"></d2l-icon>
 							</td>
 							<td width="33%">
 								<div class="d2l-body-standard" style="text-align:center;">${value[2]} </div>
-								<div class="d2l-body-standard">Replies</div>
+								<div class="d2l-body-standard">${this.localize('components.insights-discussion-activity-card.replies')}</div>
 
 							</td>
 						</tr>
