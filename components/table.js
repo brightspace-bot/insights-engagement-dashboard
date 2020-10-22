@@ -75,6 +75,11 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				cursor: pointer;
 			}
 
+			.d2l-insights-table-cell-header:focus-visible {
+				outline: solid 2px var(--d2l-color-celestine);
+				outline-offset: -1px;
+			}
+
 			.d2l-insights-table-cell-sort-indicator {
 				pointer-events: none;
 				position: absolute;
@@ -206,7 +211,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		const arrowDirection = isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : '';
 
 		return html`
-			<th class="${classMap(styles)}" scope="col" @click="${this._handleHeaderClicked}">
+			<th class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : idx === 0 ? 0 : -1}">
 				${info.headerText}
 				${!isSortedColumn ? html`` : html`<d2l-icon icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
 			</th>
@@ -259,6 +264,28 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		} // future work: else if COLUMN_TYPES.SUBCOLUMNS...
 
 		throw new Error('Users table: unknown column type');
+	}
+
+	_handleHeaderKey(e) {
+
+		const children = e.target.parentElement.children;
+		let colmnNumber = Array.from(children).indexOf(e.target);
+		if (e.keyCode === 32 /* spacebar */ || e.key === 'Enter') {
+			e.preventDefault();
+			this._handleHeaderClicked(e);
+			return;
+		} else if (e.key === 'ArrowLeft') {
+			colmnNumber -= 1;
+			if (colmnNumber < 0) {
+				colmnNumber = children.length - 1;
+			}
+		} else if (e.key === 'ArrowRight') {
+			colmnNumber += 1;
+			if (colmnNumber >= children.length) {
+				colmnNumber = 0;
+			}
+		}
+		children[colmnNumber].focus();
 	}
 
 	_handleHeaderClicked(e) {
