@@ -71,6 +71,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					font-weight: normal;	/* default for h1 is bold */
 					margin: 0.67em 0;		/* required to be explicitly defined for Edge Legacy */
 					padding: 0;				/* required to be explicitly defined for Edge Legacy */
+					width: 65%;
 				}
 
 				h2.d2l-heading-3 {
@@ -86,6 +87,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.d2l-button-group {
 					flex-grow: 1;
 					margin: 0.7em;
+					width: 25%;
 				}
 
 				@media screen and (max-width: 615px) {
