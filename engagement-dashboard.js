@@ -111,8 +111,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					<div class="d2l-button-group">
 						<d2l-action-button-group min-to-show="0" max-to-show="2" opener-type="more">
 							<d2l-button-subtle
-								icon="d2l-tier1:print"
-								text=${this.localize('components.insights-engagement-dashboard.print')}>
+								icon="d2l-tier1:export"
+								text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}>
 							</d2l-button-subtle>
 							<d2l-button-subtle
 								icon="d2l-tier1:help"
