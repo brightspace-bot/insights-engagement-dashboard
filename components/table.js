@@ -262,6 +262,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 						aria-label="${value.ariaLabel}"
 						name="checkbox-${value.value}"
 						value="${value.value}"
+						@change="${this._handleRowSelected}"
 					></d2l-input-checkbox>
 				</td>
 			`;
@@ -324,6 +325,15 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				detail: { column: this.sortColumn, order: this.sortOrder },
 			}
 		));
+	}
+
+	_handleRowSelected(event) {
+		this.dispatchEvent(new CustomEvent('d2l-insights-table-select-changed', {
+			detail: {
+				value: event.target.value,
+				selected: event.target.checked
+			}
+		}));
 	}
 }
 customElements.define('d2l-insights-table', Table);

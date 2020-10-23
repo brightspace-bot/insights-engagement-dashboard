@@ -1,6 +1,6 @@
 import '../../components/table.js';
 
-import { expect, fixture, html } from '@open-wc/testing';
+import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import { COLUMN_TYPES } from '../../components/table';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
@@ -66,6 +66,23 @@ describe('d2l-insights-table', () => {
 					verifyCellData(cell, rowIdx, colIdx);
 				});
 			});
+		});
+	});
+
+	describe('eventing', () => {
+		it('should fire d2l-insights-table-select-changed', async() => {
+			const el = await fixture(html`<d2l-insights-table .columnInfo=${columnInfo} .data="${data}"></d2l-insights-table>`);
+			const checkbox = el.shadowRoot.querySelector('d2l-input-checkbox'); // just grab the first one
+
+			let listener = oneEvent(el, 'd2l-insights-table-select-changed');
+			checkbox.simulateClick();
+			let event = await listener;
+			expect(event.detail).to.deep.equal({ value: '123', selected: true });
+
+			listener = oneEvent(el, 'd2l-insights-table-select-changed');
+			checkbox.simulateClick();
+			event = await listener;
+			expect(event.detail).to.deep.equal({ value: '123', selected: false });
 		});
 	});
 });

@@ -235,6 +235,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 				.columnInfo=${this.columnInfo}
 				.data="${this._displayData}"
 				?skeleton="${this.skeleton}"
+				@d2l-insights-table-select-changed="${this._handleSelectChanged}"
 			></d2l-insights-table>
 
 			<d2l-labs-pagination
@@ -281,6 +282,15 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	_handlePageSizeChange(event) {
 		this._currentPage = 1;
 		this._pageSize = Number(event.detail.itemCount); // itemCount comes back as a string
+	}
+
+	_handleSelectChanged(event) {
+		this.dispatchEvent(new CustomEvent('d2l-insights-users-table-select-changed', {
+			detail: {
+				userId: event.detail.value,
+				selected: event.detail.selected
+			}
+		}));
 	}
 }
 decorate(UsersTable, {
