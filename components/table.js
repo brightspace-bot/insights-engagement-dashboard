@@ -1,4 +1,5 @@
 import '@brightspace-ui/core/components/icons/icon.js';
+import '@brightspace-ui/core/components/inputs/input-checkbox';
 
 import { bodySmallStyles, bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { css, html, LitElement } from 'lit-element';
@@ -8,6 +9,7 @@ import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const COLUMN_TYPES = {
+	ROW_SELECTOR: -1,
 	NORMAL_TEXT: 0,
 	TEXT_SUB_TEXT: 1
 };
@@ -196,8 +198,8 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	}
 
 	_renderHeaderCell(info, idx) {
-
-		const isSortedColumn = idx === this.sortColumn;
+		const isSortable = info.sortable !== false;
+		const isSortedColumn = isSortable && idx === this.sortColumn;
 
 		const styles = {
 			'd2l-insights-table-cell': true,
@@ -260,7 +262,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 					<div class="d2l-body-small">${value[1]}</div>
 				</td>
 			`;
-		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT) {
+		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT || columnType === COLUMN_TYPES.ROW_SELECTOR) { // TODO: handle row selector col
 			return defaultHtml;
 		} // future work: else if COLUMN_TYPES.SUBCOLUMNS...
 

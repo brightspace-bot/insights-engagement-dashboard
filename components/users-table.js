@@ -12,11 +12,12 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin';
 
 const TABLE_USER = {
-	NAME_INFO: 0,
-	COURSES: 1,
-	AVG_GRADE: 2,
-	AVG_TIME_IN_CONTENT: 3,
-	LAST_ACCESSED_SYS: 4
+	SELECTOR_VALUE: 0,
+	NAME_INFO: 1,
+	COURSES: 2,
+	AVG_GRADE: 3,
+	AVG_TIME_IN_CONTENT: 4,
+	LAST_ACCESSED_SYS: 5
 };
 
 const numberFormatOptions = { maximumFractionDigits: 2 };
@@ -77,6 +78,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this._currentPage = 1;
 		this._pageSize = DEFAULT_PAGE_SIZE;
 		this._sortOrder = 'desc';
+		this._sortColumn = TABLE_USER.NAME_INFO;
 	}
 
 	get _itemsCount() {
@@ -118,16 +120,22 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	_preProcessData(user) {
 		const recordsByUser = this.data.recordsByUser;
 
-		const records = recordsByUser.get(user[USER.ID]);
-		const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
-		const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
-		const date = user[USER.LAST_SYS_ACCESS] ? new Date(user[USER.LAST_SYS_ACCESS]).toISOString() : null;
+		const userId = user[USER.ID];
+		const userInfo = [`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${userId}`];
+
+		const userRecords = recordsByUser.get(user[USER.ID]);
+		const coursesWithGrades = userRecords.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
+		const avgFinalGrade = avgOf(coursesWithGrades, RECORD.CURRENT_FINAL_GRADE);
+
+		const userLastSysAccess = user[USER.LAST_SYS_ACCESS] ? new Date(user[USER.LAST_SYS_ACCESS]) : undefined;
+
 		return [
-			[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
-			records.length, // courses
-			avgFinalGrade,
-			avgOf(records, RECORD.TIME_IN_CONTENT),
-			date ? new Date(date) : undefined
+			user[USER.ID],								// userId (as value for selector)
+			userInfo,
+			userRecords.length, 						// courses
+			avgFinalGrade, 								// average final grade
+			avgOf(userRecords, RECORD.TIME_IN_CONTENT), // average time in content
+			userLastSysAccess				 			// last system access
 		];
 	}
 
@@ -136,11 +144,11 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			'asc': [-1, 1, 0],
 			'desc': [1, -1, 0]
 		};
-		if (column === 0 || column === undefined) {
-			// sorting the last name requires a slightly different sort function
+		if (column === TABLE_USER.NAME_INFO) {
+			// NB: "desc" and "asc" are inverted for name info: desc sorts a-z whereas asc sorts z-a
 			return (user1, user2) => {
-				const lastName1 = user1[0][0].toLowerCase();
-				const lastName2 = user2[0][0].toLowerCase();
+				const lastName1 = user1[TABLE_USER.NAME_INFO][0].toLowerCase();
+				const lastName2 = user2[TABLE_USER.NAME_INFO][0].toLowerCase();
 				return (lastName1 > lastName2 ? ORDER[order][0] :
 					lastName1 < lastName2 ? ORDER[order][1] :
 						ORDER[order][2]);
@@ -158,13 +166,17 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	_formatDataForDisplay(user) {
-		const dateIsNull = user[TABLE_USER.LAST_ACCESSED_SYS] === undefined;
+		const lastSysAccessFormatted = user[TABLE_USER.LAST_ACCESSED_SYS]
+			? formatDateTime(new Date(user[TABLE_USER.LAST_ACCESSED_SYS]), { format: 'medium' })
+			: this.localize('components.insights-users-table.null');
+
 		return [
+			user[TABLE_USER.SELECTOR_VALUE],
 			user[TABLE_USER.NAME_INFO],
-			user[TABLE_USER.COURSES], // courses
+			user[TABLE_USER.COURSES],
 			user[TABLE_USER.AVG_GRADE] ? formatPercent(user[TABLE_USER.AVG_GRADE] / 100, numberFormatOptions) : '',
 			formatNumber(user[TABLE_USER.AVG_TIME_IN_CONTENT] / 60, numberFormatOptions),
-			dateIsNull ? this.localize('components.insights-users-table.null') : formatDateTime(new Date(user[TABLE_USER.LAST_ACCESSED_SYS]), { format: 'medium' })
+			lastSysAccessFormatted
 		];
 	}
 
@@ -182,8 +194,13 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	get columnInfo() {
 		return [
 			{
+				headerText: '', // no text should appear for this column header
+				columnType: COLUMN_TYPES.ROW_SELECTOR,
+				sortable: false
+			},
+			{
 				headerText: this.localize('components.insights-users-table.lastFirstName'),
-				columnType: COLUMN_TYPES.TEXT_SUB_TEXT
+				columnType: COLUMN_TYPES.TEXT_SUB_TEXT,
 			},
 			{
 				headerText: this.localize('components.insights-users-table.courses'),
@@ -209,6 +226,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			<d2l-insights-table
 				title="${this.localize('components.insights-users-table.title')}"
 				@d2l-insights-table-sort="${this._handleColumnSort}"
+				sort-column="1"
 				.columnInfo=${this.columnInfo}
 				.data="${this._displayData}"
 				?skeleton="${this.skeleton}"
