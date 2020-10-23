@@ -174,9 +174,9 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// then sort by lastFirstName
 		const sortFunction = this._choseSortFunction(this._sortColumn, this._sortOrder);
 		return this.data.users
-			.map(this._preProcessData.bind(this))
-			.sort(sortFunction.bind(this))
-			.map(this._formatDataForDisplay.bind(this));
+			.map(this._preProcessData, this)
+			.sort(sortFunction)
+			.map(this._formatDataForDisplay, this);
 	}
 
 	get columnInfo() {

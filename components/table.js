@@ -17,7 +17,7 @@ export const COLUMN_TYPES = {
  * @property {Array} columnInfo - list of column info. Contains headerText and columnType
  * @property {Array} data - a row-indexed 2D array of rows and columns.
  * @property {Number} sortColumn - the column that the table is sorted by (starting at 0)
- * @property {String} sortOrder - weather the column is asc or desc sorted
+ * @property {String} sortOrder - whether the column is asc or desc sorted
  * E.g. data[0] gets the entire first row; data[0][0] gets the first row / first column
  */
 class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
