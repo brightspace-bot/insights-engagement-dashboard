@@ -153,6 +153,9 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			.d2l-insights-table-arrow-spacing {
 				padding-right: 30px;
 			}
+			.d2l-insights-table-visuallyhidden {
+				display: none;
+			}
 		`];
 	}
 
@@ -211,9 +214,10 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		const arrowDirection = isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : '';
 
 		return html`
-			<th class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : 0}">
+			<th role="button" class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : 0}">
 				${info.headerText}
 				${!isSortedColumn ? html`` : html`<d2l-icon icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
+				${isSortedColumn ? html`<p class="d2l-insights-table-visuallyhidden">${arrowDirection === 'arrow-toggle-up' ? 'Sorted Ascending' : 'Sorted Descending'}</p>` : '' }
 			</th>
 		`;
 	}
