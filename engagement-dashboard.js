@@ -11,6 +11,7 @@ import './components/applied-filters';
 import './components/aria-loading-progress';
 import './components/course-last-access-card.js';
 import './components/discussion-activity-card.js';
+import 'd2l-button-group/d2l-action-button-group';
 
 import './components/default-view-popup.js';
 import './components/last-access-card';
@@ -50,11 +51,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					display: none;
 				}
 
-				d2l-action-button-group {
-					float: right;
-					margin: 2em;
-				}
-
 				.d2l-insights-chart-container {
 					display: flex;
 					flex-wrap: wrap;
@@ -81,6 +77,17 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					margin-bottom: 1rem; /* default for d2l h3 style is 1.5 rem */
 				}
 
+				.heading-button-group {
+					display: flex;
+					flex-direction: row;
+					flex-wrap: wrap;
+				}
+
+				.button-group {
+					margin: 0.7em;
+					flex-grow: 1;
+				}
+
 				@media screen and (max-width: 615px) {
 					h1 {
 						line-height: 2rem;
@@ -99,15 +106,22 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return html`
 				<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
 
-				<d2l-action-button-group min-to-show="1" max-to-show="4">
-					<d2l-button-subtle
-						icon="d2l-tier1:help"
-						text=${this.localize('components.insights-engagement-dashboard.learMore')}
-						onclick="location.href='https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide';">
-					</d2l-button-subtle>
-				</d2l-action-button-group>
-
-				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
+				<div class="heading-button-group">
+					<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
+					<div class="button-group">
+						<d2l-action-button-group min-to-show="0" max-to-show="2" opener-type="more">
+							<d2l-button-subtle
+								icon="d2l-tier1:print"
+								text=${this.localize('components.insights-engagement-dashboard.print')}>
+							</d2l-button-subtle>
+							<d2l-button-subtle
+								icon="d2l-tier1:help"
+								text=${this.localize('components.insights-engagement-dashboard.learMore')}
+								onclick="location.href='https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide';">
+							</d2l-button-subtle>
+						</d2l-action-button-group>
+					</div>
+				</div>
 
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter

@@ -9,6 +9,7 @@ export default {
 	"components.insights-engagement-dashboard.lastSystemAccess": "Users have no system access in the last 14 days.",
 	"components.insights-engagement-dashboard.lastSystemAccessHeading": "System Access",
 	"components.insights-engagement-dashboard.learMore": "Learn More",
+	"components.insights-engagement-dashboard.print": "Print",
 
 	"components.insights-role-filter.name": "Role",
 
