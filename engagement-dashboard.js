@@ -11,6 +11,7 @@ import './components/applied-filters';
 import './components/aria-loading-progress';
 import './components/course-last-access-card.js';
 import './components/discussion-activity-card.js';
+import 'd2l-button-group/d2l-action-button-group';
 
 import './components/default-view-popup.js';
 
@@ -72,10 +73,23 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					font-weight: normal;	/* default for h1 is bold */
 					margin: 0.67em 0;		/* required to be explicitly defined for Edge Legacy */
 					padding: 0;				/* required to be explicitly defined for Edge Legacy */
+					width: 65%;
 				}
 
 				h2.d2l-heading-3 {
 					margin-bottom: 1rem; /* default for d2l h3 style is 1.5 rem */
+				}
+
+				.d2l-heading-button-group {
+					display: flex;
+					flex-direction: row;
+					flex-wrap: wrap;
+				}
+
+				d2l-action-button-group {
+					flex-grow: 1;
+					margin: 0.7em;
+					width: 25%;
 				}
 
 				@media screen and (max-width: 615px) {
@@ -97,7 +111,20 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
 
-				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
+				<div class="d2l-heading-button-group">
+					<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
+					<d2l-action-button-group min-to-show="0" max-to-show="2" opener-type="more">
+						<d2l-button-subtle
+							icon="d2l-tier1:export"
+							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}>
+						</d2l-button-subtle>
+						<d2l-button-subtle
+							icon="d2l-tier1:help"
+							text=${this.localize('components.insights-engagement-dashboard.learMore')}
+							onclick="location.href='https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide';">
+						</d2l-button-subtle>
+					</d2l-action-button-group>
+				</div>
 
 				<div class="view-filters-container">
 					<d2l-insights-ou-filter

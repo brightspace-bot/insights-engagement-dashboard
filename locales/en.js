@@ -8,6 +8,8 @@ export default {
 	"components.insights-engagement-dashboard.overdueAssignmentsHeading": "Overdue Assignments",
 	"components.insights-engagement-dashboard.lastSystemAccess": "Users have no system access in the last 14 days.",
 	"components.insights-engagement-dashboard.lastSystemAccessHeading": "System Access",
+	"components.insights-engagement-dashboard.learMore": "Learn More",
+	"components.insights-engagement-dashboard.exportToCsv": "Export to CSV",
 
 	"components.insights-role-filter.name": "Role",
 
