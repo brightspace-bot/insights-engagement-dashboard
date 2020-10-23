@@ -18,6 +18,7 @@ import { css, html } from 'lit-element/lit-element.js';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
+import { DiscussionActivityFilter } from './components/discussion-activity-card';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
@@ -155,7 +156,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.withFilter(new OverdueAssignmentsFilter())
 				.withFilter(new LastAccessFilter())
 				.withFilter(new CourseLastAccessFilter())
-				.withFilter(new CurrentFinalGradesFilter());
+				.withFilter(new CurrentFinalGradesFilter())
+				.withFilter(new DiscussionActivityFilter());
 
 			this.__data = rowFilteredData.withFilter(new TimeInContentVsGradeFilter(rowFilteredData));
 		}

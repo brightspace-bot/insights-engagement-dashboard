@@ -1,6 +1,7 @@
 import '../../components/discussion-activity-card.js';
 
 import { expect, fixture, html } from '@open-wc/testing';
+import { DiscussionActivityFilter } from '../../components/discussion-activity-card';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-discussion-activity-card', () => {
@@ -24,8 +25,10 @@ describe('d2l-insights-discussion-activity-card', () => {
 		[6, 600, 700, 0, 95, 2000, Date.now() - 8560938122, 0, 0, 0],
 		[1, 400, 700, 1, 75, 2000, null, 2, 1, 4]
 	];
+	const filter = new DiscussionActivityFilter();
 	const data = {
-		records
+		getFilter: id => (id === filter.id ? filter : null),
+		withoutFilter: id => (id === filter.id ? { records } : null)
 	};
 
 	describe('constructor', () => {

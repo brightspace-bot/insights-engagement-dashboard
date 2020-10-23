@@ -1,7 +1,8 @@
-import { action, computed, decorate, observable } from 'mobx';
+import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
+import { CategoryFilter } from '../model/categoryFilter';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../consts';
@@ -21,37 +22,15 @@ function gradeCategory(grade) {
 	}
 }
 
-export class CurrentFinalGradesFilter {
+export class CurrentFinalGradesFilter extends CategoryFilter {
 	constructor() {
-		this.selectedCategories = new Set();
-	}
-
-	get id() { return filterId; }
-
-	get isApplied() {
-		return this.selectedCategories.size > 0;
-	}
-
-	set isApplied(isApplied) {
-		if (!isApplied) this.selectedCategories.clear();
-	}
-
-	get title() { return 'components.insights-current-final-grade-card.currentGrade'; }
-
-	selectCategory(category) {
-		this.selectedCategories.add(category);
-	}
-
-	filter(record) {
-		return this.selectedCategories.has(gradeCategory(record[RECORD.CURRENT_FINAL_GRADE]));
+		super(
+			filterId,
+			'components.insights-current-final-grade-card.currentGrade',
+			record => this.selectedCategories.has(gradeCategory(record[RECORD.CURRENT_FINAL_GRADE]))
+		);
 	}
 }
-
-decorate(CurrentFinalGradesFilter, {
-	isApplied: computed,
-	selectCategory: action,
-	selectedCategories: observable
-});
 
 class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 

@@ -1,7 +1,8 @@
-import { action, computed, decorate, observable } from 'mobx';
+import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
+import { CategoryFilter } from '../model/categoryFilter';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../consts';
@@ -37,36 +38,15 @@ function lastAccessDateBucket(record) {
 	}
 }
 
-export class CourseLastAccessFilter {
+export class CourseLastAccessFilter extends CategoryFilter {
 	constructor() {
-		this.selectedCategories = new Set();
-	}
-
-	get id() { return filterId; }
-
-	get isApplied() {
-		return this.selectedCategories.size > 0;
-	}
-
-	set isApplied(isApplied) {
-		if (!isApplied) this.selectedCategories.clear();
-	}
-
-	get title() { return 'components.insights-course-last-access-card.courseAccess'; }
-
-	filter(record) {
-		return this.selectedCategories.has(lastAccessDateBucket(record));
-	}
-
-	selectCategory(category) {
-		this.selectedCategories.add(category);
+		super(
+			filterId,
+			'components.insights-course-last-access-card.courseAccess',
+			record => this.selectedCategories.has(lastAccessDateBucket(record))
+		);
 	}
 }
-decorate(CourseLastAccessFilter, {
-	isApplied: computed,
-	selectCategory: action,
-	selectedCategories: observable
-});
 
 class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
