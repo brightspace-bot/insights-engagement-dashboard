@@ -77,15 +77,15 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					margin-bottom: 1rem; /* default for d2l h3 style is 1.5 rem */
 				}
 
-				.heading-button-group {
+				.d2l-heading-button-group {
 					display: flex;
 					flex-direction: row;
 					flex-wrap: wrap;
 				}
 
-				.button-group {
-					margin: 0.7em;
+				.d2l-button-group {
 					flex-grow: 1;
+					margin: 0.7em;
 				}
 
 				@media screen and (max-width: 615px) {
@@ -106,9 +106,9 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return html`
 				<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
 
-				<div class="heading-button-group">
+				<div class="d2l-heading-button-group">
 					<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
-					<div class="button-group">
+					<div class="d2l-button-group">
 						<d2l-action-button-group min-to-show="0" max-to-show="2" opener-type="more">
 							<d2l-button-subtle
 								icon="d2l-tier1:print"
