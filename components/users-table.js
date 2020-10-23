@@ -121,7 +121,12 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		const recordsByUser = this.data.recordsByUser;
 
 		const userId = user[USER.ID];
-		const userInfo = [`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${userId}`];
+		const userLastFirstName = `${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`;
+		const selectorInfo = {
+			value: userId,
+			ariaLabel: this.localize('components.insights-users-table.selector-aria-label', { userLastFirstName })
+		};
+		const userInfo = [userLastFirstName, `${user[USER.USERNAME]} - ${userId}`];
 
 		const userRecords = recordsByUser.get(user[USER.ID]);
 		const coursesWithGrades = userRecords.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
@@ -130,12 +135,12 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		const userLastSysAccess = user[USER.LAST_SYS_ACCESS] ? new Date(user[USER.LAST_SYS_ACCESS]) : undefined;
 
 		return [
-			user[USER.ID],								// userId (as value for selector)
+			selectorInfo,
 			userInfo,
-			userRecords.length, 						// courses
-			avgFinalGrade, 								// average final grade
-			avgOf(userRecords, RECORD.TIME_IN_CONTENT), // average time in content
-			userLastSysAccess				 			// last system access
+			userRecords.length, // courses
+			avgFinalGrade,
+			avgOf(userRecords, RECORD.TIME_IN_CONTENT),
+			userLastSysAccess
 		];
 	}
 

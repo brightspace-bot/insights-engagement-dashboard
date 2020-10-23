@@ -45,12 +45,28 @@ data.records.forEach(r => {
 });
 
 const expected = [
-	[300, ['Harrison, George', 'gharrison - 300'], 14, '71.42 %', '19.64', getLocalDateTime(2)],
-	[100, ['Lennon, John', 'jlennon - 100'], 12, '22 %', '2.78', getLocalDateTime(0)],
-	[200, ['McCartney, Paul', 'pmccartney - 200'], 13, '74 %', '23.72', 'NULL'],
-	[400, ['Starr, Ringo', 'rstarr - 400'], 9, '55 %', '8.33', getLocalDateTime(3)],
+	[
+		{ value: 300, ariaLabel: 'Select Harrison, George' },
+		['Harrison, George', 'gharrison - 300'],
+		14, '71.42 %', '19.64', getLocalDateTime(2)
+	],
+	[
+		{ value: 100, ariaLabel: 'Select Lennon, John' },
+		['Lennon, John', 'jlennon - 100'],
+		12, '22 %', '2.78', getLocalDateTime(0)
+	],
+	[
+		{ value: 200, ariaLabel: 'Select McCartney, Paul' },
+		['McCartney, Paul', 'pmccartney - 200'],
+		13, '74 %', '23.72', 'NULL'
+	],
+	[
+		{ value: 400, ariaLabel: 'Select Starr, Ringo' },
+		['Starr, Ringo', 'rstarr - 400'],
+		9, '55 %', '8.33', getLocalDateTime(3)
+	],
 	...Array.from({ length: 19 }, (val, idx) => [
-		idx,
+		{ value: idx, ariaLabel: `Select zz${idx}Last, zz${idx}First` },
 		[`zz${idx}Last, zz${idx}First`, `username${idx} - ${idx}`],
 		1,
 		'93 %',
@@ -347,20 +363,30 @@ function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
 
 		expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
 
-		if (colType === COLS.USER_INFO) {
-			displayedUserInfo.forEach((cell, rowIdx) => {
-				const mainText = cell.querySelector('div:first-child');
-				const subText = cell.querySelector('div:last-child');
-				expect(mainText.innerText).to.equal(expected[rowIdx + startRowNum][COLS.USER_INFO][0]);
-				expect(subText.innerText).to.equal(expected[rowIdx + startRowNum][COLS.USER_INFO][1]);
-			});
-		} else {
-			displayedUserInfo.forEach((cell, rowIdx) => {
-				const mainText = cell.querySelector('div');
-				expect(mainText.innerText).to.equal(expected[rowIdx + startRowNum][colType].toString());
-			});
-		}
+		displayedUserInfo.forEach((cell, rowIdx) => {
+			const expectedCellValue = expected[rowIdx + startRowNum][colType];
+			verifyCellValue(expectedCellValue, cell, colType);
+		});
 	});
+}
+
+function verifyCellValue(expectedValue, cell, colType) {
+	if (colType === COLS.USER_INFO) {
+		const mainText = cell.querySelector('div:first-child');
+		const subText = cell.querySelector('div:last-child');
+		expect(mainText.innerText).to.equal(expectedValue[0]);
+		expect(subText.innerText).to.equal(expectedValue[1]);
+
+	} else if (colType === COLS.SELECTOR_VALUE) {
+		const innerCheckbox = cell.querySelector('d2l-input-checkbox');
+		expect(innerCheckbox.name).to.equal(`checkbox-${expectedValue.value}`);
+		expect(innerCheckbox.value).to.equal(expectedValue.value.toString());
+		expect(innerCheckbox.ariaLabel).to.equal(expectedValue.ariaLabel);
+
+	} else {
+		const mainText = cell.querySelector('div');
+		expect(mainText.innerText).to.equal(expectedValue.toString());
+	}
 }
 
 function getLocalDateTime(rowIndex) {

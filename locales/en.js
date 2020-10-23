@@ -52,6 +52,7 @@ export default {
 	"components.insights-users-table.totalUsers": "Total Users: {num}",
 	"components.insights-users-table.lastAccessedSys" : "Last Accessed System",
 	"components.insights-users-table.null" : "NULL",
+	"components.insights-users-table.selector-aria-label": "Select {userLastFirstName}",
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
 
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",

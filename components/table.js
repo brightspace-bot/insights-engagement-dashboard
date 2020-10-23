@@ -255,16 +255,26 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			return defaultHtml; // regardless of the column type, because the data hasn't been loaded yet
 		}
 
-		if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
+		if (columnType === COLUMN_TYPES.ROW_SELECTOR) {
+			return html`
+				<td class="${classMap(styles)}">
+					<d2l-input-checkbox
+						aria-label="${value.ariaLabel}"
+						name="checkbox-${value.value}"
+						value="${value.value}"
+					></d2l-input-checkbox>
+				</td>
+			`;
+		} else if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
 			return html`
 				<td class="${classMap(styles)}">
 					<div class="d2l-body-standard">${value[0]}</div>
 					<div class="d2l-body-small">${value[1]}</div>
 				</td>
 			`;
-		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT || columnType === COLUMN_TYPES.ROW_SELECTOR) { // TODO: handle row selector col
+		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT) {
 			return defaultHtml;
-		} // future work: else if COLUMN_TYPES.SUBCOLUMNS...
+		}
 
 		throw new Error('Users table: unknown column type');
 	}
@@ -272,32 +282,32 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	_handleHeaderKey(e) {
 
 		const children = e.target.parentElement.children;
-		let colmnNumber = Array.from(children).indexOf(e.target);
+		let columnNumber = Array.from(children).indexOf(e.target);
 		if (e.keyCode === 32 /* spacebar */ || e.key === 'Enter') {
 			e.preventDefault();
 			this._handleHeaderClicked(e);
 			return;
 		} else if (e.key === 'ArrowLeft') {
-			colmnNumber -= 1;
-			if (colmnNumber < 0) {
-				colmnNumber = children.length - 1;
+			columnNumber -= 1;
+			if (columnNumber < 0) {
+				columnNumber = children.length - 1;
 			}
 		} else if (e.key === 'ArrowRight') {
-			colmnNumber += 1;
-			if (colmnNumber >= children.length) {
-				colmnNumber = 0;
+			columnNumber += 1;
+			if (columnNumber >= children.length) {
+				columnNumber = 0;
 			}
 		}
-		children[colmnNumber].focus();
+		children[columnNumber].focus();
 		if (e.keyCode === 'Tab') e.preventDefault();
 		return false;
 	}
 
 	_handleHeaderClicked(e) {
 		const children = e.target.parentElement.children;
-		const colmnNumber = Array.from(children).indexOf(e.target);
+		const columnNumber = Array.from(children).indexOf(e.target);
 
-		if (colmnNumber !== this.sortColumn) {
+		if (columnNumber !== this.sortColumn) {
 			this.sortOrder = 'desc';
 		} else {
 			if (this.sortOrder === 'asc') {
@@ -307,7 +317,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			}
 		}
 
-		this.sortColumn = colmnNumber;
+		this.sortColumn = columnNumber;
 
 		this.dispatchEvent(new CustomEvent('d2l-insights-table-sort',
 			{

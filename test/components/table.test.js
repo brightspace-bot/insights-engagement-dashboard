@@ -16,14 +16,18 @@ const columnInfo = [
 	{
 		headerText: 'header3',
 		columnType: COLUMN_TYPES.TEXT_SUB_TEXT
+	},
+	{
+		headerText: 'header4',
+		columnType: COLUMN_TYPES.ROW_SELECTOR
 	}
 ];
 
 const data = [
-	['First Item', 1, ['text1', 'subtext1']],
-	['Second Item', 2, ['text2', 'subtext2']],
-	['Third Item', 3, ['text3', 'subtext3']],
-	['Fourth Item', 4, ['text4', 'subtext4']]
+	['First Item', 1, ['text1', 'subtext1'], { value: 123, ariaLabel: '123' }],
+	['Second Item', 2, ['text2', 'subtext2'], { value: 234, ariaLabel: '234' }],
+	['Third Item', 3, ['text3', 'subtext3'], { value: 345, ariaLabel: '345' }],
+	['Fourth Item', 4, ['text4', 'subtext4'], { value: 456, ariaLabel: '456' }]
 ];
 
 describe('d2l-insights-table', () => {
@@ -56,7 +60,7 @@ describe('d2l-insights-table', () => {
 
 			rows.forEach((row, rowIdx) => {
 				const cells = Array.from(row.querySelectorAll('td'));
-				expect(cells.length).to.equal(3);
+				expect(cells.length).to.equal(4);
 
 				cells.forEach((cell, colIdx) => {
 					verifyCellData(cell, rowIdx, colIdx);
@@ -68,15 +72,22 @@ describe('d2l-insights-table', () => {
 
 function verifyCellData(cell, rowIdx, colIdx) {
 	const columnType = columnInfo[colIdx].columnType;
+	const expectedValue = data[rowIdx][colIdx];
 
 	if (columnType === COLUMN_TYPES.NORMAL_TEXT) {
 		const innerDiv = cell.querySelector('div');
-		expect(innerDiv.innerText).to.equal(data[rowIdx][colIdx].toString());
+		expect(innerDiv.innerText).to.equal(expectedValue.toString());
 
 	} else if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
 		const mainTextDiv = cell.querySelector('div:first-child');
 		const subTextDiv = cell.querySelector('div:last-child');
-		expect(mainTextDiv.innerText).to.equal(data[rowIdx][colIdx][0].toString());
-		expect(subTextDiv.innerText).to.equal(data[rowIdx][colIdx][1].toString());
+		expect(mainTextDiv.innerText).to.equal(expectedValue[0].toString());
+		expect(subTextDiv.innerText).to.equal(expectedValue[1].toString());
+
+	} else if (columnType === COLUMN_TYPES.ROW_SELECTOR) {
+		const innerCheckbox = cell.querySelector('d2l-input-checkbox');
+		expect(innerCheckbox.name).to.equal(`checkbox-${expectedValue.value}`);
+		expect(innerCheckbox.value).to.equal(expectedValue.value.toString());
+		expect(innerCheckbox.ariaLabel).to.equal(expectedValue.ariaLabel);
 	}
 }
