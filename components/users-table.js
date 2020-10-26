@@ -182,7 +182,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	setDataForExport(userData) {
-		this.data.dataForExport = userData;
+		this.data._data.dataForExport = userData;
 	}
 
 	get columnInfo() {

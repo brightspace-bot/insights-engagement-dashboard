@@ -29,6 +29,7 @@ import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
+import { toJS } from 'mobx';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -170,7 +171,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	_exportToCsv() {
-		console.log('export');
+		toJS(this._serverData.dataForExport);
 	}
 
 	get _isLoading() {
