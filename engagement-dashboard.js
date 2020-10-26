@@ -116,7 +116,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					<d2l-action-button-group min-to-show="0" max-to-show="2" opener-type="more">
 						<d2l-button-subtle
 							icon="d2l-tier1:export"
-							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}>
+							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
+							@click="${this._exportToCsv}">
 						</d2l-button-subtle>
 						<d2l-button-subtle
 							icon="d2l-tier1:help"
@@ -166,6 +167,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					.data="${this._serverData.defaultViewPopupDisplayData}">
 				</d2l-insights-default-view-popup>
 		`;
+	}
+
+	_exportToCsv() {
+		console.log('export');
 	}
 
 	get _isLoading() {

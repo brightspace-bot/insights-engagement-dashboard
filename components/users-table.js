@@ -1,7 +1,7 @@
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
-import { computed, decorate, observable } from 'mobx';
+import { action, computed, decorate, observable } from 'mobx';
 import { css, html } from 'lit-element';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl';
 import { RECORD, USER } from '../consts';
@@ -173,10 +173,16 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
 		// then sort by lastFirstName
 		const sortFunction = this._choseSortFunction(this._sortColumn, this._sortOrder);
-		return this.data.users
+		const userData = this.data.users
 			.map(this._preProcessData.bind(this))
 			.sort(sortFunction.bind(this))
 			.map(this._formatDataForDisplay.bind(this));
+		this.setDataForExport(userData);
+		return userData;
+	}
+
+	setDataForExport(userData) {
+		this.data.dataForExport = userData;
 	}
 
 	get columnInfo() {
@@ -264,5 +270,6 @@ decorate(UsersTable, {
 	userDataForDisplay: computed,
 	_sortColumn: observable,
 	_sortOrder: observable,
+	setDataForExport: action
 });
 customElements.define('d2l-insights-users-table', UsersTable);
