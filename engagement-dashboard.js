@@ -87,10 +87,14 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					flex-wrap: wrap;
 				}
 
-				d2l-action-button-group {
+				.d2l-main-action-button-group {
 					flex-grow: 1;
 					margin: 0.7em;
 					width: 25%;
+				}
+
+				.d2l-table-action-button-group {
+					margin-bottom: 1rem;
 				}
 
 				@media screen and (max-width: 615px) {
@@ -114,7 +118,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				<div class="d2l-heading-button-group">
 					<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
-					<d2l-action-button-group min-to-show="0" max-to-show="2" opener-type="more">
+					<d2l-action-button-group
+						class="d2l-main-action-button-group"
+						min-to-show="0"
+						max-to-show="2"
+						opener-type="more"
+					>
 						<d2l-button-subtle
 							icon="d2l-tier1:export"
 							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}>
@@ -159,8 +168,21 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
 					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
 				</div>
+
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-				<d2l-insights-users-table .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-users-table>
+
+				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
+					<d2l-button-subtle
+						icon="d2l-tier1:email"
+						text=${this.localize('components.insights-engagement-dashboard.email')}>
+					</d2l-button-subtle>
+				</d2l-action-button-group>
+
+				<d2l-insights-users-table
+					.data="${this._data}"
+					?skeleton="${this._isLoading}"
+					@d2l-insights-users-table-select-changed="${this._handleTableSelectChanged}"
+				></d2l-insights-users-table>
 
 				<d2l-insights-default-view-popup
 					?opened=${Boolean(this._serverData.defaultViewPopupDisplayData.length)}

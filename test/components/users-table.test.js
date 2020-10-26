@@ -1,5 +1,5 @@
 import '../../components/users-table.js';
-import { expect, fixture, html, oneEvent } from '@open-wc/testing';
+import { expect, fixture, html } from '@open-wc/testing';
 import { mockRoleIds, records } from '../model/mocks';
 import { RECORD, USER } from '../../consts';
 import { formatDateTime } from '@brightspace-ui/intl/lib/dateTime.js';
@@ -350,27 +350,6 @@ describe('d2l-insights-users-table', () => {
 			await userTable.updateComplete;
 			data = userTable.data.map(record => parseDate(record[COLS.LAST_SYS_ACCESS]));
 			checkIfSorted(data, 'asc');
-		});
-	});
-
-	describe('eventing', () => {
-		it('should fire d2l-insights-users-table-select-changed', async() => {
-			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
-			const innerTable = el.shadowRoot.querySelector('d2l-insights-table');
-			await new Promise(resolve => setTimeout(resolve, 200));
-			await innerTable.updateComplete;
-
-			const checkbox = innerTable.shadowRoot.querySelector('d2l-input-checkbox'); // just take the first one
-
-			let listener = oneEvent(el, 'd2l-insights-users-table-select-changed');
-			checkbox.simulateClick();
-			let event = await listener;
-			expect(event.detail).to.deep.equal({ userId: '300', selected: true });
-
-			listener = oneEvent(el, 'd2l-insights-users-table-select-changed');
-			checkbox.simulateClick();
-			event = await listener;
-			expect(event.detail).to.deep.equal({ userId: '300', selected: false });
 		});
 	});
 });

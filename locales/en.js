@@ -11,6 +11,7 @@ export default {
 	"components.insights-engagement-dashboard.tooManyResults": "There are too many results in your filters. Please refine your selection.",
 	"components.insights-engagement-dashboard.learMore": "Learn More",
 	"components.insights-engagement-dashboard.exportToCsv": "Export to CSV",
+	"components.insights-engagement-dashboard.email": "Email",
 
 	"components.insights-role-filter.name": "Role",
 
