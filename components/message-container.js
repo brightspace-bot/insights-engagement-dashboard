@@ -32,14 +32,15 @@ class MessageContainer extends Localizer(MobxLitElement) {
 				border: 1px solid #e3e9f1; /* gypsum */
 				border-radius: 8px;
 				color: #494c4e; /* ferrite */
+				display: flex;
 				height: 130px;
 				width: 200%;
-				display: flex;
 			}
 
 			.d2l-insights-message-container-value {
 				padding-left: 40px;
 				padding-top: 50px;
+				word-wrap: break-word;
 			}
 		`;
 	}
