@@ -1,7 +1,7 @@
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
-import { computed, decorate, observable } from 'mobx';
+import { computed, decorate, observable, reaction } from 'mobx';
 import { css, html } from 'lit-element';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl';
 import { RECORD, USER } from '../consts';
@@ -27,6 +27,10 @@ const DEFAULT_PAGE_SIZE = 20;
 function avgOf(records, field) {
 	const total = records.reduce((sum, r) => sum + r[field], 0);
 	return total / records.length;
+}
+
+function unique(arr) {
+	return [...new Set(arr)];
 }
 
 /**
@@ -84,6 +88,12 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this._sortOrder = 'desc';
 		this._sortColumn = TABLE_USER.NAME_INFO;
 		this.selectedUserIds = [];
+
+		// reset selectedUserIds whenever the input data changes
+		reaction(
+			() => this.data.users,
+			() => { this._resetSelectedUserIds(); }
+		);
 	}
 
 	get _itemsCount() {
@@ -93,6 +103,11 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	get _maxPages() {
 		const itemsCount = this._itemsCount;
 		return itemsCount ? Math.ceil(itemsCount / this._pageSize) : 0;
+	}
+
+	// should be reset whenever data, page or sorting state changes
+	_resetSelectedUserIds() {
+		this.selectedUserIds = [];
 	}
 
 	// don't use displayData.length to get the itemsCount. When we display a skeleton view, displayData.length is
@@ -120,6 +135,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this._sortOrder = e.detail.order;
 		this._sortColumn = e.detail.column;
 		this._currentPage = 0;
+
+		this._resetSelectedUserIds();
 	}
 
 	_preProcessData(user) {
@@ -129,7 +146,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		const userLastFirstName = `${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`;
 		const selectorInfo = {
 			value: userId,
-			ariaLabel: this.localize('components.insights-users-table.selector-aria-label', { userLastFirstName }),
+			ariaLabel: this.localize('components.insights-users-table.selectorAriaLabel', { userLastFirstName }),
 			selected: this.selectedUserIds.includes(userId)
 		};
 		const userInfo = [userLastFirstName, `${user[USER.USERNAME]} - ${userId}`];
@@ -283,19 +300,21 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	_handlePageChange(event) {
 		this._currentPage = event.detail.page;
+		this._resetSelectedUserIds();
 	}
 
 	_handlePageSizeChange(event) {
 		this._currentPage = 1;
 		this._pageSize = Number(event.detail.itemCount); // itemCount comes back as a string
+		this._resetSelectedUserIds();
 	}
 
 	_handleSelectChanged(event) {
-		const changedUserId = Number(event.detail.value);
+		const changedUserIds = event.detail.values.map(value => Number(value));
 		if (event.detail.selected) {
-			this.selectedUserIds = [...this.selectedUserIds, changedUserId];
+			this.selectedUserIds = unique([...this.selectedUserIds, ...changedUserIds]);
 		} else {
-			this.selectedUserIds = this.selectedUserIds.filter(userId => userId !== changedUserId);
+			this.selectedUserIds = this.selectedUserIds.filter(userId => !changedUserIds.includes(userId));
 		}
 	}
 }
@@ -303,6 +322,6 @@ decorate(UsersTable, {
 	selectedUserIds: observable,
 	userDataForDisplay: computed,
 	_sortColumn: observable,
-	_sortOrder: observable,
+	_sortOrder: observable
 });
 customElements.define('d2l-insights-users-table', UsersTable);

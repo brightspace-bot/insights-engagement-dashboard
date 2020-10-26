@@ -198,27 +198,44 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	}
 
 	_renderHeaderCell(info, idx) {
-		const isSortable = info.sortable !== false;
-		const isSortedColumn = isSortable && idx === this.sortColumn;
+		const columnType = this.columnInfo[idx].columnType;
 
 		const styles = {
 			'd2l-insights-table-cell': true,
 			'd2l-insights-table-cell-header': true,
 			'd2l-insights-table-cell-first': idx === 0,
-			'd2l-insights-table-cell-last': idx === this._numColumns - 1,
-			'd2l-insights-table-arrow-spacing': isSortedColumn
+			'd2l-insights-table-cell-last': idx === this._numColumns - 1
 		};
-		const spaceArrow = { 'd2l-insights-table-cell-sort-indicator': isSortedColumn };
 
-		const arrowDirection = isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : '';
+		if (columnType === COLUMN_TYPES.ROW_SELECTOR) {
+			const isAllSelected = this.data.every(row => row[idx].selected);
 
-		return html`
-			<th role="button" class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : 0}">
-				${info.headerText}
-				${!isSortedColumn ? html`` : html`<d2l-icon role="img" aria-label="${arrowDirection === 'arrow-toggle-up' ? 'Sorted Ascending' : 'Sorted Descending'}" icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
+			return html`
+				<th class="${classMap(styles)}"
+					scope="col"
+					tabindex="${this.skeleton ? -1 : 0}"
+				>
+					<d2l-input-checkbox
+						aria-label="${this.localize('components.insights-table.selectAll')}"
+						name="checkbox-all"
+						@change="${this._handleAllSelected}"
+						?checked="${isAllSelected}"
+					></d2l-input-checkbox>
+				</th>
+			`;
+		} else {
+			const isSortedColumn = idx === this.sortColumn;
+			const spaceArrow = { 'd2l-insights-table-cell-sort-indicator' : isSortedColumn };
+			const arrowDirection = isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : '';
 
-			</th>
-		`;
+			return html`
+				<th role="button" class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : 0}">
+					${info.headerText}
+					${!isSortedColumn ? html`` : html`<d2l-icon role="img" aria-label="${arrowDirection === 'arrow-toggle-up' ? 'Sorted Ascending' : 'Sorted Descending'}" icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
+
+				</th>
+			`;
+		}
 	}
 
 	_renderTbody() {
@@ -331,8 +348,21 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	_handleRowSelected(event) {
 		this.dispatchEvent(new CustomEvent('d2l-insights-table-select-changed', {
 			detail: {
-				value: event.target.value,
+				values: [event.target.value],
 				selected: event.target.checked
+			}
+		}));
+	}
+
+	_handleAllSelected() {
+		const checkboxes = Array.from(this.shadowRoot.querySelectorAll('td > d2l-input-checkbox')); // NB: this will only handle 1 checkbox column
+		const values = checkboxes.map(checkbox => checkbox.value);
+		const isAllSelected = checkboxes.every(checkbox => checkbox.checked);
+
+		this.dispatchEvent(new CustomEvent('d2l-insights-table-select-changed', {
+			detail: {
+				values,
+				selected: !isAllSelected
 			}
 		}));
 	}

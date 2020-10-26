@@ -262,6 +262,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			noUsersSelectedDialog.opened = true;
 		} else {
 			// (out-of-scope) show email edit dialog
+			console.log(selectedUserIds);
 		}
 	}
 }

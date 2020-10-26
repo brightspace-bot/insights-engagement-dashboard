@@ -360,8 +360,9 @@ describe('d2l-insights-users-table', () => {
 			await new Promise(resolve => setTimeout(resolve, 200));
 			await innerTable.updateComplete;
 
-			const checkbox1 = innerTable.shadowRoot.querySelectorAll('d2l-input-checkbox')[0]; // corresponds to id 300
-			const checkbox2 = innerTable.shadowRoot.querySelectorAll('d2l-input-checkbox')[1]; // corresponds to id 100
+			const checkbox1 = innerTable.shadowRoot.querySelectorAll('td > d2l-input-checkbox')[0]; // corresponds to id 300
+			const checkbox2 = innerTable.shadowRoot.querySelectorAll('td > d2l-input-checkbox')[1]; // corresponds to id 100
+			const checkboxAll = innerTable.shadowRoot.querySelector('th > d2l-input-checkbox');
 
 			checkbox1.simulateClick();
 			expect(el.selectedUserIds).to.deep.equal([300]);
@@ -369,8 +370,14 @@ describe('d2l-insights-users-table', () => {
 			checkbox2.simulateClick();
 			expect(el.selectedUserIds).to.deep.equal([300, 100]);
 
-			checkbox1.simulateClick();
-			expect(el.selectedUserIds).to.deep.equal([100]);
+			// should only select the first 20 items
+			checkboxAll.simulateClick();
+			await innerTable.updateComplete;
+			expect(el.selectedUserIds).to.deep.equal(expected.map(data => data[0].value).slice(0, 20));
+
+			checkboxAll.simulateClick();
+			await innerTable.updateComplete;
+			expect(el.selectedUserIds).to.deep.equal([]);
 		});
 	});
 });

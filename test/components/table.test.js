@@ -18,7 +18,7 @@ const columnInfo = [
 		columnType: COLUMN_TYPES.TEXT_SUB_TEXT
 	},
 	{
-		headerText: 'header4',
+		headerText: '',
 		columnType: COLUMN_TYPES.ROW_SELECTOR
 	}
 ];
@@ -70,19 +70,60 @@ describe('d2l-insights-table', () => {
 	});
 
 	describe('eventing', () => {
-		it('should fire d2l-insights-table-select-changed', async() => {
-			const el = await fixture(html`<d2l-insights-table .columnInfo=${columnInfo} .data="${data}"></d2l-insights-table>`);
-			const checkbox = el.shadowRoot.querySelector('d2l-input-checkbox'); // just grab the first one
+		describe('single row selector', () => {
+			it('should fire d2l-insights-table-select-changed when selected and deselected', async() => {
+				const el = await fixture(html`<d2l-insights-table .columnInfo=${columnInfo} .data="${data}"></d2l-insights-table>`);
+				const checkbox = el.shadowRoot.querySelector('td > d2l-input-checkbox'); // just grab the first one
 
-			let listener = oneEvent(el, 'd2l-insights-table-select-changed');
-			checkbox.simulateClick();
-			let event = await listener;
-			expect(event.detail).to.deep.equal({ value: '123', selected: true });
+				let listener = oneEvent(el, 'd2l-insights-table-select-changed');
+				checkbox.simulateClick();
+				let event = await listener;
+				expect(event.detail).to.deep.equal({ values: ['123'], selected: true });
 
-			listener = oneEvent(el, 'd2l-insights-table-select-changed');
-			checkbox.simulateClick();
-			event = await listener;
-			expect(event.detail).to.deep.equal({ value: '123', selected: false });
+				listener = oneEvent(el, 'd2l-insights-table-select-changed');
+				checkbox.simulateClick();
+				event = await listener;
+				expect(event.detail).to.deep.equal({ values: ['123'], selected: false });
+			});
+		});
+
+		describe('select all', () => {
+			const runSelectAllTest = async(initialData, expectedSelected) => {
+				const el = await fixture(html`<d2l-insights-table .columnInfo=${columnInfo} .data="${initialData}"></d2l-insights-table>`);
+				const checkbox = el.shadowRoot.querySelector('th > d2l-input-checkbox');
+
+				const listener = oneEvent(el, 'd2l-insights-table-select-changed');
+				checkbox.simulateClick();
+				const event = await listener;
+				expect(event.detail).to.deep.equal({ values: ['123', '234', '345', '456'], selected: expectedSelected });
+			};
+
+			it('should fire d2l-insights-table-select-changed with selected=true when none initially selected ', async() => {
+				const initialData = [ ...data ];
+				initialData.forEach(row => row[3].selected = false);
+
+				await runSelectAllTest(initialData, true);
+			});
+
+			it('should fire d2l-insights-table-select-changed with selected=true when 1 initially selected ', async() => {
+				const initialData = [ ...data ]; // default data already has 1 initially selected
+
+				await runSelectAllTest(initialData, true);
+			});
+
+			it('should fire d2l-insights-table-select-changed with selected=true when multiple initially selected ', async() => {
+				const initialData = [ ...data ];
+				initialData[0][3].selected = true; // should have 2 rows selected
+
+				await runSelectAllTest(initialData, true);
+			});
+
+			it('should fire d2l-insights-table-select-changed with selected=false when all initially selected ', async() => {
+				const initialData = [ ...data ];
+				initialData.forEach(row => row[3].selected = true);
+
+				await runSelectAllTest(initialData, false);
+			});
 		});
 	});
 });
