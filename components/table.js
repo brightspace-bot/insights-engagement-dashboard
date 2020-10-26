@@ -216,8 +216,8 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		return html`
 			<th role="button" class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : 0}">
 				${info.headerText}
-				${!isSortedColumn ? html`` : html`<d2l-icon icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
-				${isSortedColumn ? html`<p class="d2l-insights-table-visuallyhidden">${arrowDirection === 'arrow-toggle-up' ? 'Sorted Ascending' : 'Sorted Descending'}</p>` : '' }
+				${!isSortedColumn ? html`` : html`<d2l-icon role="img" aria-label="${arrowDirection === 'arrow-toggle-up' ? 'Sorted Ascending' : 'Sorted Descending'}" icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
+
 			</th>
 		`;
 	}
