@@ -4,15 +4,65 @@ import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
+import { CategoryFilter } from '../model/categoryFilter';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
+const filterId = 'd2l-insights-discussion-activity-card';
+
+export class DiscussionActivityFilter extends CategoryFilter {
+	constructor() {
+		super(
+			filterId,
+			'components.insights-discussion-activity-card.cardTitle',
+			record => [...this.selectedCategories].some(category => record[category] > 0)
+		);
+	}
+}
+
+// todo: remove in another PR - we decided not to go with this, but I want to
+// get the code in the repo history in case we go back to it
+// function drawCustomHalo(point, chart) {
+// 	if ((!point.selected || point.y !== point.haloY) && point.customHalo) {
+// 		point.customHalo.destroy();
+// 		point.customHalo = null;
+// 	}
+//
+// 	if (point.selected && !point.customHalo && point.y > 0) {
+// 		const shapeArgs = point.shapeArgs,
+// 			size = 7,
+// 			opacity = 1,
+// 			path = point.series.chart.renderer
+// 				.symbols
+// 				.arc(
+// 					shapeArgs.x + chart.plotLeft,
+// 					shapeArgs.y + chart.plotTop,
+// 					shapeArgs.r + size,
+// 					shapeArgs.r + size, {
+// 						innerR: shapeArgs.r + 1,
+// 						start: shapeArgs.start,
+// 						end: shapeArgs.end
+// 					}
+// 				);
+//
+// 		point.customHalo = chart.renderer
+// 			.path(path)
+// 			.attr({
+// 				fill: point.color,
+// 				opacity: opacity
+// 			}).add();
+// 		point.hasHalo = true;
+// 		point.haloY = point.y;
+//
+// 	}
+// }
+
 class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	static get properties() {
 		return {
-			isValueClickable: { type: Boolean, attribute: 'clickable' }
+			data: { type: Object, attribute: false }
 		};
 	}
 
@@ -56,6 +106,10 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		`];
 	}
 
+	get filter() {
+		return this.data.getFilter(filterId);
+	}
+
 	get _cardTitle() {
 		return this.localize('components.insights-discussion-activity-card.cardTitle');
 	}
@@ -72,7 +126,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	get _discussionActivityStats() {
 		let threadSum, replySum, readSum;
 		threadSum = replySum = readSum = 0;
-		this.data.getRecordsInView().forEach(record => {
+		this.data.withoutFilter(filterId).records.forEach(record => {
 			threadSum += record[RECORD.DISCUSSION_ACTIVITY_THREADS];
 			replySum += record[RECORD.DISCUSSION_ACTIVITY_REPLIES];
 			readSum += record[RECORD.DISCUSSION_ACTIVITY_READS];
@@ -102,7 +156,12 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return html`<div class="d2l-insights-discussion-activity-card">
 			<div class="d2l-insights-discussion-activity-card-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
 			<div class="d2l-insights-discussion-activity-card-body">
-			<d2l-labs-chart class="d2l-insights-discussion-activity-card-body" .options="${this.chartOptions}" ?skeleton="${this.skeleton}"></d2l-labs-chart>
+				<d2l-labs-chart
+					class="d2l-insights-discussion-activity-card-body"
+					.options="${this.chartOptions}"
+					.globalOptions="${this.globalHighchartsOptions}"
+					?skeleton="${this.skeleton}">
+				</d2l-labs-chart>
 			</div>
 		</div>`;
 	}
@@ -113,7 +172,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			chart: {
 				type: 'pie',
 				height: 100,
-				width: 245,
+				width: 245
 			},
 			title: {
 				text: this._cardTitle, // override default title
@@ -125,20 +184,41 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				pie: {
 					size: 80,
 					colors: ['var(--d2l-color-amethyst-plus-1)', 'var(--d2l-color-zircon-plus-1)', 'var(--d2l-color-zircon)'],
-					borderWidth: 0,
+					borderWidth: 1.5,
 					cursor: 'pointer',
 					dataLabels: {
 						enabled: false
 					},
-					showInLegend: true
+					point: {
+						events: {
+							legendItemClick: function(e) {
+								const point = this;
+								that.filter.toggleCategory(point.id);
+								e.preventDefault();
+							}
+						}
+					},
+					showInLegend: true,
+					slicedOffset: 7
 				},
 				series: {
+					point: {
+						events: {
+							click: function() {
+								const point = this;
+								that.filter.toggleCategory(point.id);
+							}
+						}
+					},
 					states: {
 						hover: {
 							enabled: true,
 							halo: {
 								size: 0
 							}
+						},
+						inactive: {
+							enabled: false
 						}
 					}
 				}
@@ -160,16 +240,29 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			},
 			series: {
 				colorByPoint: true,
-				data:[{
+				data: [{
 					name: that._legendLabels[0],
-					y: that._discussionActivityStats.threadSum
+					y: that._discussionActivityStats.threadSum,
+					id: RECORD.DISCUSSION_ACTIVITY_THREADS,
+					unselectedColor: 'var(--d2l-color-tungsten)'
 				}, {
 					name: that._legendLabels[1],
-					y: that._discussionActivityStats.replySum
+					y: that._discussionActivityStats.replySum,
+					id: RECORD.DISCUSSION_ACTIVITY_REPLIES,
+					unselectedColor: 'var(--d2l-color-gypsum)'
 				}, {
 					name: that._legendLabels[2],
-					y: that._discussionActivityStats.readSum
-				}],
+					y: that._discussionActivityStats.readSum,
+					id: RECORD.DISCUSSION_ACTIVITY_READS,
+					unselectedColor: 'var(--d2l-color-mica)'
+				}].map(slice => {
+					const selected = that.filter.selectedCategories.has(slice.id);
+					return Object.assign(slice, {
+						selected,
+						sliced: selected,
+						color: (that.filter.isApplied && !selected) ? slice.unselectedColor : undefined
+					});
+				}),
 				accessibility: {
 					description: that._chartDescriptionTextLabel,
 					pointDescriptionFormatter: function(point) {
@@ -196,6 +289,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				backgroundColor: 'var(--d2l-color-ferrite)',
 				borderColor: 'var(--d2l-color-ferrite)',
 				borderRadius: 12,
+				hideDelay: 0,
 				style: {
 					color: 'white',
 				},
@@ -205,6 +299,20 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			credits: {
 				enabled: false,
 			},
+		};
+	}
+
+	get globalHighchartsOptions() {
+		return {
+			lang: {
+				accessibility: {
+					legend: {
+						// highcharts will substitute the actual item name, so we pass the placeholder to localize()
+						legendItem: this.localize('components.insights-discussion-activity-card.legendItem', { itemName: '{itemName}' }),
+						legendLabel: this.localize('components.insights-discussion-activity-card.legendLabel')
+					}
+				}
+			}
 		};
 	}
 }

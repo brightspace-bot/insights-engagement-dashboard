@@ -1,7 +1,8 @@
-import { action, computed, decorate, observable } from 'mobx';
+import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
+import { CategoryFilter } from '../model/categoryFilter';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../consts';
@@ -37,36 +38,15 @@ function lastAccessDateBucket(record) {
 	}
 }
 
-export class CourseLastAccessFilter {
+export class CourseLastAccessFilter extends CategoryFilter {
 	constructor() {
-		this.selectedCategories = new Set();
-	}
-
-	get id() { return filterId; }
-
-	get isApplied() {
-		return this.selectedCategories.size > 0;
-	}
-
-	set isApplied(isApplied) {
-		if (!isApplied) this.selectedCategories.clear();
-	}
-
-	get title() { return 'components.insights-course-last-access-card.courseAccess'; }
-
-	filter(record) {
-		return this.selectedCategories.has(lastAccessDateBucket(record));
-	}
-
-	selectCategory(category) {
-		this.selectedCategories.add(category);
+		super(
+			filterId,
+			'components.insights-course-last-access-card.courseAccess',
+			record => this.selectedCategories.has(lastAccessDateBucket(record))
+		);
 	}
 }
-decorate(CourseLastAccessFilter, {
-	isApplied: computed,
-	selectCategory: action,
-	selectedCategories: observable
-});
 
 class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -130,7 +110,10 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	get _preparedBarChartData() {
 		// return an array of size 6, each element mapping to a category on the course last access bar chart
 		const dateBucketCounts = [0, 0, 0, 0, 0, 0];
-		this.data.getRecordsInView(filterId).forEach(record => dateBucketCounts[ lastAccessDateBucket(record) ]++);
+		this.data
+			.withoutFilter(filterId)
+			.records
+			.forEach(record => dateBucketCounts[ lastAccessDateBucket(record) ]++);
 		return dateBucketCounts;
 	}
 
@@ -346,6 +329,7 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 }
 decorate(CourseLastAccessCard, {
+	filter: computed,
 	_preparedBarChartData: computed
 });
 customElements.define('d2l-insights-course-last-access-card', CourseLastAccessCard);

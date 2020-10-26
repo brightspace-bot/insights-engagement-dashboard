@@ -26,6 +26,7 @@ class Chart extends SkeletonMixin(LitElement) {
 	static get properties() {
 		return {
 			options: { type: Object, attribute: false },
+			globalOptions: { type: Object, attribute: false },
 			constructorType: { type: String },
 			highcharts: { type: Object, attribute: false },
 			immutable: { type: Boolean },
@@ -66,6 +67,7 @@ class Chart extends SkeletonMixin(LitElement) {
 			true,
 			true
 		];
+		this.globalOptions = null;
 	}
 
 	static get styles() {
@@ -81,6 +83,10 @@ class Chart extends SkeletonMixin(LitElement) {
 	}
 
 	render() {
+		if (this.globalOptions) {
+			this.highcharts.setOptions(this.globalOptions);
+		}
+
 		return html`
 			<div id="chart-container" tabindex="${this.skeleton ? -1 : 0}"></div>
 			<d2l-insights-overlay spinner-size="150" ?loading="${this.skeleton}"></d2l-insights-overlay>
