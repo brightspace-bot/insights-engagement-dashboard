@@ -153,9 +153,6 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			.d2l-insights-table-arrow-spacing {
 				padding-right: 30px;
 			}
-			.d2l-insights-table-visuallyhidden {
-				display: none;
-			}
 		`];
 	}
 
