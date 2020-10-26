@@ -35,6 +35,9 @@ function avgOf(records, field) {
  * @property {Object} data - an instance of Data from model/data.js
  * @property {Number} _currentPage
  * @property {Number} _pageSize
+ * @property {Number} _sortColumn - The index of the column that is currently sorted
+ * @property {String} _sortOrder - either 'asc' or 'desc'
+ * @property {Array} selectedUserIds - ids of users that are selected in the table
  */
 class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -45,6 +48,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			_pageSize: { type: Number, attribute: false },
 			_sortColumn: { type: Number, attribute: false },
 			_sortOrder: { type: String, attribute: false },
+			selectedUserIds: { type: Array, attribute: false }
 		};
 	}
 
@@ -79,6 +83,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this._pageSize = DEFAULT_PAGE_SIZE;
 		this._sortOrder = 'desc';
 		this._sortColumn = TABLE_USER.NAME_INFO;
+		this.selectedUserIds = [];
 	}
 
 	get _itemsCount() {
@@ -124,7 +129,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		const userLastFirstName = `${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`;
 		const selectorInfo = {
 			value: userId,
-			ariaLabel: this.localize('components.insights-users-table.selector-aria-label', { userLastFirstName })
+			ariaLabel: this.localize('components.insights-users-table.selector-aria-label', { userLastFirstName }),
+			selected: this.selectedUserIds.includes(userId)
 		};
 		const userInfo = [userLastFirstName, `${user[USER.USERNAME]} - ${userId}`];
 
@@ -283,8 +289,18 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this._currentPage = 1;
 		this._pageSize = Number(event.detail.itemCount); // itemCount comes back as a string
 	}
+
+	_handleSelectChanged(event) {
+		const changedUserId = Number(event.detail.value);
+		if (event.detail.selected) {
+			this.selectedUserIds = [...this.selectedUserIds, changedUserId];
+		} else {
+			this.selectedUserIds = this.selectedUserIds.filter(userId => userId !== changedUserId);
+		}
+	}
 }
 decorate(UsersTable, {
+	selectedUserIds: observable,
 	userDataForDisplay: computed,
 	_sortColumn: observable,
 	_sortOrder: observable,

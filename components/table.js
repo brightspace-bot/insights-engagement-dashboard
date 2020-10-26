@@ -237,7 +237,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		`;
 	}
 
-	_renderBodyCell(value, idx) {
+	_renderBodyCell(cellValue, idx) {
 		const columnType = this.columnInfo[idx].columnType;
 		const styles = {
 			'd2l-insights-table-cell': true,
@@ -247,7 +247,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 		const defaultHtml = html`
 			<td class="${classMap(styles)}">
-				<div class="d2l-skeletize d2l-skeletize-95 d2l-body-standard">${value}</div>
+				<div class="d2l-skeletize d2l-skeletize-95 d2l-body-standard">${cellValue}</div>
 			</td>
 		`;
 
@@ -259,9 +259,10 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			return html`
 				<td class="${classMap(styles)}">
 					<d2l-input-checkbox
-						aria-label="${value.ariaLabel}"
-						name="checkbox-${value.value}"
-						value="${value.value}"
+						aria-label="${cellValue.ariaLabel}"
+						name="checkbox-${cellValue.value}"
+						value="${cellValue.value}"
+						?checked="${cellValue.selected}"
 						@change="${this._handleRowSelected}"
 					></d2l-input-checkbox>
 				</td>
@@ -269,8 +270,8 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		} else if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
 			return html`
 				<td class="${classMap(styles)}">
-					<div class="d2l-body-standard">${value[0]}</div>
-					<div class="d2l-body-small">${value[1]}</div>
+					<div class="d2l-body-standard">${cellValue[0]}</div>
+					<div class="d2l-body-small">${cellValue[1]}</div>
 				</td>
 			`;
 		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT) {

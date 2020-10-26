@@ -24,10 +24,10 @@ const columnInfo = [
 ];
 
 const data = [
-	['First Item', 1, ['text1', 'subtext1'], { value: 123, ariaLabel: '123' }],
-	['Second Item', 2, ['text2', 'subtext2'], { value: 234, ariaLabel: '234' }],
-	['Third Item', 3, ['text3', 'subtext3'], { value: 345, ariaLabel: '345' }],
-	['Fourth Item', 4, ['text4', 'subtext4'], { value: 456, ariaLabel: '456' }]
+	['First Item', 1, ['text1', 'subtext1'], { value: 123, ariaLabel: '123', selected: false }],
+	['Second Item', 2, ['text2', 'subtext2'], { value: 234, ariaLabel: '234', selected: true }],
+	['Third Item', 3, ['text3', 'subtext3'], { value: 345, ariaLabel: '345', selected: false }],
+	['Fourth Item', 4, ['text4', 'subtext4'], { value: 456, ariaLabel: '456', selected: false }]
 ];
 
 describe('d2l-insights-table', () => {
@@ -106,5 +106,6 @@ function verifyCellData(cell, rowIdx, colIdx) {
 		expect(innerCheckbox.name).to.equal(`checkbox-${expectedValue.value}`);
 		expect(innerCheckbox.value).to.equal(expectedValue.value.toString());
 		expect(innerCheckbox.ariaLabel).to.equal(expectedValue.ariaLabel);
+		expect(innerCheckbox.checked).to.equal(expectedValue.selected);
 	}
 }

@@ -352,6 +352,27 @@ describe('d2l-insights-users-table', () => {
 			checkIfSorted(data, 'asc');
 		});
 	});
+
+	describe('eventing', () => {
+		it('should modify selectedUserIds when items in the table are selected', async() => {
+			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
+			const innerTable = el.shadowRoot.querySelector('d2l-insights-table');
+			await new Promise(resolve => setTimeout(resolve, 200));
+			await innerTable.updateComplete;
+
+			const checkbox1 = innerTable.shadowRoot.querySelectorAll('d2l-input-checkbox')[0]; // corresponds to id 300
+			const checkbox2 = innerTable.shadowRoot.querySelectorAll('d2l-input-checkbox')[1]; // corresponds to id 100
+
+			checkbox1.simulateClick();
+			expect(el.selectedUserIds).to.deep.equal([300]);
+
+			checkbox2.simulateClick();
+			expect(el.selectedUserIds).to.deep.equal([300, 100]);
+
+			checkbox1.simulateClick();
+			expect(el.selectedUserIds).to.deep.equal([100]);
+		});
+	});
 });
 
 function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
