@@ -33,6 +33,24 @@ describe('d2l-insights-current-final-grade-card', () => {
 			expect(title[0].innerText).to.equal('Current Grade');
 			const expected = [20, 30, 40, 50, 30, 90, 90, 90, 70, 70, 40, 50, 30, 90, 70, 80, 90, 80, 90, 80, 90, 40, 60];
 			expect(el._preparedHistogramData).to.deep.equal(expected);
+			expect(el._colours).to.deep.equal(['var(--d2l-color-amethyst)']);
+		});
+
+		it('should colour selected bars', async() => {
+			filter.selectCategory(30);
+			filter.selectCategory(50);
+			const el = await fixture(html`<d2l-insights-current-final-grade-card .data="${data}"></d2l-insights-current-final-grade-card>`);
+			// only the first 8 colours matter (from 20 to 90)
+			expect(el._colours.slice(0, 8)).to.deep.equal([
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-amethyst)',
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-amethyst)',
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-mica)'
+			]);
 		});
 
 		it('should exclude chart form tabindex when data is loading', async() => {
