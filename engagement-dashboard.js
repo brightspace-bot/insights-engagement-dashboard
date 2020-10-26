@@ -121,7 +121,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						<d2l-button-subtle
 							icon="d2l-tier1:help"
 							text=${this.localize('components.insights-engagement-dashboard.learMore')}
-							onclick="location.href='https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide';">
+							@click="${this._openHelpLink}">
 						</d2l-button-subtle>
 					</d2l-action-button-group>
 				</div>
@@ -200,6 +200,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		}
 
 		return this.__serverData;
+	}
+
+	_openHelpLink() {
+		window.open('https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide', '_blank');
 	}
 
 	_roleFilterChange(event) {
