@@ -20,6 +20,7 @@ import './components/default-view-popup.js';
 import { css, html } from 'lit-element/lit-element.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
+import { createComposeEmailPopup } from './components/emailIntegration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
@@ -33,6 +34,7 @@ import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
+import { toJS } from 'mobx';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -295,8 +297,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			const noUsersSelectedDialog = this.shadowRoot.querySelector('#no-users-selected-dialog');
 			noUsersSelectedDialog.opened = true;
 		} else {
-			// (out-of-scope) show email edit dialog
-			console.log(selectedUserIds);
+			createComposeEmailPopup(toJS(selectedUserIds), 6606); // TODO: make the orgUnitId configurable
 		}
 	}
 
