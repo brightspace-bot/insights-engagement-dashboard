@@ -11,7 +11,7 @@ import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin';
 
-const TABLE_USER = {
+export const TABLE_USER = {
 	NAME_INFO: 0,
 	COURSES: 1,
 	AVG_GRADE: 2,
@@ -40,6 +40,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	static get properties() {
 		return {
 			data: { type: Object, attribute: false },
+			exportData: { type: Object, attribute: false },
 			_currentPage: { type: Number, attribute: false },
 			_pageSize: { type: Number, attribute: false },
 			_sortColumn: { type: Number, attribute: false },
@@ -74,6 +75,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this.data = {
 			users: []
 		};
+		this.exportData = {};
 		this._currentPage = 1;
 		this._pageSize = DEFAULT_PAGE_SIZE;
 		this._sortOrder = 'desc';
@@ -182,7 +184,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	setDataForExport(userData) {
-		this.data._data.dataForExport = userData;
+		this.exportData.setData(userData);
 	}
 
 	get columnInfo() {

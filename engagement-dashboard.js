@@ -20,6 +20,7 @@ import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
+import { ExportData } from './model/exportData';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
@@ -29,7 +30,6 @@ import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
-import { toJS } from 'mobx';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -161,7 +161,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
 				</div>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-				<d2l-insights-users-table .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-users-table>
+				<d2l-insights-users-table .data="${this._data}" .exportData="${this._exportData}" ?skeleton="${this._isLoading}"></d2l-insights-users-table>
 
 				<d2l-insights-default-view-popup
 					?opened=${Boolean(this._serverData.defaultViewPopupDisplayData.length)}
@@ -171,7 +171,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	_exportToCsv() {
-		toJS(this._serverData.dataForExport);
+		this._exportData.downloadCsv();
 	}
 
 	get _isLoading() {
@@ -196,6 +196,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		}
 
 		return this.__data;
+	}
+
+	get _exportData() {
+		if (!this.__exportData) {
+			this.__exportData = new ExportData();
+		}
+		return this.__exportData;
 	}
 
 	get _serverData() {
