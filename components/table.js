@@ -233,7 +233,6 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				<th role="button" class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : 0}">
 					${info.headerText}
 					${!isSortedColumn ? html`` : html`<d2l-icon role="img" aria-label="${arrowDirection === 'arrow-toggle-up' ? 'Sorted Ascending' : 'Sorted Descending'}" icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
-
 				</th>
 			`;
 		}

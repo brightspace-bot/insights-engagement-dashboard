@@ -372,10 +372,12 @@ describe('d2l-insights-users-table', () => {
 
 			// should only select the first 20 items
 			checkboxAll.simulateClick();
+			await new Promise(resolve => setTimeout(resolve, 200));
 			await innerTable.updateComplete;
 			expect(el.selectedUserIds).to.deep.equal(expected.map(data => data[0].value).slice(0, 20));
 
 			checkboxAll.simulateClick();
+			await new Promise(resolve => setTimeout(resolve, 200));
 			await innerTable.updateComplete;
 			expect(el.selectedUserIds).to.deep.equal([]);
 		});
