@@ -13,7 +13,7 @@ class MessageContainer extends Localizer(MobxLitElement) {
 
 	constructor() {
 		super();
-		this.data = [];
+		this.data = {};
 	}
 
 	static get styles() {

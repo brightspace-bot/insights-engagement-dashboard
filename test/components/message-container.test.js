@@ -4,14 +4,18 @@ import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-help
 describe('d2l-insights-message-container', () => {
 
 	const dataWithTruncatedRecords = {
-		serverData : {
-			isRecordsTruncated: true
+		_data: {
+			serverData : {
+				isRecordsTruncated: true
+			}
 		}
 	};
 
 	const dataWithoutTruncatedRecords = {
-		serverData : {
-			isRecordsTruncated: false
+		_data: {
+			serverData : {
+				isRecordsTruncated: false
+			}
 		}
 	};
 
