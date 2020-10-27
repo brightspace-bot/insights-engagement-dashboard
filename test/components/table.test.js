@@ -48,7 +48,7 @@ describe('d2l-insights-table', () => {
 			const headerCells = Array.from(el.shadowRoot.querySelectorAll('thead>tr>th'));
 			expect(headerCells.length).to.equal(columnInfo.length);
 			headerCells.forEach((cell, idx) => {
-				expect(cell.innerText).to.equal(columnInfo[idx].headerText);
+				expect(cell.innerText.trim()).to.equal(columnInfo[idx].headerText);
 			});
 
 			const rows = Array.from(el.shadowRoot.querySelectorAll('tbody>tr'));
