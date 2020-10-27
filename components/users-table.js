@@ -1,7 +1,7 @@
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
-import { computed, decorate, observable, reaction } from 'mobx';
+import { action, computed, decorate, observable, reaction } from 'mobx';
 import { css, html } from 'lit-element';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl';
 import { RECORD, USER } from '../consts';
@@ -322,6 +322,7 @@ decorate(UsersTable, {
 	selectedUserIds: observable,
 	userDataForDisplay: computed,
 	_sortColumn: observable,
-	_sortOrder: observable
+	_sortOrder: observable,
+	_handleColumnSort: action
 });
 customElements.define('d2l-insights-users-table', UsersTable);
