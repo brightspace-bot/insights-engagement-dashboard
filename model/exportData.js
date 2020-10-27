@@ -1,4 +1,4 @@
-import { action, computed, decorate, observable, toJS } from 'mobx';
+import { action, decorate, observable, toJS } from 'mobx';
 import { TABLE_USER } from '../components/users-table';
 
 export class ExportData {
