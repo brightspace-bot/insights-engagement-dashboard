@@ -28,10 +28,10 @@ class MessageContainer extends Localizer(MobxLitElement) {
 			}
 
 			.d2l-insights-message-container-body {
-				background-color: #f9fbff; /* regolith */
-				border: 1px solid #e3e9f1; /* gypsum */
+				background-color: var(--d2l-color-regolith);
+				border: 1px solid var(--d2l-color-gypsum);
 				border-radius: 8px;
-				color: #494c4e; /* ferrite */
+				color: var(--d2l-color-ferrite);
 				display: flex;
 				height: 130px;
 				width: 200%;
@@ -47,7 +47,7 @@ class MessageContainer extends Localizer(MobxLitElement) {
 
 	// @computed
 	get _isRecordsTruncated() {
-		return this.data.serverData.isRecordsTruncated;
+		return this.data._data.serverData.isRecordsTruncated;
 	}
 
 	get _messageContainerTextTooManyResults() {
