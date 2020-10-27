@@ -100,7 +100,6 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		if (this._itemsCount) {
 			const start = this._pageSize * (this._currentPage - 1);
 			const end = this._pageSize * (this._currentPage); // it's ok if this goes over the end of the array
-
 			return this.userDataForDisplay.slice(start, end);
 		}
 

@@ -24,7 +24,7 @@ const data = {
 	],
 	records: [
 		...records,
-		...Array.from({ length: 19 }, (val, idx) => [111, idx, mockRoleIds.student, 1, 93, 7000, null])
+		...Array.from({ length: 19 }, (val, idx) => [111, idx, mockRoleIds.student, 1, 93, 7000, null, 0, 0, 0])
 	]
 };
 data.recordsByUser = new Map();
@@ -36,15 +36,16 @@ data.records.forEach(r => {
 });
 
 const expected = [
-	[['Harrison, George', 'gharrison - 300'], 14, '71.42 %', '19.64', getLocalDateTime(2)],
-	[['Lennon, John', 'jlennon - 100'], 12, '22 %', '2.78', getLocalDateTime(0)],
-	[['McCartney, Paul', 'pmccartney - 200'], 13, '74 %', '23.72', 'NULL'],
-	[['Starr, Ringo', 'rstarr - 400'], 9, '55 %', '8.33', getLocalDateTime(3)],
+	[['Harrison, George', 'gharrison - 300'], 14, '71.42 %', '19.64', ['1', '6', '28'], getLocalDateTime(2)],
+	[['Lennon, John', 'jlennon - 100'], 12, '22 %', '2.78', ['1', '2', '2'], getLocalDateTime(0)],
+	[['McCartney, Paul', 'pmccartney - 200'], 13, '74 %', '23.72', ['0', '0', '0'], 'NULL'],
+	[['Starr, Ringo', 'rstarr - 400'], 9, '55 %', '8.33', ['1', '3', '11'], getLocalDateTime(3)],
 	...Array.from({ length: 19 }, (val, idx) => [
 		[`zz${idx}Last, zz${idx}First`, `username${idx} - ${idx}`],
 		1,
 		'93 %',
 		'116.67',
+		['0', '0', '0'],
 		'NULL'
 	]).sort((u1, u2) => u1[0][0].localeCompare(u2[0][0]))
 ];
@@ -190,7 +191,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.maxPageNumber).to.equal(0);
 				expect(pageSelector.pageNumber).to.equal(0);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('.d2l-insights-table-table > tbody > tr > td:first-child'));
 				expect(displayedUsers.length).to.equal(20);
 			});
 		});
@@ -198,7 +199,7 @@ describe('d2l-insights-users-table', () => {
 });
 
 function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
-	let displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+	let displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll('.d2l-insights-table-table > tbody > tr > td:first-child'));
 	expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
 	displayedUserInfo.forEach((cell, rowIdx) => {
 		const mainText = cell.querySelector('div:first-child');
@@ -207,14 +208,23 @@ function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
 		expect(subText.innerText).to.equal(expected[rowIdx + startRowNum][0][1]);
 	});
 
-	[2, 3, 4, 5].forEach(child => {
-
-		displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll(`tbody > tr > td:nth-child(${child})`));
+	[2, 3, 4, 6].forEach(child => {
+		displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll(`.d2l-insights-table-table > tbody > tr > td:nth-child(${child})`));
 		expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
 		displayedUserInfo.forEach((cell, rowIdx) => {
 			const mainText = cell.querySelector('div');
 			expect(mainText.innerText).to.equal(expected[rowIdx + startRowNum][child - 1].toString());
 		});
+	});
+
+	displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll('.d2l-insights-table-table > tbody > tr > td:nth-child(5)'));
+	displayedUserInfo.forEach((cell, rowIdx) => {
+		const numThreads = cell.querySelector('td:nth-child(1) > div:first-child').innerText;
+		const numReads = cell.querySelector('td:nth-child(3) > div:first-child').innerText;
+		const numReplies = cell.querySelector('td:nth-child(5) > div:first-child').innerText;
+		expect(numThreads).to.equal(expected[rowIdx + startRowNum][4][0]);
+		expect(numReads).to.equal(expected[rowIdx + startRowNum][4][1]);
+		expect(numReplies).to.equal(expected[rowIdx + startRowNum][4][2]);
 	});
 }
 
