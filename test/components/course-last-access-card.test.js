@@ -7,7 +7,7 @@ describe('d2l-insights-course-last-access-card', () => {
 	const filter = new CourseLastAccessFilter();
 	const data = {
 		getFilter: id => (id === filter.id ? filter : null),
-		getRecordsInView: id => (id === filter.id ? records : null)
+		withoutFilter: id => (id === filter.id ? { records } : null)
 	};
 
 	describe('constructor', () => {

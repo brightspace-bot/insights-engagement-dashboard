@@ -8,6 +8,8 @@ export default {
 	"components.insights-engagement-dashboard.overdueAssignmentsHeading": "Overdue Assignments",
 	"components.insights-engagement-dashboard.lastSystemAccess": "Users have no system access in the last 14 days.",
 	"components.insights-engagement-dashboard.lastSystemAccessHeading": "System Access",
+	"components.insights-engagement-dashboard.learMore": "Learn More",
+	"components.insights-engagement-dashboard.exportToCsv": "Export to CSV",
 
 	"components.insights-role-filter.name": "Role",
 
@@ -100,6 +102,8 @@ export default {
 	"components.insights-discussion-activity-card.toolTipThreads": "{numberOfUsers} threads have been created by the returned users",
 	"components.insights-discussion-activity-card.toolTipReplies": "{numberOfUsers} posts have been replied to by the returned users",
 	"components.insights-discussion-activity-card.toolTipReads": "{numberOfUsers} posts have been read by the returned users",
+	"components.insights-discussion-activity-card.legendItem": "Toggle {itemName}",
+	"components.insights-discussion-activity-card.legendLabel": "Toggle filtering",
 
 	"components.insights-applied-filters.clear-all": "Clear all",
 	"components.insights-applied-filters.label-text": "Showing only:",

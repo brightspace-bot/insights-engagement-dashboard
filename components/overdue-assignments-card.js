@@ -46,7 +46,7 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardValue() {
-		return this.data.getRecordsInView(filterId)
+		return this.data.withoutFilter(filterId).records
 			.reduce((acc, record) => {
 				if (!acc.has(record[RECORD.USER_ID]) && record[RECORD.OVERDUE] !== 0) {
 					acc.add(record[RECORD.USER_ID]);
@@ -64,7 +64,6 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			<d2l-labs-summary-card
 				id="d2l-insights-engagement-overdue-assignments"
 				is-value-clickable
-				.data="${this.data}"
 				card-title="${this._cardTitle}"
 				card-value="${this._cardValue}"
 				card-message="${this._cardMessage}"
@@ -79,6 +78,7 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 }
 decorate(OverdueAssignmentsCard, {
+	filter: computed,
 	_cardValue: computed
 });
 customElements.define('d2l-insights-overdue-assignments-card', OverdueAssignmentsCard);

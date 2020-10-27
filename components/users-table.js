@@ -1,7 +1,7 @@
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
 import './table.js';
-import { computed, decorate } from 'mobx';
+import { computed, decorate, observable } from 'mobx';
 import { css, html } from 'lit-element';
 import { formatNumber, formatPercent } from '@brightspace-ui/intl';
 import { RECORD, USER } from '../consts';
@@ -42,7 +42,9 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return {
 			data: { type: Object, attribute: false },
 			_currentPage: { type: Number, attribute: false },
-			_pageSize: { type: Number, attribute: false }
+			_pageSize: { type: Number, attribute: false },
+			_sortColumn: { type: Number, attribute: false },
+			_sortOrder: { type: String, attribute: false },
 		};
 	}
 
@@ -75,6 +77,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		};
 		this._currentPage = 1;
 		this._pageSize = DEFAULT_PAGE_SIZE;
+		this._sortOrder = 'desc';
 	}
 
 	get _itemsCount() {
@@ -97,6 +100,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		}
 
 		if (this._itemsCount) {
+
 			const start = this._pageSize * (this._currentPage - 1);
 			const end = this._pageSize * (this._currentPage); // it's ok if this goes over the end of the array
 			return this.userDataForDisplay.slice(start, end);
@@ -105,33 +109,79 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return [];
 	}
 
+	_handleColumnSort(e) {
+		this._sortOrder = e.detail.order;
+		this._sortColumn = e.detail.column;
+		this._currentPage = 0;
+	}
+
+	_preProcessData(user) {
+		const recordsByUser = this.data.recordsByUser;
+
+		const records = recordsByUser.get(user[USER.ID]);
+		const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
+		const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
+		const threads = avgOf(records, RECORD.DISCUSSION_ACTIVITY_THREADS);
+		const read = avgOf(records, RECORD.DISCUSSION_ACTIVITY_READS);
+		const replies = avgOf(records, RECORD.DISCUSSION_ACTIVITY_REPLIES);
+		const date = user[USER.LAST_SYS_ACCESS] ? new Date(user[USER.LAST_SYS_ACCESS]).toISOString() : null;
+		return [
+			[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
+			records.length, // courses
+			avgFinalGrade,
+			avgOf(records, RECORD.TIME_IN_CONTENT),
+			[Math.round(threads), Math.round(read), Math.round(replies)],
+			date ? new Date(date) : undefined
+		];
+	}
+
+	_choseSortFunction(column, order) {
+		const ORDER = {
+			'asc': [-1, 1, 0],
+			'desc': [1, -1, 0]
+		};
+		if (column === 0 || column === undefined) {
+			// sorting the last name requires a slightly different sort function
+			return (user1, user2) => {
+				const lastName1 = user1[0][0].toLowerCase();
+				const lastName2 = user2[0][0].toLowerCase();
+				return (lastName1 > lastName2 ? ORDER[order][0] :
+					lastName1 < lastName2 ? ORDER[order][1] :
+						ORDER[order][2]);
+			};
+		}
+
+		return (user1, user2) => {
+			// undefined is neither greater or less then a value so we set it to -infinity
+			const record1 = user1[column] ? user1[column] : Number.NEGATIVE_INFINITY;
+			const record2 = user2[column] ? user2[column] : Number.NEGATIVE_INFINITY;
+			return (record1 > record2 ? ORDER[order][1] :
+				record1 < record2 ? ORDER[order][0] :
+					ORDER[order][2]);
+		};
+	}
+
+	_formatDataForDisplay(user) {
+		const dateIsNull = user[TABLE_USER.LAST_ACCESSED_SYS] === undefined;
+		return [
+			user[TABLE_USER.NAME_INFO],
+			user[TABLE_USER.COURSES], // courses
+			user[TABLE_USER.AVG_GRADE] ? formatPercent(user[TABLE_USER.AVG_GRADE] / 100, numberFormatOptions) : '',
+			formatNumber(user[TABLE_USER.AVG_TIME_IN_CONTENT] / 60, numberFormatOptions),
+			user[TABLE_USER.AVG_DISCUSSION_ACTIVITY],
+			dateIsNull ? this.localize('components.insights-users-table.null') : formatDateTime(new Date(user[TABLE_USER.LAST_ACCESSED_SYS]), { format: 'medium' })
+		];
+	}
+
 	// @computed
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
 		// then sort by lastFirstName
-		const recordsByUser = this.data.recordsByUser;
+		const sortFunction = this._choseSortFunction(this._sortColumn, this._sortOrder);
 		return this.data.users
-			.map(user => {
-				const records = recordsByUser.get(user[USER.ID]);
-				const recordsWithGrades = records.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
-				const avgFinalGrade = avgOf(recordsWithGrades, RECORD.CURRENT_FINAL_GRADE);
-				const threads = avgOf(records, RECORD.DISCUSSION_ACTIVITY_THREADS);
-				const read = avgOf(records, RECORD.DISCUSSION_ACTIVITY_READS);
-				const replies = avgOf(records, RECORD.DISCUSSION_ACTIVITY_REPLIES);
-				const date = user[USER.LAST_SYS_ACCESS] ? new Date(user[USER.LAST_SYS_ACCESS]).toISOString() : null;
-				return [
-					[`${user[USER.LAST_NAME]}, ${user[USER.FIRST_NAME]}`, `${user[USER.USERNAME]} - ${user[USER.ID]}`],
-					records.length, // courses
-					avgFinalGrade ? formatPercent(avgFinalGrade / 100, numberFormatOptions) : '',
-					formatNumber(avgOf(records, RECORD.TIME_IN_CONTENT) / 60, numberFormatOptions),
-					[Math.round(threads), Math.round(read), Math.round(replies)],
-					date ? formatDateTime(new Date(date), { format: 'medium' }) : this.localize('components.insights-users-table.null')
-				];
-			})
-			.sort((user1, user2) => {
-				// sort by lastFirstName
-				return user1[TABLE_USER.NAME_INFO][0].localeCompare(user2[TABLE_USER.NAME_INFO][0]);
-			});
+			.map(this._preProcessData.bind(this))
+			.sort(sortFunction.bind(this))
+			.map(this._formatDataForDisplay.bind(this));
 	}
 
 	get columnInfo() {
@@ -167,9 +217,11 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return html`
 			<d2l-insights-table
 				title="${this.localize('components.insights-users-table.title')}"
+				@d2l-insights-table-sort="${this._handleColumnSort}"
 				.columnInfo=${this.columnInfo}
 				.data="${this._displayData}"
-				?skeleton="${this.skeleton}"></d2l-insights-table>
+				?skeleton="${this.skeleton}"
+			></d2l-insights-table>
 
 			<d2l-labs-pagination
 				show-item-count-select
@@ -218,6 +270,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 }
 decorate(UsersTable, {
-	userDataForDisplay: computed
+	userDataForDisplay: computed,
+	_sortColumn: observable,
+	_sortOrder: observable,
 });
 customElements.define('d2l-insights-users-table', UsersTable);

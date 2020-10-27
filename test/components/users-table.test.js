@@ -196,6 +196,122 @@ describe('d2l-insights-users-table', () => {
 			});
 		});
 	});
+
+	describe('sorting', () => {
+
+		let headers;
+		let userTable;
+
+		before(async function() {
+			this.timeout(10000);
+
+			const table = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
+			await new Promise(resolve => setTimeout(resolve, 200));
+			await table.updateComplete;
+
+			userTable = table.shadowRoot.querySelector('d2l-insights-table');
+			headers = userTable.shadowRoot.querySelectorAll('th');
+		});
+
+		const toNumberManipulator = (record) => Number.parseFloat(record.replace('%', '').trim());
+
+		const toLowerManipulator = (record) => record.toLowerCase();
+
+		const parseDate = (dateString) => {
+			const date = Date.parse(dateString);
+			if (isNaN(date)) {
+				return Number.NEGATIVE_INFINITY;
+			}
+			return date;
+		};
+
+		const checkIfSorted = (records, order) => {
+
+			records.forEach((record, i) => {
+				if (i > 0) {
+					const previous = records[i - 1];
+					if (order === 'desc') expect(record <= previous, 'out of order').to.be.true;
+					else if (order === 'asc') expect(record >= previous, 'out of order').to.be.true;
+				}
+			});
+		};
+
+		it('should sort by last name when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(0).click();
+			await userTable.updateComplete;
+			let data = userTable.data.map(record => toLowerManipulator(record[0][0].split(',')[0]));
+			checkIfSorted(data, 'desc');
+
+			// then sort by ascending order
+			headers.item(0).click();
+			await userTable.updateComplete;
+			data = userTable.data.map(record => toLowerManipulator(record[0][0].split(',')[0]));
+			checkIfSorted(data, 'asc');
+		});
+
+		it('should sort by course total when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(1).click();
+			await userTable.updateComplete;
+			let data = userTable.data.map(record => record[1]);
+			checkIfSorted(data, 'desc');
+
+			// then sort by ascending order
+			headers.item(1).click();
+			await userTable.updateComplete;
+			data = userTable.data.map(record => record[1]);
+			checkIfSorted(data, 'asc');
+		});
+
+		it('should sort by average grade when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(2).click();
+			await userTable.updateComplete;
+			let data = userTable.data.map(record => toNumberManipulator(record[2]));
+			checkIfSorted(data, 'desc');
+
+			// then sort by ascending order
+			headers.item(2).click();
+			await userTable.updateComplete;
+			data = userTable.data.map(record => toNumberManipulator(record[2]));
+			checkIfSorted(data, 'asc');
+		});
+
+		it('should sort by average time in content when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(3).click();
+			await userTable.updateComplete;
+			let data = userTable.data.map(record => toNumberManipulator(record[3]));
+			checkIfSorted(data, 'desc');
+
+			// then sort by ascending order
+			headers.item(3).click();
+			await userTable.updateComplete;
+			data = userTable.data.map(record => toNumberManipulator(record[3]));
+			checkIfSorted(data, 'asc');
+		});
+
+		it('should sort by system access when header is clicked', async() => {
+
+			// first click for descending order
+			headers.item(4).click();
+			await userTable.updateComplete;
+			let data = userTable.data.map(record => parseDate(record[4]));
+			checkIfSorted(data, 'desc');
+
+			// then sort by ascending order
+			headers.item(4).click();
+			await userTable.updateComplete;
+			data = userTable.data.map(record => parseDate(record[4]));
+			checkIfSorted(data, 'asc');
+		});
+
+	});
 });
 
 function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {

@@ -16,6 +16,8 @@ export const COLUMN_TYPES = {
  * @property {String} title - for use by screen reader users
  * @property {Array} columnInfo - list of column info. Contains headerText and columnType
  * @property {Array} data - a row-indexed 2D array of rows and columns.
+ * @property {Number} sortColumn - the column that the table is sorted by (starting at 0)
+ * @property {String} sortOrder - weather the column is asc or desc sorted
  * E.g. data[0] gets the entire first row; data[0][0] gets the first row / first column
  */
 class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
@@ -24,7 +26,9 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		return {
 			title: { type: String, attribute: true },
 			columnInfo: { type: Array, attribute: false },
-			data: { type: Array, attribute: false }
+			data: { type: Array, attribute: false },
+			sortColumn: { type: Number, attribute: 'sort-column', reflect: true },
+			sortOrder: { type: String, attribute: 'sort-order', reflect: true },
 		};
 	}
 
@@ -55,7 +59,6 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				color: var(--d2l-color-ferrite);
 				height: 27px; /* min-height to be 48px including border */
 				line-height: 1.4rem;
-				padding: 10px 20px;
 			}
 
 			.d2l-insights-table-cell {
@@ -64,7 +67,25 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				font-weight: normal;
 				height: 41px; /* min-height to be 62px including border */
 				padding: 10px 20px;
+				position: relative;
 				vertical-align: middle;
+			}
+
+			.d2l-insights-table-cell-header {
+				cursor: pointer;
+			}
+
+			.d2l-insights-table-cell-header:focus {
+				outline: solid 0;
+				text-decoration: underline;
+			}
+
+			.d2l-insights-table-cell-sort-indicator {
+				pointer-events: none;
+				position: absolute;
+				right: 10px;
+				top: 50%;
+				transform: translateY(-50%);
 			}
 
 			/* Table cell borders - to get exactly 1px inner borders in all cells */
@@ -129,6 +150,9 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			:host([dir="rtl"]) .d2l-insights-table-table .d2l-insights-table-row-last > .d2l-insights-table-cell-last {
 				border-bottom-left-radius: 8px;
 			}
+			.d2l-insights-table-arrow-spacing {
+				padding-right: 30px;
+			}
 		`];
 	}
 
@@ -137,6 +161,8 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		this.columnInfo = [];
 		this.data = [];
 		this.title = '';
+		this.sortColumn = 0;
+		this.sortOrder = 'desc';
 	}
 
 	render() {
@@ -170,14 +196,26 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	}
 
 	_renderHeaderCell(info, idx) {
+
+		const isSortedColumn = idx === this.sortColumn;
+
 		const styles = {
 			'd2l-insights-table-cell': true,
+			'd2l-insights-table-cell-header': true,
 			'd2l-insights-table-cell-first': idx === 0,
-			'd2l-insights-table-cell-last': idx === this._numColumns - 1
+			'd2l-insights-table-cell-last': idx === this._numColumns - 1,
+			'd2l-insights-table-arrow-spacing': isSortedColumn
 		};
+		const spaceArrow = { 'd2l-insights-table-cell-sort-indicator': isSortedColumn };
+
+		const arrowDirection = isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : '';
 
 		return html`
-			<th class="${classMap(styles)}" scope="col">${info.headerText}</th>
+			<th role="button" class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : 0}">
+				${info.headerText}
+				${!isSortedColumn ? html`` : html`<d2l-icon role="img" aria-label="${arrowDirection === 'arrow-toggle-up' ? 'Sorted Ascending' : 'Sorted Descending'}" icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
+
+			</th>
 		`;
 	}
 
@@ -255,6 +293,53 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		}
 
 		throw new Error('Users table: unknown column type');
+	}
+
+	_handleHeaderKey(e) {
+
+		const children = e.target.parentElement.children;
+		let colmnNumber = Array.from(children).indexOf(e.target);
+		if (e.keyCode === 32 /* spacebar */ || e.key === 'Enter') {
+			e.preventDefault();
+			this._handleHeaderClicked(e);
+			return;
+		} else if (e.key === 'ArrowLeft') {
+			colmnNumber -= 1;
+			if (colmnNumber < 0) {
+				colmnNumber = children.length - 1;
+			}
+		} else if (e.key === 'ArrowRight') {
+			colmnNumber += 1;
+			if (colmnNumber >= children.length) {
+				colmnNumber = 0;
+			}
+		}
+		children[colmnNumber].focus();
+		if (e.keyCode === 'Tab') e.preventDefault();
+		return false;
+	}
+
+	_handleHeaderClicked(e) {
+		const children = e.target.parentElement.children;
+		const colmnNumber = Array.from(children).indexOf(e.target);
+
+		if (colmnNumber !== this.sortColumn) {
+			this.sortOrder = 'desc';
+		} else {
+			if (this.sortOrder === 'asc') {
+				this.sortOrder = 'desc';
+			} else {
+				this.sortOrder = 'asc';
+			}
+		}
+
+		this.sortColumn = colmnNumber;
+
+		this.dispatchEvent(new CustomEvent('d2l-insights-table-sort',
+			{
+				detail: { column: this.sortColumn, order: this.sortOrder },
+			}
+		));
 	}
 }
 customElements.define('d2l-insights-table', Table);
