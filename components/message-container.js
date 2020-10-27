@@ -34,7 +34,7 @@ class MessageContainer extends Localizer(MobxLitElement) {
 				color: var(--d2l-color-ferrite);
 				display: flex;
 				height: 130px;
-				width: 200%;
+				width: 73vw;
 			}
 
 			.d2l-insights-message-container-value {
@@ -59,7 +59,7 @@ class MessageContainer extends Localizer(MobxLitElement) {
 		if (this._isRecordsTruncated) {
 			return html`
 				<div class="d2l-insights-message-container-body">
-					<span class="d2l-insights-message-container-value"> ${this._messageContainerTextTooManyResults} </span>
+					<span class="d2l-insights-message-container-value">${this._messageContainerTextTooManyResults}</span>
 				</div>
 			`;
 		}
