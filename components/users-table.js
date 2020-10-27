@@ -223,8 +223,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return [
 			{
 				headerText: '', // no text should appear for this column header
-				columnType: COLUMN_TYPES.ROW_SELECTOR,
-				sortable: false
+				columnType: COLUMN_TYPES.ROW_SELECTOR
 			},
 			{
 				headerText: this.localize('components.insights-users-table.lastFirstName'),

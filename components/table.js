@@ -16,7 +16,8 @@ export const COLUMN_TYPES = {
 
 /**
  * @property {String} title - for use by screen reader users
- * @property {Array} columnInfo - list of column info. Contains headerText and columnType
+ * @property {Array} columnInfo - list of column info. Contains headerText and columnType.
+ *                                NB: only one column of type ROW_SELECTOR is allowed
  * @property {Array} data - a row-indexed 2D array of rows and columns.
  * @property {Number} sortColumn - the column that the table is sorted by (starting at 0)
  * @property {String} sortOrder - whether the column is asc or desc sorted
