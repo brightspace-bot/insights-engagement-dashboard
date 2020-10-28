@@ -15,14 +15,6 @@ export class TelemetryHelper {
 			.setBody(eventBody);
 	}
 
-	getPerformanceLoadPageMeasures() {
-		if (!window.performance || !window.performance.getEntriesByName) {
-			return [];
-		}
-
-		return window.performance.getEntriesByType('measure');
-	}
-
 	logPerformanceEvent({ id, measures, action }) {
 		if (!this._client || !window.location) {
 			return;
@@ -42,4 +34,12 @@ export class TelemetryHelper {
 
 		this._client.logUserEvent(event);
 	}
+}
+
+export function getPerformanceLoadPageMeasures() {
+	if (!window.performance || !window.performance.getEntriesByName) {
+		return [];
+	}
+
+	return window.performance.getEntriesByType('measure');
 }

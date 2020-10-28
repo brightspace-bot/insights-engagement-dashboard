@@ -16,6 +16,7 @@ import 'd2l-button-group/d2l-action-button-group';
 import './components/default-view-popup.js';
 
 import { css, html } from 'lit-element/lit-element.js';
+import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
@@ -28,7 +29,6 @@ import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
-import { TelemetryHelper } from './model/telemetry-helper';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 
 /**
@@ -239,10 +239,9 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			return;
 		}
 
-		const measures = this._telemetryHelper.getPerformanceLoadPageMeasures();
 		this._telemetryHelper.logPerformanceEvent({
 			id: this.telemetryId,
-			measures,
+			measures: getPerformanceLoadPageMeasures(),
 			action: 'PageLoad'
 		});
 	}
@@ -256,7 +255,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			return;
 		}
 
-		console.log(this.telemetryId);
 		this._telemetryHelper.logPerformanceEvent({
 			id: this.telemetryId,
 			measures: [event.detail.value],
