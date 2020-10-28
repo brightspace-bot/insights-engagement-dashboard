@@ -239,7 +239,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return this.__serverData;
 	}
 
-
 	get _telemetryHelper() {
 		if (!this.telemetryEndpoint) {
 			return null;
