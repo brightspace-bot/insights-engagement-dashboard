@@ -220,7 +220,6 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 					}
 				}
 			},
-			animation: false,
 			tooltip: {
 				formatter: function() {
 					if (this.point.y === 1) {
@@ -286,7 +285,6 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				series: {
 					minPointLength: 2, // visualize 0 points
 					pointStart: 0,
-					animation: false,
 					pointWidth: 16,
 					pointPadding: 0.60,
 					accessibility: {

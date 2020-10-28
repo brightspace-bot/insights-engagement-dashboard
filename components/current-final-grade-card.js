@@ -86,11 +86,14 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	// @computed
 	get _preparedHistogramData() {
-		return this.data.withoutFilter(filterId).records
+		const bins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.data.withoutFilter(filterId).records
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
 			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
 			.filter(item => item[0] || item[1])
-			.map(item => gradeCategory(item[1]));
+			.map(item => gradeCategory(item[1]))
+			.forEach(gradeCategory => bins[gradeCategory / 10] += 1);
+		return bins;
 	}
 
 	get _colours() {
@@ -147,7 +150,7 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		const options = this.chartOptions;
-		if (!this.skeleton && !options.series[1].data.length) {
+		if (!this.skeleton && !options.series[0].data.length) {
 			return html`<div class="d2l-insights-final-grade-container">
 				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
 				<div class="d2l-insights-summary-card-body">
@@ -169,9 +172,9 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 		return {
 			chart: {
-				height: 230
+				height: 230,
+				type: 'column',
 			},
-			animation: false,
 			tooltip: {
 				formatter: function() {
 					const yCeil = Math.ceil(this.y);
@@ -209,15 +212,16 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				allowDecimals: false,
 				alignTicks: false,
 				tickWidth: 0, // remove tick marks
-				tickPositions: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				categories: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
 				floor: 0,
 				ceiling: 100,
 				endOnTick: true,
 				labels: {
 					align: 'center',
-					reserveSpace: true
+					reserveSpace: true,
+					x: -30,
 				},
-				width: '108%', // move extra space at end of x-axis out of the container
+				//width: '108%', // move extra space at end of x-axis out of the container
 			},
 			yAxis: {
 				tickAmount: 4,
@@ -242,7 +246,6 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				series: {
 					minPointLength: 2, // visualize 0 points
 					pointStart: 0,
-					animation: false,
 					pointWidth: 37,
 					pointPadding: 0.60,
 					accessibility: {
@@ -271,16 +274,8 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				}
 			},
 			series: [{
-				type: 'histogram',
-				animation: false,
-				lineWidth: 1,
-				baseSeries: 1,
-				shadow: false,
-				binWidth: 9.9999
-			},
-			{
 				data: this._preparedHistogramData,
-				visible: false,
+				name: 'data',
 			}],
 		};
 	}
