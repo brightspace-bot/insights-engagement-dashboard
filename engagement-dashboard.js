@@ -11,6 +11,7 @@ import './components/applied-filters';
 import './components/aria-loading-progress';
 import './components/course-last-access-card.js';
 import './components/discussion-activity-card.js';
+import './components/message-container.js';
 import 'd2l-button-group/d2l-action-button-group';
 
 import './components/default-view-popup.js';
@@ -142,7 +143,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						?demo="${this.isDemo}"
 					></d2l-insights-role-filter>
 				</div>
-
+				<d2l-insights-message-container .data="${this._data}"></d2l-insights-message-container>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container-applied-filters">
 					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
