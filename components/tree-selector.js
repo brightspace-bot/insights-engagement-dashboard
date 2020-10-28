@@ -47,9 +47,9 @@ class TreeSelector extends Localizer(LitElement) {
 				.d2l-insights-tree-selector-search {
 					display: flex;
 					flex-wrap: nowrap;
-					width: 334px;
-					padding-top: 4px;
 					padding-bottom: 26px;
+					padding-top: 4px;
+					width: 334px;
 				}
 
 				:host([search]) d2l-dropdown d2l-dropdown-content .d2l-insights-tree-selector-tree {
