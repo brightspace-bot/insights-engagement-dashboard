@@ -28,16 +28,21 @@ import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
+import { TelemetryHelper } from './model/telemetry-helper';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
+ * @property {String} telemetryEndpoint - endpoint for gathering telemetry performance data
+ * @property {String} telemetryId - GUID that is used to group performance metrics for each separate load
  */
 class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	static get properties() {
 		return {
-			isDemo: { type: Boolean, attribute: 'demo' }
+			isDemo: { type: Boolean, attribute: 'demo' },
+			telemetryEndpoint: { type: String, attribute: 'telemetry-endpoint' },
+			telemetryId: { type: String, attribute: 'telemetry-id' },
 		};
 	}
 
@@ -202,6 +207,18 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return this.__serverData;
 	}
 
+	get _telemetryHelper() {
+		if (!this.telemetryEndpoint) {
+			return null;
+		}
+
+		if (!this.__telemetryHelper) {
+			this.__telemetryHelper = new TelemetryHelper(this.telemetryEndpoint);
+		}
+
+		return this.__telemetryHelper;
+	}
+
 	_roleFilterChange(event) {
 		event.stopPropagation();
 		this._serverData.selectedRoleIds = event.target.selected;
@@ -215,6 +232,53 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	_semesterFilterChange(event) {
 		event.stopPropagation();
 		this._serverData.selectedSemesterIds = event.target.selected;
+	}
+
+	_handlePageLoad() {
+		if (!this._telemetryHelper) {
+			return;
+		}
+
+		const measures = this._telemetryHelper.getPerformanceLoadPageMeasures();
+		this._telemetryHelper.logPerformanceEvent({
+			id: this.telemetryId,
+			measures,
+			action: 'PageLoad'
+		});
+	}
+
+	_handlePerfomanceMeasure(event) {
+		if (!this._telemetryHelper) {
+			return;
+		}
+
+		if (!['d2l.page.tti', 'first-paint', 'first-contentful-paint'].includes(event.detail.value.name)) {
+			return;
+		}
+
+		console.log(this.telemetryId);
+		this._telemetryHelper.logPerformanceEvent({
+			id: this.telemetryId,
+			measures: [event.detail.value],
+			action: 'PageLoad'
+		});
+	}
+
+	connectedCallback() {
+		super.connectedCallback();
+
+		this._boundHandlePageLoad = this._handlePageLoad.bind(this);
+		window.addEventListener('load', this._boundHandlePageLoad);
+
+		this._boundHandlePerfomanceMeasure = this._handlePerfomanceMeasure.bind(this);
+		document.addEventListener('d2l-performance-measure', this._boundHandlePerfomanceMeasure);
+	}
+
+	disconnectedCallback() {
+		window.removeEventListener('load', this._boundHandlePageLoad);
+		document.removeEventListener('d2l-performance-measure', this._boundHandlePerfomanceMeasure);
+
+		super.disconnectedCallback();
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);

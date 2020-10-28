@@ -6,6 +6,27 @@
 		<script type="module">
 			import '@brightspace-ui/core/components/demo/demo-page.js';
 			import '../engagement-dashboard.js';
+			import fetchMock from 'fetch-mock/esm/client';
+
+			// setup fetchMock to print network comunication for demo purposes
+			const fetch = fetchMock.sandbox();
+
+			fetch.mock(
+				async(url, opts) => {
+					console.log(`${opts.method} ${url}`);
+					console.dir('Body: ');
+					const body = JSON.parse(await opts.body);
+					console.dir(body);
+
+					// verifies that only telemetry is sent on demo page
+					const endpoint = 'https://endpoint.com/api/events/';
+					console.assert(url === endpoint, { endpoint, body });
+					return true;
+				},
+				200
+			);
+
+			window.d2lfetch = { fetch };
 		</script>
 		<title>d2l-insights-engagement-dashboard</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +37,7 @@
 		<d2l-demo-page page-title="d2l-insights-engagement-dashboard">
 			<h2>d2l-insights-engagement-dashboard</h2>
 			<d2l-demo-snippet>
-				<d2l-insights-engagement-dashboard demo></d2l-insights-engagement-dashboard>
+				<d2l-insights-engagement-dashboard demo telemetry-endpoint="https://endpoint.com/api/events/" telemetry-id="cfc669e0-509e-4ed0-b932-4a7ec5c2d8c7"></d2l-insights-engagement-dashboard>
 			</d2l-demo-snippet>
 		</d2l-demo-page>
 	</body>
