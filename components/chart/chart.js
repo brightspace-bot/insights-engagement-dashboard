@@ -93,7 +93,14 @@ class Chart extends SkeletonMixin(LitElement) {
 	}
 
 	defaultOptions() {
-		this.options.plotOptions.series.animation = this.showAnimations
+		// check for series and plotOptions because we could have a column instead.
+		if (this.options.plotOptions === undefined) return;
+		else if (this.options.plotOptions.series !== undefined) {
+			this.options.plotOptions.series.animation = this.showAnimations;
+		}
+		else if (this.options.plotOptions.column !== undefined) {
+			this.options.plotOptions.column.animation = this.showAnimations;
+		}
 	}
 
 	render() {

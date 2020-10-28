@@ -221,7 +221,6 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 					reserveSpace: true,
 					x: -30,
 				},
-				//width: '108%', // move extra space at end of x-axis out of the container
 			},
 			yAxis: {
 				tickAmount: 4,
