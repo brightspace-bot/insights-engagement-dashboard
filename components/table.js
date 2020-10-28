@@ -1,4 +1,5 @@
 import '@brightspace-ui/core/components/icons/icon.js';
+import '@brightspace-ui/core/components/inputs/input-checkbox';
 
 import { bodySmallStyles, bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { css, html, LitElement } from 'lit-element';
@@ -8,16 +9,18 @@ import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 export const COLUMN_TYPES = {
+	ROW_SELECTOR: -1,
 	NORMAL_TEXT: 0,
 	TEXT_SUB_TEXT: 1
 };
 
 /**
  * @property {String} title - for use by screen reader users
- * @property {Array} columnInfo - list of column info. Contains headerText and columnType
+ * @property {Array} columnInfo - list of column info. Contains headerText and columnType.
+ *                                NB: only one column of type ROW_SELECTOR is allowed
  * @property {Array} data - a row-indexed 2D array of rows and columns.
  * @property {Number} sortColumn - the column that the table is sorted by (starting at 0)
- * @property {String} sortOrder - weather the column is asc or desc sorted
+ * @property {String} sortOrder - whether the column is asc or desc sorted
  * E.g. data[0] gets the entire first row; data[0][0] gets the first row / first column
  */
 class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
@@ -196,26 +199,50 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	}
 
 	_renderHeaderCell(info, idx) {
-
-		const isSortedColumn = idx === this.sortColumn;
+		const columnType = this.columnInfo[idx].columnType;
 
 		const styles = {
 			'd2l-insights-table-cell': true,
 			'd2l-insights-table-cell-header': true,
 			'd2l-insights-table-cell-first': idx === 0,
-			'd2l-insights-table-cell-last': idx === this._numColumns - 1,
-			'd2l-insights-table-arrow-spacing': isSortedColumn
+			'd2l-insights-table-cell-last': idx === this._numColumns - 1
 		};
-		const spaceArrow = { 'd2l-insights-table-cell-sort-indicator': isSortedColumn };
 
-		const arrowDirection = isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : '';
+		if (columnType === COLUMN_TYPES.ROW_SELECTOR) {
+			const isAllSelected = this.data.every(row => row[idx].selected);
 
-		return html`
-			<th class="${classMap(styles)}" scope="col" @keydown="${this._handleHeaderKey}" @click="${this._handleHeaderClicked}" tabindex="${this.skeleton ? -1 : 0}">
-				${info.headerText}
-				${!isSortedColumn ? html`` : html`<d2l-icon icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
-			</th>
-		`;
+			return html`
+				<th class="${classMap(styles)}"
+					scope="col"
+					tabindex="${this.skeleton ? -1 : 0}"
+				>
+					<d2l-input-checkbox
+						aria-label="${this.localize('components.insights-table.selectAll')}"
+						name="checkbox-all"
+						@change="${this._handleAllSelected}"
+						?checked="${isAllSelected}"
+					></d2l-input-checkbox>
+				</th>
+			`;
+		} else {
+			const isSortedColumn = idx === this.sortColumn;
+			styles['d2l-insights-table-arrow-spacing'] = isSortedColumn;
+			const spaceArrow = { 'd2l-insights-table-cell-sort-indicator' : isSortedColumn };
+			const arrowDirection = isSortedColumn ? this.sortOrder === 'desc' ? 'arrow-toggle-down' : 'arrow-toggle-up' : '';
+
+			return html`
+				<th role="button"
+					class="${classMap(styles)}"
+					scope="col"
+					@keydown="${this._handleHeaderKey}"
+					@click="${this._handleHeaderClicked}"
+					tabindex="${this.skeleton ? -1 : 0}">
+
+					${info.headerText}
+					${!isSortedColumn ? html`` : html`<d2l-icon role="img" aria-label="${arrowDirection === 'arrow-toggle-up' ? 'Sorted Ascending' : 'Sorted Descending'}" icon="tier1:${arrowDirection}" class="${classMap(spaceArrow)}"></d2l-icon>`}
+				</th>
+			`;
+		}
 	}
 
 	_renderTbody() {
@@ -234,7 +261,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 		`;
 	}
 
-	_renderBodyCell(value, idx) {
+	_renderBodyCell(cellValue, idx) {
 		const columnType = this.columnInfo[idx].columnType;
 		const styles = {
 			'd2l-insights-table-cell': true,
@@ -244,7 +271,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 		const defaultHtml = html`
 			<td class="${classMap(styles)}">
-				<div class="d2l-skeletize d2l-skeletize-95 d2l-body-standard">${value}</div>
+				<div class="d2l-skeletize d2l-skeletize-95 d2l-body-standard">${cellValue}</div>
 			</td>
 		`;
 
@@ -252,16 +279,28 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			return defaultHtml; // regardless of the column type, because the data hasn't been loaded yet
 		}
 
-		if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
+		if (columnType === COLUMN_TYPES.ROW_SELECTOR) {
 			return html`
 				<td class="${classMap(styles)}">
-					<div class="d2l-body-standard">${value[0]}</div>
-					<div class="d2l-body-small">${value[1]}</div>
+					<d2l-input-checkbox
+						aria-label="${cellValue.ariaLabel}"
+						name="checkbox-${cellValue.value}"
+						value="${cellValue.value}"
+						?checked="${cellValue.selected}"
+						@change="${this._handleRowSelected}"
+					></d2l-input-checkbox>
+				</td>
+			`;
+		} else if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
+			return html`
+				<td class="${classMap(styles)}">
+					<div class="d2l-body-standard">${cellValue[0]}</div>
+					<div class="d2l-body-small">${cellValue[1]}</div>
 				</td>
 			`;
 		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT) {
 			return defaultHtml;
-		} // future work: else if COLUMN_TYPES.SUBCOLUMNS...
+		}
 
 		throw new Error('Users table: unknown column type');
 	}
@@ -269,32 +308,32 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	_handleHeaderKey(e) {
 
 		const children = e.target.parentElement.children;
-		let colmnNumber = Array.from(children).indexOf(e.target);
+		let columnNumber = Array.from(children).indexOf(e.target);
 		if (e.keyCode === 32 /* spacebar */ || e.key === 'Enter') {
 			e.preventDefault();
 			this._handleHeaderClicked(e);
 			return;
 		} else if (e.key === 'ArrowLeft') {
-			colmnNumber -= 1;
-			if (colmnNumber < 0) {
-				colmnNumber = children.length - 1;
+			columnNumber -= 1;
+			if (columnNumber < 0) {
+				columnNumber = children.length - 1;
 			}
 		} else if (e.key === 'ArrowRight') {
-			colmnNumber += 1;
-			if (colmnNumber >= children.length) {
-				colmnNumber = 0;
+			columnNumber += 1;
+			if (columnNumber >= children.length) {
+				columnNumber = 0;
 			}
 		}
-		children[colmnNumber].focus();
+		children[columnNumber].focus();
 		if (e.keyCode === 'Tab') e.preventDefault();
 		return false;
 	}
 
 	_handleHeaderClicked(e) {
 		const children = e.target.parentElement.children;
-		const colmnNumber = Array.from(children).indexOf(e.target);
+		const columnNumber = Array.from(children).indexOf(e.target);
 
-		if (colmnNumber !== this.sortColumn) {
+		if (columnNumber !== this.sortColumn) {
 			this.sortOrder = 'desc';
 		} else {
 			if (this.sortOrder === 'asc') {
@@ -304,13 +343,35 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			}
 		}
 
-		this.sortColumn = colmnNumber;
+		this.sortColumn = columnNumber;
 
 		this.dispatchEvent(new CustomEvent('d2l-insights-table-sort',
 			{
 				detail: { column: this.sortColumn, order: this.sortOrder },
 			}
 		));
+	}
+
+	_handleRowSelected(event) {
+		this.dispatchEvent(new CustomEvent('d2l-insights-table-select-changed', {
+			detail: {
+				values: [event.target.value],
+				selected: event.target.checked
+			}
+		}));
+	}
+
+	_handleAllSelected() {
+		const checkboxes = Array.from(this.shadowRoot.querySelectorAll('td > d2l-input-checkbox')); // NB: this will only handle 1 checkbox column
+		const values = checkboxes.map(checkbox => checkbox.value);
+		const isAllSelected = checkboxes.every(checkbox => checkbox.checked);
+
+		this.dispatchEvent(new CustomEvent('d2l-insights-table-select-changed', {
+			detail: {
+				values,
+				selected: !isAllSelected
+			}
+		}));
 	}
 }
 customElements.define('d2l-insights-table', Table);
