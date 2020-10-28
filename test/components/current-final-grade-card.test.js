@@ -31,7 +31,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run
 			const title = (el.shadowRoot.querySelectorAll('div.d2l-insights-current-final-grade-title'));
 			expect(title[0].innerText).to.equal('Current Grade');
-			const expected = [20, 30, 40, 50, 30, 90, 90, 90, 70, 70, 40, 50, 30, 90, 70, 80, 90, 80, 90, 80, 90, 40, 60];
+			const expected = [ 0, 0, 1, 3, 3, 2, 1, 3, 3, 7 ];
 			expect(el._preparedHistogramData).to.deep.equal(expected);
 			expect(el._colours).to.deep.equal(['var(--d2l-color-amethyst)']);
 		});
@@ -41,7 +41,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 			filter.selectCategory(50);
 			const el = await fixture(html`<d2l-insights-current-final-grade-card .data="${data}"></d2l-insights-current-final-grade-card>`);
 			// only the first 8 colours matter (from 20 to 90)
-			expect(el._colours.slice(0, 8)).to.deep.equal([
+			expect(el._colours.slice(2, 10)).to.deep.equal([
 				'var(--d2l-color-mica)',
 				'var(--d2l-color-amethyst)',
 				'var(--d2l-color-mica)',
