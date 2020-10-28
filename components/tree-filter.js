@@ -180,6 +180,10 @@ export class Tree {
 		this._ancestors = new Map();
 	}
 
+	clearSelection() {
+		this._state.clear();
+	}
+
 	getAncestorIds(id) {
 		if (id === 0) return new Set();
 
@@ -409,6 +413,7 @@ decorate(Tree, {
 	_hasMore: observable,
 	selected: computed,
 	addNodes: action,
+	clearSelection: action,
 	setAncestorFilter: action,
 	setLoading: action,
 	setOpen: action,
@@ -514,7 +519,9 @@ class TreeFilter extends Localizer(MobxLitElement) {
 		return html`<d2l-insights-tree-selector
 				name="${openerText}"
 				?search="${this._isSearch}"
+				?selected="${this.tree.selected.length > 0}"
 				@d2l-insights-tree-selector-search="${this._onSearch}"
+				@d2l-insights-tree-selector-clear="${this._onClear}"
 			>
 				${this._renderSearchResults()}
 				${this._renderSearchLoadingControls()}
@@ -627,6 +634,12 @@ class TreeFilter extends Localizer(MobxLitElement) {
 			});
 	}
 
+	_onClear(event) {
+		event.stopPropagation();
+		this.tree.clearSelection();
+		this._fireSelectEvent();
+	}
+
 	_onOpen(event) {
 		event.stopPropagation();
 		this._needResize = true;
@@ -669,7 +682,10 @@ class TreeFilter extends Localizer(MobxLitElement) {
 	_onSelect(event) {
 		event.stopPropagation();
 		this.tree.setSelected(event.detail.id, event.detail.isSelected);
+		this._fireSelectEvent();
+	}
 
+	_fireSelectEvent() {
 		/**
 		 * @event d2l-insights-tree-filter-select
 		 */

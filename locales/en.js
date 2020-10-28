@@ -29,6 +29,8 @@ export default {
 
 	"components.tree-filter.node-name": "{orgUnitName} (Id: {id})",
 	"components.tree-filter.node-name.root": "root",
+	"components.tree-selector.filterBy": "Filter By",
+	"components.tree-selector.clear-label": "Clear",
 	"components.tree-selector.search-label": "Search",
 	"components.tree-selector.load-more-label": "Load More",
 	"components.tree-selector.parent-load-more.aria-label": "Load more child org units",

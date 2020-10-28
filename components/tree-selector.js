@@ -11,14 +11,17 @@ import { selectStyles } from '@brightspace-ui/core/components/inputs/input-selec
 /**
  * @property {String} name
  * @property {Boolean} isSearch - if true, show "search-results" slot instead of "tree" slot
+ * @property {Boolean} isSelected - if true, show a "Clear" button in the header
  * @fires d2l-insights-tree-selector-search - user requested or cleared a search; search string is event.detail.value
+ * @fires d2l-insights-tree-selector-clear - user requested that all selections be cleared
  */
 class TreeSelector extends Localizer(LitElement) {
 
 	static get properties() {
 		return {
 			name: { type: String },
-			isSearch: { type: Boolean, attribute: 'search', reflect: true }
+			isSearch: { type: Boolean, attribute: 'search', reflect: true },
+			isSelected: { type: Boolean, attribute: 'selected', reflect: true }
 		};
 	}
 
@@ -33,10 +36,20 @@ class TreeSelector extends Localizer(LitElement) {
 					display: none;
 				}
 
+				.d2l-filter-dropdown-content-header {
+					display: flex;
+					justify-content: space-between;
+				}
+				.d2l-filter-dropdown-content-header > span {
+					align-self: center;
+				}
+
 				.d2l-insights-tree-selector-search {
 					display: flex;
 					flex-wrap: nowrap;
 					width: 334px;
+					padding-top: 4px;
+					padding-bottom: 26px;
 				}
 
 				:host([search]) d2l-dropdown d2l-dropdown-content .d2l-insights-tree-selector-tree {
@@ -75,7 +88,15 @@ class TreeSelector extends Localizer(LitElement) {
 			<d2l-dropdown>
 				<d2l-dropdown-button-subtle text="${this.name}">
 					<d2l-dropdown-content align="start" no-auto-fit>
-						<div class="d2l-insights-tree-selector-search" slot="header">
+						<div class="d2l-filter-dropdown-content-header" slot="header">
+							<span>${this.localize('components.tree-selector.filterBy')}</span>
+							<d2l-button-subtle
+							 	text="${this.localize('components.tree-selector.clear-label')}"
+							 	?hidden="${!this.isSelected}"
+							 	@click="${this._onClear}"
+							></d2l-button-subtle>
+						</div>
+						<div class="d2l-insights-tree-selector-search">
 							<d2l-input-search
 								label="${this.localize('components.tree-selector.search-label')}"
 								placeholder="${this.localize('components.tree-selector.search-placeholder')}"
@@ -106,6 +127,19 @@ class TreeSelector extends Localizer(LitElement) {
 		await this.treeUpdateComplete;
 		const content = this.shadowRoot.querySelector('d2l-dropdown-content');
 		content && await content.resize();
+	}
+
+	_onClear() {
+		/**
+		 * @event d2l-insights-tree-selector-clear
+		 */
+		this.dispatchEvent(new CustomEvent(
+			'd2l-insights-tree-selector-clear',
+			{
+				bubbles: true,
+				composed: false
+			}
+		));
 	}
 
 	_onSearch(event) {
