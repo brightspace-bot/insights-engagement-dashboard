@@ -36,7 +36,7 @@ import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grad
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
  * @property {String} telemetryEndpoint - endpoint for gathering telemetry performance data
- * @property {String} telemetryId - GUID that is used to group performance metrics for each separate load
+ * @property {String} telemetryId - GUID that is used to group performance metrics for each separate page load
  */
 class EngagementDashboard extends Localizer(MobxLitElement) {
 
