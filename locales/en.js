@@ -4,6 +4,7 @@ export default {
 	"components.insights-engagement-dashboard.title": "Engagement Dashboard",
 	"components.insights-engagement-dashboard.summaryHeading": "Summary View",
 	"components.insights-engagement-dashboard.resultsHeading": "Results",
+	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
 	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 	"components.insights-engagement-dashboard.overdueAssignmentsHeading": "Overdue Assignments",
 	"components.insights-engagement-dashboard.lastSystemAccess": "Users have no system access in the last 14 days.",
@@ -11,6 +12,8 @@ export default {
 	"components.insights-engagement-dashboard.tooManyResults": "There are too many results in your filters. Please refine your selection.",
 	"components.insights-engagement-dashboard.learMore": "Learn More",
 	"components.insights-engagement-dashboard.exportToCsv": "Export to CSV",
+	"components.insights-engagement-dashboard.emailButton": "Email",
+	"components.insights-engagement-dashboard.noUsersSelectedDialogText": "Please select one or more users to email.",
 
 	"components.insights-role-filter.name": "Role",
 
@@ -52,7 +55,9 @@ export default {
 	"components.insights-users-table.totalUsers": "Total Users: {num}",
 	"components.insights-users-table.lastAccessedSys" : "Last Accessed System",
 	"components.insights-users-table.null" : "NULL",
-	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
+	"components.insights-users-table.selectorAriaLabel": "Select {userLastFirstName}",
+
+	"components.insights-table.selectAll": "Select all",
 
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
 	"components.insights-time-in-content-vs-grade-card.currentGrade": "Current Grade (%)",
