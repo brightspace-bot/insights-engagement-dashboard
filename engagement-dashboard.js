@@ -119,6 +119,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 							icon="d2l-tier1:export"
 							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
 							@click="${this._exportToCsv}">
+							<a class="export-csv" hidden download="engagement.csv"></a>
 						</d2l-button-subtle>
 						<d2l-button-subtle
 							icon="d2l-tier1:help"

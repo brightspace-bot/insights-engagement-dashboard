@@ -185,6 +185,19 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	setDataForExport(userData) {
 		this.exportData.setData(userData);
+
+		const headerArray = this.columnInfo.map(item => item.headerText);
+		const headers = [
+			this.localize('components.insights-users-table-export.lastName'),
+			this.localize('components.insights-users-table-export.FirstName'),
+			this.localize('components.insights-users-table-export.UserName'),
+			this.localize('components.insights-users-table-export.UserID'),
+			headerArray[TABLE_USER.COURSES],
+			headerArray[TABLE_USER.AVG_GRADE],
+			headerArray[TABLE_USER.AVG_TIME_IN_CONTENT],
+			headerArray[TABLE_USER.LAST_ACCESSED_SYS]
+		];
+		this.exportData.setHeaders(headers);
 	}
 
 	get columnInfo() {

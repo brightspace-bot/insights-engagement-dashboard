@@ -29,7 +29,8 @@ const data = {
 };
 
 const exportData = {
-	setData: userData => userData
+	setData: userData => userData,
+	setHeaders: arr => arr
 };
 
 data.recordsByUser = new Map();

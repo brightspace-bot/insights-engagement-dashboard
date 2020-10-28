@@ -53,6 +53,11 @@ export default {
 	"components.insights-users-table.null" : "NULL",
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
 
+	"components.insights-users-table-export.lastName": "Last Name",
+	"components.insights-users-table-export.FirstName": "First Name",
+	"components.insights-users-table-export.UserName": "User Name",
+	"components.insights-users-table-export.UserID": "User ID",
+
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
 	"components.insights-time-in-content-vs-grade-card.currentGrade": "Current Grade (%)",
 	"components.insights-time-in-content-vs-grade-card.timeInContent": "Time in Content (mins)",
