@@ -117,6 +117,17 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return dateBucketCounts;
 	}
 
+	get _colours() {
+		if (!this.isApplied) return ['var(--d2l-color-celestine)'];
+
+		return [0, 1, 2, 3, 4, 5]
+			.map(category =>
+				(this.category.has(category) ?
+					'var(--d2l-color-celestine)' :
+					'var(--d2l-color-mica)')
+			);
+	}
+
 	get _accessibilityLessThanOneLabel() {
 		return this.localize('components.insights-course-last-access-card.accessibilityLessThanOne');
 	}
@@ -170,26 +181,6 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.filter.selectedCategories;
 	}
 
-	_colorNonSelectedPoints(seriesData, color) {
-		seriesData.forEach(point => {
-			if (!this.category.has(point.index)) this._pointUpdateColor(point, color);
-		});
-	}
-
-	_colorSelectedPoints(seriesData, color) {
-		seriesData.forEach(point => {
-			if (this.category.has(point.index)) this._pointUpdateColor(point, color);
-		});
-	}
-
-	_colorAllPoints(seriesData, color) {
-		seriesData.forEach(point => this._pointUpdateColor(point, color));
-	}
-
-	_pointUpdateColor(point, colorForPoint) {
-		point.update({ color: colorForPoint }, false);
-	}
-
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -204,21 +195,7 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return {
 			chart: {
 				type: 'bar',
-				height: '250px',
-				events: {
-					render: function() {
-						//after redrawing the chart as a result of updating (for example, when the user disable any of the filters),
-						// we need to keep the color of the selected/nonselected bars
-						if (that.isApplied) {
-							that._colorNonSelectedPoints(this.series[0].data, 'var(--d2l-color-mica)');
-							that._colorSelectedPoints(this.series[0].data, 'var(--d2l-color-celestine)');
-						} else {
-							that._colorAllPoints(this.series[0].data, 'var(--d2l-color-celestine)');
-						}
-						// noinspection JSPotentiallyInvalidUsageOfClassThis
-						this.render(false);
-					}
-				}
+				height: '250px'
 			},
 			animation: false,
 			tooltip: {
@@ -299,18 +276,12 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 							return `${that._cardCategoriesText[point.x]}, ${that._horizontalLabel}, ${val}.`;
 						}
 					},
-					allowPointSelect: true,
-					color: 'var(--d2l-color-celestine)',
-					states: {
-						select: {
-							color: 'var(--d2l-color-celestine)'
-						}
-					},
+					colorByPoint: true,
+					colors: this._colours,
 					point: {
 						events: {
-							select: function() {
+							click: function() {
 								that.addToCategory(this.index);
-								that._colorSelectedPoints(this.series.data, 'var(--d2l-color-celestine)');
 							}
 						}
 					}
