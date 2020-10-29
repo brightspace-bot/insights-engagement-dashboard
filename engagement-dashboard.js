@@ -185,7 +185,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				<d2l-insights-users-table
 					.data="${this._data}"
-					.exportData="${this._exportData}"
 					?skeleton="${this._isLoading}"
 				></d2l-insights-users-table>
 
@@ -205,7 +204,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	_exportToCsv() {
-		this._exportData.downloadCsv();
+		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
+		const formattedData = ExportData.dataFormatter(usersTable.dataForExport);
+		const arrayToCsv = ExportData.arrayToCsv(formattedData, usersTable.headersForExport);
+		ExportData.downloadCsv(arrayToCsv);
 	}
 
 	get _isLoading() {
@@ -230,13 +232,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		}
 
 		return this.__data;
-	}
-
-	get _exportData() {
-		if (!this.__exportData) {
-			this.__exportData = new ExportData();
-		}
-		return this.__exportData;
 	}
 
 	get _serverData() {

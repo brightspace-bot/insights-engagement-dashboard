@@ -43,18 +43,21 @@ function unique(arr) {
  * @property {Number} _sortColumn - The index of the column that is currently sorted
  * @property {String} _sortOrder - either 'asc' or 'desc'
  * @property {Array} selectedUserIds - ids of users that are selected in the table
+ * @property {Array} dataForExport - 2D array from the user table (across all pages) for export a CSV file
+ * @property {Array} headersForExport - an array of table column headers for export a CSV file
  */
 class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	static get properties() {
 		return {
 			data: { type: Object, attribute: false },
-			exportData: { type: Object, attribute: false },
 			_currentPage: { type: Number, attribute: false },
 			_pageSize: { type: Number, attribute: false },
 			_sortColumn: { type: Number, attribute: false },
 			_sortOrder: { type: String, attribute: false },
-			selectedUserIds: { type: Array, attribute: false }
+			selectedUserIds: { type: Array, attribute: false },
+			dataForExport: { type: Array, attribute: false },
+			headersForExport: { type: Array, attribute: false }
 		};
 	}
 
@@ -85,17 +88,21 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this.data = {
 			users: []
 		};
-		this.exportData = {};
 		this._currentPage = 1;
 		this._pageSize = DEFAULT_PAGE_SIZE;
 		this._sortOrder = 'desc';
 		this._sortColumn = TABLE_USER.NAME_INFO;
 		this.selectedUserIds = [];
+		this.dataForExport = [];
+		this.headersForExport = [];
 
-		// reset selectedUserIds whenever the input data changes
+		// set export data and reset selectedUserIds whenever the input data changes
 		reaction(
 			() => this.data.users,
-			() => { this._resetSelectedUserIds(); }
+			() => {
+				this._resetSelectedUserIds();
+				this._setExportData();
+			}
 		);
 	}
 
@@ -216,19 +223,20 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
 		// then sort by lastFirstName
 		const sortFunction = this._choseSortFunction(this._sortColumn, this._sortOrder);
-		const userData = this.data.users
-		.map(this._preProcessData, this)
-				.sort(sortFunction)
-				.map(this._formatDataForDisplay, this);
-		this.setDataForExport(userData);
-		return userData;
+		return this.data.users
+			.map(this._preProcessData, this)
+			.sort(sortFunction)
+			.map(this._formatDataForDisplay, this);
 	}
 
-	setDataForExport(userData) {
-		this.exportData.setData(userData);
+	_setExportData() {
+		this.dataForExport = this.userDataForDisplay;
+		this.headersForExport = this.exportTableHeaders;
+	}
 
+	get exportTableHeaders() {
 		const headerArray = this.columnInfo.map(item => item.headerText);
-		const headers = [
+		return [
 			this.localize('components.insights-users-table-export.lastName'),
 			this.localize('components.insights-users-table-export.FirstName'),
 			this.localize('components.insights-users-table-export.UserName'),
@@ -238,7 +246,6 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			headerArray[TABLE_USER.AVG_TIME_IN_CONTENT],
 			headerArray[TABLE_USER.LAST_ACCESSED_SYS]
 		];
-		this.exportData.setHeaders(headers);
 	}
 
 	get columnInfo() {
@@ -341,10 +348,11 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 }
 decorate(UsersTable, {
 	selectedUserIds: observable,
+	dataForExport: observable,
+	exportTableHeaders: computed,
 	userDataForDisplay: computed,
 	_sortColumn: observable,
 	_sortOrder: observable,
-	setDataForExport: action,
 	_handleColumnSort: action
 });
 customElements.define('d2l-insights-users-table', UsersTable);

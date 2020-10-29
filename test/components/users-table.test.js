@@ -37,11 +37,6 @@ const data = {
 	]
 };
 
-const exportData = {
-	setData: userData => userData,
-	setHeaders: arr => arr
-};
-
 data.recordsByUser = new Map();
 data.records.forEach(r => {
 	if (!data.recordsByUser.has(r[RECORD.USER_ID])) {
@@ -91,7 +86,7 @@ describe('d2l-insights-users-table', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async() => {
-			const el = await fixture(html`<d2l-insights-users-table .exportData="${exportData}" .data="${data}"></d2l-insights-users-table>`);
+			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
 			// give it a second to make sure inner table and paging controls load in
 			await new Promise(resolve => setTimeout(resolve, 200));
 			await el.updateComplete;
@@ -102,7 +97,7 @@ describe('d2l-insights-users-table', () => {
 
 	describe('render', () => {
 		it('should display the correct total users count', async() => {
-			const el = await fixture(html`<d2l-insights-users-table .exportData="${exportData}" .data="${data}"></d2l-insights-users-table>`);
+			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
 			const totalUsersText = el.shadowRoot.querySelectorAll('.d2l-insights-users-table-total-users')[0];
 			expect(totalUsersText.innerText).to.equal('Total Users: 23');
 		});
@@ -124,7 +119,7 @@ describe('d2l-insights-users-table', () => {
 			before(async function() {
 				this.timeout(10000);
 
-				el = await fixture(html`<d2l-insights-users-table .exportData="${exportData}" .data="${data}"></d2l-insights-users-table>`);
+				el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
 				innerTable = el.shadowRoot.querySelector('d2l-insights-table');
 				await new Promise(resolve => setTimeout(resolve, 200));
 				await innerTable.updateComplete;
@@ -236,7 +231,7 @@ describe('d2l-insights-users-table', () => {
 		before(async function() {
 			this.timeout(10000);
 
-			const table = await fixture(html`<d2l-insights-users-table .exportData="${exportData}" .data="${data}"></d2l-insights-users-table>`);
+			const table = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
 			await new Promise(resolve => setTimeout(resolve, 200));
 			await table.updateComplete;
 
