@@ -69,5 +69,15 @@ describe('d2l-insights-tree-selector', () => {
 				value: 'asdf'
 			});
 		});
+
+		it('should fire d2l-insights-tree-selector-clear on clear', async() => {
+			const el = await fixture(html`<d2l-insights-tree-selector name="choose!" selected></d2l-insights-tree-selector>`);
+			const listener = oneEvent(el, 'd2l-insights-tree-selector-clear');
+			const button = el.shadowRoot.querySelector('d2l-dropdown-content d2l-button-subtle');
+			button.click();
+			const event = await listener;
+			expect(event.type).to.equal('d2l-insights-tree-selector-clear');
+			expect(event.target).to.equal(el);
+		});
 	});
 });
