@@ -32,6 +32,21 @@ describe('d2l-insights-course-last-access-card', () => {
 			const title = (el.shadowRoot.querySelectorAll('div.d2l-insights-course-last-access-title'));
 			expect(title[0].innerText).to.equal('Course Access');
 			expect(el._preparedBarChartData.toString()).to.equal([39, 7, 0, 0, 1, 1].toString());
+			expect(el._colours).to.deep.equal(['var(--d2l-color-celestine)']);
+		});
+
+		it('should render selected colours', async() => {
+			filter.selectCategory(1);
+			filter.selectCategory(5);
+			const el = await fixture(html`<d2l-insights-course-last-access-card .data="${data}"></d2l-insights-course-last-access-card>`);
+			expect(el._colours).to.deep.equal([
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-celestine)',
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-celestine)'
+			]);
 		});
 	});
 
