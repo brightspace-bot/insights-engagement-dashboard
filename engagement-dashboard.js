@@ -297,7 +297,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			const noUsersSelectedDialog = this.shadowRoot.querySelector('#no-users-selected-dialog');
 			noUsersSelectedDialog.opened = true;
 		} else {
-			createComposeEmailPopup(toJS(selectedUserIds), 6606); // TODO: make the orgUnitId configurable
+			// we use the root OU id because that's where we expect users to have email permissions
+			createComposeEmailPopup(toJS(selectedUserIds), this._data._data.orgUnitTree.rootId);
 		}
 	}
 
