@@ -23,8 +23,7 @@ export class ExportData {
 
 	static exportToCsv(formattedData, headers) {
 		const jsonArrayData = formattedData.map((data) => {
-			const arr = headers.reduce((acc, val, i) => ({ ...acc, [val]: data[i] }), {});
-			return arr;
+			return headers.reduce((acc, val, i) => ({ ...acc, [val]: data[i] }), {});
 		});
 		exportFromJSON({ data: jsonArrayData, fileName: 'engagement', exportType: exportFromJSON.types.csv });
 	}
