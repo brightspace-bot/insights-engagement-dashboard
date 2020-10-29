@@ -5,6 +5,15 @@ import { RECORD, USER } from '../../consts';
 import { formatDateTime } from '@brightspace-ui/intl/lib/dateTime.js';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
+const COLS = {
+	SELECTOR_VALUE: 0,
+	USER_INFO: 1,
+	COURSES: 2,
+	AVG_GRADE: 3,
+	AVG_TIC: 4,
+	LAST_SYS_ACCESS: 5
+};
+
 const data = {
 	users: [
 		[100, 'John', 'Lennon', 'jlennon',  1600295350000],
@@ -42,17 +51,34 @@ data.records.forEach(r => {
 });
 
 const expected = [
-	[['Harrison, George', 'gharrison - 300'], 14, '71.42 %', '19.64', getLocalDateTime(2)],
-	[['Lennon, John', 'jlennon - 100'], 12, '22 %', '2.78', getLocalDateTime(0)],
-	[['McCartney, Paul', 'pmccartney - 200'], 13, '74 %', '23.72', 'NULL'],
-	[['Starr, Ringo', 'rstarr - 400'], 9, '55 %', '8.33', getLocalDateTime(3)],
+	[
+		{ value: 300, ariaLabel: 'Select Harrison, George' },
+		['Harrison, George', 'gharrison - 300'],
+		14, '71.42 %', '19.64', getLocalDateTime(2)
+	],
+	[
+		{ value: 100, ariaLabel: 'Select Lennon, John' },
+		['Lennon, John', 'jlennon - 100'],
+		12, '22 %', '2.78', getLocalDateTime(0)
+	],
+	[
+		{ value: 200, ariaLabel: 'Select McCartney, Paul' },
+		['McCartney, Paul', 'pmccartney - 200'],
+		13, '74 %', '23.72', 'NULL'
+	],
+	[
+		{ value: 400, ariaLabel: 'Select Starr, Ringo' },
+		['Starr, Ringo', 'rstarr - 400'],
+		9, '55 %', '8.33', getLocalDateTime(3)
+	],
 	...Array.from({ length: 19 }, (val, idx) => [
+		{ value: idx, ariaLabel: `Select zz${idx}Last, zz${idx}First` },
 		[`zz${idx}Last, zz${idx}First`, `username${idx} - ${idx}`],
 		1,
 		'93 %',
 		'116.67',
 		'NULL'
-	]).sort((u1, u2) => u1[0][0].localeCompare(u2[0][0]))
+	]).sort((u1, u2) => u1[COLS.USER_INFO][0].localeCompare(u2[COLS.USER_INFO][0]))
 ];
 
 describe('d2l-insights-users-table', () => {
@@ -241,103 +267,161 @@ describe('d2l-insights-users-table', () => {
 			});
 		};
 
+		it('should not sort by selector value', async() => {
+			headers.item(COLS.SELECTOR_VALUE).click();
+			await userTable.updateComplete;
+
+			// it should still be sorted by the default (userInfo desc - i.e. names are in asc order)
+			let data = userTable.data.map(record => toLowerManipulator(record[COLS.USER_INFO][0].split(',')[0]));
+			checkIfSorted(data, 'asc');
+
+			headers.item(COLS.SELECTOR_VALUE).click();
+			await userTable.updateComplete;
+
+			// it should still be sorted by the default (userInfo desc - i.e. names are in asc order)
+			data = userTable.data.map(record => toLowerManipulator(record[COLS.USER_INFO][0].split(',')[0]));
+			checkIfSorted(data, 'asc');
+		});
+
 		it('should sort by last name when header is clicked', async() => {
 
 			// first click for descending order
-			headers.item(0).click();
+			headers.item(COLS.USER_INFO).click();
 			await userTable.updateComplete;
-			let data = userTable.data.map(record => toLowerManipulator(record[0][0].split(',')[0]));
+			let data = userTable.data.map(record => toLowerManipulator(record[COLS.USER_INFO][0].split(',')[0]));
 			checkIfSorted(data, 'desc');
 
 			// then sort by ascending order
-			headers.item(0).click();
+			headers.item(COLS.USER_INFO).click();
 			await userTable.updateComplete;
-			data = userTable.data.map(record => toLowerManipulator(record[0][0].split(',')[0]));
+			data = userTable.data.map(record => toLowerManipulator(record[COLS.USER_INFO][0].split(',')[0]));
 			checkIfSorted(data, 'asc');
 		});
 
 		it('should sort by course total when header is clicked', async() => {
 
 			// first click for descending order
-			headers.item(1).click();
+			headers.item(COLS.COURSES).click();
 			await userTable.updateComplete;
-			let data = userTable.data.map(record => record[1]);
+			let data = userTable.data.map(record => record[COLS.COURSES]);
 			checkIfSorted(data, 'desc');
 
 			// then sort by ascending order
-			headers.item(1).click();
+			headers.item(COLS.COURSES).click();
 			await userTable.updateComplete;
-			data = userTable.data.map(record => record[1]);
+			data = userTable.data.map(record => record[COLS.COURSES]);
 			checkIfSorted(data, 'asc');
 		});
 
 		it('should sort by average grade when header is clicked', async() => {
 
 			// first click for descending order
-			headers.item(2).click();
+			headers.item(COLS.AVG_GRADE).click();
 			await userTable.updateComplete;
-			let data = userTable.data.map(record => toNumberManipulator(record[2]));
+			let data = userTable.data.map(record => toNumberManipulator(record[COLS.AVG_GRADE]));
 			checkIfSorted(data, 'desc');
 
 			// then sort by ascending order
-			headers.item(2).click();
+			headers.item(COLS.AVG_GRADE).click();
 			await userTable.updateComplete;
-			data = userTable.data.map(record => toNumberManipulator(record[2]));
+			data = userTable.data.map(record => toNumberManipulator(record[COLS.AVG_GRADE]));
 			checkIfSorted(data, 'asc');
 		});
 
 		it('should sort by average time in content when header is clicked', async() => {
 
 			// first click for descending order
-			headers.item(3).click();
+			headers.item(COLS.AVG_TIC).click();
 			await userTable.updateComplete;
-			let data = userTable.data.map(record => toNumberManipulator(record[3]));
+			let data = userTable.data.map(record => toNumberManipulator(record[COLS.AVG_TIC]));
 			checkIfSorted(data, 'desc');
 
 			// then sort by ascending order
-			headers.item(3).click();
+			headers.item(COLS.AVG_TIC).click();
 			await userTable.updateComplete;
-			data = userTable.data.map(record => toNumberManipulator(record[3]));
+			data = userTable.data.map(record => toNumberManipulator(record[COLS.AVG_TIC]));
 			checkIfSorted(data, 'asc');
 		});
 
 		it('should sort by system access when header is clicked', async() => {
 
 			// first click for descending order
-			headers.item(4).click();
+			headers.item(COLS.LAST_SYS_ACCESS).click();
 			await userTable.updateComplete;
-			let data = userTable.data.map(record => parseDate(record[4]));
+			let data = userTable.data.map(record => parseDate(record[COLS.LAST_SYS_ACCESS]));
 			checkIfSorted(data, 'desc');
 
 			// then sort by ascending order
-			headers.item(4).click();
+			headers.item(COLS.LAST_SYS_ACCESS).click();
 			await userTable.updateComplete;
-			data = userTable.data.map(record => parseDate(record[4]));
+			data = userTable.data.map(record => parseDate(record[COLS.LAST_SYS_ACCESS]));
 			checkIfSorted(data, 'asc');
 		});
+	});
 
+	describe('eventing', () => {
+		it('should modify selectedUserIds when items in the table are selected', async() => {
+			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
+			const innerTable = el.shadowRoot.querySelector('d2l-insights-table');
+			await new Promise(resolve => setTimeout(resolve, 200));
+			await innerTable.updateComplete;
+
+			const checkbox1 = innerTable.shadowRoot.querySelectorAll('td > d2l-input-checkbox')[0]; // corresponds to id 300
+			const checkbox2 = innerTable.shadowRoot.querySelectorAll('td > d2l-input-checkbox')[1]; // corresponds to id 100
+			const checkboxAll = innerTable.shadowRoot.querySelector('th > d2l-input-checkbox');
+
+			checkbox1.simulateClick();
+			expect(el.selectedUserIds).to.deep.equal([300]);
+
+			checkbox2.simulateClick();
+			expect(el.selectedUserIds).to.deep.equal([300, 100]);
+
+			// should only select the first 20 items
+			checkboxAll.simulateClick();
+			await new Promise(resolve => setTimeout(resolve, 200));
+			await innerTable.updateComplete;
+			expect(el.selectedUserIds).to.deep.equal(expected.map(data => data[0].value).slice(0, 20));
+
+			checkboxAll.simulateClick();
+			await new Promise(resolve => setTimeout(resolve, 200));
+			await innerTable.updateComplete;
+			expect(el.selectedUserIds).to.deep.equal([]);
+		});
 	});
 });
 
 function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
-	let displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
-	expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
-	displayedUserInfo.forEach((cell, rowIdx) => {
-		const mainText = cell.querySelector('div:first-child');
-		const subText = cell.querySelector('div:last-child');
-		expect(mainText.innerText).to.equal(expected[rowIdx + startRowNum][0][0]);
-		expect(subText.innerText).to.equal(expected[rowIdx + startRowNum][0][1]);
-	});
+	Object.values(COLS).forEach(colType => {
+		const displayedUserInfo = Array.from(
+			table.shadowRoot.querySelectorAll(`tbody > tr > td:nth-child(${colType + 1})`) // css nth-child is 1-indexed, so add 1
+		);
 
-	[2, 3, 4, 5].forEach(child => {
-
-		displayedUserInfo = Array.from(table.shadowRoot.querySelectorAll(`tbody > tr > td:nth-child(${child})`));
 		expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
+
 		displayedUserInfo.forEach((cell, rowIdx) => {
-			const mainText = cell.querySelector('div');
-			expect(mainText.innerText).to.equal(expected[rowIdx + startRowNum][child - 1].toString());
+			const expectedCellValue = expected[rowIdx + startRowNum][colType];
+			verifyCellValue(expectedCellValue, cell, colType);
 		});
 	});
+}
+
+function verifyCellValue(expectedValue, cell, colType) {
+	if (colType === COLS.USER_INFO) {
+		const mainText = cell.querySelector('div:first-child');
+		const subText = cell.querySelector('div:last-child');
+		expect(mainText.innerText).to.equal(expectedValue[0]);
+		expect(subText.innerText).to.equal(expectedValue[1]);
+
+	} else if (colType === COLS.SELECTOR_VALUE) {
+		const innerCheckbox = cell.querySelector('d2l-input-checkbox');
+		expect(innerCheckbox.name).to.equal(`checkbox-${expectedValue.value}`);
+		expect(innerCheckbox.value).to.equal(expectedValue.value.toString());
+		expect(innerCheckbox.ariaLabel).to.equal(expectedValue.ariaLabel);
+
+	} else {
+		const mainText = cell.querySelector('div');
+		expect(mainText.innerText).to.equal(expectedValue.toString());
+	}
 }
 
 function getLocalDateTime(rowIndex) {

@@ -93,6 +93,23 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			.map(item => gradeCategory(item[1]));
 	}
 
+	get _colours() {
+		const data = this._preparedHistogramData;
+		if (!this.isApplied || !data.length) {
+			return ['var(--d2l-color-amethyst)'];
+		}
+
+		// the histogram module only renders zeroes for points between non-zero points,
+		// so we provide colours for all points starting with the minimum non-zero value
+		// (extra colours will be ignored)
+		const min = Math.min(...data);
+		return [0, 10, 20, 30, 40, 50, 60, 70, 80, 90].map(category =>
+			(this.category.has(category + min) ?
+				'var(--d2l-color-amethyst)' :
+				'var(--d2l-color-mica)')
+		);
+	}
+
 	get _xAxisLabel() {
 		return this.localize('components.insights-current-final-grade-card.xAxisLabel');
 	}
@@ -115,26 +132,6 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	get filter() {
 		return this.data.getFilter(filterId);
-	}
-
-	_colorNonSelectedPoints(seriesData, color) {
-		seriesData.forEach(point => {
-			if (!this.category.has(Math.ceil(point.category))) this._pointUpdateColor(point, color);
-		});
-	}
-
-	_colorSelectedPoints(seriesData, color) {
-		seriesData.forEach(point => {
-			if (this.category.has(Math.ceil(point.category))) this._pointUpdateColor(point, color);
-		});
-	}
-
-	_colorAllPoints(seriesData, color) {
-		seriesData.forEach(point => this._pointUpdateColor(point, color));
-	}
-
-	_pointUpdateColor(point, colorForPoint) {
-		point.update({ color: colorForPoint }, false);
 	}
 
 	_gradeBetweenText(numberOfUsers, range) {
@@ -172,21 +169,7 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 		return {
 			chart: {
-				height: 230,
-				events: {
-					render: function() {
-						//after redrawing the chart as a result of updating (for example, when the user disable any of the filters),
-						// we need to keep the color of the selected/nonselected bars
-						if (that.isApplied) {
-							that._colorNonSelectedPoints(this.series[0].data, 'var(--d2l-color-mica)');
-							that._colorSelectedPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
-						} else {
-							that._colorAllPoints(this.series[0].data, 'var(--d2l-color-amethyst)');
-						}
-						// noinspection JSPotentiallyInvalidUsageOfClassThis
-						this.render(false);
-					}
-				}
+				height: 230
 			},
 			animation: false,
 			tooltip: {
@@ -270,19 +253,13 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 							return `${ix - 10} to ${ix}, ${val}.`;
 						}
 					},
-					allowPointSelect: true,
-					color: 'var(--d2l-color-amethyst)',
-					states: {
-						select: {
-							color: 'var(--d2l-color-amethyst)'
-						}
-					},
+					colorByPoint: true,
+					colors: this._colours,
 					point: {
 						events: {
-							select: function() {
+							click: function() {
 								// noinspection JSPotentiallyInvalidUsageOfClassThis
 								that.addToCategory(Math.ceil(this.category));
-								that._colorSelectedPoints(this.series.data, 'var(--d2l-color-amethyst)');
 							}
 						}
 					}
