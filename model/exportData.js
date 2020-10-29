@@ -3,11 +3,10 @@ import { toJS } from 'mobx';
 
 export class ExportData {
 
-	static dataFormatter(data) {
-		return toJS(data).map(item => {
+	static userDataToCsv(data, headers) {
+		const formattedData = toJS(data).map(item => {
 			const lastFirstName = item[TABLE_USER.NAME_INFO][0].split(', ');
 			const userNameUserID = item[TABLE_USER.NAME_INFO][1].split(' - ');
-
 			return [lastFirstName[0],
 				lastFirstName[1],
 				userNameUserID[0],
@@ -17,6 +16,8 @@ export class ExportData {
 				item[TABLE_USER.AVG_TIME_IN_CONTENT],
 				item[TABLE_USER.LAST_ACCESSED_SYS]];
 		});
+
+		return this.arrayToCsv(formattedData, headers);
 	}
 
 	static arrayToCsv(formattedData, headers) {

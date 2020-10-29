@@ -205,9 +205,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	_exportToCsv() {
 		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
-		const formattedData = ExportData.dataFormatter(usersTable.dataForExport);
-		const arrayToCsv = ExportData.arrayToCsv(formattedData, usersTable.headersForExport);
-		ExportData.downloadCsv(arrayToCsv);
+		const userDataToCsv = ExportData.userDataToCsv(usersTable.dataForExport, usersTable.headersForExport);
+		ExportData.downloadCsv(userDataToCsv);
 	}
 
 	get _isLoading() {

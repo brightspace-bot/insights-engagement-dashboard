@@ -93,16 +93,11 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		this._sortOrder = 'desc';
 		this._sortColumn = TABLE_USER.NAME_INFO;
 		this.selectedUserIds = [];
-		this.dataForExport = [];
-		this.headersForExport = [];
 
-		// set export data and reset selectedUserIds whenever the input data changes
+		// reset selectedUserIds whenever the input data changes
 		reaction(
 			() => this.data.users,
-			() => {
-				this._resetSelectedUserIds();
-				this._setExportData();
-			}
+			() => { this._resetSelectedUserIds(); }
 		);
 	}
 
@@ -229,12 +224,11 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			.map(this._formatDataForDisplay, this);
 	}
 
-	_setExportData() {
-		this.dataForExport = this.userDataForDisplay;
-		this.headersForExport = this.exportTableHeaders;
+	get dataForExport() {
+		return this.userDataForDisplay;
 	}
 
-	get exportTableHeaders() {
+	get headersForExport() {
 		const headerArray = this.columnInfo.map(item => item.headerText);
 		return [
 			this.localize('components.insights-users-table-export.lastName'),
@@ -348,9 +342,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 }
 decorate(UsersTable, {
 	selectedUserIds: observable,
-	dataForExport: observable,
-	exportTableHeaders: computed,
 	userDataForDisplay: computed,
+	headersForExport: computed,
 	_sortColumn: observable,
 	_sortOrder: observable,
 	_handleColumnSort: action
