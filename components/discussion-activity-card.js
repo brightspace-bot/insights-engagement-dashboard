@@ -75,7 +75,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				display: none;
 			}
 
-			.d2l-insights-discussion-activity-card {
+			.d2l-insights-summary-discussion-activity-card {
 				border-color: var(--d2l-color-mica);
 				border-radius: 15px;
 				border-style: solid;
@@ -153,7 +153,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
-		return html`<div class="d2l-insights-discussion-activity-card">
+		return html`<div class="d2l-insights-summary-discussion-activity-card">
 			<div class="d2l-insights-discussion-activity-card-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
 			<div class="d2l-insights-discussion-activity-card-body">
 				<d2l-labs-chart
