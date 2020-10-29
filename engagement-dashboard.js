@@ -1,3 +1,6 @@
+import '@brightspace-ui/core/components/dialog/dialog-confirm';
+import 'd2l-button-group/d2l-action-button-group';
+
 import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/results-card.js';
@@ -11,8 +14,7 @@ import './components/applied-filters';
 import './components/aria-loading-progress';
 import './components/course-last-access-card.js';
 import './components/discussion-activity-card.js';
-import 'd2l-button-group/d2l-action-button-group';
-
+import './components/message-container.js';
 import './components/default-view-popup.js';
 
 import { css, html } from 'lit-element/lit-element.js';
@@ -86,10 +88,14 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					flex-wrap: wrap;
 				}
 
-				d2l-action-button-group {
+				.d2l-main-action-button-group {
 					flex-grow: 1;
 					margin: 0.7em;
 					width: 25%;
+				}
+
+				.d2l-table-action-button-group {
+					margin-bottom: 1rem;
 				}
 
 				@media screen and (max-width: 615px) {
@@ -113,7 +119,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 				<div class="d2l-heading-button-group">
 					<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
-					<d2l-action-button-group min-to-show="0" max-to-show="2" opener-type="more">
+					<d2l-action-button-group
+						class="d2l-main-action-button-group"
+						min-to-show="0"
+						max-to-show="2"
+						opener-type="more"
+					>
 						<d2l-button-subtle
 							icon="d2l-tier1:export"
 							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}>
@@ -142,7 +153,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						?demo="${this.isDemo}"
 					></d2l-insights-role-filter>
 				</div>
-
+				<d2l-insights-message-container .data="${this._data}"></d2l-insights-message-container>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container-applied-filters">
 					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
@@ -158,13 +169,34 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
 					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
 				</div>
+
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-				<d2l-insights-users-table .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-users-table>
+
+				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
+					<d2l-button-subtle
+						icon="d2l-tier1:email"
+						text="${this.localize('components.insights-engagement-dashboard.emailButton')}"
+						@click="${this._handleEmailButtonPress}">
+					</d2l-button-subtle>
+				</d2l-action-button-group>
+
+				<d2l-insights-users-table
+					.data="${this._data}"
+					?skeleton="${this._isLoading}"
+				></d2l-insights-users-table>
 
 				<d2l-insights-default-view-popup
 					?opened=${Boolean(this._serverData.defaultViewPopupDisplayData.length)}
 					.data="${this._serverData.defaultViewPopupDisplayData}">
 				</d2l-insights-default-view-popup>
+
+				<d2l-dialog-confirm
+					id="no-users-selected-dialog"
+					text="${this.localize('components.insights-engagement-dashboard.noUsersSelectedDialogText')}">
+					<d2l-button slot="footer" primary data-dialog-action>
+						${this.localize('components.insights-default-view-popup.buttonOk')}
+					</d2l-button>
+				</d2l-dialog-confirm>
 		`;
 	}
 
@@ -219,6 +251,19 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	_semesterFilterChange(event) {
 		event.stopPropagation();
 		this._serverData.selectedSemesterIds = event.target.selected;
+	}
+
+	_handleEmailButtonPress() {
+		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
+		const selectedUserIds = usersTable.selectedUserIds;
+
+		if (!selectedUserIds.length) {
+			const noUsersSelectedDialog = this.shadowRoot.querySelector('#no-users-selected-dialog');
+			noUsersSelectedDialog.opened = true;
+		} else {
+			// (out-of-scope) show email edit dialog
+			console.log(selectedUserIds);
+		}
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);
