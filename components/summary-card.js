@@ -17,7 +17,7 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 			title: { type: String, attribute: 'card-title' },
 			value: { type: String, attribute: 'card-value' },
 			message: { type: String, attribute: 'card-message' },
-			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' }
+			isValueClickable: { type: Boolean, attribute: 'value-clickable' }
 		};
 	}
 

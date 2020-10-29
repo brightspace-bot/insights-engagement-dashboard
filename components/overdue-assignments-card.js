@@ -63,7 +63,7 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return html`
 			<d2l-labs-summary-card
 				id="d2l-insights-engagement-overdue-assignments"
-				is-value-clickable
+				value-clickable
 				card-title="${this._cardTitle}"
 				card-value="${this._cardValue}"
 				card-message="${this._cardMessage}"
