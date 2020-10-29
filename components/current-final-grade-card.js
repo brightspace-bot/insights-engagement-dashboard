@@ -92,7 +92,8 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
 			.filter(item => item[0] || item[1])
 			.map(item => gradeCategory(item[1]))
-			.forEach(gradeCategory => bins[gradeCategory / 10] += 1);
+			.map(gradeCategory => (gradeCategory / 10 > 9 ? 9 : gradeCategory / 10))
+			.forEach(gradeCategory => bins[gradeCategory] += 1);
 		return bins;
 	}
 
@@ -102,12 +103,9 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			return ['var(--d2l-color-amethyst)'];
 		}
 
-		// the histogram module only renders zeroes for points between non-zero points,
-		// so we provide colours for all points starting with the minimum non-zero value
-		// (extra colours will be ignored)
-		const min = Math.min(...data);
+		// Go through all of the bins and assign the correct color.
 		return [0, 10, 20, 30, 40, 50, 60, 70, 80, 90].map(category =>
-			(this.category.has(category + min) ?
+			(this.category.has(category) ?
 				'var(--d2l-color-amethyst)' :
 				'var(--d2l-color-mica)')
 		);

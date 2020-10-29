@@ -92,13 +92,15 @@ class Chart extends SkeletonMixin(LitElement) {
 		`;
 	}
 
-	defaultOptions() {
+	setDefaultOptions() {
 		// check for series and plotOptions because we could have a column instead.
-		if (this.options.plotOptions === undefined) return;
-		else if (this.options.plotOptions.series !== undefined) {
+		if (!this.options.plotOptions) {
+			return;
+		}
+		else if (this.options.plotOptions.series) {
 			this.options.plotOptions.series.animation = this.showAnimations;
 		}
-		else if (this.options.plotOptions.column !== undefined) {
+		else if (this.options.plotOptions.column) {
 			this.options.plotOptions.column.animation = this.showAnimations;
 		}
 	}
@@ -138,7 +140,7 @@ class Chart extends SkeletonMixin(LitElement) {
 		}
 		else {
 			// accessible options overload
-			this.defaultOptions();
+			this.setDefaultOptions();
 			// Create a chart
 			H.setOptions({
 				lang: {
