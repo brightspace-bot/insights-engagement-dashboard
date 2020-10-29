@@ -3,12 +3,13 @@ import '@brightspace-ui/core/components/button/button';
 import './expander-with-control';
 import { css, html, LitElement } from 'lit-element';
 import { Localizer } from '../locales/localizer';
+import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
 /**
  * @property {Array} data - [{id: orgUnitId, name: orgUnitName}]
  * @property {Boolean} opened - whether or not the dialog should be opened
  */
-class DefaultViewPopup extends Localizer(LitElement) {
+class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 
 	static get properties() {
 		return {
