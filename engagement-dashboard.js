@@ -295,7 +295,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		});
 	}
 
-	_handlePerfomanceMeasure(event) {
+	_handlePerformanceMeasure(event) {
 		if (!this._telemetryHelper) {
 			return;
 		}
@@ -317,13 +317,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this._boundHandlePageLoad = this._handlePageLoad.bind(this);
 		window.addEventListener('load', this._boundHandlePageLoad);
 
-		this._boundHandlePerfomanceMeasure = this._handlePerfomanceMeasure.bind(this);
-		document.addEventListener('d2l-performance-measure', this._boundHandlePerfomanceMeasure);
+		this._boundHandlePerformanceMeasure = this._handlePerformanceMeasure.bind(this);
+		document.addEventListener('d2l-performance-measure', this._boundHandlePerformanceMeasure);
 	}
 
 	disconnectedCallback() {
 		window.removeEventListener('load', this._boundHandlePageLoad);
-		document.removeEventListener('d2l-performance-measure', this._boundHandlePerfomanceMeasure);
+		document.removeEventListener('d2l-performance-measure', this._boundHandlePerformanceMeasure);
 
 		super.disconnectedCallback();
 	}
