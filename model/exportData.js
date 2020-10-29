@@ -1,3 +1,4 @@
+import exportFromJSON from 'export-from-json';
 import { TABLE_USER } from '../components/users-table';
 import { toJS } from 'mobx';
 
@@ -17,29 +18,14 @@ export class ExportData {
 				item[TABLE_USER.LAST_ACCESSED_SYS]];
 		});
 
-		return this.arrayToCsv(formattedData, headers);
+		return this.exportToCsv(formattedData, headers);
 	}
 
-	static arrayToCsv(formattedData, headers) {
-		const csvRows = [];
-		csvRows.push(headers.join(','));
-
-		for (const row of formattedData) {
-			const values = row.map(item => {
-				const element = (`${item}`).replace(/"/g, ''); //replace any quotes
-				return `"${element}"`; //wrap element in quotes
-			});
-			csvRows.push(values.join(','));
-		}
-		return csvRows.join('\n');
-	}
-
-	static downloadCsv(arrayToCsv) {
-		const blob = new Blob([arrayToCsv], { type: 'text/csv' });
-		const url = window.URL.createObjectURL(blob);
-		const dashboardRoot = document.querySelector('d2l-insights-engagement-dashboard').shadowRoot;
-		const exportCsv = dashboardRoot.querySelector('.export-csv');
-		exportCsv.setAttribute('href', url);
-		exportCsv.click();
+	static exportToCsv(formattedData, headers) {
+		const jsonArrayData = formattedData.map((data) => {
+			const arr = headers.reduce((acc, val, i) => ({ ...acc, [val]: data[i] }), {});
+			return arr;
+		});
+		exportFromJSON({ data: jsonArrayData, fileName: 'engagement', exportType: exportFromJSON.types.csv });
 	}
 }
