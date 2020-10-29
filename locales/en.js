@@ -61,6 +61,8 @@ export default {
 
 	"components.insights-table.selectAll": "Select all",
 
+	"components.insights-summary-card.label": "{value} {message}",
+
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
 	"components.insights-time-in-content-vs-grade-card.currentGrade": "Current Grade (%)",
 	"components.insights-time-in-content-vs-grade-card.timeInContent": "Time in Content (mins)",
