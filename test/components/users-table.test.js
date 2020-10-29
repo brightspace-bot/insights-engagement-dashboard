@@ -36,7 +36,6 @@ const data = {
 		...Array.from({ length: 19 }, (val, idx) => [111, idx, mockRoleIds.student, 1, 93, 7000, null])
 	]
 };
-
 data.recordsByUser = new Map();
 data.records.forEach(r => {
 	if (!data.recordsByUser.has(r[RECORD.USER_ID])) {
