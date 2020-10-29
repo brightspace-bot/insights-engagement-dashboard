@@ -193,7 +193,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		return this.data.getFilter(filterId);
 	}
 
-	_toolTipTextByQuadrant(quadrant, numberOfUsers) {
+	_descriptiveTextByQuadrant(quadrant, numberOfUsers) {
 		const quadrantTerm = `components.insights-time-in-content-vs-grade-card.${quadrant}`;
 		return this.localize(quadrantTerm, { numberOfUsers });
 	}
@@ -236,16 +236,16 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 						const midPoints = that._dataMidPoints;
 						const currentMidPoint = [this.x, this.y];
 						if (currentMidPoint.toString() === midPoints[0].toString()) {
-							return that._toolTipTextByQuadrant(this.series.chart.series[0].name, this.series.chart.series[0].data.length);
+							return that._descriptiveTextByQuadrant(this.series.chart.series[0].name, this.series.chart.series[0].data.length);
 						}
 						if (currentMidPoint.toString() === midPoints[1].toString()) {
-							return that._toolTipTextByQuadrant(this.series.chart.series[1].name, this.series.chart.series[1].data.length);
+							return that._descriptiveTextByQuadrant(this.series.chart.series[1].name, this.series.chart.series[1].data.length);
 						}
 						if (currentMidPoint.toString() === midPoints[2].toString()) {
-							return that._toolTipTextByQuadrant(this.series.chart.series[2].name, this.series.chart.series[2].data.length);
+							return that._descriptiveTextByQuadrant(this.series.chart.series[2].name, this.series.chart.series[2].data.length);
 						}
 						if (currentMidPoint.toString() === midPoints[3].toString()) {
-							return that._toolTipTextByQuadrant(this.series.chart.series[3].name, this.series.chart.series[3].data.length);
+							return that._descriptiveTextByQuadrant(this.series.chart.series[3].name, this.series.chart.series[3].data.length);
 						}
 					}
 					return false;
@@ -357,7 +357,13 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 					beforeChartFormat: BEFORE_CHART_FORMAT
 				}
 			},
-			series: [{
+			series: this.getSeries()
+		};
+	}
+
+	getSeries() {
+		const series = [
+			{
 				name: 'leftBottom',
 				data: this._plotDataForLeftBottomQuadrant
 			},
@@ -375,7 +381,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 			},
 			{
 				name: 'midPoint',
-				data: that._dataMidPoints,
+				data: this._dataMidPoints,
 				lineColor: 'transparent',
 				marker: {
 					fillColor: 'transparent',
@@ -385,8 +391,19 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 						}
 					}
 				},
-			}]
-		};
+			}
+		].map(s => {
+			if (s.name === 'midPoint') return s;
+
+			return Object.assign(s, {
+				accessibility: {
+					exposeAsGroupOnly: true,
+					description: this._descriptiveTextByQuadrant(s.name, s.data.length)
+				}
+			});
+		});
+		console.log(JSON.stringify(series));
+		return series;
 	}
 }
 decorate(TimeInContentVsGradeCard, {
