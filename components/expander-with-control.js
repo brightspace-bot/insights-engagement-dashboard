@@ -28,6 +28,10 @@ class ExpanderWithControl extends Localizer(LitElement) {
 				margin: 1em 0 0.5em 0;
 			}
 
+			.d2l-insights-expand-collapse-control-button {
+				margin-left: 10px;
+			}
+
 			.d2l-insights-expand-collapse-control-text {
 				color: var(--d2l-color-celestine);
 				display: inline-flex;
@@ -58,6 +62,7 @@ class ExpanderWithControl extends Localizer(LitElement) {
 
 				<p class="d2l-insights-expand-collapse-control-text">${ controlText }</p>
 				<d2l-button-icon
+					class="d2l-insights-expand-collapse-control-button"
 					icon="tier1:${ this.expanded ? 'arrow-collapse' : 'arrow-expand' }"
 					aria-label="${ controlText }"
 					aria-expanded="${this.expanded}">
