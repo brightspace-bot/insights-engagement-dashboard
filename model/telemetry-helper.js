@@ -20,7 +20,7 @@ export class TelemetryHelper {
 			return;
 		}
 
-		if (measures.lenght < 1) {
+		if (measures.length < 1) {
 			return;
 		}
 

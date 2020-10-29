@@ -19,7 +19,7 @@
 					console.dir(body);
 
 					// verifies that only telemetry is sent on demo page
-					const endpoint = 'https://endpoint.com/api/events/';
+					const endpoint = 'https://example.com/api/events/';
 					console.assert(url === endpoint, { endpoint, body });
 					return true;
 				},
@@ -37,7 +37,7 @@
 		<d2l-demo-page page-title="d2l-insights-engagement-dashboard">
 			<h2>d2l-insights-engagement-dashboard</h2>
 			<d2l-demo-snippet>
-				<d2l-insights-engagement-dashboard demo telemetry-endpoint="https://endpoint.com/api/events/" telemetry-id="cfc669e0-509e-4ed0-b932-4a7ec5c2d8c7"></d2l-insights-engagement-dashboard>
+				<d2l-insights-engagement-dashboard demo telemetry-endpoint="https://example.com/api/events/" telemetry-id="cfc669e0-509e-4ed0-b932-4a7ec5c2d8c7"></d2l-insights-engagement-dashboard>
 			</d2l-demo-snippet>
 		</d2l-demo-page>
 	</body>

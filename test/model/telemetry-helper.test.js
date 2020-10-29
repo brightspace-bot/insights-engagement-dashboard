@@ -24,7 +24,7 @@ describe('TelemetryHelper', () => {
 		});
 
 		it('does nothing if no measures provided', () => {
-			const telemetryHelper = new TelemetryHelper(null);
+			const telemetryHelper = new TelemetryHelper('http://example.com/');
 
 			telemetryHelper.logPerformanceEvent({ id: 'ID', measures: [], action: 'Action' });
 
@@ -32,14 +32,14 @@ describe('TelemetryHelper', () => {
 		});
 
 		it('sends timings with a performance event', async() => {
-			const telemetryHelper = new TelemetryHelper('http://endpoint.com/');
+			const telemetryHelper = new TelemetryHelper('http://example.com/');
 
 			telemetryHelper.logPerformanceEvent({ id: 'ID', measures: [{ name: 'name1' }, { name: 'name2' }], action: 'Action' });
 
 			console.dir(fetchSandbox.lastCall());
 			const lastCall = fetchSandbox.lastCall();
 
-			expect(lastCall[0]).to.equal('http://endpoint.com/');
+			expect(lastCall[0]).to.equal('http://example.com/');
 			const event = JSON.parse(await lastCall[1].body);
 
 			delete event.ts;
