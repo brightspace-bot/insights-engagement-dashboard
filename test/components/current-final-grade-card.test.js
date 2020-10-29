@@ -40,8 +40,9 @@ describe('d2l-insights-current-final-grade-card', () => {
 			filter.selectCategory(30);
 			filter.selectCategory(50);
 			const el = await fixture(html`<d2l-insights-current-final-grade-card .data="${data}"></d2l-insights-current-final-grade-card>`);
-			// only the first 8 colours matter (from 20 to 90)
-			expect(el._colours.slice(2, 10)).to.deep.equal([
+			expect(el._colours).to.deep.equal([
+				'var(--d2l-color-mica)',
+				'var(--d2l-color-mica)',
 				'var(--d2l-color-mica)',
 				'var(--d2l-color-amethyst)',
 				'var(--d2l-color-mica)',
