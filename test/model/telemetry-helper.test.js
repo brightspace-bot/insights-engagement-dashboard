@@ -40,12 +40,7 @@ describe('TelemetryHelper', () => {
 			const lastCall = fetchSandbox.lastCall();
 
 			expect(lastCall[0]).to.equal('http://example.com/');
-			console.log('lastCall[1]');
-			console.log(lastCall[1]);
-			console.log('await lastCall[1].body');
-			const body = await lastCall[1].body;
-			console.log(body);
-			const event = JSON.parse(body);
+			const event = JSON.parse(await lastCall[1].body);
 
 			delete event.ts;
 			delete event.name;
