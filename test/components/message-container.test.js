@@ -8,15 +8,21 @@ describe('d2l-insights-message-container', () => {
 			serverData : {
 				isRecordsTruncated: true
 			}
-		}
+		},
+		users: [
+			[100, 'John', 'Lennon', 'jlennon',  1600295350000],
+			[200, 'Paul', 'McCartney', 'pmccartney', null]
+		]
 	};
 
 	const dataWithoutTruncatedRecords = {
 		_data: {
 			serverData : {
 				isRecordsTruncated: false
-			}
-		}
+			},
+		},
+		users: [],
+		isLoading: false
 	};
 
 	describe('constructor', () => {
@@ -40,7 +46,7 @@ describe('d2l-insights-message-container', () => {
 
 		it('should not render without truncated records', async() => {
 			const el = await fixture(html`<d2l-insights-message-container .data="${dataWithoutTruncatedRecords}"></d2l-insights-message-container>`);
-			expect(el.shadowRoot.querySelector('.d2l-insights-message-container-value')).to.equal(null);
+			expect(el.shadowRoot.querySelector('.d2l-insights-message-container-value').innerText).to.equal('There are no results available that match your filters.');
 		});
 	});
 });

@@ -27,7 +27,18 @@ class MessageContainer extends Localizer(MobxLitElement) {
 				display: none;
 			}
 
-			.d2l-insights-message-container-body {
+			.d2l-insights-message-container-body-noResultsAvailable {
+				background-color: var(--d2l-color-regolith);
+				border: 1px solid var(--d2l-color-gypsum);
+				border-radius: 8px;
+				color: var(--d2l-color-ferrite);
+				display: flex;
+				height: 130px;
+				margin-bottom: 20px;
+				width: 73vw;
+			}
+
+			.d2l-insights-message-container-body-tooManyResults {
 				background-color: var(--d2l-color-regolith);
 				border: 1px solid var(--d2l-color-gypsum);
 				border-radius: 8px;
@@ -50,15 +61,29 @@ class MessageContainer extends Localizer(MobxLitElement) {
 		return this.data._data.serverData.isRecordsTruncated;
 	}
 
+	get _isNoDataReturned() {
+		return this.data.users.length === 0 && !this.data.isLoading;
+	}
+
 	get _messageContainerTextTooManyResults() {
 		return this.localize('components.insights-engagement-dashboard.tooManyResults');
 	}
 
+	get _messageContainerTextNoResultsAvailable() {
+		return this.localize('components.insights-engagement-dashboard.noResultsAvailable');
+	}
+
 	render() {
 		// conditinally render message text and body
-		if (this._isRecordsTruncated) {
+		if (this._isNoDataReturned) { //overwrite too many results case
 			return html`
-				<div class="d2l-insights-message-container-body">
+				<div class="d2l-insights-message-container-body-noResultsAvailable">
+					<span class="d2l-insights-message-container-value">${this._messageContainerTextNoResultsAvailable}</span>
+				</div>
+			`;
+		} else if (this._isRecordsTruncated) {
+			return html`
+				<div class="d2l-insights-message-container-body-tooManyResults">
 					<span class="d2l-insights-message-container-value">${this._messageContainerTextTooManyResults}</span>
 				</div>
 			`;
