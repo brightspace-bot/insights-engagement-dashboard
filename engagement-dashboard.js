@@ -23,6 +23,7 @@ import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
+import { ExportData } from './model/exportData';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
@@ -121,8 +122,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					margin-bottom: 1rem;
 				}
 
-				@media only screen and (max-width: 630px) {
-					h1.d2l-heading-1 {
+				.d2l-insights-noDisplay {
+					display: none;
+					padding: 50px;
+				}
+
+				@media screen and (max-width: 615px) {
+					h1 {
 						line-height: 2rem;
 						margin-bottom: 10px;
 					}
@@ -155,7 +161,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					>
 						<d2l-button-subtle
 							icon="d2l-tier1:export"
-							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}>
+							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
+							@click="${this._exportToCsv}">
 						</d2l-button-subtle>
 						<d2l-button-subtle
 							icon="d2l-tier1:help"
@@ -181,7 +188,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						?demo="${this.isDemo}"
 					></d2l-insights-role-filter>
 				</div>
-				<d2l-insights-message-container .data="${this._data}"></d2l-insights-message-container>
+				<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container-applied-filters">
 					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
@@ -198,15 +205,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
 				</div>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-
-				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
-					<d2l-button-subtle
-						icon="d2l-tier1:email"
-						text="${this.localize('components.insights-engagement-dashboard.emailButton')}"
-						@click="${this._handleEmailButtonPress}">
-					</d2l-button-subtle>
-				</d2l-action-button-group>
-
+			<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
+				<d2l-button-subtle
+					icon="d2l-tier1:email"
+					text="${this.localize('components.insights-engagement-dashboard.emailButton')}"
+					@click="${this._handleEmailButtonPress}">
+				</d2l-button-subtle>
+			</d2l-action-button-group>
 				<d2l-insights-users-table
 					.data="${this._data}"
 					?skeleton="${this._isLoading}"
@@ -226,6 +231,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					</d2l-button>
 				</d2l-dialog-confirm>
 		`;
+	}
+
+	_exportToCsv() {
+		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
+		ExportData.userDataToCsv(usersTable.dataForExport, usersTable.headersForExport);
 	}
 
 	get _isLoading() {
@@ -250,6 +260,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		}
 
 		return this.__data;
+	}
+
+	get _isNoUserResults() {
+		if (!this.isDemo) {
+			return this._data.records.length === 0 && !this._data.isLoading;
+		}
+		return false;
 	}
 
 	get _serverData() {

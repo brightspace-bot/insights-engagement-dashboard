@@ -386,6 +386,19 @@ describe('d2l-insights-users-table', () => {
 			expect(el.selectedUserIds).to.deep.equal([]);
 		});
 	});
+
+	describe('export', () => {
+		it('should get headersForExport', async() => {
+			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
+			expect(el.headersForExport).to.deep.equal(
+				['Last Name', 'First Name', 'User Name', 'User ID', 'Courses', 'Average Grade', 'Average Time in Content (mins)', 'Threads', 'Reads', 'Replies', 'Last Accessed System']);
+		});
+		it('should get dataForExport[0]', async() => {
+			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
+			expect(el.dataForExport[0]).to.deep.equal(
+				[{ value: 300, ariaLabel: 'Select Harrison, George', selected: false }, [300, 'George', 'Harrison', 'gharrison'], 14, '71.42 %', '19.64', [1, 6, 28], `${getLocalDateTime(2)}`]);
+		});
+	});
 });
 
 function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
