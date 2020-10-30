@@ -106,3 +106,7 @@ Golden snapshots in source control must be updated by Travis CI. To trigger an u
 All version changes should obey [semantic versioning](https://semver.org/) rules.
 
 Include either `[increment major]`, `[increment minor]` or `[increment patch]` in your merge commit message to automatically increment the `package.json` version and create a tag.
+
+## Telemetry
+
+This app gathers performance and usage telemetry. You can find more details [here](https://desire2learn.atlassian.net/wiki/spaces/DRACO/pages/1697317280/Engagement+Dashboard+Telemetry)

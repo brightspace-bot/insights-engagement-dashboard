@@ -229,7 +229,6 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 					}
 				}
 			},
-			animation: false,
 			tooltip: {
 				formatter: function() {
 					if (this.series.name === 'midPoint') {

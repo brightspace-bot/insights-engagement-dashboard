@@ -6,6 +6,11 @@ import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import { css, html, LitElement } from 'lit-element';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
+const easeOut = (t) => (1 - (--t) * t * t * t);
+const defaultAnimationOptions = {
+	duration: 500,
+	easing: easeOut,
+};
 // use default highcharts's template but with <h3> instead of <h4> to fix axe heading-order error
 export const BEFORE_CHART_FORMAT = '<h3>{chartTitle}</h3>' +
 	'<div>{typeDescription}</div>' +
@@ -57,6 +62,11 @@ class Chart extends SkeletonMixin(LitElement) {
 		 */
 		this.immutable = false;
 		/**
+		 * Checks accessibility preferences and enables or disables them accordingly.
+		 */
+		this.showAnimations = !window.matchMedia('(prefers-reduced-motion: reduce)').matches ?
+			defaultAnimationOptions : false;
+		/**
 		 * Array of update()'s function optional arguments.
 		 * Parameters should be defined in the same order like in
 		 * native Highcharts function: [redraw, oneToOne, animation].
@@ -65,7 +75,7 @@ class Chart extends SkeletonMixin(LitElement) {
 		this.updateArgs = [
 			true,
 			true,
-			true
+			this.showAnimations
 		];
 		this.globalOptions = null;
 	}
@@ -80,6 +90,19 @@ class Chart extends SkeletonMixin(LitElement) {
 				display: none;
 			}
 		`;
+	}
+
+	setDefaultOptions() {
+		// check for series and plotOptions because we could have a column instead.
+		if (!this.options.plotOptions) {
+			return;
+		}
+		else if (this.options.plotOptions.series) {
+			this.options.plotOptions.series.animation = this.showAnimations;
+		}
+		else if (this.options.plotOptions.column) {
+			this.options.plotOptions.column.animation = this.showAnimations;
+		}
 	}
 
 	render() {
@@ -116,6 +139,8 @@ class Chart extends SkeletonMixin(LitElement) {
 			console.warn('The "options" property was not passed.');
 		}
 		else {
+			// accessible options overload
+			this.setDefaultOptions();
 			// Create a chart
 			H.setOptions({
 				lang: {
