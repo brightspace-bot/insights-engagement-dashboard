@@ -78,7 +78,7 @@ describe('TelemetryHelper', () => {
 
 			const measures = getPerformanceLoadPageMeasures();
 
-			expect(measures.map(m => m.name)).to.deep.equal(['measure 1', 'measure 2', 'measure 3']);
+			expect(measures.map(m => m.name).sort()).to.deep.equal(['measure 1', 'measure 2', 'measure 3']);
 		});
 	});
 });
