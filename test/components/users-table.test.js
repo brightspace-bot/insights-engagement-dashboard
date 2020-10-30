@@ -92,7 +92,9 @@ describe('d2l-insights-users-table', () => {
 			await new Promise(resolve => setTimeout(resolve, 200));
 			await el.updateComplete;
 
-			await expect(el).to.be.accessible();
+			await expect(el).to.be.accessible({
+				ignoredRules: ['aria-hidden-focus']
+			});
 		});
 	});
 
