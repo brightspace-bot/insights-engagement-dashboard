@@ -1,5 +1,6 @@
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
+import 'd2l-table/d2l-scroll-wrapper';
 import './table.js';
 import { action, computed, decorate, observable, reaction } from 'mobx';
 import { css, html } from 'lit-element';
@@ -68,6 +69,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 				d2l-labs-pagination {
 					margin: 15px 0;
+					max-width: 1200px;
 				}
 
 				.d2l-insights-users-table-total-users {
@@ -77,7 +79,28 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 				.d2l-insights-scroll-container {
 					overflow-x: auto;
-					width: 90vw;
+				}
+
+				d2l-scroll-wrapper {
+					--d2l-scroll-wrapper-h-scroll: {
+						border-left: var(--d2l-table-border-overflow);
+						border-right: var(--d2l-table-border-overflow);
+					};
+					--d2l-scroll-wrapper-h-scroll-focus: {
+						border-left: var(--d2l-table-border-overflow-focus);
+						border-right: var(--d2l-table-border-overflow-focus);
+					};
+					--d2l-scroll-wrapper-left: {
+						border-left: dashed 1px black;
+					};
+					--d2l-scroll-wrapper-right: {
+						border-right: none;
+					};
+					--d2l-scroll-wrapper-border-color: var(--d2l-color-galena);
+					--d2l-scroll-wrapper-background-color: var(--d2l-color-sylvite);
+					--d2l-scroll-wrapper-inner: {
+						@apply --d2l-table;
+					};
 				}
 			`
 		];
@@ -255,7 +278,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	render() {
 		return html`
-			<div class="d2l-insights-scroll-container">
+			<d2l-scroll-wrapper show-actions="" needs-table>
 				<d2l-insights-table
 					title="${this.localize('components.insights-users-table.title')}"
 					@d2l-insights-table-sort="${this._handleColumnSort}"
@@ -265,7 +288,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 					?skeleton="${this.skeleton}"
 					@d2l-insights-table-select-changed="${this._handleSelectChanged}"
 				></d2l-insights-table>
-			</div>
+			</d2l-scroll-wrapper>
 
 			<d2l-labs-pagination
 				show-item-count-select

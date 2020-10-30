@@ -62,8 +62,8 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				display: inline-block;
 				height: 285px;
 				margin-top: 10px;
-				padding: 15px;
-				width: 602px;
+				padding: 15px 4px;
+				width: 581px;
 			}
 
 			.d2l-insights-current-final-grade-title {
@@ -168,7 +168,8 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 		return {
 			chart: {
-				height: 230
+				height: 230,
+				width: 581
 			},
 			animation: false,
 			tooltip: {

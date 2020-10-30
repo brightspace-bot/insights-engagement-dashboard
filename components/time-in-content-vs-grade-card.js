@@ -111,8 +111,8 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				height: 275px;
 				margin-right: 12px;
 				margin-top: 10px;
-				padding: 15px;
-				width: 602px;
+				padding: 15px 4px;
+				width: 581px;
 			}
 
 			@media only screen and (max-width: 615px) {
@@ -219,6 +219,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 			chart: {
 				type: 'scatter',
 				height: 250,
+				width: 581,
 				events: {
 					click: function(event) {
 						that._colorAllPointsInAmethyst(this.series);

@@ -51,11 +51,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					display: block;
 					padding: 0 30px;
 				}
-				@media only screen and (min-width: 650px) {
-					:host {
-						padding: 0 15px;
-					}
-				}
 				:host([hidden]) {
 					display: none;
 				}
@@ -69,18 +64,19 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.d2l-insights-summary-chart-layout {
 					display: flex;
 					flex-wrap: wrap;
+					max-width: 1300px;
 				}
 
 				d2l-insights-results-card,
 				d2l-insights-discussion-activity-card {
-					margin-right: 10px;
+					margin-right: 12px;
 				}
 
 				.d2l-insights-summary-container {
 					display: flex;
 					flex-wrap: wrap;
 					margin-right: 10px;
-					max-width: 636px;
+					max-width: 594px;
 				}
 
 				.d2l-insights-summary-container-applied-filters {
@@ -92,7 +88,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					font-weight: normal;	/* default for h1 is bold */
 					margin: 0.67em 0;		/* required to be explicitly defined for Edge Legacy */
 					padding: 0;				/* required to be explicitly defined for Edge Legacy */
-					width: 65%;
 				}
 
 				h2.d2l-heading-3 {
@@ -102,22 +97,29 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.d2l-heading-button-group {
 					display: flex;
 					flex-direction: row;
-					flex-wrap: wrap;
+					justify-content: space-between;
 				}
 
 				.d2l-main-action-button-group {
 					flex-grow: 1;
 					margin: 0.7em;
-					width: 25%;
+					max-width: 300px;
+				}
+
+				@media only screen and (max-width: 780px) {
+					.d2l-main-action-button-group {
+						max-width: 10%;
+					}
 				}
 
 				.d2l-table-action-button-group {
 					margin-bottom: 1rem;
 				}
 
-				@media screen and (max-width: 630px) {
-					h1 {
+				@media only screen and (max-width: 630px) {
+					h1.d2l-heading-1 {
 						line-height: 2rem;
+						margin-bottom: 10px;
 					}
 
 					:host {
