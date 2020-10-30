@@ -23,6 +23,7 @@ import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
+import { ExportData } from './model/exportData';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
@@ -132,7 +133,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					>
 						<d2l-button-subtle
 							icon="d2l-tier1:export"
-							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}>
+							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
+							@click="${this._exportToCsv}">
 						</d2l-button-subtle>
 						<d2l-button-subtle
 							icon="d2l-tier1:help"
@@ -203,6 +205,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					</d2l-button>
 				</d2l-dialog-confirm>
 		`;
+	}
+
+	_exportToCsv() {
+		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
+		ExportData.userDataToCsv(usersTable.dataForExport, usersTable.headersForExport);
 	}
 
 	get _isLoading() {

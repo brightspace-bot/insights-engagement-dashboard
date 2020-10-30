@@ -11,7 +11,7 @@ import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin';
 
-const TABLE_USER = {
+export const TABLE_USER = {
 	SELECTOR_VALUE: 0,
 	NAME_INFO: 1,
 	COURSES: 2,
@@ -98,7 +98,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _itemsCount() {
-		return this.userDataForDisplay.length;
+		return this.userDataForDisplayFormatted.length;
 	}
 
 	get _maxPages() {
@@ -125,7 +125,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 			const start = this._pageSize * (this._currentPage - 1);
 			const end = this._pageSize * (this._currentPage); // it's ok if this goes over the end of the array
-			return this.userDataForDisplay.slice(start, end);
+			return this.userDataForDisplayFormatted.slice(start, end);
 		}
 
 		return [];
@@ -149,8 +149,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			ariaLabel: this.localize('components.insights-users-table.selectorAriaLabel', { userLastFirstName }),
 			selected: this.selectedUserIds.includes(userId)
 		};
-		const userInfo = [userLastFirstName, `${user[USER.USERNAME]} - ${userId}`];
-
+		const userInfo = [user[USER.ID], user[USER.FIRST_NAME], user[USER.LAST_NAME], user[USER.USERNAME]];
 		const userRecords = recordsByUser.get(user[USER.ID]);
 		const coursesWithGrades = userRecords.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
 		const avgFinalGrade = avgOf(coursesWithGrades, RECORD.CURRENT_FINAL_GRADE);
@@ -179,10 +178,10 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		if (column === TABLE_USER.NAME_INFO) {
 			// NB: "desc" and "asc" are inverted for name info: desc sorts a-z whereas asc sorts z-a
 			return (user1, user2) => {
-				const lastName1 = user1[TABLE_USER.NAME_INFO][0].toLowerCase();
-				const lastName2 = user2[TABLE_USER.NAME_INFO][0].toLowerCase();
-				return (lastName1 > lastName2 ? ORDER[order][0] :
-					lastName1 < lastName2 ? ORDER[order][1] :
+				const lastFirstName1 = `${user1[TABLE_USER.NAME_INFO][USER.LAST_NAME]}, ${user1[TABLE_USER.NAME_INFO][USER.FIRST_NAME]}`.toLowerCase();
+				const lastFirstName2 = `${user2[TABLE_USER.NAME_INFO][USER.LAST_NAME]}, ${user2[TABLE_USER.NAME_INFO][USER.FIRST_NAME]}`.toLowerCase();
+				return (lastFirstName1 > lastFirstName2 ? ORDER[order][0] :
+					lastFirstName1 < lastFirstName2 ? ORDER[order][1] :
 						ORDER[order][2]);
 			};
 		}
@@ -215,13 +214,48 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	// @computed
 	get userDataForDisplay() {
-		// map to a 2D userData array, with column 0 as a sub-array of [lastFirstName, username - id]
-		// then sort by lastFirstName
+		// map to a 2D userData array, with column 1 as a sub-array of [id, FirstName, LastName, UserName]
+		// then sort by the selected sorting function
 		const sortFunction = this._choseSortFunction(this._sortColumn, this._sortOrder);
 		return this.data.users
 			.map(this._preProcessData, this)
 			.sort(sortFunction)
 			.map(this._formatDataForDisplay, this);
+	}
+
+	get userDataForDisplayFormatted() {
+		return this.userDataForDisplay.map(data => {
+			return [
+				data[TABLE_USER.SELECTOR_VALUE],
+				[`${data[TABLE_USER.NAME_INFO][USER.LAST_NAME]}, ${data[TABLE_USER.NAME_INFO][USER.FIRST_NAME]}`,
+					`${data[TABLE_USER.NAME_INFO][USER.USERNAME]} - ${data[TABLE_USER.NAME_INFO][USER.ID]}`],
+				data[TABLE_USER.COURSES],
+				data[TABLE_USER.AVG_GRADE],
+				data[TABLE_USER.AVG_TIME_IN_CONTENT],
+				data[TABLE_USER.AVG_DISCUSSION_ACTIVITY],
+				data[TABLE_USER.LAST_ACCESSED_SYS]];
+		});
+	}
+
+	get dataForExport() {
+		return this.userDataForDisplay;
+	}
+
+	get headersForExport() {
+		const headerArray = this.columnInfo.map(item => item.headerText);
+		return [
+			this.localize('components.insights-users-table-export.lastName'),
+			this.localize('components.insights-users-table-export.FirstName'),
+			this.localize('components.insights-users-table-export.UserName'),
+			this.localize('components.insights-users-table-export.UserID'),
+			headerArray[TABLE_USER.COURSES],
+			headerArray[TABLE_USER.AVG_GRADE],
+			headerArray[TABLE_USER.AVG_TIME_IN_CONTENT],
+			this.localize('components.insights-discussion-activity-card.threads'),
+			this.localize('components.insights-discussion-activity-card.reads'),
+			this.localize('components.insights-discussion-activity-card.replies'),
+			headerArray[TABLE_USER.LAST_ACCESSED_SYS]
+		];
 	}
 
 	get columnInfo() {
@@ -329,6 +363,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 decorate(UsersTable, {
 	selectedUserIds: observable,
 	userDataForDisplay: computed,
+	userDataForDisplayFormatted: computed,
+	headersForExport: computed,
 	_sortColumn: observable,
 	_sortOrder: observable,
 	_handleColumnSort: action

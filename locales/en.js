@@ -61,6 +61,11 @@ export default {
 
 	"components.insights-table.selectAll": "Select all",
 
+	"components.insights-users-table-export.lastName": "Last Name",
+	"components.insights-users-table-export.FirstName": "First Name",
+	"components.insights-users-table-export.UserName": "User Name",
+	"components.insights-users-table-export.UserID": "User ID",
+
 	"components.insights-summary-card.label": "{value} {message}",
 
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
