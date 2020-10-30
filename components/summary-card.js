@@ -114,7 +114,7 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
 						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
 				</div>
-			<span class="d2l-insights-summary-card-message d2l-insights-summary-card-field d2l-skeletize-paragraph-3">${this.message}</span>
+					<p tabindex=0 id="d2l-insights-summary-card-message" aria-label="${this.value + this.message}" class="d2l-insights-summary-card-message d2l-insights-summary-card-field d2l-skeletize-paragraph-3">${this.message}</p>
 			</div>
 		</div>`;
 	}
