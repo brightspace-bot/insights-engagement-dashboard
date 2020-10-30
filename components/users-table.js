@@ -43,8 +43,6 @@ function unique(arr) {
  * @property {Number} _sortColumn - The index of the column that is currently sorted
  * @property {String} _sortOrder - either 'asc' or 'desc'
  * @property {Array} selectedUserIds - ids of users that are selected in the table
- * @property {Array} dataForExport - 2D array from the user table (across all pages) for export a CSV file
- * @property {Array} headersForExport - an array of table column headers for export a CSV file
  */
 class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
@@ -55,9 +53,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			_pageSize: { type: Number, attribute: false },
 			_sortColumn: { type: Number, attribute: false },
 			_sortOrder: { type: String, attribute: false },
-			selectedUserIds: { type: Array, attribute: false },
-			dataForExport: { type: Array, attribute: false },
-			headersForExport: { type: Array, attribute: false }
+			selectedUserIds: { type: Array, attribute: false }
 		};
 	}
 
@@ -219,7 +215,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 	// @computed
 	get userDataForDisplay() {
 		// map to a 2D userData array, with column 1 as a sub-array of [id, FirstName, LastName, UserName]
-		// then sort by 'lastName, FirstName'
+		// then sort by the selected sorting function
 		const sortFunction = this._choseSortFunction(this._sortColumn, this._sortOrder);
 		return this.data.users
 			.map(this._preProcessData, this)
