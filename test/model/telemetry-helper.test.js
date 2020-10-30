@@ -36,12 +36,17 @@ describe('TelemetryHelper', () => {
 
 			telemetryHelper.logPerformanceEvent({ id: 'ID', measures: [{ name: 'name1' }, { name: 'name2' }], action: 'Action' });
 
-			console.dir(fetchSandbox.lastCall());
 			const lastCall = fetchSandbox.lastCall();
 
 			expect(lastCall[0]).to.equal('http://example.com/');
+			console.log(lastCall.length);
+			console.log(lastCall[1]);
 			const body = await lastCall[1].body;
 			console.log(body);
+			console.log(String(body));
+			if (String(body) === '[object ReadableStream]') {
+				console.log(body.text());
+			}
 			const event = JSON.parse(body);
 
 			delete event.ts;
