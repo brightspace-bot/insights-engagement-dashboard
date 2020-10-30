@@ -104,6 +104,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					margin-bottom: 1rem;
 				}
 
+				.d2l-insights-noDisplay {
+					display: none;
+					padding: 50px;
+				}
+
 				@media screen and (max-width: 615px) {
 					h1 {
 						line-height: 2rem;
@@ -160,7 +165,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						?demo="${this.isDemo}"
 					></d2l-insights-role-filter>
 				</div>
-				<d2l-insights-message-container .data="${this._data}"></d2l-insights-message-container>
+				<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container-applied-filters">
 					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
@@ -178,15 +183,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-
-				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
-					<d2l-button-subtle
-						icon="d2l-tier1:email"
-						text="${this.localize('components.insights-engagement-dashboard.emailButton')}"
-						@click="${this._handleEmailButtonPress}">
-					</d2l-button-subtle>
-				</d2l-action-button-group>
-
+			<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
+				<d2l-button-subtle
+					icon="d2l-tier1:email"
+					text="${this.localize('components.insights-engagement-dashboard.emailButton')}"
+					@click="${this._handleEmailButtonPress}">
+				</d2l-button-subtle>
+			</d2l-action-button-group>
 				<d2l-insights-users-table
 					.data="${this._data}"
 					?skeleton="${this._isLoading}"
@@ -234,6 +237,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		}
 
 		return this.__data;
+	}
+
+	get _isNoUserResults() {
+		if (!this.isDemo) {
+			return this._data.records.length === 0 && !this._data.isLoading;
+		}
+		return false;
 	}
 
 	get _serverData() {
