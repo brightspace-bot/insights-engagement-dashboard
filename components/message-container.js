@@ -7,7 +7,8 @@ class MessageContainer extends Localizer(MobxLitElement) {
 
 	static get properties() {
 		return {
-			data: { type: Object, attribute: false }
+			data: { type: Object, attribute: false },
+			isNoDataReturned: { type: Boolean, attribute: false }
 		};
 	}
 
@@ -61,10 +62,6 @@ class MessageContainer extends Localizer(MobxLitElement) {
 		return this.data._data.serverData.isRecordsTruncated;
 	}
 
-	get _isNoDataReturned() {
-		return this.data.users.length === 0 && !this.data.isLoading;
-	}
-
 	get _messageContainerTextTooManyResults() {
 		return this.localize('components.insights-engagement-dashboard.tooManyResults');
 	}
@@ -75,7 +72,7 @@ class MessageContainer extends Localizer(MobxLitElement) {
 
 	render() {
 		// conditinally render message text and body
-		if (this._isNoDataReturned) { //overwrite too many results case
+		if (this.isNoDataReturned) { //overwrite too many results case
 			return html`
 				<div class="d2l-insights-message-container-body-noResultsAvailable">
 					<span class="d2l-insights-message-container-value">${this._messageContainerTextNoResultsAvailable}</span>

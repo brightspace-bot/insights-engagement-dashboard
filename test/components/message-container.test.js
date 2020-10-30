@@ -22,7 +22,6 @@ describe('d2l-insights-message-container', () => {
 			},
 		},
 		users: [],
-		isLoading: false
 	};
 
 	describe('constructor', () => {
@@ -33,19 +32,19 @@ describe('d2l-insights-message-container', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async() => {
-			const el = await fixture(html`<d2l-insights-message-container .data="${dataWithTruncatedRecords}"></d2l-insights-message-container>`);
+			const el = await fixture(html`<d2l-insights-message-container .data="${dataWithTruncatedRecords}" .isNoDataReturned="${1 === 2}"></d2l-insights-message-container>`);
 			await expect(el).to.be.accessible();
 		});
 	});
 
 	describe('render', () => {
 		it('should render as expected with truncated records', async() => {
-			const el = await fixture(html`<d2l-insights-message-container .data="${dataWithTruncatedRecords}"></d2l-insights-message-container>`);
+			const el = await fixture(html`<d2l-insights-message-container .data="${dataWithTruncatedRecords}" .isNoDataReturned="${1 === 2}"></d2l-insights-message-container>`);
 			expect(el.shadowRoot.querySelector('span.d2l-insights-message-container-value').innerText).to.equal('There are too many results in your filters. Please refine your selection.');
 		});
 
 		it('should not render without truncated records', async() => {
-			const el = await fixture(html`<d2l-insights-message-container .data="${dataWithoutTruncatedRecords}"></d2l-insights-message-container>`);
+			const el = await fixture(html`<d2l-insights-message-container .data="${dataWithoutTruncatedRecords}" .isNoDataReturned=${1 === 1}></d2l-insights-message-container>`);
 			expect(el.shadowRoot.querySelector('.d2l-insights-message-container-value').innerText).to.equal('There are no results available that match your filters.');
 		});
 	});
