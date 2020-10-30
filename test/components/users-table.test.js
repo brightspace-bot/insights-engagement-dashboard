@@ -394,7 +394,7 @@ describe('d2l-insights-users-table', () => {
 		it('should get dataForExport[0]', async() => {
 			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
 			expect(el.dataForExport[0]).to.deep.equal(
-				[{ value: 300, ariaLabel: 'Select Harrison, George', selected: false }, [300, 'George', 'Harrison', 'gharrison'], 14, '71.42 %', '19.64', [1, 6, 28], 'Oct 19, 2020 10:42 AM']);
+				[{ value: 300, ariaLabel: 'Select Harrison, George', selected: false }, [300, 'George', 'Harrison', 'gharrison'], 14, '71.42 %', '19.64', [1, 6, 28], `${getLocalDateTime(2)}`]);
 		});
 	});
 });
