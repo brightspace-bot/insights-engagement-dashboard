@@ -29,6 +29,8 @@ export default {
 
 	"components.tree-filter.node-name": "{orgUnitName} (Id: {id})",
 	"components.tree-filter.node-name.root": "root",
+	"components.tree-selector.filterBy": "Filter By",
+	"components.tree-selector.clear-label": "Clear",
 	"components.tree-selector.search-label": "Search",
 	"components.tree-selector.load-more-label": "Load More",
 	"components.tree-selector.parent-load-more.aria-label": "Load more child org units",
@@ -63,6 +65,8 @@ export default {
 	"components.insights-users-table-export.FirstName": "First Name",
 	"components.insights-users-table-export.UserName": "User Name",
 	"components.insights-users-table-export.UserID": "User ID",
+
+	"components.insights-summary-card.label": "{value} {message}",
 
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
 	"components.insights-time-in-content-vs-grade-card.currentGrade": "Current Grade (%)",

@@ -123,6 +123,11 @@ describe('Tree', () => {
 			expect(tree.selected.sort()).to.deep.equal([1002, 111]);
 		});
 
+		it('should clear selection', () => {
+			dynamicTree.clearSelection();
+			expect(dynamicTree.selected).to.be.empty;
+		});
+
 		it('should set selected nodes', () => {
 			const tree = new Tree({ nodes, invisibleTypes });
 			tree.setSelected(111, true);
@@ -808,6 +813,17 @@ describe('d2l-insights-tree-filter', () => {
 
 		it('should fire d2l-insights-tree-selector-change on deselection', async() => {
 			await expectEvent(3);
+		});
+
+		it('should clear and fire d2l-insights-tree-filter-select on clear', async() => {
+			const listener = oneEvent(el, 'd2l-insights-tree-filter-select');
+			const selector = el.shadowRoot.querySelector('d2l-insights-tree-selector');
+			const button = selector.shadowRoot.querySelector('d2l-dropdown-content d2l-button-subtle');
+			button.click();
+			const event = await listener;
+			expect(event.type).to.equal('d2l-insights-tree-filter-select');
+			expect(event.target).to.equal(el);
+			expect(el.tree.selected).to.be.empty;
 		});
 
 		it('should immediately fire d2l-insights-tree-filter-request-children for root of dynamic tree', async() => {
