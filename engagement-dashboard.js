@@ -299,7 +299,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			noUsersSelectedDialog.opened = true;
 		} else {
 			// we use the root OU id because that's where we expect users to have email permissions
-			createComposeEmailPopup(toJS(selectedUserIds), this._data._data.orgUnitTree.rootId);
+			createComposeEmailPopup(toJS(selectedUserIds), this._serverData.orgUnitTree.rootId);
 		}
 	}
 
