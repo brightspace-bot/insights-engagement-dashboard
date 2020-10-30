@@ -20,10 +20,10 @@ import './components/default-view-popup.js';
 import { css, html } from 'lit-element/lit-element.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
-import { createComposeEmailPopup } from './components/emailIntegration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
+import { EmailIntegration } from './components/email-integration';
 import { ExportData } from './model/exportData';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
@@ -298,7 +298,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			noUsersSelectedDialog.opened = true;
 		} else {
 			// we use the root OU id because that's where we expect users to have email permissions
-			createComposeEmailPopup(toJS(selectedUserIds), this._data._data.orgUnitTree.rootId);
+			EmailIntegration.createComposeEmailPopup(toJS(selectedUserIds), this._data._data.orgUnitTree.rootId);
 		}
 	}
 
