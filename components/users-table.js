@@ -288,7 +288,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	render() {
 		return html`
-			<d2l-scroll-wrapper show-actions="" needs-table>
+			<d2l-scroll-wrapper show-actions>
 				<d2l-insights-table
 					title="${this.localize('components.insights-users-table.title')}"
 					@d2l-insights-table-sort="${this._handleColumnSort}"
