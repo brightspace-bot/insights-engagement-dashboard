@@ -1,6 +1,8 @@
+import '@brightspace-ui/core/components/offscreen/offscreen.js';
 import './overlay';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
+import { Localizer } from '../locales/localizer';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 /**
@@ -9,13 +11,13 @@ import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton
  * @property {string} message
  * @fires d2l-labs-summary-card-value-click
  */
-class SummaryCard extends SkeletonMixin(LitElement) {
+class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 	static get properties() {
 		return {
 			title: { type: String, attribute: 'card-title' },
 			value: { type: String, attribute: 'card-value' },
 			message: { type: String, attribute: 'card-message' },
-			isValueClickable: { type: Boolean, attribute: 'is-value-clickable' }
+			isValueClickable: { type: Boolean, attribute: 'value-clickable' }
 		};
 	}
 
@@ -70,7 +72,9 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 				margin-inline-start: 30px;
 			}
 
-			.d2l-insights-summary-card-value[is-value-clickable] {
+			.d2l-insights-summary-card-button {
+				background: inherit;
+				border: none;
 				color: var(--d2l-color-celestine);
 				cursor: pointer;
 				font-size: 22px;
@@ -103,6 +107,10 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 		this.dispatchEvent(new CustomEvent('d2l-labs-summary-card-value-click'));
 	}
 
+	get summaryLabel() {
+		return this.localize('components.insights-summary-card.label', { value: this.value, message: this.message });
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -110,11 +118,24 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 			<div class="d2l-insights-summary-card-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this.title}</div>
 			<div class="d2l-insights-summary-card-body" aria-hidden="${this.skeleton}">
 				<div class="d2l-skeletize">
-					${this.isValueClickable ?
-						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field" ?is-value-clickable=${this.isValueClickable} @click=${this._valueClickHandler}>${this.value}</span>` :
-						html`<span class="d2l-insights-summary-card-value d2l-insights-summary-card-field">${this.value}</span>`}
+					${this.isValueClickable ? html`<button
+ 						class="d2l-insights-summary-card-button d2l-insights-summary-card-field"
+ 						@click=${this._valueClickHandler}
+ 					>
+ 						<span aria-hidden="true">${this.value}</span>
+ 						<d2l-offscreen>${this.summaryLabel}</d2l-offscreen>
+ 					</button>` : html`<span
+ 						class="d2l-insights-summary-card-value d2l-insights-summary-card-field"
+ 						aria-label="${this.summaryLabel}"
+ 					>
+ 						<span aria-hidden="true">${this.value}</span>
+ 						<d2l-offscreen>${this.summaryLabel}</d2l-offscreen>
+ 					</span>`}
 				</div>
-					<p tabindex=0 id="d2l-insights-summary-card-message" aria-label="${this.value + this.message}" class="d2l-insights-summary-card-message d2l-insights-summary-card-field d2l-skeletize-paragraph-3">${this.message}</p>
+				<span
+					class="d2l-insights-summary-card-message d2l-insights-summary-card-field d2l-skeletize-paragraph-3"
+					aria-hidden="true"
+				>${this.message}</span>
 			</div>
 		</div>`;
 	}

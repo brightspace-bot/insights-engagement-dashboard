@@ -11,7 +11,8 @@ const COLS = {
 	COURSES: 2,
 	AVG_GRADE: 3,
 	AVG_TIC: 4,
-	LAST_SYS_ACCESS: 5
+	AVG_DISCUSSION: 5,
+	LAST_SYS_ACCESS: 6
 };
 
 const data = {
@@ -33,7 +34,7 @@ const data = {
 	],
 	records: [
 		...records,
-		...Array.from({ length: 19 }, (val, idx) => [111, idx, mockRoleIds.student, 1, 93, 7000, null])
+		...Array.from({ length: 19 }, (val, idx) => [111, idx, mockRoleIds.student, 1, 93, 7000, null, 0, 0, 0])
 	]
 };
 data.recordsByUser = new Map();
@@ -48,22 +49,22 @@ const expected = [
 	[
 		{ value: 300, ariaLabel: 'Select Harrison, George' },
 		['Harrison, George', 'gharrison - 300'],
-		14, '71.42 %', '19.64', getLocalDateTime(2)
+		14, '71.42 %', '19.64', ['1', '6', '28'], getLocalDateTime(2)
 	],
 	[
 		{ value: 100, ariaLabel: 'Select Lennon, John' },
 		['Lennon, John', 'jlennon - 100'],
-		12, '22 %', '2.78', getLocalDateTime(0)
+		12, '22 %', '2.78', ['1', '2', '2'], getLocalDateTime(0)
 	],
 	[
 		{ value: 200, ariaLabel: 'Select McCartney, Paul' },
 		['McCartney, Paul', 'pmccartney - 200'],
-		13, '74 %', '23.72', 'NULL'
+		13, '74 %', '23.72', ['0', '0', '0'], 'NULL'
 	],
 	[
 		{ value: 400, ariaLabel: 'Select Starr, Ringo' },
 		['Starr, Ringo', 'rstarr - 400'],
-		9, '55 %', '8.33', getLocalDateTime(3)
+		9, '55 %', '8.33', ['1', '3', '11'], getLocalDateTime(3)
 	],
 	...Array.from({ length: 19 }, (val, idx) => [
 		{ value: idx, ariaLabel: `Select zz${idx}Last, zz${idx}First` },
@@ -71,6 +72,7 @@ const expected = [
 		1,
 		'93 %',
 		'116.67',
+		['0', '0', '0'],
 		'NULL'
 	]).sort((u1, u2) => u1[COLS.USER_INFO][0].localeCompare(u2[COLS.USER_INFO][0]))
 ];
@@ -216,7 +218,7 @@ describe('d2l-insights-users-table', () => {
 				expect(pageSelector.maxPageNumber).to.equal(0);
 				expect(pageSelector.pageNumber).to.equal(0);
 
-				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('tbody > tr > td:first-child'));
+				const displayedUsers = Array.from(innerTable.shadowRoot.querySelectorAll('.d2l-insights-table-table > tbody > tr > td:first-child'));
 				expect(displayedUsers.length).to.equal(20);
 			});
 		});
@@ -387,7 +389,7 @@ describe('d2l-insights-users-table', () => {
 function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
 	Object.values(COLS).forEach(colType => {
 		const displayedUserInfo = Array.from(
-			table.shadowRoot.querySelectorAll(`tbody > tr > td:nth-child(${colType + 1})`) // css nth-child is 1-indexed, so add 1
+			table.shadowRoot.querySelectorAll(`.d2l-insights-table-table > tbody > tr > td:nth-child(${colType + 1})`) // css nth-child is 1-indexed, so add 1
 		);
 
 		expect(displayedUserInfo.length).to.equal(expectedNumDisplayedRows);
@@ -397,6 +399,7 @@ function verifyColumns(table, expectedNumDisplayedRows, startRowNum) {
 			verifyCellValue(expectedCellValue, cell, colType);
 		});
 	});
+
 }
 
 function verifyCellValue(expectedValue, cell, colType) {
@@ -411,6 +414,14 @@ function verifyCellValue(expectedValue, cell, colType) {
 		expect(innerCheckbox.name).to.equal(`checkbox-${expectedValue.value}`);
 		expect(innerCheckbox.value).to.equal(expectedValue.value.toString());
 		expect(innerCheckbox.ariaLabel).to.equal(expectedValue.ariaLabel);
+
+	} else if (colType === COLS.AVG_DISCUSSION) {
+		const numThreads = cell.querySelector('td:nth-child(1) > div:first-child').innerText;
+		const numReads = cell.querySelector('td:nth-child(3) > div:first-child').innerText;
+		const numReplies = cell.querySelector('td:nth-child(5) > div:first-child').innerText;
+		expect(numThreads).to.equal(expectedValue[0]);
+		expect(numReads).to.equal(expectedValue[1]);
+		expect(numReplies).to.equal(expectedValue[2]);
 
 	} else {
 		const mainText = cell.querySelector('div');

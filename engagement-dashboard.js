@@ -18,6 +18,7 @@ import './components/message-container.js';
 import './components/default-view-popup.js';
 
 import { css, html } from 'lit-element/lit-element.js';
+import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
@@ -34,12 +35,16 @@ import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grad
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
+ * @property {String} telemetryEndpoint - endpoint for gathering telemetry performance data
+ * @property {String} telemetryId - GUID that is used to group performance metrics for each separate page load
  */
 class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	static get properties() {
 		return {
-			isDemo: { type: Boolean, attribute: 'demo' }
+			isDemo: { type: Boolean, attribute: 'demo' },
+			telemetryEndpoint: { type: String, attribute: 'telemetry-endpoint' },
+			telemetryId: { type: String, attribute: 'telemetry-id' },
 		};
 	}
 
@@ -257,6 +262,18 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return this.__serverData;
 	}
 
+	get _telemetryHelper() {
+		if (!this.telemetryEndpoint) {
+			return null;
+		}
+
+		if (!this.__telemetryHelper) {
+			this.__telemetryHelper = new TelemetryHelper(this.telemetryEndpoint);
+		}
+
+		return this.__telemetryHelper;
+	}
+
 	_openHelpLink() {
 		window.open('https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide', '_blank');
 	}
@@ -287,6 +304,51 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			// (out-of-scope) show email edit dialog
 			console.log(selectedUserIds);
 		}
+	}
+
+	_handlePageLoad() {
+		if (!this._telemetryHelper) {
+			return;
+		}
+
+		this._telemetryHelper.logPerformanceEvent({
+			id: this.telemetryId,
+			measures: getPerformanceLoadPageMeasures(),
+			action: 'PageLoad'
+		});
+	}
+
+	_handlePerformanceMeasure(event) {
+		if (!this._telemetryHelper) {
+			return;
+		}
+
+		if (!['d2l.page.tti', 'first-paint', 'first-contentful-paint'].includes(event.detail.value.name)) {
+			return;
+		}
+
+		this._telemetryHelper.logPerformanceEvent({
+			id: this.telemetryId,
+			measures: [event.detail.value],
+			action: 'PageLoad'
+		});
+	}
+
+	connectedCallback() {
+		super.connectedCallback();
+
+		this._boundHandlePageLoad = this._handlePageLoad.bind(this);
+		window.addEventListener('load', this._boundHandlePageLoad);
+
+		this._boundHandlePerformanceMeasure = this._handlePerformanceMeasure.bind(this);
+		document.addEventListener('d2l-performance-measure', this._boundHandlePerformanceMeasure);
+	}
+
+	disconnectedCallback() {
+		window.removeEventListener('load', this._boundHandlePageLoad);
+		document.removeEventListener('d2l-performance-measure', this._boundHandlePerformanceMeasure);
+
+		super.disconnectedCallback();
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);

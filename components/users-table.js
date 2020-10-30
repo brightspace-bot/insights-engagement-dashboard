@@ -18,7 +18,8 @@ const TABLE_USER = {
 	COURSES: 2,
 	AVG_GRADE: 3,
 	AVG_TIME_IN_CONTENT: 4,
-	LAST_ACCESSED_SYS: 5
+	AVG_DISCUSSION_ACTIVITY: 5,
+	LAST_ACCESSED_SYS: 6
 };
 
 const numberFormatOptions = { maximumFractionDigits: 2 };
@@ -153,7 +154,6 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 			const start = this._pageSize * (this._currentPage - 1);
 			const end = this._pageSize * (this._currentPage); // it's ok if this goes over the end of the array
-
 			return this.userDataForDisplay.slice(start, end);
 		}
 
@@ -183,6 +183,9 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		const userRecords = recordsByUser.get(user[USER.ID]);
 		const coursesWithGrades = userRecords.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
 		const avgFinalGrade = avgOf(coursesWithGrades, RECORD.CURRENT_FINAL_GRADE);
+		const threads = avgOf(userRecords, RECORD.DISCUSSION_ACTIVITY_THREADS);
+		const reads = avgOf(userRecords, RECORD.DISCUSSION_ACTIVITY_READS);
+		const replies = avgOf(userRecords, RECORD.DISCUSSION_ACTIVITY_REPLIES);
 
 		const userLastSysAccess = user[USER.LAST_SYS_ACCESS] ? new Date(user[USER.LAST_SYS_ACCESS]) : undefined;
 
@@ -192,6 +195,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			userRecords.length, // courses
 			avgFinalGrade,
 			avgOf(userRecords, RECORD.TIME_IN_CONTENT),
+			[Math.round(threads), Math.round(reads), Math.round(replies)],
 			userLastSysAccess
 		];
 	}
@@ -233,6 +237,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			user[TABLE_USER.COURSES],
 			user[TABLE_USER.AVG_GRADE] ? formatPercent(user[TABLE_USER.AVG_GRADE] / 100, numberFormatOptions) : '',
 			formatNumber(user[TABLE_USER.AVG_TIME_IN_CONTENT] / 60, numberFormatOptions),
+			user[TABLE_USER.AVG_DISCUSSION_ACTIVITY],
 			lastSysAccessFormatted
 		];
 	}
@@ -269,6 +274,10 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			{
 				headerText: this.localize('components.insights-users-table.avgTimeInContent'),
 				columnType: COLUMN_TYPES.NORMAL_TEXT
+			},
+			{
+				headerText: this.localize('components.insights-users-table.avgDiscussionActivity'),
+				columnType: COLUMN_TYPES.SUB_COLUMNS
 			},
 			{
 				headerText: this.localize('components.insights-users-table.lastAccessedSys'),
