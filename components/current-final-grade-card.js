@@ -60,9 +60,8 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				border-style: solid;
 				border-width: 1.5px;
 				display: inline-block;
-				height: 275px;
-				margin-right: 10px;
-				margin-top: 19.5px;
+				height: 285px;
+				margin-top: 10px;
 				padding: 15px;
 				width: 602px;
 			}

@@ -53,6 +53,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				border-collapse: separate;
 				border-spacing: 0;
 				font-weight: normal;
+				overflow-x: auto;
 				text-align: left;
 				width: 100%;
 			}
@@ -98,6 +99,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 			.d2l-insights-table-table .d2l-insights-table-cell {
 				border-right: 1px solid var(--d2l-color-mica);
+				min-width: 100px;
 			}
 
 			.d2l-insights-table-table .d2l-insights-table-cell-first,

@@ -34,7 +34,6 @@ class Overlay extends LitElement {
 
 			.d2l-insights-overlay {
 				align-items: center;
-				background-color: white;
 				border-radius: 15px;
 				display: flex;
 				height: 100%;

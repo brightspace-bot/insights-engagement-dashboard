@@ -74,6 +74,11 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 					margin-bottom: 30px;
 					width: 100%;
 				}
+
+				.d2l-insights-scroll-container {
+					overflow-x: auto;
+					width: 90vw;
+				}
 			`
 		];
 	}
@@ -250,15 +255,17 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	render() {
 		return html`
-			<d2l-insights-table
-				title="${this.localize('components.insights-users-table.title')}"
-				@d2l-insights-table-sort="${this._handleColumnSort}"
-				sort-column="1"
-				.columnInfo=${this.columnInfo}
-				.data="${this._displayData}"
-				?skeleton="${this.skeleton}"
-				@d2l-insights-table-select-changed="${this._handleSelectChanged}"
-			></d2l-insights-table>
+			<div class="d2l-insights-scroll-container">
+				<d2l-insights-table
+					title="${this.localize('components.insights-users-table.title')}"
+					@d2l-insights-table-sort="${this._handleColumnSort}"
+					sort-column="1"
+					.columnInfo=${this.columnInfo}
+					.data="${this._displayData}"
+					?skeleton="${this.skeleton}"
+					@d2l-insights-table-select-changed="${this._handleSelectChanged}"
+				></d2l-insights-table>
+			</div>
 
 			<d2l-labs-pagination
 				show-item-count-select

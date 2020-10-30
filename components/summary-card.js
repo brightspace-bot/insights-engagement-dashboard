@@ -36,7 +36,6 @@ class SummaryCard extends SkeletonMixin(LitElement) {
 				display: flex;
 				flex-direction: column;
 				height: 121px;
-				margin-right: 10px;
 				margin-top: 10px;
 				padding: 15px;
 				width: 280px;

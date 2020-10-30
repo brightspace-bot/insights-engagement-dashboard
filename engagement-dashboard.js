@@ -51,6 +51,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					display: block;
 					padding: 0 30px;
 				}
+				@media only screen and (min-width: 650px) {
+					:host {
+						padding: 0 15px;
+					}
+				}
 				:host([hidden]) {
 					display: none;
 				}
@@ -61,9 +66,21 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					margin-top: -10px;
 				}
 
+				.d2l-insights-summary-chart-layout {
+					display: flex;
+					flex-wrap: wrap;
+				}
+
+				d2l-insights-results-card,
+				d2l-insights-discussion-activity-card {
+					margin-right: 10px;
+				}
+
 				.d2l-insights-summary-container {
 					display: flex;
 					flex-wrap: wrap;
+					margin-right: 10px;
+					max-width: 636px;
 				}
 
 				.d2l-insights-summary-container-applied-filters {
@@ -98,7 +115,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					margin-bottom: 1rem;
 				}
 
-				@media screen and (max-width: 615px) {
+				@media screen and (max-width: 630px) {
 					h1 {
 						line-height: 2rem;
 					}
@@ -106,6 +123,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					:host {
 						display: block;
 						padding: 0 18px;
+					}
+
+					.d2l-insights-summary-container {
+						margin-right: 0;
 					}
 				}
 			`
@@ -158,18 +179,17 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				<div class="d2l-insights-summary-container-applied-filters">
 					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
 				</div>
-				<div class="d2l-insights-summary-container">
-					<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
-					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
-					<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
-					<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
-				</div>
-				<div class="d2l-insights-chart-container">
+				<div class="d2l-insights-summary-chart-layout">
+					<div class="d2l-insights-summary-container">
+						<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
+						<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
+						<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
+						<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
+					</div>
 					<div><d2l-insights-current-final-grade-card	.data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>
 					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
 					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
 				</div>
-
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 
 				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
@@ -184,6 +204,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					.data="${this._data}"
 					?skeleton="${this._isLoading}"
 				></d2l-insights-users-table>
+
 
 				<d2l-insights-default-view-popup
 					?opened=${Boolean(this._serverData.defaultViewPopupDisplayData.length)}
