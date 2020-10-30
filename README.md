@@ -109,4 +109,4 @@ Include either `[increment major]`, `[increment minor]` or `[increment patch]` i
 
 ## Telemetry
 
-This app gathers perfomance and usage telemetry. You can find more details [here](https://desire2learn.atlassian.net/wiki/spaces/DRACO/pages/1697317280/Engagement+Dashboard+Telemetry)
+This app gathers performance and usage telemetry. You can find more details [here](https://desire2learn.atlassian.net/wiki/spaces/DRACO/pages/1697317280/Engagement+Dashboard+Telemetry)
