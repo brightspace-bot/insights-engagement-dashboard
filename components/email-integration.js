@@ -6,46 +6,45 @@ const RECIPIENT_TYPES = {
 	BCC: 2
 };
 
-export class EmailIntegration {
-	static createEmailCallbackObject(userIds) {
-		return {
-			// a map from userId to recipient type
-			GetUsers: () => {
-				const users = {};
-				userIds.forEach(userId => {
-					users[`u${userId}`] = [RECIPIENT_TYPES.BCC];
-				});
-				return users;
-			},
-			// a list of userIds to send to
-			GetUserIds: () => userIds,
+export function createEmailCallbackObject(userIds) {
+	return {
+		// a map from userId to recipient type
+		GetUsers: () => {
+			const users = {};
+			userIds.forEach(userId => {
+				users[`u${userId}`] = [RECIPIENT_TYPES.BCC];
+			});
+			return users;
+		},
+		// a list of userIds to send to
+		GetUserIds: () => userIds,
 
-			// a list of groupIds to send to
-			GetGroupIds: () => [],
-			// a map from groupId to recipient type
-			GetGroups: () => {
-				return {
-					// example with groupId = 1234
-					// g1234: [RECIPIENT_TYPE.TO]
-				};
-			},
+		// a list of groupIds to send to
+		GetGroupIds: () => [],
+		// a map from groupId to recipient type
+		GetGroups: () => {
+			return {
+				// example with groupId = 1234
+				// g1234: [RECIPIENT_TYPE.TO]
+			};
+		},
 
-			// a list of standalone email addresses, not related to any particular user
-			GetEmails: () => [],
-			// string to prefill the email subject
-			GetSubject: () => '',
-			// string to prefill the email body
-			GetBody: () => ''
-		};
-	}
-
-	static createComposeEmailPopup(userIds, orgUnitId) {
-		window[callbackName] = this.createEmailCallbackObject(userIds);
-
-		window.open(
-			`/d2l/lms/email/integration/AdaptLegacyPopupData.d2l?ou=${orgUnitId}&cb=${callbackName}`,
-			'ComposeEmail',
-			'height=900,width=960,resizable=yes,scrollbars=yes'
-		);
-	}
+		// a list of standalone email addresses, not related to any particular user
+		GetEmails: () => [],
+		// string to prefill the email subject
+		GetSubject: () => '',
+		// string to prefill the email body
+		GetBody: () => ''
+	};
 }
+
+export function createComposeEmailPopup(userIds, orgUnitId) {
+	window[callbackName] = createEmailCallbackObject(userIds);
+
+	window.open(
+		`/d2l/lms/email/integration/AdaptLegacyPopupData.d2l?ou=${orgUnitId}&cb=${callbackName}`,
+		'ComposeEmail',
+		'height=900,width=960,resizable=yes,scrollbars=yes'
+	);
+}
+

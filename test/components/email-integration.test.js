@@ -1,4 +1,4 @@
-import { EmailIntegration } from '../../components/email-integration';
+import { createEmailCallbackObject } from '../../components/email-integration';
 import { expect } from '@open-wc/testing';
 
 describe('EmailIntegration.createEmailCallbackObject', () => {
@@ -8,7 +8,7 @@ describe('EmailIntegration.createEmailCallbackObject', () => {
 			u1: [2], u2: [2], u3: [2], u4: [2]
 		};
 
-		const actual = EmailIntegration.createEmailCallbackObject(userIds);
+		const actual = createEmailCallbackObject(userIds);
 		expect(actual.GetUsers()).to.deep.equal(expectedGetUsersResult);
 		expect(actual.GetUserIds()).to.deep.equal(userIds);
 
