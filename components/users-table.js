@@ -96,6 +96,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 					--d2l-scroll-wrapper-right: {
 						border-right: none;
 					};
+
 					--d2l-scroll-wrapper-border-color: var(--d2l-color-galena);
 					--d2l-scroll-wrapper-background-color: var(--d2l-color-sylvite);
 					--d2l-scroll-wrapper-inner: {
