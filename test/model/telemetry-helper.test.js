@@ -57,7 +57,9 @@ describe('TelemetryHelper', () => {
 			console.log(String(body));
 			if (String(body) === '[object ReadableStream]') {
 				console.log(getAllFuncs(body));
-				console.log(body.text());
+				for (let i = 0; i < body.length; i++) {
+					console.log(body[i]);
+				}
 			}
 			const event = JSON.parse(body);
 
