@@ -39,6 +39,7 @@ class ResultsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				card-value="${this._cardValue}"
 				card-message="${this._cardMessage}"
 				?skeleton="${this.skeleton}"
+				live
 			></d2l-labs-summary-card>
 		`;
 	}
