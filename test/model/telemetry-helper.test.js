@@ -8,7 +8,7 @@ describe('TelemetryHelper', () => {
 
 	beforeEach(() => {
 		fetchSandbox = fetchMock.sandbox();
-		fetchSandbox.mock(() => { return true; }, 200);
+		fetchSandbox.mock((_, opts) => { console.log(JSON.stringify(opts, null, 2)); return true; }, 200);
 		window.d2lfetch = { fetch : fetchSandbox };
 	});
 
