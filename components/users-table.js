@@ -69,11 +69,16 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 				d2l-labs-pagination {
 					margin: 15px 0;
+					max-width: 1200px;
 				}
 
 				.d2l-insights-users-table-total-users {
 					margin-bottom: 30px;
 					width: 100%;
+				}
+
+				.d2l-insights-scroll-container {
+					overflow-x: auto;
 				}
 			`
 		];

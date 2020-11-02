@@ -1,5 +1,6 @@
 import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/inputs/input-checkbox';
+import 'd2l-table/d2l-scroll-wrapper';
 
 import { bodySmallStyles, bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { css, html, LitElement } from 'lit-element';
@@ -54,6 +55,8 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				border-collapse: separate;
 				border-spacing: 0;
 				font-weight: normal;
+				max-width: 1200px;
+				overflow-x: auto;
 				text-align: left;
 				width: 100%;
 			}
@@ -157,6 +160,32 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			.d2l-insights-table-arrow-spacing {
 				padding-right: 30px;
 			}
+			.d2l-insights-table-table td:not(.d2l-insights-table-cell-first):not(td>d2l-icon) {
+				min-width: 130px;
+			}
+
+			d2l-scroll-wrapper {
+				--d2l-scroll-wrapper-h-scroll: {
+					border-left: var(--d2l-table-border-overflow);
+					border-right: var(--d2l-table-border-overflow);
+				};
+				--d2l-scroll-wrapper-h-scroll-focus: {
+					border-left: var(--d2l-table-border-overflow-focus);
+					border-right: var(--d2l-table-border-overflow-focus);
+				};
+				--d2l-scroll-wrapper-left: {
+					border-left: dashed 1px black;
+				};
+				--d2l-scroll-wrapper-right: {
+					border-right: none;
+				};
+
+				--d2l-scroll-wrapper-border-color: var(--d2l-color-galena);
+				--d2l-scroll-wrapper-background-color: var(--d2l-color-sylvite);
+				--d2l-scroll-wrapper-inner: {
+					@apply --d2l-table;
+				};
+			}
 		`];
 	}
 
@@ -171,10 +200,12 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	render() {
 		return html`
-			<table class="d2l-insights-table-table" aria-label="${this.title}">
-				${this._renderThead()}
-				${this._renderTbody()}
-			</table>
+			<d2l-scroll-wrapper show-actions>
+				<table class="d2l-insights-table-table" aria-label="${this.title}">
+					${this._renderThead()}
+					${this._renderTbody()}
+				</table>
+			</d2l-scroll-wrapper>
 		`;
 	}
 

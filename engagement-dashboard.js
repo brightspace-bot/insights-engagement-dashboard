@@ -69,9 +69,22 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					margin-top: -10px;
 				}
 
+				.d2l-insights-summary-chart-layout {
+					display: flex;
+					flex-wrap: wrap;
+					max-width: 1300px;
+				}
+
+				d2l-insights-results-card,
+				d2l-insights-discussion-activity-card {
+					margin-right: 12px;
+				}
+
 				.d2l-insights-summary-container {
 					display: flex;
 					flex-wrap: wrap;
+					margin-right: 10px;
+					max-width: 594px;
 				}
 
 				.d2l-insights-summary-container-applied-filters {
@@ -83,7 +96,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					font-weight: normal;	/* default for h1 is bold */
 					margin: 0.67em 0;		/* required to be explicitly defined for Edge Legacy */
 					padding: 0;				/* required to be explicitly defined for Edge Legacy */
-					width: 65%;
 				}
 
 				h2.d2l-heading-3 {
@@ -93,13 +105,19 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.d2l-heading-button-group {
 					display: flex;
 					flex-direction: row;
-					flex-wrap: wrap;
+					justify-content: space-between;
 				}
 
 				.d2l-main-action-button-group {
 					flex-grow: 1;
 					margin: 0.7em;
-					width: 25%;
+					max-width: 300px;
+				}
+
+				@media only screen and (max-width: 780px) {
+					.d2l-main-action-button-group {
+						max-width: 10%;
+					}
 				}
 
 				.d2l-table-action-button-group {
@@ -114,11 +132,16 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				@media screen and (max-width: 615px) {
 					h1 {
 						line-height: 2rem;
+						margin-bottom: 10px;
 					}
 
 					:host {
 						display: block;
 						padding: 0 18px;
+					}
+
+					.d2l-insights-summary-container {
+						margin-right: 0;
 					}
 				}
 			`
@@ -172,18 +195,17 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				<div class="d2l-insights-summary-container-applied-filters">
 					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
 				</div>
-				<div class="d2l-insights-summary-container">
-					<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
-					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
-					<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
-					<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
-				</div>
-				<div class="d2l-insights-chart-container">
+				<div class="d2l-insights-summary-chart-layout">
+					<div class="d2l-insights-summary-container">
+						<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
+						<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
+						<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
+						<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
+					</div>
 					<div><d2l-insights-current-final-grade-card	.data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>
 					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
 					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
 				</div>
-
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
 					<d2l-button-subtle
@@ -197,6 +219,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					.data="${this._data}"
 					?skeleton="${this._isLoading}"
 				></d2l-insights-users-table>
+
 
 				<d2l-insights-default-view-popup
 					?opened=${Boolean(this._serverData.defaultViewPopupDisplayData.length)}
