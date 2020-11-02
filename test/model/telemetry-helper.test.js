@@ -54,9 +54,9 @@ describe('TelemetryHelper', () => {
 			console.log(lastCall[1]);
 			const body = await lastCall[1].body;
 			console.log(body);
-			console.log(String(body));
 			if (String(body) === '[object ReadableStream]') {
 				console.log(JSON.stringify(body, null, 2));
+				console.log(fetchSandbox.lastOptions().body);
 				console.log(getAllFuncs(body));
 				for (let i = 0; i < body.length; i++) {
 					console.log(body[i]);
