@@ -10,6 +10,7 @@ describe('TelemetryHelper', () => {
 		fetchSandbox = fetchMock.sandbox();
 		fetchSandbox.mock(() => { return true; }, 200);
 		window.d2lfetch = { fetch : fetchSandbox };
+		fetchMock.fetch =
 	});
 
 	describe('logPerformanceEvent', () => {
@@ -56,6 +57,7 @@ describe('TelemetryHelper', () => {
 			console.log(body);
 			console.log(String(body));
 			if (String(body) === '[object ReadableStream]') {
+				console.log(JSON.stringify(body, null, 2));
 				console.log(getAllFuncs(body));
 				for (let i = 0; i < body.length; i++) {
 					console.log(body[i]);
