@@ -20,6 +20,7 @@ import './components/default-view-popup.js';
 import { css, html } from 'lit-element/lit-element.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
+import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
@@ -33,6 +34,7 @@ import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
+import { toJS } from 'mobx';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -183,13 +185,14 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-			<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
-				<d2l-button-subtle
-					icon="d2l-tier1:email"
-					text="${this.localize('components.insights-engagement-dashboard.emailButton')}"
-					@click="${this._handleEmailButtonPress}">
-				</d2l-button-subtle>
-			</d2l-action-button-group>
+				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
+					<d2l-button-subtle
+						icon="d2l-tier1:email"
+						text="${this.localize('components.insights-engagement-dashboard.emailButton')}"
+						@click="${this._handleEmailButtonPress}">
+					</d2l-button-subtle>
+				</d2l-action-button-group>
+
 				<d2l-insights-users-table
 					.data="${this._data}"
 					?skeleton="${this._isLoading}"
@@ -295,8 +298,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			const noUsersSelectedDialog = this.shadowRoot.querySelector('#no-users-selected-dialog');
 			noUsersSelectedDialog.opened = true;
 		} else {
-			// (out-of-scope) show email edit dialog
-			console.log(selectedUserIds);
+			// we use the root OU id because that's where we expect users to have email permissions
+			createComposeEmailPopup(toJS(selectedUserIds), this._serverData.orgUnitTree.rootId);
 		}
 	}
 
