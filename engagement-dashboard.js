@@ -18,10 +18,13 @@ import './components/message-container.js';
 import './components/default-view-popup.js';
 
 import { css, html } from 'lit-element/lit-element.js';
+import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
+import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
+import { ExportData } from './model/exportData';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
@@ -31,15 +34,20 @@ import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
+import { toJS } from 'mobx';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
+ * @property {String} telemetryEndpoint - endpoint for gathering telemetry performance data
+ * @property {String} telemetryId - GUID that is used to group performance metrics for each separate page load
  */
 class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	static get properties() {
 		return {
-			isDemo: { type: Boolean, attribute: 'demo' }
+			isDemo: { type: Boolean, attribute: 'demo' },
+			telemetryEndpoint: { type: String, attribute: 'telemetry-endpoint' },
+			telemetryId: { type: String, attribute: 'telemetry-id' },
 		};
 	}
 
@@ -98,6 +106,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					margin-bottom: 1rem;
 				}
 
+				.d2l-insights-noDisplay {
+					display: none;
+					padding: 50px;
+				}
+
 				@media screen and (max-width: 615px) {
 					h1 {
 						line-height: 2rem;
@@ -127,7 +140,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					>
 						<d2l-button-subtle
 							icon="d2l-tier1:export"
-							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}>
+							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
+							@click="${this._exportToCsv}">
 						</d2l-button-subtle>
 						<d2l-button-subtle
 							icon="d2l-tier1:help"
@@ -153,7 +167,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						?demo="${this.isDemo}"
 					></d2l-insights-role-filter>
 				</div>
-				<d2l-insights-message-container .data="${this._data}"></d2l-insights-message-container>
+				<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container-applied-filters">
 					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
@@ -171,7 +185,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				</div>
 
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-
 				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
 					<d2l-button-subtle
 						icon="d2l-tier1:email"
@@ -200,6 +213,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		`;
 	}
 
+	_exportToCsv() {
+		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
+		ExportData.userDataToCsv(usersTable.dataForExport, usersTable.headersForExport);
+	}
+
 	get _isLoading() {
 		return this._data.isLoading;
 	}
@@ -224,6 +242,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return this.__data;
 	}
 
+	get _isNoUserResults() {
+		if (!this.isDemo) {
+			return this._data.records.length === 0 && !this._data.isLoading;
+		}
+		return false;
+	}
+
 	get _serverData() {
 		if (!this.__serverData) {
 			this.__serverData = new Data({
@@ -232,6 +257,18 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		}
 
 		return this.__serverData;
+	}
+
+	get _telemetryHelper() {
+		if (!this.telemetryEndpoint) {
+			return null;
+		}
+
+		if (!this.__telemetryHelper) {
+			this.__telemetryHelper = new TelemetryHelper(this.telemetryEndpoint);
+		}
+
+		return this.__telemetryHelper;
 	}
 
 	_openHelpLink() {
@@ -261,9 +298,54 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			const noUsersSelectedDialog = this.shadowRoot.querySelector('#no-users-selected-dialog');
 			noUsersSelectedDialog.opened = true;
 		} else {
-			// (out-of-scope) show email edit dialog
-			console.log(selectedUserIds);
+			// we use the root OU id because that's where we expect users to have email permissions
+			createComposeEmailPopup(toJS(selectedUserIds), this._serverData.orgUnitTree.rootId);
 		}
+	}
+
+	_handlePageLoad() {
+		if (!this._telemetryHelper) {
+			return;
+		}
+
+		this._telemetryHelper.logPerformanceEvent({
+			id: this.telemetryId,
+			measures: getPerformanceLoadPageMeasures(),
+			action: 'PageLoad'
+		});
+	}
+
+	_handlePerformanceMeasure(event) {
+		if (!this._telemetryHelper) {
+			return;
+		}
+
+		if (!['d2l.page.tti', 'first-paint', 'first-contentful-paint'].includes(event.detail.value.name)) {
+			return;
+		}
+
+		this._telemetryHelper.logPerformanceEvent({
+			id: this.telemetryId,
+			measures: [event.detail.value],
+			action: 'PageLoad'
+		});
+	}
+
+	connectedCallback() {
+		super.connectedCallback();
+
+		this._boundHandlePageLoad = this._handlePageLoad.bind(this);
+		window.addEventListener('load', this._boundHandlePageLoad);
+
+		this._boundHandlePerformanceMeasure = this._handlePerformanceMeasure.bind(this);
+		document.addEventListener('d2l-performance-measure', this._boundHandlePerformanceMeasure);
+	}
+
+	disconnectedCallback() {
+		window.removeEventListener('load', this._boundHandlePageLoad);
+		document.removeEventListener('d2l-performance-measure', this._boundHandlePerformanceMeasure);
+
+		super.disconnectedCallback();
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);

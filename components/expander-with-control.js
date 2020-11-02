@@ -3,13 +3,14 @@ import '@brightspace-ui/core/components/button/button-icon';
 
 import { css, html, LitElement } from 'lit-element';
 import { Localizer } from '../locales/localizer';
+import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
 /**
  * @property {String} controlExpandedText - The text to display in the control div when the control is expanded
  * @property {String} controlCollapsedText - The text to display in the control div when the control is collapsed
  * @property {Boolean} expanded - whether the content is expanded or not
  */
-class ExpanderWithControl extends Localizer(LitElement) {
+class ExpanderWithControl extends RtlMixin(Localizer(LitElement)) {
 
 	static get properties() {
 		return {
@@ -26,6 +27,16 @@ class ExpanderWithControl extends Localizer(LitElement) {
 				display: flex;
 				justify-content: space-between;
 				margin: 1em 0 0.5em 0;
+			}
+
+			.d2l-insights-expand-collapse-control-button {
+				margin-left: 10px;
+				margin-right: 0;
+			}
+
+			.d2l-insights-expand-collapse-control-button[dir="rtl"] {
+				margin-left: 0;
+				margin-right: 10px;
 			}
 
 			.d2l-insights-expand-collapse-control-text {
@@ -58,6 +69,7 @@ class ExpanderWithControl extends Localizer(LitElement) {
 
 				<p class="d2l-insights-expand-collapse-control-text">${ controlText }</p>
 				<d2l-button-icon
+					class="d2l-insights-expand-collapse-control-button"
 					icon="tier1:${ this.expanded ? 'arrow-collapse' : 'arrow-expand' }"
 					aria-label="${ controlText }"
 					aria-expanded="${this.expanded}">

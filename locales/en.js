@@ -14,6 +14,7 @@ export default {
 	"components.insights-engagement-dashboard.exportToCsv": "Export to CSV",
 	"components.insights-engagement-dashboard.emailButton": "Email",
 	"components.insights-engagement-dashboard.noUsersSelectedDialogText": "Please select one or more users to email.",
+	"components.insights-engagement-dashboard.noResultsAvailable": "There are no results available that match your filters.",
 
 	"components.insights-role-filter.name": "Role",
 
@@ -60,6 +61,11 @@ export default {
 	"components.insights-users-table.selectorAriaLabel": "Select {userLastFirstName}",
 
 	"components.insights-table.selectAll": "Select all",
+
+	"components.insights-users-table-export.lastName": "Last Name",
+	"components.insights-users-table-export.FirstName": "First Name",
+	"components.insights-users-table-export.UserName": "User Name",
+	"components.insights-users-table-export.UserID": "User ID",
 
 	"components.insights-summary-card.label": "{value} {message}",
 

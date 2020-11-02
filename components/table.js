@@ -11,7 +11,8 @@ import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton
 export const COLUMN_TYPES = {
 	ROW_SELECTOR: -1,
 	NORMAL_TEXT: 0,
-	TEXT_SUB_TEXT: 1
+	TEXT_SUB_TEXT: 1,
+	SUB_COLUMNS: 2
 };
 
 /**
@@ -298,10 +299,37 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 					<div class="d2l-body-small">${cellValue[1]}</div>
 				</td>
 			`;
+		} else if (columnType === COLUMN_TYPES.SUB_COLUMNS) {
+			return html`
+				<td class="${classMap(styles)}">
+
+					<table>
+						<tr>
+							<td>
+								<div class="d2l-body-standard" style="text-align:center;">${cellValue[0]}</div>
+								<div class="d2l-body-standard" style="text-align:center;">${this.localize('components.insights-discussion-activity-card.threads')}</div>
+							</td>
+							<td>
+								<d2l-icon icon="tier2:divider"></d2l-icon>
+							</td>
+							<td>
+								<div class="d2l-body-standard" style="text-align:center;">${cellValue[1]}</div>
+								<div class="d2l-body-standard" style="text-align:center;">${this.localize('components.insights-discussion-activity-card.reads')}</div>
+							</td>
+							<td>
+								<d2l-icon icon="tier2:divider"></d2l-icon>
+							</td>
+							<td>
+								<div class="d2l-body-standard" style="text-align:center;">${cellValue[2]}</div>
+								<div class="d2l-body-standard" style="text-align:center;">${this.localize('components.insights-discussion-activity-card.replies')}</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			`;
 		} else if (columnType === COLUMN_TYPES.NORMAL_TEXT) {
 			return defaultHtml;
 		}
-
 		throw new Error('Users table: unknown column type');
 	}
 
