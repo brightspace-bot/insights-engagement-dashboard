@@ -49,6 +49,7 @@ export async function fetchData({ roleIds, semesterIds, orgUnitIds, defaultView 
 			[1100, 'JTest', 'JStudent', 'JStudent', Date.now()]
 		],
 		semesterTypeId: 25,
+		numDefaultSemesters: 4,
 		selectedSemestersIds: semesterIds,
 		selectedRolesIds: roleIds,
 		selectedOrgUnitIds: orgUnitIds,

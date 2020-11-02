@@ -27,6 +27,7 @@ export class Data {
 			isRecordsTruncated: false,
 			isOrgUnitsTruncated: false,
 			semesterTypeId: null,
+			numDefaultSemesters: 0,
 			selectedOrgUnitIds: [],
 			selectedRolesIds: [],
 			selectedSemestersIds: [],
@@ -135,6 +136,14 @@ export class Data {
 		return courseIdsToDisplay.map(id => {
 			return { id, name: this.orgUnitTree.getName(id) };
 		});
+	}
+
+	get numDefaultSemesters() {
+		return this.serverData.numDefaultSemesters;
+	}
+
+	get isDefaultView() {
+		return this.serverData.isDefaultView;
 	}
 
 	// @computed

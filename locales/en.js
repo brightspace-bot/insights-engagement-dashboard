@@ -124,6 +124,7 @@ export default {
 	"components.insights-default-view-popup.title": "Engagement Dashboard Default View",
 	"components.insights-default-view-popup.defaultViewDescription1": "This dashboard is designed to look at portions of your organization's engagement. Results showing are from {numDefaultCourses} recently accessed courses to get you started.",
 	"components.insights-default-view-popup.defaultViewDescription2": "Use the dashboard filters to change the results displayed.",
+	"components.insights-default-view-popup.defaultViewDescription3": "This dashboard is designed to look at portions of your organization's engagement. You do not have permission to review data in any courses in the most recently created {numDefaultSemesters} semesters",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Expand to see the courses included in your default view",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Collapse the list of courses included in your default view",
 	"components.insights-default-view-popup.buttonOk": "Ok"
