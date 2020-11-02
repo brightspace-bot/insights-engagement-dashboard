@@ -32,6 +32,17 @@ describe('TelemetryHelper', () => {
 		});
 
 		it('sends timings with a performance event', async() => {
+			const getAllFuncs = (toCheck) => {
+				let props = [];
+				let obj = toCheck;
+				do {
+					props = props.concat(Object.getOwnPropertyNames(obj));
+					obj = Object.getPrototypeOf(obj);
+				} while (obj);
+
+				return props.sort();
+			};
+
 			const telemetryHelper = new TelemetryHelper('http://example.com/');
 
 			telemetryHelper.logPerformanceEvent({ id: 'ID', measures: [{ name: 'name1' }, { name: 'name2' }], action: 'Action' });
@@ -45,6 +56,7 @@ describe('TelemetryHelper', () => {
 			console.log(body);
 			console.log(String(body));
 			if (String(body) === '[object ReadableStream]') {
+				console.log(getAllFuncs(body));
 				console.log(body.text());
 			}
 			const event = JSON.parse(body);
