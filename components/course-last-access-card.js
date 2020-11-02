@@ -173,10 +173,6 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.data.getFilter(filterId);
 	}
 
-	addToCategory(category) {
-		this.filter.selectCategory(category);
-	}
-
 	get category() {
 		return this.filter.selectedCategories;
 	}
@@ -279,7 +275,7 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 					point: {
 						events: {
 							click: function() {
-								that.addToCategory(this.index);
+								that.filter.toggleCategory(this.index);
 							}
 						}
 					}

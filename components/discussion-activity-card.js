@@ -22,43 +22,6 @@ export class DiscussionActivityFilter extends CategoryFilter {
 	}
 }
 
-// todo: remove in another PR - we decided not to go with this, but I want to
-// get the code in the repo history in case we go back to it
-// function drawCustomHalo(point, chart) {
-// 	if ((!point.selected || point.y !== point.haloY) && point.customHalo) {
-// 		point.customHalo.destroy();
-// 		point.customHalo = null;
-// 	}
-//
-// 	if (point.selected && !point.customHalo && point.y > 0) {
-// 		const shapeArgs = point.shapeArgs,
-// 			size = 7,
-// 			opacity = 1,
-// 			path = point.series.chart.renderer
-// 				.symbols
-// 				.arc(
-// 					shapeArgs.x + chart.plotLeft,
-// 					shapeArgs.y + chart.plotTop,
-// 					shapeArgs.r + size,
-// 					shapeArgs.r + size, {
-// 						innerR: shapeArgs.r + 1,
-// 						start: shapeArgs.start,
-// 						end: shapeArgs.end
-// 					}
-// 				);
-//
-// 		point.customHalo = chart.renderer
-// 			.path(path)
-// 			.attr({
-// 				fill: point.color,
-// 				opacity: opacity
-// 			}).add();
-// 		point.hasHalo = true;
-// 		point.haloY = point.y;
-//
-// 	}
-// }
-
 class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	static get properties() {
 		return {
