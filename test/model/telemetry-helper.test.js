@@ -44,6 +44,7 @@ describe('TelemetryHelper', () => {
 
 			if (body === '[object ReadableStream]') {
 				/// skip test for Safari 13.0.1 (Mac OS X 10.13.6) due to invalid body
+				console.log('Skip test for Safari 13.0.1 (Mac OS X 10.13.6) due to invalid body.');
 				return;
 			}
 
