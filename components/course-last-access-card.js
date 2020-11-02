@@ -76,10 +76,15 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				border-width: 1.5px;
 				display: inline-block;
 				height: 275px;
-				margin-right: 10px;
-				margin-top: 19.5px;
-				padding: 15px;
-				width: 602px;
+				margin-top: 10px;
+				padding: 15px 4px;
+				width: 581px;
+			}
+
+			@media screen and (max-width: 615px) {
+				.d2l-insights-course-last-access-container {
+					margin-right: 0;
+				}
 			}
 
 			.d2l-insights-course-last-access-title {
@@ -191,7 +196,8 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return {
 			chart: {
 				type: 'bar',
-				height: '250px'
+				height: '250px',
+				width: 581
 			},
 			tooltip: {
 				formatter: function() {
