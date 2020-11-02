@@ -8,7 +8,7 @@ describe('TelemetryHelper', () => {
 
 	beforeEach(() => {
 		fetchSandbox = fetchMock.sandbox();
-		fetchSandbox.mock((_, opts) => { console.log(JSON.stringify(opts, null, 2)); return true; }, 200);
+		fetchSandbox.mock('*', 200);
 		window.d2lfetch = { fetch : fetchSandbox };
 	});
 
@@ -52,6 +52,7 @@ describe('TelemetryHelper', () => {
 			expect(lastCall[0]).to.equal('http://example.com/');
 			console.log(lastCall.length);
 			console.log(lastCall[1]);
+			await fetchMock.flush();
 			const body = await lastCall[1].body;
 			console.log(body);
 			if (String(body) === '[object ReadableStream]') {
