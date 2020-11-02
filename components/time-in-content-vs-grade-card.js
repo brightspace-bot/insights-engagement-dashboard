@@ -245,7 +245,11 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 					width: 1.5
 				}],
 				accessibility:{
-					description: `${this._timeInContentText} The average for selected enrollments is ${this.filter.avgTimeInContent} minutes`
+					description: `${this._timeInContentText} ${
+						this.localize('components.insights-time-in-content-vs-grade-card.averageTimeInContent', {
+							avgTimeInContent: this.filter.avgTimeInContent
+						})
+					}`,
 				}
 			},
 			yAxis: {
@@ -280,7 +284,11 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 					width: 1.5
 				}],
 				accessibility:{
-					description: `${this._currentGradeText} The average for selected enrollments is ${this.filter.avgGrade}%`,
+					description: `${this._currentGradeText} ${
+						this.localize('components.insights-time-in-content-vs-grade-card.averageGrade', {
+							avgGrade: this.filter.avgGrade
+						})
+					}`,
 					rangeDescription: ''
 				}
 			},

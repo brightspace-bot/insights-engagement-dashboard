@@ -71,7 +71,9 @@ export default {
 
 	"components.insights-time-in-content-vs-grade-card.timeInContentVsGrade": "Time in Content vs. Grade",
 	"components.insights-time-in-content-vs-grade-card.currentGrade": "Current Grade (%)",
+	"components.insights-time-in-content-vs-grade-card.averageGrade": "The average for selected enrollments is {avgGrade} percent",
 	"components.insights-time-in-content-vs-grade-card.timeInContentLong": "Time in Content (minutes)",
+	"components.insights-time-in-content-vs-grade-card.averageTimeInContent": "The average for selected enrollments is {avgTimeInContent} minutes",
 	"components.insights-time-in-content-vs-grade-card.leftTop": "{numberOfUsers} user enrollments are getting an above average grade and spending below average time in content.",
 	"components.insights-time-in-content-vs-grade-card.rightTop": " {numberOfUsers} user enrollments are getting an above average grade and spending above average time in content.",
 	"components.insights-time-in-content-vs-grade-card.leftBottom": "{numberOfUsers} user enrollments are getting a below average grade and spending below average time in content.",
