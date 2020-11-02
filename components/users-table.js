@@ -1,6 +1,5 @@
 import '@brightspace-ui/core/components/inputs/input-text';
 import '@brightspace-ui-labs/pagination/pagination';
-import 'd2l-table/d2l-scroll-wrapper';
 import './table.js';
 import { action, computed, decorate, observable, reaction } from 'mobx';
 import { css, html } from 'lit-element';
