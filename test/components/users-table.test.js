@@ -91,7 +91,11 @@ describe('d2l-insights-users-table', () => {
 			// give it a second to make sure inner table and paging controls load in
 			await new Promise(resolve => setTimeout(resolve, 200));
 			await el.updateComplete;
-
+			// the scroll wrapper table component has a button in an aria-hidden div
+			// so it technically breaks the accessibility test. To get around this
+			// we exclude that test from this element. Please check for this rule manually
+			// or disable this rule and make sure no other issues were introduced
+			// during future development.
 			await expect(el).to.be.accessible({
 				ignoredRules: ['aria-hidden-focus']
 			});

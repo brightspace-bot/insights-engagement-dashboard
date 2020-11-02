@@ -117,7 +117,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 
 			@media only screen and (max-width: 615px) {
 				:host {
-					margin-right: 0 !important;
+					margin-right: 0;
 				}
 			}
 

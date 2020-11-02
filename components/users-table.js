@@ -81,29 +81,6 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 				.d2l-insights-scroll-container {
 					overflow-x: auto;
 				}
-
-				d2l-scroll-wrapper {
-					--d2l-scroll-wrapper-h-scroll: {
-						border-left: var(--d2l-table-border-overflow);
-						border-right: var(--d2l-table-border-overflow);
-					};
-					--d2l-scroll-wrapper-h-scroll-focus: {
-						border-left: var(--d2l-table-border-overflow-focus);
-						border-right: var(--d2l-table-border-overflow-focus);
-					};
-					--d2l-scroll-wrapper-left: {
-						border-left: dashed 1px black;
-					};
-					--d2l-scroll-wrapper-right: {
-						border-right: none;
-					};
-
-					--d2l-scroll-wrapper-border-color: var(--d2l-color-galena);
-					--d2l-scroll-wrapper-background-color: var(--d2l-color-sylvite);
-					--d2l-scroll-wrapper-inner: {
-						@apply --d2l-table;
-					};
-				}
 			`
 		];
 	}
@@ -322,17 +299,15 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	render() {
 		return html`
-			<d2l-scroll-wrapper show-actions>
-				<d2l-insights-table
-					title="${this.localize('components.insights-users-table.title')}"
-					@d2l-insights-table-sort="${this._handleColumnSort}"
-					sort-column="1"
-					.columnInfo=${this.columnInfo}
-					.data="${this._displayData}"
-					?skeleton="${this.skeleton}"
-					@d2l-insights-table-select-changed="${this._handleSelectChanged}"
-				></d2l-insights-table>
-			</d2l-scroll-wrapper>
+			<d2l-insights-table
+				title="${this.localize('components.insights-users-table.title')}"
+				@d2l-insights-table-sort="${this._handleColumnSort}"
+				sort-column="1"
+				.columnInfo=${this.columnInfo}
+				.data="${this._displayData}"
+				?skeleton="${this.skeleton}"
+				@d2l-insights-table-select-changed="${this._handleSelectChanged}"
+			></d2l-insights-table>
 
 			<d2l-labs-pagination
 				show-item-count-select
