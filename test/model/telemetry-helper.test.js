@@ -10,7 +10,6 @@ describe('TelemetryHelper', () => {
 		fetchSandbox = fetchMock.sandbox();
 		fetchSandbox.mock(() => { return true; }, 200);
 		window.d2lfetch = { fetch : fetchSandbox };
-		fetchMock.fetch =
 	});
 
 	describe('logPerformanceEvent', () => {
