@@ -109,10 +109,16 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				border-width: 1.5px;
 				display: inline-block;
 				height: 275px;
-				margin-right: 10px;
-				margin-top: 19.5px;
-				padding: 15px;
-				width: 602px;
+				margin-right: 12px;
+				margin-top: 10px;
+				padding: 15px 4px;
+				width: 581px;
+			}
+
+			@media only screen and (max-width: 615px) {
+				:host {
+					margin-right: 0;
+				}
 			}
 
 			:host([hidden]) {
@@ -213,6 +219,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 			chart: {
 				type: 'scatter',
 				height: 250,
+				width: 581,
 				events: {
 					click: function(event) {
 						that._colorAllPointsInAmethyst(this.series);
@@ -229,7 +236,6 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 					}
 				}
 			},
-			animation: false,
 			tooltip: {
 				formatter: function() {
 					if (this.series.name === 'midPoint') {

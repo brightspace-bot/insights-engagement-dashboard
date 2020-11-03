@@ -63,7 +63,6 @@ const sparklineOptions = function(options) {
 		},
 		plotOptions: {
 			series: {
-				animation: false,
 				lineWidth: 1,
 				shadow: false,
 				states: {

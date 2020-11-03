@@ -60,11 +60,10 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				border-style: solid;
 				border-width: 1.5px;
 				display: inline-block;
-				height: 275px;
-				margin-right: 10px;
-				margin-top: 19.5px;
-				padding: 15px;
-				width: 602px;
+				height: 285px;
+				margin-top: 10px;
+				padding: 15px 4px;
+				width: 581px;
 			}
 
 			.d2l-insights-current-final-grade-title {
@@ -86,11 +85,15 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	// @computed
 	get _preparedHistogramData() {
-		return this.data.withoutFilter(filterId).records
+		const bins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.data.withoutFilter(filterId).records
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
 			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
 			.filter(item => item[0] || item[1])
-			.map(item => gradeCategory(item[1]));
+			.map(item => gradeCategory(item[1]))
+			.map(gradeCategory => (gradeCategory / 10 > 9 ? 9 : gradeCategory / 10))
+			.forEach(gradeCategory => bins[gradeCategory] += 1);
+		return bins;
 	}
 
 	get _colours() {
@@ -99,12 +102,9 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 			return ['var(--d2l-color-amethyst)'];
 		}
 
-		// the histogram module only renders zeroes for points between non-zero points,
-		// so we provide colours for all points starting with the minimum non-zero value
-		// (extra colours will be ignored)
-		const min = Math.min(...data);
+		// Go through all of the bins and assign the correct color.
 		return [0, 10, 20, 30, 40, 50, 60, 70, 80, 90].map(category =>
-			(this.category.has(category + min) ?
+			(this.category.has(category) ?
 				'var(--d2l-color-amethyst)' :
 				'var(--d2l-color-mica)')
 		);
@@ -147,7 +147,7 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		const options = this.chartOptions;
-		if (!this.skeleton && !options.series[1].data.length) {
+		if (!this.skeleton && !options.series[0].data.length) {
 			return html`<div class="d2l-insights-final-grade-container">
 				<div class="d2l-insights-current-final-grade-title">${this._cardTitle}</div>
 				<div class="d2l-insights-summary-card-body">
@@ -169,9 +169,10 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 		return {
 			chart: {
-				height: 230
+				height: 230,
+				width: 581,
+				type: 'column'
 			},
-			animation: false,
 			tooltip: {
 				formatter: function() {
 					const yCeil = Math.ceil(this.y);
@@ -209,15 +210,15 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				allowDecimals: false,
 				alignTicks: false,
 				tickWidth: 0, // remove tick marks
-				tickPositions: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				categories: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
 				floor: 0,
 				ceiling: 100,
 				endOnTick: true,
 				labels: {
 					align: 'center',
-					reserveSpace: true
+					reserveSpace: true,
+					x: -30,
 				},
-				width: '108%', // move extra space at end of x-axis out of the container
 			},
 			yAxis: {
 				tickAmount: 4,
@@ -242,7 +243,6 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				series: {
 					minPointLength: 2, // visualize 0 points
 					pointStart: 0,
-					animation: false,
 					pointWidth: 37,
 					pointPadding: 0.60,
 					accessibility: {
@@ -271,16 +271,8 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				}
 			},
 			series: [{
-				type: 'histogram',
-				animation: false,
-				lineWidth: 1,
-				baseSeries: 1,
-				shadow: false,
-				binWidth: 9.9999
-			},
-			{
 				data: this._preparedHistogramData,
-				visible: false,
+				name: 'data',
 			}],
 		};
 	}

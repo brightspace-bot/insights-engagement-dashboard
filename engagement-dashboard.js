@@ -20,9 +20,11 @@ import './components/default-view-popup.js';
 import { css, html } from 'lit-element/lit-element.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
+import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
 import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
+import { ExportData } from './model/exportData';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
@@ -32,6 +34,7 @@ import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
+import { toJS } from 'mobx';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -66,9 +69,22 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					margin-top: -10px;
 				}
 
+				.d2l-insights-summary-chart-layout {
+					display: flex;
+					flex-wrap: wrap;
+					max-width: 1300px;
+				}
+
+				d2l-insights-results-card,
+				d2l-insights-discussion-activity-card {
+					margin-right: 12px;
+				}
+
 				.d2l-insights-summary-container {
 					display: flex;
 					flex-wrap: wrap;
+					margin-right: 10px;
+					max-width: 594px;
 				}
 
 				.d2l-insights-summary-container-applied-filters {
@@ -80,7 +96,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					font-weight: normal;	/* default for h1 is bold */
 					margin: 0.67em 0;		/* required to be explicitly defined for Edge Legacy */
 					padding: 0;				/* required to be explicitly defined for Edge Legacy */
-					width: 65%;
 				}
 
 				h2.d2l-heading-3 {
@@ -90,27 +105,43 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.d2l-heading-button-group {
 					display: flex;
 					flex-direction: row;
-					flex-wrap: wrap;
+					justify-content: space-between;
 				}
 
 				.d2l-main-action-button-group {
 					flex-grow: 1;
 					margin: 0.7em;
-					width: 25%;
+					max-width: 300px;
+				}
+
+				@media only screen and (max-width: 780px) {
+					.d2l-main-action-button-group {
+						max-width: 10%;
+					}
 				}
 
 				.d2l-table-action-button-group {
 					margin-bottom: 1rem;
 				}
 
+				.d2l-insights-noDisplay {
+					display: none;
+					padding: 50px;
+				}
+
 				@media screen and (max-width: 615px) {
 					h1 {
 						line-height: 2rem;
+						margin-bottom: 10px;
 					}
 
 					:host {
 						display: block;
 						padding: 0 18px;
+					}
+
+					.d2l-insights-summary-container {
+						margin-right: 0;
 					}
 				}
 			`
@@ -132,7 +163,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					>
 						<d2l-button-subtle
 							icon="d2l-tier1:export"
-							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}>
+							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
+							@click="${this._exportToCsv}">
 						</d2l-button-subtle>
 						<d2l-button-subtle
 							icon="d2l-tier1:help"
@@ -158,25 +190,23 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						?demo="${this.isDemo}"
 					></d2l-insights-role-filter>
 				</div>
-				<d2l-insights-message-container .data="${this._data}"></d2l-insights-message-container>
+				<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
 				<div class="d2l-insights-summary-container-applied-filters">
 					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
 				</div>
-				<div class="d2l-insights-summary-container">
-					<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
-					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
-					<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
-					<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
-				</div>
-				<div class="d2l-insights-chart-container">
+				<div class="d2l-insights-summary-chart-layout">
+					<div class="d2l-insights-summary-container">
+						<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
+						<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
+						<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
+						<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
+					</div>
 					<div><d2l-insights-current-final-grade-card	.data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>
 					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
 					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
 				</div>
-
 				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-
 				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
 					<d2l-button-subtle
 						icon="d2l-tier1:email"
@@ -189,6 +219,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					.data="${this._data}"
 					?skeleton="${this._isLoading}"
 				></d2l-insights-users-table>
+
 
 				<d2l-insights-default-view-popup
 					?opened=${Boolean(this._serverData.isDefaultView)}
@@ -203,6 +234,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					</d2l-button>
 				</d2l-dialog-confirm>
 		`;
+	}
+
+	_exportToCsv() {
+		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
+		ExportData.userDataToCsv(usersTable.dataForExport, usersTable.headersForExport);
 	}
 
 	get _isLoading() {
@@ -227,6 +263,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		}
 
 		return this.__data;
+	}
+
+	get _isNoUserResults() {
+		if (!this.isDemo) {
+			return this._data.records.length === 0 && !this._data.isLoading;
+		}
+		return false;
 	}
 
 	get _serverData() {
@@ -278,8 +321,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			const noUsersSelectedDialog = this.shadowRoot.querySelector('#no-users-selected-dialog');
 			noUsersSelectedDialog.opened = true;
 		} else {
-			// (out-of-scope) show email edit dialog
-			console.log(selectedUserIds);
+			// we use the root OU id because that's where we expect users to have email permissions
+			createComposeEmailPopup(toJS(selectedUserIds), this._serverData.orgUnitTree.rootId);
 		}
 	}
 

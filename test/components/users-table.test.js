@@ -91,8 +91,14 @@ describe('d2l-insights-users-table', () => {
 			// give it a second to make sure inner table and paging controls load in
 			await new Promise(resolve => setTimeout(resolve, 200));
 			await el.updateComplete;
-
-			await expect(el).to.be.accessible();
+			// the scroll wrapper table component has a button in an aria-hidden div
+			// so it technically breaks the accessibility test. To get around this
+			// we exclude that test from this element. Please check for this rule manually
+			// or disable this rule and make sure no other issues were introduced
+			// during future development.
+			await expect(el).to.be.accessible({
+				ignoredRules: ['aria-hidden-focus']
+			});
 		});
 	});
 
@@ -382,6 +388,19 @@ describe('d2l-insights-users-table', () => {
 			await new Promise(resolve => setTimeout(resolve, 200));
 			await innerTable.updateComplete;
 			expect(el.selectedUserIds).to.deep.equal([]);
+		});
+	});
+
+	describe('export', () => {
+		it('should get headersForExport', async() => {
+			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
+			expect(el.headersForExport).to.deep.equal(
+				['Last Name', 'First Name', 'User Name', 'User ID', 'Courses', 'Average Grade', 'Average Time in Content (mins)', 'Threads', 'Reads', 'Replies', 'Last Accessed System']);
+		});
+		it('should get dataForExport[0]', async() => {
+			const el = await fixture(html`<d2l-insights-users-table .data="${data}"></d2l-insights-users-table>`);
+			expect(el.dataForExport[0]).to.deep.equal(
+				[{ value: 300, ariaLabel: 'Select Harrison, George', selected: false }, [300, 'George', 'Harrison', 'gharrison'], 14, '71.42 %', '19.64', [1, 6, 28], `${getLocalDateTime(2)}`]);
 		});
 	});
 });
