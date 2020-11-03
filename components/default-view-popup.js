@@ -58,7 +58,7 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 					width="615"
 					@d2l-dialog-close="${this._closeDialog}">
 
-				${this._renderDescriptiveEmptyResultsMessage({ displayData, numDefaultCourses: displayData.length, numDefaultSemesters: this._defaultSemestersCount })}
+				${this._renderResultsDescription({ displayData, numDefaultCourses: displayData.length, numDefaultSemesters: this._defaultSemestersCount })}
 
 				<p class="d2l-insights-default-view-popup-description">
 					${this.localize('components.insights-default-view-popup.promptUseFilters')}
@@ -73,7 +73,7 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 		`;
 	}
 
-	_renderDescriptiveEmptyResultsMessage({ displayData, numDefaultCourses, numDefaultSemesters }) {
+	_renderResultsDescription({ displayData, numDefaultCourses, numDefaultSemesters }) {
 		if (displayData.length) {
 			return html`
 				<p class="d2l-insights-default-view-popup-description">
