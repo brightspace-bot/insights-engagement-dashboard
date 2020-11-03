@@ -78,7 +78,7 @@ describe('d2l-insights-default-view-popup', () => {
 		describe('render', () => {
 			it('should show the message about recently created N semesters', () => {
 				const descs = Array.from(el.shadowRoot.querySelectorAll('p.d2l-insights-default-view-popup-description'));
-				expect(descs.some(p => p.innerText.endsWith('recently created 2 semesters'))).to.be.true;
+				expect(descs.some(p => p.innerText.endsWith('recently created 2 semesters.'))).to.be.true;
 			});
 			it('should not have the courses list', () => {
 				const listEntries = Array.from(el.shadowRoot.querySelectorAll('li'));
