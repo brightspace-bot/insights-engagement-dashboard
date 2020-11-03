@@ -53,7 +53,7 @@ describe('d2l-insights-default-view-popup', () => {
 		});
 	});
 
-	describe('when there are no selected courses', () => {
+	describe.skip('when there are no selected courses', () => {
 		const noCoursesData = {
 			defaultViewPopupDisplayData:[],
 			numDefaultSemesters: 2
@@ -77,7 +77,6 @@ describe('d2l-insights-default-view-popup', () => {
 
 		describe('render', () => {
 			it('should show the message about recently created N semesters', () => {
-				console.log(el.shadowRoot.querySelector('d2l-dialog').innerHTML);
 				const descs = Array.from(el.shadowRoot.querySelectorAll('p.d2l-insights-default-view-popup-description'));
 				expect(descs.some(p => p.innerText.endsWith('recently created 2 semesters.'))).to.be.true;
 			});
