@@ -118,7 +118,7 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "Indlæsning er afsluttet",
 
 	"components.insights-default-view-popup.title": "Standardvisning for kontrolpanelet Engagement",
-	"components.insights-default-view-popup.emptyResultsFromNRecentCourses": "Dette kontrolpanel er designet til at se på dele af engagementet i din organisation. De resultater, der vises, er fra {numDefaultCourses} kurser, der er blevet åbnet for nylig.",
+	"components.insights-default-view-popup.resultsFromNRecentCourses": "Dette kontrolpanel er designet til at se på dele af engagementet i din organisation. De resultater, der vises, er fra {numDefaultCourses} kurser, der er blevet åbnet for nylig.",
 	"components.insights-default-view-popup.promptUseFilters": "Brug kontrolpanelets filtre til at ændre de viste resultater.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Vis for at se de kurser, der er inkluderet i standardvisningen",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Skjul listen over kurser, der er inkluderet i standardvisningen",

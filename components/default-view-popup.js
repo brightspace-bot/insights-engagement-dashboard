@@ -77,7 +77,7 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 		if (displayData.length) {
 			return html`
 				<p class="d2l-insights-default-view-popup-description">
-				${this.localize('components.insights-default-view-popup.emptyResultsFromNRecentCourses', { numDefaultCourses })}
+				${this.localize('components.insights-default-view-popup.resultsFromNRecentCourses', { numDefaultCourses })}
 				</p>`;
 		}
 

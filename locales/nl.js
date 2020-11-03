@@ -118,7 +118,7 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "Laden is voltooid",
 
 	"components.insights-default-view-popup.title": "Standaardweergave van het Engagement Dashboard",
-	"components.insights-default-view-popup.emptyResultsFromNRecentCourses": "Dit dashboard is ontworpen om delen van de betrokkenheid van uw organisatie te bekijken. De resultaten zijn afkomstig van {numDefaultCourses} onlangs geopende cursussen om u op weg te helpen.",
+	"components.insights-default-view-popup.resultsFromNRecentCourses": "Dit dashboard is ontworpen om delen van de betrokkenheid van uw organisatie te bekijken. De resultaten zijn afkomstig van {numDefaultCourses} onlangs geopende cursussen om u op weg te helpen.",
 	"components.insights-default-view-popup.promptUseFilters": "Gebruik de dashboardfilters om in te stellen welke resultaten worden weergegeven.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Uitvouwen om de cursussen in uw standaardweergave weer te geven",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "De lijst met cursussen in uw standaardweergave samenvouwen",

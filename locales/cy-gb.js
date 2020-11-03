@@ -118,7 +118,7 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "Wedi gorffen llwytho",
 
 	"components.insights-default-view-popup.title": "Gwedd Ddiofyn y Dangosfwrdd Ymgysylltiad",
-	"components.insights-default-view-popup.emptyResultsFromNRecentCourses": "Dyluniwyd y dangosfwrdd hwn i edrych ar rannau o ymgysylltiad eich sefydliad. Mae’r canlyniadau sy’n cael eu dangos wedi dod o {numDefaultCourses} o gyrsiau sydd wedi’u cyrchu’n ddiweddar i’ch helpu i gychwyn.",
+	"components.insights-default-view-popup.resultsFromNRecentCourses": "Dyluniwyd y dangosfwrdd hwn i edrych ar rannau o ymgysylltiad eich sefydliad. Mae’r canlyniadau sy’n cael eu dangos wedi dod o {numDefaultCourses} o gyrsiau sydd wedi’u cyrchu’n ddiweddar i’ch helpu i gychwyn.",
 	"components.insights-default-view-popup.promptUseFilters": "Defnyddiwch hidlwyr y dangosfwrdd i newid y canlyniadau sy'n cael eu harddangos.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Ehangu i weld y cyrsiau sydd wedi'u cynnwys yn eich gwedd ddiofyn",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Crebachu’r rhestr o gyrsiau sydd wedi'u cynnwys yn eich gwedd ddiofyn",

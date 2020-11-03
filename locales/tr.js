@@ -118,7 +118,7 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "Yükleme tamamlandı",
 
 	"components.insights-default-view-popup.title": "Katılım Panosu Varsayılan Görünümü",
-	"components.insights-default-view-popup.emptyResultsFromNRecentCourses": "Bu pano, organizasyonunuzun etkileşimini gözden geçirme amacıyla tasarlanmıştır. Başlamanız için son zamanlarda erişilen {numDefaultCourses} dersten sonuçlar gösteriliyor.",
+	"components.insights-default-view-popup.resultsFromNRecentCourses": "Bu pano, organizasyonunuzun etkileşimini gözden geçirme amacıyla tasarlanmıştır. Başlamanız için son zamanlarda erişilen {numDefaultCourses} dersten sonuçlar gösteriliyor.",
 	"components.insights-default-view-popup.promptUseFilters": "Görüntülenen sonuçları değiştirmek için pano filtrelerini kullanın.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Varsayılan görünümünüze dahil edilen dersleri görmek için genişletin",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Varsayılan görünümünüze dahil edilen derslerin listesini daraltın",

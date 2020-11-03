@@ -118,7 +118,7 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "Der Ladevorgang ist abgeschlossen.",
 
 	"components.insights-default-view-popup.title": "Standardansicht des Aktivitäten-Dashboards",
-	"components.insights-default-view-popup.emptyResultsFromNRecentCourses": "Dieses Dashboard ist dafür gedacht, sich Teile der Aktivitäten Ihres Unternehmens anzeigen zu lassen. Die gezeigten Ergebnisse stammen aus {numDefaultCourses} Kursen, auf die kürzlich zugegriffen worden ist, um Ihnen einen Einstieg zu bieten.",
+	"components.insights-default-view-popup.resultsFromNRecentCourses": "Dieses Dashboard ist dafür gedacht, sich Teile der Aktivitäten Ihres Unternehmens anzeigen zu lassen. Die gezeigten Ergebnisse stammen aus {numDefaultCourses} Kursen, auf die kürzlich zugegriffen worden ist, um Ihnen einen Einstieg zu bieten.",
 	"components.insights-default-view-popup.promptUseFilters": "Nutzen Sie die Filter des Dashboards, um zu ändern, welche Ergebnisse angezeigt werden.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Erweitern Sie die Liste, um anzeigen zu lassen, welche Kurse in der Standardansicht enthalten sind.",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Liste der Kurse reduzieren, die in der Standardansicht enthalten ist",
