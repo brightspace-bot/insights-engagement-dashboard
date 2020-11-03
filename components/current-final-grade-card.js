@@ -86,13 +86,18 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	// @computed
 	get _preparedHistogramData() {
 		const bins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		const usersGrades = new Map();
 		this.data.withoutFilter(filterId).records
 			.filter(record => record[RECORD.CURRENT_FINAL_GRADE] !== null && record[RECORD.CURRENT_FINAL_GRADE] !== undefined)
-			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE]])
+			.map(record => [record[RECORD.TIME_IN_CONTENT], record[RECORD.CURRENT_FINAL_GRADE], record[RECORD.USER_ID]])
 			.filter(item => item[0] || item[1])
-			.map(item => gradeCategory(item[1]))
+			.map(item => [gradeCategory(item[1]), item[2]])
+			.forEach(item => usersGrades.set(`${item[0]}-${item[1]}`, item[0])); // getting unique Map of grades for users
+
+		Array.from(usersGrades.values())
 			.map(gradeCategory => (gradeCategory / 10 > 9 ? 9 : gradeCategory / 10))
 			.forEach(gradeCategory => bins[gradeCategory] += 1);
+
 		return bins;
 	}
 

@@ -31,7 +31,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 			await new Promise(resolve => setTimeout(resolve, 200)); // allow fetch to run
 			const title = (el.shadowRoot.querySelectorAll('div.d2l-insights-current-final-grade-title'));
 			expect(title[0].innerText).to.equal('Current Grade');
-			const expected = [ 0, 0, 1, 3, 3, 2, 1, 3, 3, 7 ];
+			const expected = [ 0, 0, 1, 2, 1, 2, 1, 2, 2, 2];
 			expect(el._preparedHistogramData).to.deep.equal(expected);
 			expect(el._colours).to.deep.equal(['var(--d2l-color-amethyst)']);
 		});
