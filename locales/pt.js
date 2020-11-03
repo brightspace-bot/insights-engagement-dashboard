@@ -118,8 +118,8 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "Carregamento concluído",
 
 	"components.insights-default-view-popup.title": "Exibição padrão do painel de envolvimento",
-	"components.insights-default-view-popup.defaultViewDescription1": "Este painel foi projetado para analisar partes do envolvimento de sua organização. Os resultados mostrados são de {numDefaultCourses} cursos acessados recentemente para você começar.",
-	"components.insights-default-view-popup.defaultViewDescription2": "Use os filtros do painel para alterar os resultados exibidos.",
+	"components.insights-default-view-popup.emptyResultsFromNRecentCourses": "Este painel foi projetado para analisar partes do envolvimento de sua organização. Os resultados mostrados são de {numDefaultCourses} cursos acessados recentemente para você começar.",
+	"components.insights-default-view-popup.promptUseFilters": "Use os filtros do painel para alterar os resultados exibidos.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Expanda para ver os cursos incluídos na exibição padrão",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Recolher a lista de cursos incluídos na exibição padrão",
 	"components.insights-default-view-popup.buttonOk": "Ok"

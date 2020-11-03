@@ -118,8 +118,8 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "載入已完成",
 
 	"components.insights-default-view-popup.title": "參與情形儀表板預設檢視",
-	"components.insights-default-view-popup.defaultViewDescription1": "此儀表板是針對檢視貴組織的參與情形而設計。顯示結果來自於 {numDefaultCourses} 個最近存取的課程，方便您開始使用。",
-	"components.insights-default-view-popup.defaultViewDescription2": "使用儀表板篩選器以改變顯示的結果。",
+	"components.insights-default-view-popup.emptyResultsFromNRecentCourses": "此儀表板是針對檢視貴組織的參與情形而設計。顯示結果來自於 {numDefaultCourses} 個最近存取的課程，方便您開始使用。",
+	"components.insights-default-view-popup.promptUseFilters": "使用儀表板篩選器以改變顯示的結果。",
 	"components.insights-default-view-popup.expandDefaultCourseList": "展開以檢視預設檢視中包含的課程",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "摺疊預設檢視中包含的課程清單",
 	"components.insights-default-view-popup.buttonOk": "確定"

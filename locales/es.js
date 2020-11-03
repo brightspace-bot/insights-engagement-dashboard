@@ -118,8 +118,8 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "La carga finalizó",
 
 	"components.insights-default-view-popup.title": "Vista predeterminada del panel de participación",
-	"components.insights-default-view-popup.defaultViewDescription1": "Este panel está diseñado para revisar partes de la participación de su organización. Los resultados que se muestran provienen de {numDefaultCourses} cursos a los que se accedió recientemente para iniciar.",
-	"components.insights-default-view-popup.defaultViewDescription2": "Utilice los filtros del panel para cambiar los resultados mostrados.",
+	"components.insights-default-view-popup.emptyResultsFromNRecentCourses": "Este panel está diseñado para revisar partes de la participación de su organización. Los resultados que se muestran provienen de {numDefaultCourses} cursos a los que se accedió recientemente para iniciar.",
+	"components.insights-default-view-popup.promptUseFilters": "Utilice los filtros del panel para cambiar los resultados mostrados.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Expanda para ver los cursos incluidos en su vista predeterminada",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Contraer la lista de cursos incluidos en su vista predeterminada",
 	"components.insights-default-view-popup.buttonOk": "Aceptar"

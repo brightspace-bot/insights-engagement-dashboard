@@ -118,8 +118,8 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "加载已完成",
 
 	"components.insights-default-view-popup.title": "参与仪表板默认视图",
-	"components.insights-default-view-popup.defaultViewDescription1": "此仪表板旨在查看组织参与的部分。显示的结果来自最近访问的课程 {numDefaultCourses} 以帮助您入门。",
-	"components.insights-default-view-popup.defaultViewDescription2": "使用仪表板筛选器更改显示的结果。",
+	"components.insights-default-view-popup.emptyResultsFromNRecentCourses": "此仪表板旨在查看组织参与的部分。显示的结果来自最近访问的课程 {numDefaultCourses} 以帮助您入门。",
+	"components.insights-default-view-popup.promptUseFilters": "使用仪表板筛选器更改显示的结果。",
 	"components.insights-default-view-popup.expandDefaultCourseList": "展开以查看您的默认视图中包含的课程",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "折叠您的默认视图中包含的课程列表",
 	"components.insights-default-view-popup.buttonOk": "确定"

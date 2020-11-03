@@ -61,7 +61,7 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 				${this._renderDescription1({ displayData, numDefaultCourses: displayData.length, numDefaultSemesters: this._defaultSemestersCount })}
 
 				<p class="d2l-insights-default-view-popup-description">
-					${this.localize('components.insights-default-view-popup.defaultViewDescription2')}
+					${this.localize('components.insights-default-view-popup.promptUseFilters')}
 				</p>
 
 				${this._renderExpandableCoursesList(displayData)}
@@ -77,13 +77,13 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 		if (displayData.length) {
 			return html`
 				<p class="d2l-insights-default-view-popup-description">
-				${this.localize('components.insights-default-view-popup.defaultViewDescription1', { numDefaultCourses })}
+				${this.localize('components.insights-default-view-popup.emptyResultsFromNRecentCourses', { numDefaultCourses })}
 				</p>`;
 		}
 
 		return html`
 			<p class="d2l-insights-default-view-popup-description">
-			${this.localize('components.insights-default-view-popup.defaultViewDescription3', { numDefaultSemesters })}
+			${this.localize('components.insights-default-view-popup.emptyResultsFromNRecentSemesters', { numDefaultSemesters })}
 			</p>`;
 	}
 
