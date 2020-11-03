@@ -53,7 +53,7 @@ describe('d2l-insights-default-view-popup', () => {
 		});
 	});
 
-	describe.skip('when there are no selected courses', () => {
+	describe('when there are no selected courses', () => {
 		const noCoursesData = {
 			defaultViewPopupDisplayData:[],
 			numDefaultSemesters: 2
