@@ -31,7 +31,7 @@ module.exports = config => {
 			// from https://support.saucelabs.com/hc/en-us/articles/225104707-Karma-Tests-Disconnect-Particularly-When-Running-Tests-on-Safari
 			// to avoid DISCONNECTED messages
 			browserDisconnectTimeout: 10000, // default 2000
-			browserDisconnectTolerance: 1, // default 0
+			browserDisconnectTolerance: 3, // default 0
 			browserNoActivityTimeout: 4 * 60 * 1000, //default 10000
 			captureTimeout: 4 * 60 * 1000, //default 60000
 			files: [
