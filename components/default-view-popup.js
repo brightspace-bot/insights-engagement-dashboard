@@ -64,7 +64,7 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 					${this.localize('components.insights-default-view-popup.defaultViewDescription2')}
 				</p>
 
-				${this._renderExpandableCourseList(displayData)}
+				${this._renderExpandableCoursesList(displayData)}
 
 				<d2l-button primary slot="footer" @click="${this._closeDialog}">
 					${this.localize('components.insights-default-view-popup.buttonOk')}
@@ -87,7 +87,7 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 			</p>`;
 	}
 
-	_renderExpandableCourseList(displayData) {
+	_renderExpandableCoursesList(displayData) {
 		if (!displayData.length) {
 			return html``;
 		}
