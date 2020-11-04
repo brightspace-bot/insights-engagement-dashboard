@@ -37,6 +37,10 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 			numDefaultSemesters: 0
 		};
 		this.opened = false;
+		// when the pop-up is rendered the first time it is hidden and it can't properly calculate the height
+		// of the pop-up due to data is not received yet and not all components placed into the content.
+		// In order to calculate pop-up's height right, we should render all possible components for the first time
+		this._firstRender = true;
 	}
 
 	get _displayData() {
@@ -47,6 +51,10 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 
 	get _defaultSemestersCount() {
 		return this.data.numDefaultSemesters;
+	}
+
+	firstUpdated() {
+		this._firstRender = false;
 	}
 
 	render() {
@@ -88,7 +96,7 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 	}
 
 	_renderExpandableCoursesList(displayData) {
-		if (!displayData.length) {
+		if (!displayData.length && !this._firstRender) {
 			return html``;
 		}
 
