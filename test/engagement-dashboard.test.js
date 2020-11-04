@@ -25,10 +25,7 @@ describe('d2l-insights-engagement-dashboard', () => {
 			// or disable this rule and make sure no other issues were introduced
 			// during future development.
 			await expect(el).to.be.accessible({
-				ignoredRules: [
-					'aria-hidden-focus',
-					'button-name' // temporarily ignore to check other tests work
-				]
+				ignoredRules: ['aria-hidden-focus']
 			});
 		});
 	});
