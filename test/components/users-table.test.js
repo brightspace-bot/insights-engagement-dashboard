@@ -97,7 +97,10 @@ describe('d2l-insights-users-table', () => {
 			// or disable this rule and make sure no other issues were introduced
 			// during future development.
 			await expect(el).to.be.accessible({
-				ignoredRules: ['aria-hidden-focus']
+				ignoredRules: [
+					'aria-hidden-focus',
+					'button-name' // d2l-scroll-wrapper draws button at the right edge of the table. This button does not have a label.
+				]
 			});
 		});
 	});
