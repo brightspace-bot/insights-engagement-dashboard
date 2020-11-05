@@ -119,6 +119,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 			:host([skeleton]) .d2l-insights-discussion-activity-card-skeleton-message {
 				display: inline-block;
+				font-size: 14px;
 				line-height: 1rem;
 				margin: 10px;
 				vertical-align: middle;
