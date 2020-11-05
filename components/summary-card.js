@@ -1,5 +1,5 @@
 import '@brightspace-ui/core/components/offscreen/offscreen.js';
-import './overlay';
+import './card-overlay';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
@@ -40,6 +40,7 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 				height: 121px;
 				margin-top: 10px;
 				padding: 15px 4px;
+				position: relative;
 				width: 280px;
 			}
 
@@ -47,8 +48,6 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 				align-items: center;
 				display: flex;
 				height: 100%;
-				position: relative;
-
 			}
 
 			.d2l-insights-summary-card-title {
@@ -91,17 +90,6 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 				margin-inline-start: 2%;
 				max-width: 180px;
 			}
-
-			:host([skeleton]) .d2l-insights-summary-card-body > div {
-				flex-shrink: 0;
-				height: 70px;
-				margin: 0 10px;
-				width: 70px;
-			}
-
-			:host([skeleton]) .d2l-insights-summary-card-title {
-				margin-left: 10px;
-			}
 		`];
 	}
 
@@ -120,9 +108,8 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-card">
-			<div class="d2l-insights-summary-card-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this.title}</div>
+			<div class="d2l-insights-summary-card-title d2l-body-standard">${this.title}</div>
 			<div class="d2l-insights-summary-card-body" aria-hidden="${this.skeleton}">
-				<div class="d2l-skeletize">
 					${this.isValueClickable ? html`<button
  						class="d2l-insights-summary-card-button d2l-insights-summary-card-field"
  						@click=${this._valueClickHandler}
@@ -136,12 +123,12 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
  						<span aria-hidden="true">${this.value}</span>
  						<d2l-offscreen>${this.summaryLabel}</d2l-offscreen>
  					</span>`}
-				</div>
 				<span
-					class="d2l-insights-summary-card-message d2l-insights-summary-card-field d2l-skeletize-paragraph-3"
+					class="d2l-insights-summary-card-message d2l-insights-summary-card-field"
 					aria-hidden="true"
 				>${this.message}</span>
 			</div>
+			<d2l-insights-card-overlay ?skeleton="${this.skeleton}"></d2l-insights-card-overlay>
 		</div>`;
 	}
 }

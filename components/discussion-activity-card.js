@@ -1,4 +1,4 @@
-import './overlay';
+import './card-overlay';
 import 'highcharts';
 import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
@@ -85,6 +85,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				height: 121px;
 				margin-top: 10px;
 				padding: 15px 4px;
+				position: relative;
 				width: 279px;
 			}
 
@@ -95,45 +96,11 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				margin-bottom: 25px;
 			}
 
-			:host([skeleton]) .d2l-insights-discussion-activity-card-body {
-				display: none;
-			}
-
 			.d2l-insights-discussion-activity-card-title {
 				color: var(--d2l-color-ferrite);
 				font-size: smaller;
 				font-weight: bold;
 				text-indent: 3%;
-			}
-
-			:host([skeleton]) .d2l-insights-discussion-activity-card-title {
-				margin-left: 10px;
-			}
-
-			.d2l-insights-discussion-activity-card-skeleton-body {
-				display: none;
-			}
-
-			:host([skeleton]) .d2l-insights-discussion-activity-card-skeleton-body {
-				align-items: center;
-				display: flex;
-				height: 100%;
-				margin-bottom: 25px;
-			}
-
-			:host([skeleton]) .d2l-insights-discussion-activity-card-skeleton-body > div {
-				flex-shrink: 0;
-				height: 70px;
-				margin: 0 10px;
-				width: 70px;
-			}
-
-			:host([skeleton]) .d2l-insights-discussion-activity-card-skeleton-message {
-				display: inline-block;
-				font-size: 14px;
-				line-height: 1rem;
-				margin: 10px;
-				vertical-align: middle;
 			}
 		`];
 	}
@@ -186,7 +153,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-discussion-activity-card">
-			<div class="d2l-insights-discussion-activity-card-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
+			<div class="d2l-insights-discussion-activity-card-title d2l-body-standard">${this._cardTitle}</div>
 			<div class="d2l-insights-discussion-activity-card-body">
 				<d2l-labs-chart
 					.options="${this.chartOptions}"
@@ -194,10 +161,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				>
 				</d2l-labs-chart>
 			</div>
-			<div class="d2l-insights-discussion-activity-card-skeleton-body" aria-hidden="true">
-				<div class="d2l-skeletize"></div>
-				<span class="d2l-insights-discussion-activity-card-skeleton-message d2l-body-standard d2l-skeletize-paragraph-3">A text that triggers CSS styling. Do not localize.</span>
-			</div>
+			<d2l-insights-card-overlay ?skeleton="${this.skeleton}"></d2l-insights-card-overlay>
 		</div>`;
 	}
 
