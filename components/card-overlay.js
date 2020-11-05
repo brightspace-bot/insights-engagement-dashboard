@@ -32,10 +32,10 @@ class CardOverlay extends SkeletonMixin(LitElement) {
 				border-radius: 15px;
 				display: flex;
 				flex-direction: column;
-				height: calc(100% - 10px);
+				height: calc(100% - 20px);
 				justify-content: center;
 				padding-left: 10px;
-				padding-top: 10px;
+				padding-top: 20px;
 				width: calc(100% - 15px);
 			}
 
