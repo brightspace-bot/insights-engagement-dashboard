@@ -93,9 +93,14 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 			}
 
 			:host([skeleton]) .d2l-insights-summary-card-body > div {
+				flex-shrink: 0;
 				height: 70px;
-				margin-right: 10px;
+				margin: 0 10px;
 				width: 70px;
+			}
+
+			:host([skeleton]) .d2l-insights-summary-card-title {
+				margin-left: 10px;
 			}
 		`];
 	}
