@@ -95,6 +95,10 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				margin-bottom: 25px;
 			}
 
+			:host([skeleton]) .d2l-insights-discussion-activity-card-body {
+				display: none;
+			}
+
 			.d2l-insights-discussion-activity-card-title {
 				color: var(--d2l-color-ferrite);
 				font-size: smaller;
@@ -106,25 +110,6 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				margin-left: 10px;
 			}
 
-			:host([skeleton]) .d2l-insights-discussion-activity-card-skeleton-body > div {
-				flex-shrink: 0;
-				height: 70px;
-				margin: 0 10px;
-				width: 70px;
-			}
-
-			:host([skeleton]) .d2l-insights-discussion-activity-card-body {
-				display: none;
-			}
-
-			:host([skeleton]) .d2l-insights-discussion-activity-card-skeleton-message {
-				display: inline-block;
-				font-size: 14px;
-				line-height: 1rem;
-				margin: 10px;
-				vertical-align: middle;
-			}
-
 			.d2l-insights-discussion-activity-card-skeleton-body {
 				display: none;
 			}
@@ -134,6 +119,21 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				display: flex;
 				height: 100%;
 				margin-bottom: 25px;
+			}
+
+			:host([skeleton]) .d2l-insights-discussion-activity-card-skeleton-body > div {
+				flex-shrink: 0;
+				height: 70px;
+				margin: 0 10px;
+				width: 70px;
+			}
+
+			:host([skeleton]) .d2l-insights-discussion-activity-card-skeleton-message {
+				display: inline-block;
+				font-size: 14px;
+				line-height: 1rem;
+				margin: 10px;
+				vertical-align: middle;
 			}
 		`];
 	}
