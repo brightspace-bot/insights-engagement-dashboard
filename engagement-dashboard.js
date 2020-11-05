@@ -222,8 +222,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 
 				<d2l-insights-default-view-popup
-					?opened=${Boolean(this._serverData.defaultViewPopupDisplayData.length)}
-					.data="${this._serverData.defaultViewPopupDisplayData}">
+					?opened=${Boolean(this._serverData.isDefaultView)}
+					.data="${this._serverData}">
 				</d2l-insights-default-view-popup>
 
 				<d2l-dialog-confirm

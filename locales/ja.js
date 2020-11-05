@@ -118,8 +118,8 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "読み込み完了",
 
 	"components.insights-default-view-popup.title": "受講ダッシュボードのデフォルトビュー",
-	"components.insights-default-view-popup.defaultViewDescription1": "このダッシュボードは、組織の受講状況の一部を表示するように設計されています。はじめは最近アクセスした {numDefaultCourses} 件のコースの結果が表示されます。",
-	"components.insights-default-view-popup.defaultViewDescription2": "ダッシュボードフィルタを使用して、表示される結果を変更します。",
+	"components.insights-default-view-popup.resultsFromNRecentCourses": "このダッシュボードは、組織の受講状況の一部を表示するように設計されています。はじめは最近アクセスした {numDefaultCourses} 件のコースの結果が表示されます。",
+	"components.insights-default-view-popup.promptUseFilters": "ダッシュボードフィルタを使用して、表示される結果を変更します。",
 	"components.insights-default-view-popup.expandDefaultCourseList": "展開してデフォルトビューに含まれているコースを表示",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "デフォルトビューに含まれているコースのリストを折りたたむ",
 	"components.insights-default-view-popup.buttonOk": "OK"

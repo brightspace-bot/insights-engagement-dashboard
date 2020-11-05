@@ -118,8 +118,8 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "Inläsningen har slutförts",
 
 	"components.insights-default-view-popup.title": "Standardvy för instrumentpanelen för engagemang",
-	"components.insights-default-view-popup.defaultViewDescription1": "Den här instrumentpanelen är utformad för att visa delar av engagemanget för organisationen. Det resultat som visas är från {numDefaultCourses} nyligen använda kurser för att hjälpa dig komma igång.",
-	"components.insights-default-view-popup.defaultViewDescription2": "Du kan använda instrumentpanelsfiltren för att ändra vilka resultat som ska visas.",
+	"components.insights-default-view-popup.resultsFromNRecentCourses": "Den här instrumentpanelen är utformad för att visa delar av engagemanget för organisationen. Det resultat som visas är från {numDefaultCourses} nyligen använda kurser för att hjälpa dig komma igång.",
+	"components.insights-default-view-popup.promptUseFilters": "Du kan använda instrumentpanelsfiltren för att ändra vilka resultat som ska visas.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Expandera för att visa de kurser som visas i standardvyn",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Komprimera listan med kurser som visas i standardvyn",
 	"components.insights-default-view-popup.buttonOk": "Ok"

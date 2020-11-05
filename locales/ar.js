@@ -118,8 +118,8 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "انتهى التحميل",
 
 	"components.insights-default-view-popup.title": "العرض الافتراضي للوحة معلومات التفاعل",
-	"components.insights-default-view-popup.defaultViewDescription1": "تم تصميم لوحة المعلومات هذه لعرض أجزاء من تفاعل مؤسستك. تعود النتائج التي تظهر إلى {numDefaultCourses} من المقررات التعليمية التي تم الوصول إليها مؤخرًا للبدء.",
-	"components.insights-default-view-popup.defaultViewDescription2": "استخدم عوامل تصفية لوحة المعلومات لتغيير النتائج المعروضة.",
+	"components.insights-default-view-popup.resultsFromNRecentCourses": "تم تصميم لوحة المعلومات هذه لعرض أجزاء من تفاعل مؤسستك. تعود النتائج التي تظهر إلى {numDefaultCourses} من المقررات التعليمية التي تم الوصول إليها مؤخرًا للبدء.",
+	"components.insights-default-view-popup.promptUseFilters": "استخدم عوامل تصفية لوحة المعلومات لتغيير النتائج المعروضة.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "توسيع لرؤية المقررات التعليمية المضمنة في العرض الافتراضي الخاص بك",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "طي قائمة المقررات التعليمية المضمنة في العرض الافتراضي الخاص بك",
 	"components.insights-default-view-popup.buttonOk": "موافق"
