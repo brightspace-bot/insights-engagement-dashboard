@@ -2,6 +2,7 @@ import '@brightspace-ui/core/components/offscreen/offscreen.js';
 import './overlay';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
+import { ifDefined } from 'lit-html/directives/if-defined';
 import { Localizer } from '../locales/localizer';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
@@ -17,7 +18,8 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 			title: { type: String, attribute: 'card-title' },
 			value: { type: String, attribute: 'card-value' },
 			message: { type: String, attribute: 'card-message' },
-			isValueClickable: { type: Boolean, attribute: 'value-clickable' }
+			isValueClickable: { type: Boolean, attribute: 'value-clickable' },
+			isLive: { type: Boolean, attribute: 'live' }
 		};
 	}
 
@@ -111,6 +113,10 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 		return this.localize('components.insights-summary-card.label', { value: this.value, message: this.message });
 	}
 
+	get ariaLive() {
+		return this.isLive ? 'polite' : undefined;
+	}
+
 	render() {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
@@ -123,10 +129,11 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
  						@click=${this._valueClickHandler}
  					>
  						<span aria-hidden="true">${this.value}</span>
- 						<d2l-offscreen>${this.summaryLabel}</d2l-offscreen>
+ 						<d2l-offscreen aria-live="${ifDefined(this.ariaLive)}">${this.summaryLabel}</d2l-offscreen>
  					</button>` : html`<span
  						class="d2l-insights-summary-card-value d2l-insights-summary-card-field"
  						aria-label="${this.summaryLabel}"
+ 						aria-live="${ifDefined(this.ariaLive)}"
  					>
  						<span aria-hidden="true">${this.value}</span>
  						<d2l-offscreen>${this.summaryLabel}</d2l-offscreen>

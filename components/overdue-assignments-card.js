@@ -74,7 +74,7 @@ class OverdueAssignmentsCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	_valueClickHandler() {
-		this.filter.isApplied = true;
+		this.filter.isApplied = !this.filter.isApplied;
 	}
 }
 decorate(OverdueAssignmentsCard, {

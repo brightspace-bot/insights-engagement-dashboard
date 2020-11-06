@@ -78,7 +78,7 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	_valueClickHandler() {
-		this.filter.isApplied = true;
+		this.filter.isApplied = !this.filter.isApplied;
 	}
 }
 customElements.define('d2l-insights-last-access-card', LastAccessCard);
