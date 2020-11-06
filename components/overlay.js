@@ -32,8 +32,9 @@ class Overlay extends LitElement {
 				display: none;
 			}
 
-			.d2l-insights-overlay {
+			.d2l-insights-overlay-container {
 				align-items: center;
+				background-color: var( --d2l-color-white );
 				border-radius: 15px;
 				display: flex;
 				height: 100%;
@@ -50,7 +51,7 @@ class Overlay extends LitElement {
 		}
 
 		return html`
-			<div class="d2l-insights-overlay">
+			<div class="d2l-insights-overlay-container">
 				<d2l-loading-spinner size="${this.spinnerSize}"></d2l-loading-spinner>
 			</div>`;
 	}

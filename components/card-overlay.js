@@ -27,7 +27,7 @@ class CardOverlay extends SkeletonMixin(LitElement) {
 				display: none;
 			}
 
-			.d2l-insights-card-overlay {
+			.d2l-insights-card-overlay-container {
 				background-color: white;
 				border-radius: 15px;
 				display: flex;
@@ -76,7 +76,7 @@ class CardOverlay extends SkeletonMixin(LitElement) {
 		}
 
 		return html`
-			<div class="d2l-insights-card-overlay" aria-hidden="true">
+			<div class="d2l-insights-card-overlay-container" aria-hidden="true">
 				<div class="d2l-insights-card-overlay-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">A title. Do not localize.</div>
 				<div class="d2l-insights-card-overlay-body">
 					<div class="d2l-skeletize"></div>
