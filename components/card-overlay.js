@@ -65,7 +65,7 @@ class CardOverlay extends SkeletonMixin(LitElement) {
 				line-height: 1rem;
 				margin: 10px;
 				margin-left: 5px;
-				margin-right: 0px;
+				margin-right: 0;
 				vertical-align: middle;
 			}
 		`];
