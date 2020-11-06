@@ -1,7 +1,15 @@
+import { disableUrlStateForTesting, enableUrlState } from '../../model/urlState';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from '../../model/selectorFilters';
 import { expect } from '@open-wc/testing';
 
 describe('selectorFilters', () => {
+	before(() => {
+		disableUrlStateForTesting();
+	});
+	after(() => {
+		enableUrlState();
+	});
+
 	describe('RoleSelectorFilter', () => {
 		describe('shouldInclude', () => {
 			it('should return true if the filter has no selected ids', () => {
@@ -220,15 +228,9 @@ describe('selectorFilters', () => {
 
 	describe('OrgUnitSelectorFilter', () => {
 		describe('shouldInclude', () => {
-			it('should return true if the filter has no org unit tree', () => {
-				const record = [1, 1, 1]; // doesn't matter what the ids are here
-				const sut = new OrgUnitSelectorFilter({}, null);
-				expect(sut.shouldInclude(record)).to.be.true;
-			});
-
 			it('should return true if the filter has no selected ids', () => {
 				const record = [1, 1, 1]; // doesn't matter what the ids are here
-				const sut = new OrgUnitSelectorFilter({}, { selected: [] });
+				const sut = new OrgUnitSelectorFilter({ orgUnitTree: { selected: [] } });
 				expect(sut.shouldInclude(record)).to.be.true;
 			});
 
@@ -237,7 +239,7 @@ describe('selectorFilters', () => {
 					hasAncestorsInList: (/* any */) => true
 				};
 				const record = [1, 5, 5]; // doesn't matter what the ids are here
-				const sut = new OrgUnitSelectorFilter({}, mockOrgUnitTree);
+				const sut = new OrgUnitSelectorFilter({ orgUnitTree: mockOrgUnitTree });
 
 				expect(sut.shouldInclude(record)).to.be.true;
 			});
@@ -248,7 +250,7 @@ describe('selectorFilters', () => {
 					hasAncestorsInList: (/* any */) => false
 				};
 				const record = [10, 5, 5]; // doesn't matter what the ids are here
-				const sut = new OrgUnitSelectorFilter({}, mockOrgUnitTree);
+				const sut = new OrgUnitSelectorFilter({ orgUnitTree: mockOrgUnitTree });
 
 				expect(sut.shouldInclude(record)).to.be.false;
 			});
@@ -257,29 +259,29 @@ describe('selectorFilters', () => {
 		describe('shouldReloadFromServer', () => {
 			it('should return true if records are truncated', () => {
 				const newOrgUnitIds = [1, 3]; // a list that otherwise wouldn't trigger a server reload
-				const sut = new OrgUnitSelectorFilter({
+				const sut = new OrgUnitSelectorFilter({ serverData: {
 					selectedOrgUnitIds: [1, 3, 5],
 					isRecordsTruncated: true
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.true;
 			});
 
 			it('should return true if ou tree is truncated', () => {
 				const newOrgUnitIds = [1, 3]; // a list that otherwise wouldn't trigger a server reload
-				const sut = new OrgUnitSelectorFilter({
+				const sut = new OrgUnitSelectorFilter({ serverData: {
 					selectedOrgUnitIds: [1, 3, 5],
 					isOrgUnitsTruncated: true
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.true;
 			});
 
 			it('should return true if the existing selected list has items and the new list has no items', () => {
 				// i.e. the filter was cleared
 				const newOrgUnitIds = [/* empty */];
-				const sut = new OrgUnitSelectorFilter({
+				const sut = new OrgUnitSelectorFilter({ serverData: {
 					selectedOrgUnitIds: [1, 3, 5],
 					isRecordsTruncated: false
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.true;
 			});
 
@@ -291,9 +293,12 @@ describe('selectorFilters', () => {
 
 				const newOrgUnitIds = [1, 2, 3];
 				const sut = new OrgUnitSelectorFilter({
-					selectedOrgUnitIds: [1, 2],
-					isRecordsTruncated: false
-				}, mockOrgUnitTree);
+					serverData: {
+						selectedOrgUnitIds: [1, 2],
+						isRecordsTruncated: false
+					},
+					orgUnitTree: mockOrgUnitTree
+				});
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.true;
 			});
 
@@ -301,9 +306,12 @@ describe('selectorFilters', () => {
 				const newOrgUnitIds = [1, 2, 3];
 				const mockOrgUnitTree = { selected: [] };
 				const sut = new OrgUnitSelectorFilter({
-					selectedOrgUnitIds: null,
-					isRecordsTruncated: false
-				}, mockOrgUnitTree);
+					serverData: {
+						selectedOrgUnitIds: null,
+						isRecordsTruncated: false
+					},
+					orgUnitTree: mockOrgUnitTree
+				});
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.false;
 
 				// apply local changes - make sure it won't reload from server if it doesn't need to
@@ -320,9 +328,12 @@ describe('selectorFilters', () => {
 
 				const newOrgUnitIds = [1, 2, 3];
 				const sut = new OrgUnitSelectorFilter({
-					selectedOrgUnitIds: [1, 2],
-					isRecordsTruncated: false
-				}, mockOrgUnitTree);
+					serverData: {
+						selectedOrgUnitIds: [1, 2],
+						isRecordsTruncated: false
+					},
+					orgUnitTree: mockOrgUnitTree
+				});
 				expect(sut.shouldReloadFromServer(newOrgUnitIds)).to.be.false;
 			});
 
@@ -333,9 +344,12 @@ describe('selectorFilters', () => {
 				};
 
 				const sut = new OrgUnitSelectorFilter({
-					selectedOrgUnitIds: [1, 3, 5],
-					isRecordsTruncated: false
-				}, mockOrgUnitTree);
+					serverData: {
+						selectedOrgUnitIds: [1, 3, 5],
+						isRecordsTruncated: false
+					},
+					orgUnitTree: mockOrgUnitTree
+				});
 
 				// apply local changes
 				mockOrgUnitTree.selected = [1, 3];

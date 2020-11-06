@@ -29,6 +29,7 @@ import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
+import { isDefault } from './model/urlState';
 import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -275,6 +276,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	get _serverData() {
 		if (!this.__serverData) {
 			this.__serverData = new Data({
+				isDefault: isDefault(),
 				recordProvider: this.isDemo ? fetchDemoData : fetchData
 			});
 		}

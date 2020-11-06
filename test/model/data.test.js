@@ -1,3 +1,4 @@
+import { disableUrlStateForTesting, enableUrlState } from '../../model/urlState';
 import { mockOuTypes, mockRoleIds, records } from './mocks';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from '../../model/selectorFilters';
 import { Data } from '../../model/data.js';
@@ -5,6 +6,13 @@ import { expect } from '@open-wc/testing';
 import sinon from 'sinon/pkg/sinon-esm.js';
 
 describe('Data', () => {
+	before(() => {
+		disableUrlStateForTesting();
+	});
+	after(() => {
+		enableUrlState();
+	});
+
 	const serverData = {
 		orgUnits: [
 			[6606, 'root', mockOuTypes.organization, [0]],
@@ -146,14 +154,12 @@ describe('Data', () => {
 
 	describe('set selectedOrgUnits', () => {
 		it('should cause a reload from server if filter says it should reload', () => {
+			// set isRecordsTruncated to true to force a reload
+			sut.serverData.isRecordsTruncated = true;
 			const recordProvider = sinon.stub().resolves(serverData);
 			sut.recordProvider = recordProvider;
 
-			// set isRecordsTruncated to true to force a reload
-			sut._selectorFilters.orgUnit = new OrgUnitSelectorFilter({
-				selectedOrgUnitIds: null,
-				isRecordsTruncated: true
-			}, null);
+			sut._selectorFilters.orgUnit = new OrgUnitSelectorFilter(sut);
 			sut.selectedOrgUnitIds = [1001];
 
 			sinon.assert.calledWithMatch(recordProvider, sinon.match({
@@ -168,10 +174,7 @@ describe('Data', () => {
 			sut.recordProvider = recordProvider;
 
 			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
-			sut._selectorFilters.orgUnit = new OrgUnitSelectorFilter({
-				selectedSemestersIds: null,
-				isRecordsTruncated: false
-			}, null);
+			sut._selectorFilters.orgUnit = new OrgUnitSelectorFilter(sut);
 			sut.selectedOrgUnitIds = [1001];
 
 			sinon.assert.notCalled(recordProvider);
