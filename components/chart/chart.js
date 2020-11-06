@@ -36,7 +36,7 @@ class Chart extends SkeletonMixin(LitElement) {
 			highcharts: { type: Object, attribute: false },
 			immutable: { type: Boolean },
 			updateArgs: { type: Array, attribute: false },
-			doNotUseOverlay: {type: Boolean, attribute: 'do-not-use-overlay' }
+			doNotUseOverlay: { type: Boolean, attribute: 'do-not-use-overlay' }
 		};
 	}
 
