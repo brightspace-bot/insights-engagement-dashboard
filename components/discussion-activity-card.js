@@ -86,7 +86,7 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				margin-top: 10px;
 				padding: 15px 4px;
 				position: relative;
-				width: 279px;
+				width: 280px;
 			}
 
 			.d2l-insights-discussion-activity-card-body {
