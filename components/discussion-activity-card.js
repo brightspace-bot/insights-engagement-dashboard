@@ -158,6 +158,8 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				<d2l-labs-chart
 					.options="${this.chartOptions}"
 					.globalOptions="${this.globalHighchartsOptions}"
+					?skeleton="${this.skeleton}"
+					do-not-use-overlay
 				>
 				</d2l-labs-chart>
 			</div>
