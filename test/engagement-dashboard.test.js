@@ -6,7 +6,7 @@ describe('d2l-insights-engagement-dashboard', () => {
 
 	describe('accessibility', () => {
 		it('should pass all axe tests', async function() {
-			this.timeout(5000);
+			this.timeout(7000);
 
 			const el = await fixture(html`<d2l-insights-engagement-dashboard demo></d2l-insights-engagement-dashboard>`);
 			// need for this delay might be tied to the mock data async loading in engagement-dashboard.js
