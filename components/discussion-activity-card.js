@@ -1,4 +1,4 @@
-import './overlay';
+import './card-overlay';
 import 'highcharts';
 import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
@@ -48,7 +48,8 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				height: 121px;
 				margin-top: 10px;
 				padding: 15px 4px;
-				width: 279px;
+				position: relative;
+				width: 280px;
 			}
 
 			.d2l-insights-discussion-activity-card-body {
@@ -56,7 +57,6 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				display: flex;
 				height: 100%;
 				margin-bottom: 25px;
-				position: relative;
 			}
 
 			.d2l-insights-discussion-activity-card-title {
@@ -116,15 +116,17 @@ class DiscussionActivityCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 		// NB: relying on mobx rather than lit-element properties to handle update detection: it will trigger a redraw for
 		// any change to a relevant observed property of the Data object
 		return html`<div class="d2l-insights-summary-discussion-activity-card">
-			<div class="d2l-insights-discussion-activity-card-title d2l-skeletize d2l-skeletize-45 d2l-body-standard">${this._cardTitle}</div>
+			<div class="d2l-insights-discussion-activity-card-title d2l-body-standard">${this._cardTitle}</div>
 			<div class="d2l-insights-discussion-activity-card-body">
 				<d2l-labs-chart
-					class="d2l-insights-discussion-activity-card-body"
 					.options="${this.chartOptions}"
 					.globalOptions="${this.globalHighchartsOptions}"
-					?skeleton="${this.skeleton}">
+					?skeleton="${this.skeleton}"
+					do-not-use-overlay
+				>
 				</d2l-labs-chart>
 			</div>
+			<d2l-insights-card-overlay ?skeleton="${this.skeleton}"></d2l-insights-card-overlay>
 		</div>`;
 	}
 
