@@ -138,6 +138,10 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				font-weight: bold;
 				text-indent: 3%;
 			}
+
+			:host([skeleton]) .d2l-insights-time-in-content-vs-grade-title {
+				margin-left: 19px;
+			}
 		`];
 	}
 

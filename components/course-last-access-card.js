@@ -93,6 +93,10 @@ class CourseLastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
+
+			:host([skeleton]) .d2l-insights-course-last-access-title {
+				margin-left: 19px;
+			}
 		`];
 	}
 
