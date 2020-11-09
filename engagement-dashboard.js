@@ -19,6 +19,7 @@ import './components/default-view-popup.js';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
+import { isDefault, restoreDefaultView, saveDefaultView } from './model/urlState';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
@@ -29,7 +30,6 @@ import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
-import { isDefault } from './model/urlState';
 import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -168,6 +168,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 							@click="${this._exportToCsv}">
 						</d2l-button-subtle>
 						<d2l-button-subtle
+							icon="d2l-tier1:save"
+							text=${this.localize('components.insights-engagement-dashboard.saveDefaultView')}
+							@click="${saveDefaultView}">
+						</d2l-button-subtle>
+						<d2l-button-subtle
 							icon="d2l-tier1:help"
 							text=${this.localize('components.insights-engagement-dashboard.learMore')}
 							@click="${this._openHelpLink}">
@@ -276,6 +281,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	get _serverData() {
 		if (!this.__serverData) {
+			restoreDefaultView();
+
 			this.__serverData = new Data({
 				isDefault: isDefault(),
 				recordProvider: this.isDemo ? fetchDemoData : fetchData
