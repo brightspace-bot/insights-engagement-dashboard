@@ -79,6 +79,7 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 				border: none;
 				color: var(--d2l-color-celestine);
 				cursor: pointer;
+				font-family: 'Lato';
 				font-size: 22px;
 				font-weight: bold;
 				margin: 10px;
