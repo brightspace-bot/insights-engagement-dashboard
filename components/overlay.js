@@ -1,7 +1,6 @@
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
-import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 /**
@@ -17,7 +16,7 @@ class Overlay extends SkeletonMixin(LitElement) {
 	}
 
 	static get styles() {
-		return [super.styles, bodyStandardStyles, css`
+		return [super.styles, css`
 			:host {
 				display: block;
 				left: 0;
