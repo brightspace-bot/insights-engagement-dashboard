@@ -116,7 +116,7 @@ class SummaryCard extends SkeletonMixin(Localizer(LitElement)) {
 		return html`<div class="d2l-insights-summary-card">
 			<div class="d2l-insights-summary-card-title d2l-body-standard">${this.title}</div>
 			<div class="d2l-insights-summary-card-body" aria-hidden="${this.skeleton}">
-					${this.isValueClickable ? html`<button
+					${this.isValueClickable ? html`<button tabindex="${this.skeleton ? -1 : 0}"
  						class="d2l-insights-summary-card-button d2l-insights-summary-card-field"
  						@click=${this._valueClickHandler}
  					>
