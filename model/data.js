@@ -35,7 +35,7 @@ export class Data {
 
 		this._selectorFilters = {
 			role: new RoleSelectorFilter(this),
-			semester: new SemesterSelectorFilter(this.serverData, this.orgUnitTree),
+			semester: new SemesterSelectorFilter(this),
 			orgUnit: new OrgUnitSelectorFilter(this)
 		};
 
@@ -75,12 +75,9 @@ export class Data {
 		this.userDictionary = new Map(newServerData.users.map(user => [user[USER.ID], user]));
 		this.isLoading = false;
 		this.serverData = newServerData;
-
-		this._selectorFilters = {
-			role: this._selectorFilters.role,
-			semester: new SemesterSelectorFilter(this.serverData, this.orgUnitTree),
-			orgUnit: this._selectorFilters.orgUnit
-		};
+		if (this.serverData.selectedSemestersIds) {
+			this._selectorFilters.semester.selected = this.serverData.selectedSemestersIds;
+		}
 	}
 
 	set selectedRoleIds(newRoleIds) {

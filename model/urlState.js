@@ -16,12 +16,13 @@ export function isDefault() {
 
 // plan: store various filter settings in the url query (handled by each component); then add a button
 // "make this my default view" that stores the current query in local storage
-// TODO: consider making this a decorator that surfaces filter(), id, title, isApplied, shouldReloadFromServer()
 /**
  * The wrapped object must implement:
  * {String} get persistenceKey() - a constant string used as the url query parameter for this component
- * {String} get persistenceValue() - should reference one or more mobx observables and return current state as a string
+ * {String} get persistenceValue() - should return current state as a string
  * set persistenceValue({String}) - called when the component should set the given state
+ * If persistenceValue references one or more mobx observables, mobx will track changes. Otherwise,
+ * it is necessary to call save() when the state changes.
  */
 export class UrlState {
 
@@ -36,7 +37,17 @@ export class UrlState {
 		this._onpopstate = this._onpopstate.bind(this);
 		window.addEventListener('popstate', this._onpopstate);
 
-		autorun(() => this._save());
+		autorun(() => this.save());
+	}
+
+	save() {
+		const url = new URL(window.location.href);
+		const valueToSave = this.value;
+		if (valueToSave !== this._savedValue(url)) {
+			console.log(`save ${this.key}`);
+			url.searchParams.set(this.key, valueToSave);
+			window.history.pushState({}, '', url.toString());
+		}
 	}
 
 	get key() {
@@ -58,16 +69,6 @@ export class UrlState {
 	_load() {
 		const url = new URL(window.location.href);
 		this.value = this._savedValue(url);
-	}
-
-	_save() {
-		console.log(`save ${this.key}`);
-		const url = new URL(window.location.href);
-		const valueToSave = this.value;
-		if (valueToSave !== this._savedValue(url)) {
-			url.searchParams.set(this.key, valueToSave);
-			window.history.pushState({}, '', url.toString());
-		}
 	}
 
 	_savedValue(url) {

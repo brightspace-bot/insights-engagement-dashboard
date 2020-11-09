@@ -14,10 +14,9 @@ function isFilterCleared(oldSelectedIds, newSelectedIds) {
 export class RoleSelectorFilter {
 	constructor(data) {
 		this._data = data;
-		// this._latestServerQuery = selectedRolesIds || [];
 		this.selected = data.serverData.selectedRolesIds || [];
-		// this._isRecordsTruncated = isRecordsTruncated;
-		this.urlState = new UrlState(this);
+		// noinspection JSUnusedGlobalSymbols
+		this._urlState = new UrlState(this);
 	}
 
 	// persistence key and value for UrlState
@@ -46,12 +45,22 @@ export class RoleSelectorFilter {
 }
 
 export class SemesterSelectorFilter {
-	constructor({ selectedSemestersIds, isRecordsTruncated, isOrgUnitsTruncated }, orgUnitAncestors) {
-		this._latestServerQuery = selectedSemestersIds || [];
-		this.selected = selectedSemestersIds || [];
-		this._isRecordsTruncated = isRecordsTruncated;
-		this._isOrgUnitsTruncated = isOrgUnitsTruncated;
-		this._orgUnitAncestors = orgUnitAncestors;
+	constructor(data) {
+		this._data = data;
+		this.selected = data.serverData.selectedSemestersIds || [];
+		// noinspection JSUnusedGlobalSymbols
+		this._urlState = new UrlState(this);
+	}
+
+	// persistence key and value for UrlState
+	get persistenceKey() { return 'sf'; }
+
+	get persistenceValue() {
+		return this.selected.join(',');
+	}
+
+	set persistenceValue(value) {
+		this.selected = value.split(',').filter(x => x).map(Number);
 	}
 
 	shouldInclude(record) {
@@ -59,16 +68,16 @@ export class SemesterSelectorFilter {
 	}
 
 	shouldIncludeOrgUnitId(orgUnitId) {
-		if (!hasSelections(this.selected) || !this._orgUnitAncestors) {
+		if (!hasSelections(this.selected) || !this._data.orgUnitTree) {
 			return true;
 		}
 
-		return this._orgUnitAncestors.hasAncestorsInList(orgUnitId, this.selected);
+		return this._data.orgUnitTree.hasAncestorsInList(orgUnitId, this.selected);
 	}
 
 	shouldReloadFromServer(newSemesterIds) {
-		if (this._isRecordsTruncated
-			|| this._isOrgUnitsTruncated
+		if (this._data.serverData.isRecordsTruncated
+			|| this._data.serverData.isOrgUnitsTruncated
 			|| isFilterCleared(this._latestServerQuery, newSemesterIds)
 		) {
 			return true;
@@ -77,11 +86,16 @@ export class SemesterSelectorFilter {
 		return hasSelections(this._latestServerQuery)
 			&& newSemesterIds.some(newSemesterId => !this._latestServerQuery.includes(newSemesterId));
 	}
+
+	_latestServerQuery() {
+		return this._data.serverData.selectedSemestersIds;
+	}
 }
 
 export class OrgUnitSelectorFilter {
 	constructor(data) {
 		this._data = data;
+		// noinspection JSUnusedGlobalSymbols
 		this._urlState = new UrlState(this);
 	}
 

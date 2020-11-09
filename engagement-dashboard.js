@@ -188,6 +188,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					></d2l-insights-semester-filter>
 					<d2l-insights-role-filter
 						@d2l-insights-role-filter-change="${this._roleFilterChange}"
+						.selected="${this._serverData.selectedRoleIds}"
 						?demo="${this.isDemo}"
 					></d2l-insights-role-filter>
 				</div>
