@@ -34,7 +34,7 @@ export class Data {
 		};
 
 		this._selectorFilters = {
-			role: new RoleSelectorFilter(this.serverData),
+			role: new RoleSelectorFilter(this),
 			semester: new SemesterSelectorFilter(this.serverData, this.orgUnitTree),
 			orgUnit: new OrgUnitSelectorFilter(this)
 		};
@@ -77,17 +77,16 @@ export class Data {
 		this.serverData = newServerData;
 
 		this._selectorFilters = {
-			role: new RoleSelectorFilter(this.serverData),
+			role: this._selectorFilters.role,
 			semester: new SemesterSelectorFilter(this.serverData, this.orgUnitTree),
 			orgUnit: this._selectorFilters.orgUnit
 		};
 	}
 
 	set selectedRoleIds(newRoleIds) {
+		this._selectorFilters.role.selected = newRoleIds;
 		if (this._selectorFilters.role.shouldReloadFromServer(newRoleIds)) {
 			this.loadData({ newRoleIds });
-		} else {
-			this._selectorFilters.role.selected = newRoleIds;
 		}
 	}
 

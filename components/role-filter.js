@@ -10,7 +10,7 @@ import { Localizer } from '../locales/localizer';
  * @fires d2l-insights-role-filter-close
  */
 class RoleFilter extends Localizer(LitElement) {
-
+// TODO: mob this up for use with UrlState, or come up with a pattern for plain lit elements
 	static get properties() {
 		return {
 			isDemo: { type: Boolean, attribute: 'demo' },

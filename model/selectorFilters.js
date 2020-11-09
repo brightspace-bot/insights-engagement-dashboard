@@ -12,10 +12,23 @@ function isFilterCleared(oldSelectedIds, newSelectedIds) {
 }
 
 export class RoleSelectorFilter {
-	constructor({ selectedRolesIds, isRecordsTruncated }) {
-		this._latestServerQuery = selectedRolesIds || [];
-		this.selected = selectedRolesIds || [];
-		this._isRecordsTruncated = isRecordsTruncated;
+	constructor(data) {
+		this._data = data;
+		// this._latestServerQuery = selectedRolesIds || [];
+		this.selected = data.serverData.selectedRolesIds || [];
+		// this._isRecordsTruncated = isRecordsTruncated;
+		this.urlState = new UrlState(this);
+	}
+
+	// persistence key and value for UrlState
+	get persistenceKey() { return 'rf'; }
+
+	get persistenceValue() {
+		return this.selected.join(',');
+	}
+
+	set persistenceValue(value) {
+		this.selected = value.split(',').filter(x => x).map(Number);
 	}
 
 	shouldInclude(record) {
@@ -23,12 +36,12 @@ export class RoleSelectorFilter {
 	}
 
 	shouldReloadFromServer(newRoleIds) {
-		if (this._isRecordsTruncated || isFilterCleared(this._latestServerQuery, newRoleIds)) {
+		if (this._data.serverData.isRecordsTruncated || isFilterCleared(this._data.serverData.selectedRolesIds, newRoleIds)) {
 			return true;
 		}
 
-		return hasSelections(this._latestServerQuery)
-			&& newRoleIds.some(newRoleId => !this._latestServerQuery.includes(newRoleId));
+		return hasSelections(this._data.serverData.selectedRolesIds)
+			&& newRoleIds.some(newRoleId => !this._data.serverData.selectedRolesIds.includes(newRoleId));
 	}
 }
 

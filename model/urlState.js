@@ -61,6 +61,7 @@ export class UrlState {
 	}
 
 	_save() {
+		console.log(`save ${this.key}`);
 		const url = new URL(window.location.href);
 		const valueToSave = this.value;
 		if (valueToSave !== this._savedValue(url)) {
