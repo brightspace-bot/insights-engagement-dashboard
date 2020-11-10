@@ -44,6 +44,7 @@ export class Data {
 	}
 
 	loadData({ newRoleIds = null, newSemesterIds = null, newOrgUnitIds = null, defaultView = false }) {
+		this.isLoading = true;
 		const filters = {
 			roleIds: newRoleIds || this._selectorFilters.role.selected,
 			semesterIds: newSemesterIds || this._selectorFilters.semester.selected,
