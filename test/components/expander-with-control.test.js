@@ -1,6 +1,6 @@
 import '../../components/expander-with-control';
 
-import { expect, fixture, html } from '@open-wc/testing';
+import { expect, fixture, html, oneEvent } from '@open-wc/testing';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper';
 
 describe('d2l-insights-expander-with-control', () => {
@@ -76,22 +76,25 @@ describe('d2l-insights-expander-with-control', () => {
 		it('should fire collapsed event if element is expanded and control is clicked', async function() {
 			this.timeout(3000);
 
+			const listener = oneEvent(elExpanded, 'd2l-insights-expander-with-control-collapsed');
+
 			const controlDiv = elExpanded.shadowRoot.querySelector('div');
-			const promise = new Promise(resolve => {
-				elExpanded.addEventListener('d2l-insights-expander-with-control-collapsed', (e => resolve(e)), { once: true });
-			});
 			controlDiv.click();
-			await promise;
+
+			const event = await listener;
+			expect(event.target).to.equal(elExpanded);
 		});
 
 		it('should fire expanded event if element is collapsed and control is clicked', async function() {
 			this.timeout(3000);
 
+			const listener = oneEvent(elCollapsed, 'd2l-insights-expander-with-control-expanded');
+
 			const controlDiv = elCollapsed.shadowRoot.querySelector('div');
-			setTimeout(() => controlDiv.click());
-			await new Promise(resolve => {
-				elCollapsed.addEventListener('d2l-insights-expander-with-control-expanded', (e => resolve(e)), { once: true });
-			});
+			controlDiv.click();
+
+			const event = await listener;
+			expect(event.target).to.equal(elCollapsed);
 		});
 	});
 });
