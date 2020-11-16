@@ -77,10 +77,11 @@ describe('d2l-insights-expander-with-control', () => {
 			this.timeout(3000);
 
 			const controlDiv = elExpanded.shadowRoot.querySelector('div');
-			setTimeout(() => controlDiv.click());
-			await new Promise(resolve => {
+			const promise = new Promise(resolve => {
 				elExpanded.addEventListener('d2l-insights-expander-with-control-collapsed', (e => resolve(e)), { once: true });
 			});
+			controlDiv.click();
+			await promise;
 		});
 
 		it('should fire expanded event if element is collapsed and control is clicked', async function() {
