@@ -73,7 +73,7 @@ describe('d2l-insights-expander-with-control', () => {
 
 		// This test fails on Chrome/OSX and it seems to sometimes crash Safari as well. I don't understand why, but
 		// collapsing and expanding does work on a real LMS
-		it.skip('should fire collapsed event if element is expanded and control is clicked', async function() {
+		it('should fire collapsed event if element is expanded and control is clicked', async function() {
 			this.timeout(3000);
 
 			const controlDiv = elExpanded.shadowRoot.querySelector('div');
