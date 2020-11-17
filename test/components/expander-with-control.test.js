@@ -71,10 +71,10 @@ describe('d2l-insights-expander-with-control', () => {
 
 	describe('interactions/eventing', () => {
 
-		// This test fails on Chrome/OSX and it seems to sometimes crash Safari as well. I don't understand why, but
-		// collapsing and expanding does work on a real LMS
 		it('should fire collapsed event if element is expanded and control is clicked', async function() {
-			this.timeout(3000);
+			// during Sauce tests, on Chrome for Mac, the wait for next animation frame in the d2l-expand-collapse-content
+			// sometimes takes over ten seconds - this is presumably an artifact of that test environment
+			this.timeout(15000);
 
 			const listener = oneEvent(elExpanded, 'd2l-insights-expander-with-control-collapsed');
 
@@ -86,7 +86,7 @@ describe('d2l-insights-expander-with-control', () => {
 		});
 
 		it('should fire expanded event if element is collapsed and control is clicked', async function() {
-			this.timeout(3000);
+			this.timeout(15000);
 
 			const listener = oneEvent(elCollapsed, 'd2l-insights-expander-with-control-expanded');
 
