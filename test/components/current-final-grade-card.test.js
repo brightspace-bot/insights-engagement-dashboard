@@ -71,7 +71,6 @@ describe('d2l-insights-current-final-grade-card', () => {
 
 	describe('filter', () => {
 		it('should not be applied if no categories are selected', () => {
-			console.log(new CurrentFinalGradesFilter());
 			expect(new CurrentFinalGradesFilter().isApplied).to.be.false;
 		});
 
