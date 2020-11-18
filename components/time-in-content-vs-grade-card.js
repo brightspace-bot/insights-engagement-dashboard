@@ -7,6 +7,7 @@ import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { RECORD } from '../consts';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
+import { UrlState } from '../model/urlState';
 
 const filterId = 'd2l-insights-time-in-content-vs-grade-card';
 
@@ -23,6 +24,7 @@ export class TimeInContentVsGradeFilter {
 	constructor(data) {
 		this._data = data;
 		this.quadrant = null;
+		this._urlState = new UrlState(this);
 	}
 
 	get avgGrade() {
@@ -76,6 +78,17 @@ export class TimeInContentVsGradeFilter {
 
 	filter(record) {
 		return this.calculateQuadrant(record) === this.quadrant;
+	}
+
+	//for Urlstate
+	get persistenceKey() { return 'tcgf'; }
+
+	get persistenceValue() {
+		return this.quadrant ? this.quadrant : '';
+	}
+
+	set persistenceValue(value) {
+		this.quadrant = value === '' ? null : value;
 	}
 }
 decorate(TimeInContentVsGradeFilter, {
@@ -195,8 +208,67 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		});
 	}
 
+	_getQuadrantColor(name) {
+		if (this.filter.quadrant === null || this.filter.quadrant === name) {
+			return 'var(--d2l-color-amethyst-plus-1)';
+		}
+		return 'var(--d2l-color-mica)';
+	}
+
 	get filter() {
 		return this.data.getFilter(filterId);
+	}
+
+	get activeQuadrant() {
+		return this.filter.quadrant;
+	}
+
+	get _plotData() {
+		return [{
+			name: 'leftBottom',
+			data: this._plotDataForLeftBottomQuadrant,
+			marker: {
+				enabled: true,
+				fillColor: this._getQuadrantColor('leftBottom')
+			}
+		},
+		{
+			name: 'leftTop',
+			data: this._plotDataForLeftTopQuadrant,
+			marker: {
+				enabled: true,
+				fillColor: this._getQuadrantColor('leftTop')
+			}
+		},
+		{
+			name: 'rightTop',
+			data: this._plotDataForRightTopQuadrant,
+			marker: {
+				enabled: true,
+				fillColor: this._getQuadrantColor('rightTop')
+			}
+		},
+		{
+			name: 'rightBottom',
+			data: this._plotDataForRightBottomQuadrant,
+			marker: {
+				enabled: true,
+				fillColor: this._getQuadrantColor('rightBottom')
+			}
+		},
+		{
+			name: 'midPoint',
+			data: this._dataMidPoints,
+			lineColor: 'transparent',
+			marker: {
+				fillColor: 'transparent',
+				states: {
+					hover: {
+						enabled: false
+					}
+				}
+			},
+		}];
 	}
 
 	_toolTipTextByQuadrant(quadrant, numberOfUsers) {
@@ -214,7 +286,6 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 
 	get chartOptions() {
 		const that = this;
-
 		return {
 			chart: {
 				type: 'scatter',
@@ -222,18 +293,18 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				width: 581,
 				events: {
 					click: function(event) {
-						that._colorAllPointsInAmethyst(this.series);
+						//that._colorAllPointsInAmethyst(this.series);
 						that.filter.quadrant = that.filter.calculateQuadrant(Math.floor(event.xAxis[0].value), Math.floor(event.yAxis[0].value));
-						that._colorNonSelectedPointsInMica(this.series);
+						//that._colorNonSelectedPointsInMica(this.series);
 					},
-					update: function() {
-						if (that.filter.isApplied) {
-							that._colorNonSelectedPointsInMica(this.series);
-							that._colorSelectedQuadrantPointsInAmethyst(this.series);
-						} else {
-							that._colorAllPointsInAmethyst(this.series);
-						}
-					}
+					// render: function() {
+					// 	if (that.filter.isApplied) {
+					// 		that._colorNonSelectedPointsInMica(this.series);
+					// 		that._colorSelectedQuadrantPointsInAmethyst(this.series);
+					// 	} else {
+					// 		that._colorAllPointsInAmethyst(this.series);
+					// 	}
+					// },
 				}
 			},
 			tooltip: {
@@ -363,40 +434,13 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 					beforeChartFormat: BEFORE_CHART_FORMAT
 				}
 			},
-			series: [{
-				name: 'leftBottom',
-				data: this._plotDataForLeftBottomQuadrant
-			},
-			{
-				name: 'leftTop',
-				data: this._plotDataForLeftTopQuadrant
-			},
-			{
-				name: 'rightTop',
-				data: this._plotDataForRightTopQuadrant
-			},
-			{
-				name: 'rightBottom',
-				data: this._plotDataForRightBottomQuadrant
-			},
-			{
-				name: 'midPoint',
-				data: that._dataMidPoints,
-				lineColor: 'transparent',
-				marker: {
-					fillColor: 'transparent',
-					states: {
-						hover: {
-							enabled: false
-						}
-					}
-				},
-			}]
+			series: this._plotData
 		};
 	}
 }
 decorate(TimeInContentVsGradeCard, {
 	filter: computed,
+	_plotData: computed,
 	_dataMidPoints: computed,
 	_plotDataForLeftBottomQuadrant: computed,
 	_plotDataForLeftTopQuadrant: computed,

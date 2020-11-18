@@ -168,11 +168,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 							@click="${this._exportToCsv}">
 						</d2l-button-subtle>
 						<d2l-button-subtle
-							icon="d2l-tier1:save"
-							text=${this.localize('components.insights-engagement-dashboard.saveDefaultView')}
-							@click="${saveDefaultView}">
-						</d2l-button-subtle>
-						<d2l-button-subtle
 							icon="d2l-tier1:help"
 							text=${this.localize('components.insights-engagement-dashboard.learMore')}
 							@click="${this._openHelpLink}">
