@@ -58,7 +58,11 @@ export class UrlState {
 	save() {
 		const url = new URL(window.location.href);
 		const valueToSave = this.value;
-		if (valueToSave !== this._savedValue(url)) {
+		if (valueToSave === '') {
+			url.searchParams.delete(this.key);
+			window.history.pushState({}, '', url.toString());
+		}
+		else if (valueToSave !== this._savedValue(url)) {
 			url.searchParams.set(this.key, valueToSave);
 			window.history.pushState({}, '', url.toString());
 		}
