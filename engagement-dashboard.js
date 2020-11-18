@@ -19,7 +19,7 @@ import './components/default-view-popup.js';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
-import { isDefault, restoreDefaultView, saveDefaultView } from './model/urlState';
+import { isDefault, restoreDefaultView } from './model/urlState';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
