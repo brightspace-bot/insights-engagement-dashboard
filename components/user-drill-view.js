@@ -28,8 +28,8 @@ class UserDrill extends Localizer(MobxLitElement) {
 			}
 
 			.d2l-insights-user-drill-view-container {
-				width: 100%;
 				padding-top: 30px;
+				width: 100%;
 			}
 
 			.d2l-insights-user-drill-view-container > d2l-button {
@@ -37,10 +37,10 @@ class UserDrill extends Localizer(MobxLitElement) {
 			}
 
 			.d2l-insights-user-drill-view-header-panel {
-				width: 100%;
 				display: flex;
 				flex-direction: row;
 				justify-content: space-between;
+				width: 100%;
 			}
 
 			.d2l-insights-user-drill-view-profile {
@@ -55,7 +55,7 @@ class UserDrill extends Localizer(MobxLitElement) {
 
 			.d2l-insights-user-drill-view-profile-name {
 				display: flex;
-    			flex-direction: column;
+				flex-direction: column;
 			}
 
 			.d2l-insights-user-drill-view-profile-name > div.d2l-heading-2 {
