@@ -87,6 +87,28 @@ describe('selectorFilters', () => {
 				expect(sut.shouldReloadFromServer([1, 3, 5, 6])).to.be.true;
 			});
 		});
+
+		describe('urlState', () => {
+
+			before(() => {
+				enableUrlState();
+			});
+			after(() => disableUrlStateForTesting());
+
+			it('should load the filter from the url state', async() => {
+
+				const searchParams = new URLSearchParams(window.location.search);
+				searchParams.append('rf', '1,3,5');
+				const url = new URL(window.location.href);
+				url.search = searchParams.toString();
+				window.history.pushState({}, '', url.toString());
+
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: null, isRecordsTruncated: false } });
+
+				const values = sut.persistenceValue;
+				expect(values).equals('1,3,5');
+			});
+		});
 	});
 
 	describe('SemesterSelectorFilter', () => {
@@ -234,6 +256,32 @@ describe('selectorFilters', () => {
 				expect(sut.shouldReloadFromServer([1, 3, 5, 6])).to.be.true;
 			});
 		});
+
+		describe('urlState', () => {
+
+			before(() => {
+				enableUrlState();
+			});
+			after(() => disableUrlStateForTesting());
+
+			it('should load the filter from the url state', async() => {
+
+				const searchParams = new URLSearchParams(window.location.search);
+				searchParams.append('sf', '1,3,5');
+				const url = new URL(window.location.href);
+				url.search = searchParams.toString();
+				window.history.pushState({}, '', url.toString());
+
+				const sut = new SemesterSelectorFilter({ serverData: {
+					selectedSemestersIds: [],
+					isRecordsTruncated: false,
+					isOrgUnitsTruncated: false
+				} });
+
+				const values = sut.persistenceValue;
+				expect(values).equals('1,3,5');
+			});
+		});
 	});
 
 	describe('OrgUnitSelectorFilter', () => {
@@ -367,6 +415,32 @@ describe('selectorFilters', () => {
 				// if it were using the newly applied local selection, this next line would be true
 				expect(sut.shouldReloadFromServer([1, 3, 5])).to.be.false;
 				expect(sut.shouldReloadFromServer([1, 3, 5, 6])).to.be.true;
+			});
+		});
+
+		describe('urlState', () => {
+			before(() => {
+				enableUrlState();
+			});
+			after(() => disableUrlStateForTesting());
+			it('should load the filter from the url state', async() => {
+
+				const searchParams = new URLSearchParams(window.location.search);
+				searchParams.append('ouf', '1,3,5');
+				const url = new URL(window.location.href);
+				url.search = searchParams.toString();
+				window.history.pushState({}, '', url.toString());
+
+				const sut = new OrgUnitSelectorFilter({ serverData: {
+					selectedOrgUnitIds: [1, 3, 5],
+					isRecordsTruncated: true
+				},
+				orgUnitTree: { selected: [] }
+				});
+
+				const values = sut.persistenceValue;
+				await new Promise(res => setTimeout(res, 1000));
+				expect(values).equals('1,3,5');
 			});
 		});
 	});

@@ -14,6 +14,10 @@ export function isDefault() {
 	return window.location.search === '';
 }
 
+export function clearUrlState() {
+	window.history.replaceState({}, '', '');
+}
+
 export function restoreDefaultView() {
 	if (isDefault()) {
 		const defaultView = localStorage.getItem('d2l-insights-engagement-dashboard.defaultView');
