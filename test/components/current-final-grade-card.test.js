@@ -1,9 +1,12 @@
+import { disableUrlStateForTesting, enableUrlState } from '../../model/urlState';
 import { elementUpdated, expect, fixture, html } from '@open-wc/testing';
 import { CurrentFinalGradesFilter } from '../../components/current-final-grade-card';
 import { records } from '../model/mocks';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-current-final-grade-card', () => {
+	before(() => disableUrlStateForTesting());
+	after(() => enableUrlState());
 	const filter = new CurrentFinalGradesFilter();
 	const data = {
 		getFilter: id => (id === filter.id ? filter : null),
@@ -68,6 +71,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 
 	describe('filter', () => {
 		it('should not be applied if no categories are selected', () => {
+			console.log(new CurrentFinalGradesFilter());
 			expect(new CurrentFinalGradesFilter().isApplied).to.be.false;
 		});
 

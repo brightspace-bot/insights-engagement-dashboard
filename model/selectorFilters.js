@@ -35,10 +35,10 @@ export class RoleSelectorFilter {
 	}
 
 	shouldReloadFromServer(newRoleIds) {
-		if (this._data.serverData.isRecordsTruncated || isFilterCleared(this._data.serverData.selectedRolesIds, newRoleIds)) {
+		if (this._data.serverData.isRecordsTruncated
+			|| isFilterCleared(this._data.serverData.selectedRolesIds, newRoleIds)) {
 			return true;
 		}
-
 		return hasSelections(this._data.serverData.selectedRolesIds)
 			&& newRoleIds.some(newRoleId => !this._data.serverData.selectedRolesIds.includes(newRoleId));
 	}
@@ -68,10 +68,10 @@ export class SemesterSelectorFilter {
 	}
 
 	shouldIncludeOrgUnitId(orgUnitId) {
+
 		if (!hasSelections(this.selected) || !this._data.orgUnitTree) {
 			return true;
 		}
-
 		return this._data.orgUnitTree.hasAncestorsInList(orgUnitId, this.selected);
 	}
 
@@ -87,7 +87,7 @@ export class SemesterSelectorFilter {
 			&& newSemesterIds.some(newSemesterId => !this._latestServerQuery.includes(newSemesterId));
 	}
 
-	_latestServerQuery() {
+	get _latestServerQuery() {
 		return this._data.serverData.selectedSemestersIds;
 	}
 }

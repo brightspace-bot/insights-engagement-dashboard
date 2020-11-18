@@ -71,7 +71,7 @@ describe('Data', () => {
 			sut.orgUnitTree.setOpen(1, true);
 
 			// trigger a reload and allow recordProvider to resolve
-			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: true });
+			sut._selectorFilters.role = new RoleSelectorFilter({ serverData: { selectedRolesIds: null, isRecordsTruncated: true } });
 			sut.selectedRoleIds = [mockRoleIds.student];
 			await new Promise(resolve => setTimeout(resolve, 0));
 
@@ -82,7 +82,7 @@ describe('Data', () => {
 
 		it('marks the org unit tree as dynamic if the server truncated it', async() => {
 			// trigger a truncated reload and allow recordProvider to resolve
-			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: true });
+			sut._selectorFilters.role = new RoleSelectorFilter({ serverData: { selectedRolesIds: null, isRecordsTruncated: true } });
 			sut.selectedRoleIds = [mockRoleIds.student, TRUNCATE_IF_THIS_ROLE_IS_PRESENT];
 			await new Promise(resolve => setTimeout(resolve, 0));
 
@@ -96,7 +96,7 @@ describe('Data', () => {
 			sut.recordProvider = recordProvider;
 
 			// set isRecordsTruncated to true to force a reload
-			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: true });
+			sut._selectorFilters.role = new RoleSelectorFilter({ serverData: { selectedRolesIds: null, isRecordsTruncated: true } });
 			sut.selectedRoleIds = [mockRoleIds.student];
 
 			sinon.assert.calledWithMatch(recordProvider, sinon.match({
@@ -111,7 +111,7 @@ describe('Data', () => {
 			sut.recordProvider = recordProvider;
 
 			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
-			sut._selectorFilters.role = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: false });
+			sut._selectorFilters.role = new RoleSelectorFilter({ serverData: { selectedRolesIds: null, isRecordsTruncated: false } });
 			sut.selectedRoleIds = [mockRoleIds.student];
 
 			sinon.assert.notCalled(recordProvider);
@@ -124,10 +124,10 @@ describe('Data', () => {
 			sut.recordProvider = recordProvider;
 
 			// set isRecordsTruncated to true to force a reload
-			sut._selectorFilters.semester = new SemesterSelectorFilter({
+			sut._selectorFilters.semester = new SemesterSelectorFilter({ serverData: {
 				selectedSemestersIds: null,
 				isRecordsTruncated: true
-			}, null);
+			} });
 			sut.selectedSemesterIds = [11];
 
 			sinon.assert.calledWithMatch(recordProvider, sinon.match({
@@ -142,10 +142,10 @@ describe('Data', () => {
 			sut.recordProvider = recordProvider;
 
 			// set isRecordsTruncated to false and selectedRolesIds to null to force no reload
-			sut._selectorFilters.semester = new SemesterSelectorFilter({
+			sut._selectorFilters.semester = new SemesterSelectorFilter({ serverData: {
 				selectedSemestersIds: null,
 				isRecordsTruncated: false
-			}, null);
+			} });
 			sut.selectedSemesterIds = [mockRoleIds.student];
 
 			sinon.assert.notCalled(recordProvider);

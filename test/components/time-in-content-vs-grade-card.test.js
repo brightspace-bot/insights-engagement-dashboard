@@ -1,9 +1,14 @@
+import { disableUrlStateForTesting, enableUrlState } from '../../model/urlState';
 import { elementUpdated, expect, fixture, html } from '@open-wc/testing';
 import { records } from '../model/mocks';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 import { TimeInContentVsGradeFilter } from '../../components/time-in-content-vs-grade-card';
 
 describe('TimeInContentVsGradeFilter', () => {
+
+	before(() => disableUrlStateForTesting());
+	after(() => enableUrlState());
+
 	let sut;
 	beforeEach(() => {
 		sut = new TimeInContentVsGradeFilter({ records });

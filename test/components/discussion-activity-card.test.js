@@ -1,10 +1,12 @@
 import '../../components/discussion-activity-card.js';
-
+import { disableUrlStateForTesting, enableUrlState } from '../../model/urlState';
 import { expect, fixture, html } from '@open-wc/testing';
 import { DiscussionActivityFilter } from '../../components/discussion-activity-card';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-discussion-activity-card', () => {
+	before(() => disableUrlStateForTesting());
+	after(() => enableUrlState());
 	const records = [
 		[1, 100, 500, 1, 55, 1000, null, 0, 0, 0],
 		[1, 200, 600, 0, 33, 2000, Date.now() - 2093, 0, 0, 0],

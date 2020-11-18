@@ -1,9 +1,15 @@
+import { disableUrlStateForTesting, enableUrlState } from '../../model/urlState';
 import { expect, fixture, html } from '@open-wc/testing';
 import { LastAccessFilter } from '../../components/last-access-card';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-last-access-card', () => {
+
+	before(() => disableUrlStateForTesting());
+	after(() => enableUrlState());
+
 	const filter = new LastAccessFilter();
+
 	const data = {
 		getFilter: id => (id === filter.id ? filter : null),
 		withoutFilter: id => (id === filter.id ? {

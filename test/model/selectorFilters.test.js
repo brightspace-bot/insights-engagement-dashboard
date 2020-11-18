@@ -14,19 +14,19 @@ describe('selectorFilters', () => {
 		describe('shouldInclude', () => {
 			it('should return true if the filter has no selected ids', () => {
 				const record = [1, 1, 1]; // doesn't matter what the ids are here
-				const sut = new RoleSelectorFilter({ selectedRolesIds: [], isRecordsTruncated: false });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: [], isRecordsTruncated: false } });
 				expect(sut.shouldInclude(record)).to.be.true;
 			});
 
 			it('should return true if the record role id is in the selected ids', () => {
 				const record = [1, 1, 1];
-				const sut = new RoleSelectorFilter({ selectedRolesIds: [1, 3, 5], isRecordsTruncated: false });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: [1, 3, 5], isRecordsTruncated: false } });
 				expect(sut.shouldInclude(record)).to.be.true;
 			});
 
 			it('should return false if the record role id is not in the selected ids', () => {
 				const record = [1, 1, 2];
-				const sut = new RoleSelectorFilter({ selectedRolesIds: [1, 3, 5], isRecordsTruncated: false });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: [1, 3, 5], isRecordsTruncated: false } });
 				expect(sut.shouldInclude(record)).to.be.false;
 			});
 		});
@@ -34,26 +34,26 @@ describe('selectorFilters', () => {
 		describe('shouldReloadFromServer', () => {
 			it('should return true if records are truncated', () => {
 				const newRoleIds = [1, 3]; // a list that otherwise wouldn't trigger a server reload
-				const sut = new RoleSelectorFilter({ selectedRolesIds: [1, 3, 5], isRecordsTruncated: true });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: [1, 3, 5], isRecordsTruncated: true } });
 				expect(sut.shouldReloadFromServer(newRoleIds)).to.be.true;
 			});
 
 			it('should return true if the existing server query has items and the new list has no items', () => {
 				// i.e. the filter was cleared
 				const newRoleIds = [ /* empty */ ];
-				const sut = new RoleSelectorFilter({ selectedRolesIds: [1, 3, 5], isRecordsTruncated: false });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: [1, 3, 5], isRecordsTruncated: false } });
 				expect(sut.shouldReloadFromServer(newRoleIds)).to.be.true;
 			});
 
 			it('should return true if the new role ids list has an id that is not in the existing server query', () => {
 				const newRoleIds = [1, 2, 5];
-				const sut = new RoleSelectorFilter({ selectedRolesIds: [1, 3, 5], isRecordsTruncated: false });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: [1, 3, 5], isRecordsTruncated: false } });
 				expect(sut.shouldReloadFromServer(newRoleIds)).to.be.true;
 			});
 
 			it('should return false if no filters were applied originally and data was not truncated', () => {
 				const newRoleIds = [1, 3, 5];
-				const sut = new RoleSelectorFilter({ selectedRolesIds: null, isRecordsTruncated: false });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: null, isRecordsTruncated: false } });
 				expect(sut.shouldReloadFromServer(newRoleIds)).to.be.false;
 
 				// apply local changes - make sure it won't reload from server if it doesn't need to
@@ -66,18 +66,18 @@ describe('selectorFilters', () => {
 			it('should return false if the new list is the same as the server query', () => {
 				// added an explicit test for this because it could potentially happen often
 				const newRoleIds = [1, 3, 5];
-				const sut = new RoleSelectorFilter({ selectedRolesIds: [1, 3, 5], isRecordsTruncated: false });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: [1, 3, 5], isRecordsTruncated: false } });
 				expect(sut.shouldReloadFromServer(newRoleIds)).to.be.false;
 			});
 
 			it('should return false if the new list is a subset of the server query', () => {
 				const newRoleIds = [1, 3];
-				const sut = new RoleSelectorFilter({ selectedRolesIds: [1, 3, 5], isRecordsTruncated: false });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: [1, 3, 5], isRecordsTruncated: false } });
 				expect(sut.shouldReloadFromServer(newRoleIds)).to.be.false;
 			});
 
 			it('should use the server query ids to determine reload instead of the local ids', () => {
-				const sut = new RoleSelectorFilter({ selectedRolesIds: [1, 3, 5], isRecordsTruncated: false });
+				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: [1, 3, 5], isRecordsTruncated: false } });
 
 				// apply local changes
 				sut.selected = [1, 3];
@@ -93,38 +93,48 @@ describe('selectorFilters', () => {
 		describe('shouldInclude', () => {
 			it('should return true if the filter has no selected ids', () => {
 				const record = [1, 1, 1]; // doesn't matter what the ids are here
-				const sut = new SemesterSelectorFilter({
+				const sut = new SemesterSelectorFilter({ serverData: {
 					selectedSemestersIds: [],
 					isRecordsTruncated: false,
 					isOrgUnitsTruncated: false
-				}, null);
+				} });
 				expect(sut.shouldInclude(record)).to.be.true;
 			});
 
 			it('should return true if the record orgUnit id has a selected semester id as one of its ancestors', () => {
-				const mockOrgUnitAncestors = {
-					hasAncestorsInList: (/* any */) => true
-				};
+				// const mockOrgUnitAncestors = {
+				// 	hasAncestorsInList: (/* any */) => true
+				// };
 				const record = [1, 1, 1]; // doesn't matter what the ids are here
-				const sut = new SemesterSelectorFilter({
-					selectedSemestersIds: [11, 12],
-					isRecordsTruncated: false,
-					isOrgUnitsTruncated: false
-				}, mockOrgUnitAncestors);
+				const sut = new SemesterSelectorFilter(
+					{
+						serverData:
+						{
+							selectedSemestersIds: [11, 12],
+							isRecordsTruncated: false,
+							isOrgUnitsTruncated: false,
+						},
+						orgUnitTree: { hasAncestorsInList: () => true },
+					});
 
 				expect(sut.shouldInclude(record)).to.be.true;
 			});
 
 			it('should return false if the record orgUnitId has no ancestors in the selected ids', () => {
-				const mockOrgUnitAncestors = {
-					hasAncestorsInList: (/* any */) => false
-				};
+				// const mockOrgUnitAncestors = {
+				// 	hasAncestorsInList: (/* any */) => false
+				// };
 				const record = [1, 1, 1]; // doesn't matter what the ids are here
-				const sut = new SemesterSelectorFilter({
-					selectedSemestersIds: [12, 13],
-					isRecordsTruncated: false,
-					isOrgUnitsTruncated: false
-				}, mockOrgUnitAncestors);
+				const sut = new SemesterSelectorFilter(
+					{
+						serverData:
+						{
+							selectedSemestersIds: [12, 13],
+							isRecordsTruncated: false,
+							isOrgUnitsTruncated: false,
+						},
+						orgUnitTree: { hasAncestorsInList: () => false },
+					});
 
 				expect(sut.shouldInclude(record)).to.be.false;
 			});
@@ -133,52 +143,52 @@ describe('selectorFilters', () => {
 		describe('shouldReloadFromServer', () => {
 			it('should return true if records are truncated', () => {
 				const newSemesterIds = [1, 3]; // a list that otherwise wouldn't trigger a server reload
-				const sut = new SemesterSelectorFilter({
+				const sut = new SemesterSelectorFilter({ serverData: {
 					selectedSemestersIds: [1, 3, 5],
 					isRecordsTruncated: true,
 					isOrgUnitsTruncated: false
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newSemesterIds)).to.be.true;
 			});
 
 			it('should return true if orgUnits are truncated', () => {
 				const newSemesterIds = [1, 3]; // a list that otherwise wouldn't trigger a server reload
-				const sut = new SemesterSelectorFilter({
-					selectedOrgUnitIds: [1, 3, 5],
+				const sut = new SemesterSelectorFilter({ serverData: {
+					selectedSemestersIds: [1, 3, 5],
 					isRecordsTruncated: false,
 					isOrgUnitsTruncated: true
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newSemesterIds)).to.be.true;
 			});
 
 			it('should return true if the existing server query has items and the new list has no items', () => {
 				// i.e. the filter was cleared
 				const newSemesterIds = [ /* empty */ ];
-				const sut = new SemesterSelectorFilter({
+				const sut = new SemesterSelectorFilter({ serverData: {
 					selectedSemestersIds: [1, 3, 5],
 					isRecordsTruncated: false,
 					isOrgUnitsTruncated: false
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newSemesterIds)).to.be.true;
 			});
 
 			it('should return true if the new semester ids list has an id that is not in the existing server query', () => {
 				const newSemesterIds = [1, 2, 5];
-				const sut = new SemesterSelectorFilter({
+				const sut = new SemesterSelectorFilter({ serverData: {
 					selectedSemestersIds: [1, 3, 5],
 					isRecordsTruncated: false,
 					isOrgUnitsTruncated: false
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newSemesterIds)).to.be.true;
 			});
 
 			it('should return false if no filters were applied originally and data was not truncated', () => {
 				const newSemesterIds = [1, 3, 5];
-				const sut = new SemesterSelectorFilter({
+				const sut = new SemesterSelectorFilter({ serverData: {
 					selectedSemestersIds: null,
 					isRecordsTruncated: false,
 					isOrgUnitsTruncated: false
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newSemesterIds)).to.be.false;
 
 				// apply local changes - make sure it won't reload from server if it doesn't need to
@@ -191,30 +201,30 @@ describe('selectorFilters', () => {
 			it('should return false if the new list is the same as the old server query', () => {
 				// added an explicit test for this because it could potentially happen often
 				const newSemesterIds = [1, 3, 5];
-				const sut = new SemesterSelectorFilter({
+				const sut = new SemesterSelectorFilter({ serverData: {
 					selectedSemestersIds: [1, 3, 5],
 					isRecordsTruncated: false,
 					isOrgUnitsTruncated: false
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newSemesterIds)).to.be.false;
 			});
 
 			it('should return false if the new list is a subset of the old server query', () => {
 				const newSemesterIds = [1, 3];
-				const sut = new SemesterSelectorFilter({
+				const sut = new SemesterSelectorFilter({ serverData: {
 					selectedSemestersIds: [1, 3, 5],
 					isRecordsTruncated: false,
 					isOrgUnitsTruncated: false
-				}, null);
+				} });
 				expect(sut.shouldReloadFromServer(newSemesterIds)).to.be.false;
 			});
 
 			it('should use the server query ids to determine reload instead of the local ids', () => {
-				const sut = new SemesterSelectorFilter({
+				const sut = new SemesterSelectorFilter({ serverData: {
 					selectedSemestersIds: [1, 3, 5],
 					isRecordsTruncated: false,
 					isOrgUnitsTruncated: false
-				}, null);
+				} });
 
 				// apply local changes
 				sut.selected = [1, 3];
