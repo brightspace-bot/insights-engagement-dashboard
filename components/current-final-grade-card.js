@@ -28,14 +28,13 @@ export class CurrentFinalGradesFilter extends CategoryFilter {
 		super(
 			filterId,
 			'components.insights-current-final-grade-card.currentGrade',
-			record => this.selectedCategories.has(gradeCategory(record[RECORD.CURRENT_FINAL_GRADE]))
+			record => this.selectedCategories.has(gradeCategory(record[RECORD.CURRENT_FINAL_GRADE])),
+			'cgf'
 		);
 		this._urlState = new UrlState(this);
 	}
 
 	//for Urlstate
-	get persistenceKey() { return 'cgf'; }
-
 	get persistenceValue() {
 		if (this.selectedCategories.size === 0) return '';
 		return [...this.selectedCategories].join(',');

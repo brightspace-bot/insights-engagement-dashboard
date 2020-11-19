@@ -26,21 +26,6 @@ export function clearUrlState() {
 	window.history.replaceState({}, '', '');
 }
 
-export function restoreDefaultView() {
-	if (isDefault()) {
-		const defaultView = localStorage.getItem('d2l-insights-engagement-dashboard.defaultView');
-		if (defaultView) {
-			const url = new URL(window.location.href);
-			url.search = defaultView;
-			window.history.replaceState({}, '', url.toString());
-		}
-	}
-}
-
-export function saveDefaultView() {
-	window.localStorage.setItem('d2l-insights-engagement-dashboard.defaultView', window.location.search);
-}
-
 // plan: store various filter settings in the url query (handled by each component); then add a button
 // "make this my default view" that stores the current query in local storage
 /**

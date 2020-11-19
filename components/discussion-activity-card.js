@@ -18,14 +18,13 @@ export class DiscussionActivityFilter extends CategoryFilter {
 		super(
 			filterId,
 			'components.insights-discussion-activity-card.cardTitle',
-			record => [...this.selectedCategories].some(category => record[category] > 0)
+			record => [...this.selectedCategories].some(category => record[category] > 0),
+			'daf'
 		);
 		this._urlState = new UrlState(this);
 	}
 
 	//for Urlstate
-	get persistenceKey() { return 'daf'; }
-
 	get persistenceValue() {
 		if (this.selectedCategories.size === 0) return '';
 		return [...this.selectedCategories].join(',');

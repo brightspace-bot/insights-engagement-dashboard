@@ -48,14 +48,13 @@ export class CourseLastAccessFilter extends CategoryFilter {
 		super(
 			filterId,
 			'components.insights-course-last-access-card.courseAccess',
-			record => this.selectedCategories.has(lastAccessDateBucket(record))
+			record => this.selectedCategories.has(lastAccessDateBucket(record)),
+			'caf'
 		);
 		this._urlState = new UrlState(this);
 	}
 
 	//for Urlstate
-	get persistenceKey() { return 'caf'; }
-
 	get persistenceValue() {
 		if (this.selectedCategories.size === 0) return '';
 		return [...this.selectedCategories].join(',');
