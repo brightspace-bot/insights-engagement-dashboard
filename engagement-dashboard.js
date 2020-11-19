@@ -1,6 +1,7 @@
 import '@brightspace-ui/core/components/dialog/dialog-confirm';
 import 'd2l-button-group/d2l-action-button-group';
 import 'd2l-navigation/d2l-navigation-immersive';
+import 'd2l-navigation/d2l-navigation-link-back';
 
 import './components/histogram-card.js';
 import './components/ou-filter.js';
@@ -153,6 +154,14 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					padding: 50px;
 				}
 
+				.d2l-insights-link-back-default {
+					display: inline-block;
+				}
+
+				.d2l-insights-link-back-responsive {
+					display: none;
+				}
+
 				@media screen and (max-width: 615px) {
 					h1 {
 						line-height: 2rem;
@@ -166,6 +175,14 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 					.d2l-insights-summary-container {
 						margin-right: 0;
+					}
+
+					.d2l-insights-link-back-default {
+						display: none;
+					}
+
+					.d2l-insights-link-back-responsive {
+						display: inline-block;
 					}
 				}
 			`
@@ -190,15 +207,31 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		}
 
 		return html`
+			${ this._renderNavBar() }
+			${ innerView }
+		`;
+	}
+
+	_renderNavBar() {
+		return html`
 			<d2l-navigation-immersive
-				back-link-href="${this.linkToInsightsPortal}"
-				back-link-text="${this.localize('components.insights-engagement-dashboard.backLinkText')}"
 				width-type="fullscreen">
+				<div slot="left">
+					<d2l-navigation-link-back
+						text="${this.localize('components.insights-engagement-dashboard.backLinkText')}"
+						href="${this.linkToInsightsPortal}"
+						class="d2l-insights-link-back-default">
+					</d2l-navigation-link-back>
+					<d2l-navigation-link-back
+						text="${this.localize('components.insights-engagement-dashboard.backLinkTextShort')}"
+						href="${this.linkToInsightsPortal}"
+						class="d2l-insights-link-back-responsive">
+					</d2l-navigation-link-back>
+				</div>
 				<div slot="middle" class="d2l-insights-immersive-nav-title">
 					${this.localize('components.insights-engagement-dashboard.title')}
 				</div>
 			</d2l-navigation-immersive>
-			${ innerView }
 		`;
 	}
 

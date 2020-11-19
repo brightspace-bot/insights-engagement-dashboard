@@ -3,6 +3,7 @@
 export default {
 	"components.insights-engagement-dashboard.title": "Engagement Dashboard",
 	"components.insights-engagement-dashboard.backLinkText": "Back to Insights Portal",
+	"components.insights-engagement-dashboard.backLinkTextShort": "Back",
 	"components.insights-engagement-dashboard.summaryHeading": "Summary View",
 	"components.insights-engagement-dashboard.resultsHeading": "Results",
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
