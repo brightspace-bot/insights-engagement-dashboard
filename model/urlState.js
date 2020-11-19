@@ -54,6 +54,10 @@ export class UrlState {
 	}
 
 	save() {
+
+		// don't save state changes if we are restoring an old state
+		if (this.popping) return;
+
 		const url = new URL(window.location.href);
 		const valueToSave = this.value;
 		if (valueToSave === '' && url.searchParams.has(this.key)) {
@@ -79,7 +83,9 @@ export class UrlState {
 	}
 
 	_onpopstate(e) {
+		this.popping = true;
 		if (e.state !== null) this._load();
+		this.popping = false;
 	}
 
 	_load() {
