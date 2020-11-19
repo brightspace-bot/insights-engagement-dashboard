@@ -1,6 +1,7 @@
-import { disableUrlStateForTesting, enableUrlState } from '../../model/urlState';
+import { disableUrlStateForTesting, enableUrlState, setStateForTesting } from '../../model/urlState';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from '../../model/selectorFilters';
 import { expect } from '@open-wc/testing';
+import { observable } from 'mobx';
 
 describe('selectorFilters', () => {
 	before(() => {
@@ -90,23 +91,25 @@ describe('selectorFilters', () => {
 
 		describe('urlState', () => {
 
+			const key = new RoleSelectorFilter({ serverData: {} }).persistenceKey;
 			before(() => {
 				enableUrlState();
 			});
 			after(() => disableUrlStateForTesting());
 
-			it('should load the filter from the url state', async() => {
+			it('should load the filter from the url state then save to it', async() => {
 
-				const searchParams = new URLSearchParams(window.location.search);
-				searchParams.append('rf', '1,3,5');
-				const url = new URL(window.location.href);
-				url.search = searchParams.toString();
-				window.history.pushState({}, '', url.toString());
+				setStateForTesting(key, '1,3,5');
 
 				const sut = new RoleSelectorFilter({ serverData: { selectedRolesIds: null, isRecordsTruncated: false } });
+				expect(sut.selected).eqls([1, 3, 5]);
 
-				const values = sut.persistenceValue;
-				expect(values).equals('1,3,5');
+				sut.selected = [1];
+
+				const params = new URLSearchParams(window.location.search);
+				const values = params.get(sut.persistenceKey);
+
+				expect(values).equals('1');
 			});
 		});
 	});
@@ -259,27 +262,30 @@ describe('selectorFilters', () => {
 
 		describe('urlState', () => {
 
+			const key = new SemesterSelectorFilter({ serverData: {} }).persistenceKey;
 			before(() => {
 				enableUrlState();
 			});
 			after(() => disableUrlStateForTesting());
 
-			it('should load the filter from the url state', async() => {
+			it('should load the filter from the url state then save to it', async() => {
 
-				const searchParams = new URLSearchParams(window.location.search);
-				searchParams.append('sf', '1,3,5');
-				const url = new URL(window.location.href);
-				url.search = searchParams.toString();
-				window.history.pushState({}, '', url.toString());
+				setStateForTesting(key, '1,3,5');
 
 				const sut = new SemesterSelectorFilter({ serverData: {
-					selectedSemestersIds: [],
+					selectedSemestersIds: null,
 					isRecordsTruncated: false,
 					isOrgUnitsTruncated: false
 				} });
 
-				const values = sut.persistenceValue;
-				expect(values).equals('1,3,5');
+				expect(sut.selected).eqls([1, 3, 5]);
+
+				sut.selected = [1];
+
+				const params = new URLSearchParams(window.location.search);
+				const values = params.get(sut.persistenceKey);
+
+				expect(values).equals('1');
 			});
 		});
 	});
@@ -419,28 +425,33 @@ describe('selectorFilters', () => {
 		});
 
 		describe('urlState', () => {
+
+			const key = new OrgUnitSelectorFilter({ serverData: {}, orgUnitTree: { selected : null } }).persistenceKey;
 			before(() => {
 				enableUrlState();
 			});
 			after(() => disableUrlStateForTesting());
-			it('should load the filter from the url state', async() => {
 
-				const searchParams = new URLSearchParams(window.location.search);
-				searchParams.append('ouf', '1,3,5');
-				const url = new URL(window.location.href);
-				url.search = searchParams.toString();
-				window.history.pushState({}, '', url.toString());
+			it('should load the filter from the url state then save to it', async() => {
 
-				const sut = new OrgUnitSelectorFilter({ serverData: {
+				setStateForTesting(key, '1,3,5');
+
+				const data = observable({ serverData: {
 					selectedOrgUnitIds: [1, 3, 5],
 					isRecordsTruncated: true
 				},
-				orgUnitTree: { selected: [] }
+				orgUnitTree: { selected : null }
 				});
+				const sut = new OrgUnitSelectorFilter(data);
 
-				const values = sut.persistenceValue;
-				await new Promise(res => setTimeout(res, 1000));
-				expect(values).equals('1,3,5');
+				expect(sut.selected).to.eql([1, 3, 5]);
+
+				data.orgUnitTree.selected = [1];
+
+				const params = new URLSearchParams(window.location.search);
+				const values = params.get(sut.persistenceKey);
+
+				expect(values).equals('1');
 			});
 		});
 	});

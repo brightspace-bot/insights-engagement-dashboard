@@ -14,6 +14,14 @@ export function isDefault() {
 	return window.location.search === '';
 }
 
+export function setStateForTesting(key, value) {
+	const searchParams = new URLSearchParams(window.location.search);
+	searchParams.set(key, value);
+	const url = new URL(window.location.href);
+	url.search = searchParams.toString();
+	window.history.pushState({}, '', url.toString());
+}
+
 export function clearUrlState() {
 	window.history.replaceState({}, '', '');
 }
