@@ -6,7 +6,7 @@ import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
 /**
- * @property {Array} data - [{id: orgUnitId, name: orgUnitName}]
+ * @property {Object} data - { defaultViewPopupDisplayData: [{id: orgUnitId, name: orgUnitName}], numDefaultSemesters: number }
  * @property {Boolean} opened - whether or not the dialog should be opened
  */
 class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
@@ -32,14 +32,29 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 
 	constructor() {
 		super();
-		this.data = [];
+		this.data = {
+			defaultViewPopupDisplayData: [],
+			numDefaultSemesters: 0
+		};
 		this.opened = false;
+		// when the pop-up is rendered the first time it is hidden and it can't properly calculate the height
+		// of the pop-up due to data is not received yet and not all components placed into the content.
+		// In order to calculate pop-up's height right, we should render all possible components for the first time
+		this._firstRender = true;
 	}
 
 	get _displayData() {
-		return this.data.map((item) => {
+		return this.data.defaultViewPopupDisplayData.map((item) => {
 			return this.localize('components.tree-filter.node-name', { orgUnitName: item.name, id: item.id });
 		});
+	}
+
+	get _defaultSemestersCount() {
+		return this.data.numDefaultSemesters;
+	}
+
+	firstUpdated() {
+		this._firstRender = false;
 	}
 
 	render() {
@@ -51,32 +66,54 @@ class DefaultViewPopup extends RtlMixin(Localizer(LitElement)) {
 					width="615"
 					@d2l-dialog-close="${this._closeDialog}">
 
+				${this._renderResultsDescription({ displayData, numDefaultCourses: displayData.length, numDefaultSemesters: this._defaultSemestersCount })}
+
 				<p class="d2l-insights-default-view-popup-description">
-					${this.localize('components.insights-default-view-popup.defaultViewDescription1', { numDefaultCourses: displayData.length })}
-				</p>
-				<p class="d2l-insights-default-view-popup-description">
-					${this.localize('components.insights-default-view-popup.defaultViewDescription2')}
+					${this.localize('components.insights-default-view-popup.promptUseFilters')}
 				</p>
 
-				<d2l-insights-expander-with-control
-					control-expanded-text="${this.localize('components.insights-default-view-popup.collapseDefaultCourseList')}"
-					control-collapsed-text="${this.localize('components.insights-default-view-popup.expandDefaultCourseList')}"
-					@d2l-insights-expander-with-control-expanded="${this._resize}"
-					@d2l-insights-expander-with-control-collapsed="${this._resize}">
-
-					<ul class="d2l-insights-default-view-popup-course-list">
-						${displayData.map(data => html`
-							<li>${data}</li>
-						`)}
-					</ul>
-
-				</d2l-insights-expander-with-control>
+				${this._renderExpandableCoursesList(displayData)}
 
 				<d2l-button primary slot="footer" @click="${this._closeDialog}">
 					${this.localize('components.insights-default-view-popup.buttonOk')}
 				</d2l-button>
 			</d2l-dialog>
 		`;
+	}
+
+	_renderResultsDescription({ displayData, numDefaultCourses, numDefaultSemesters }) {
+		if (displayData.length) {
+			return html`
+				<p class="d2l-insights-default-view-popup-description">
+				${this.localize('components.insights-default-view-popup.resultsFromNRecentCourses', { numDefaultCourses })}
+				</p>`;
+		}
+
+		return html`
+			<p class="d2l-insights-default-view-popup-description">
+			${this.localize('components.insights-default-view-popup.emptyResultsFromNRecentSemesters', { numDefaultSemesters })}
+			</p>`;
+	}
+
+	_renderExpandableCoursesList(displayData) {
+		if (!displayData.length && !this._firstRender) {
+			return html``;
+		}
+
+		return html`
+			<d2l-insights-expander-with-control
+				control-expanded-text="${this.localize('components.insights-default-view-popup.collapseDefaultCourseList')}"
+				control-collapsed-text="${this.localize('components.insights-default-view-popup.expandDefaultCourseList')}"
+				@d2l-insights-expander-with-control-expanded="${this._resize}"
+				@d2l-insights-expander-with-control-collapsed="${this._resize}">
+
+				<ul class="d2l-insights-default-view-popup-course-list">
+					${displayData.map(data => html`
+						<li>${data}</li>
+					`)}
+				</ul>
+
+			</d2l-insights-expander-with-control>`;
 	}
 
 	_resize() {

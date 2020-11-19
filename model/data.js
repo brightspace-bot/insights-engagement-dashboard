@@ -27,6 +27,7 @@ export class Data {
 			isRecordsTruncated: false,
 			isOrgUnitsTruncated: false,
 			semesterTypeId: null,
+			numDefaultSemesters: 0,
 			selectedOrgUnitIds: [],
 			selectedRolesIds: [],
 			selectedSemestersIds: [],
@@ -43,6 +44,7 @@ export class Data {
 	}
 
 	loadData({ newRoleIds = null, newSemesterIds = null, newOrgUnitIds = null, defaultView = false }) {
+		this.isLoading = true;
 		const filters = {
 			roleIds: newRoleIds || this._selectorFilters.role.selected,
 			semesterIds: newSemesterIds || this._selectorFilters.semester.selected,
@@ -131,6 +133,14 @@ export class Data {
 		return courseIdsToDisplay.map(id => {
 			return { id, name: this.orgUnitTree.getName(id) };
 		});
+	}
+
+	get numDefaultSemesters() {
+		return this.serverData.numDefaultSemesters;
+	}
+
+	get isDefaultView() {
+		return this.serverData.isDefaultView;
 	}
 
 	// @computed

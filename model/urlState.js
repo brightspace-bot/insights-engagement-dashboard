@@ -55,6 +55,7 @@ export class UrlState {
 
 	constructor(wrapped) {
 		this._wrapped = wrapped;
+		this.popping = false;
 
 		if (isDisabledForTesting) return;
 
@@ -70,7 +71,7 @@ export class UrlState {
 	save() {
 		const url = new URL(window.location.href);
 		const valueToSave = this.value;
-		if (valueToSave === '') {
+		if (valueToSave === '' && url.searchParams.has(this.key)) {
 			url.searchParams.delete(this.key);
 			window.history.pushState({}, '', url.toString());
 		}

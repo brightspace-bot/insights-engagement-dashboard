@@ -92,6 +92,10 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 				font-weight: bold;
 				text-indent: 3%;
 			}
+
+			:host([skeleton]) .d2l-insights-current-final-grade-title {
+				margin-left: 19px;
+			}
 		`];
 	}
 
@@ -141,10 +145,6 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 
 	get _yAxisLabel() {
 		return this.localize('components.insights-current-final-grade-card.numberOfStudents');
-	}
-
-	addToCategory(category) {
-		this.filter.selectCategory(category);
 	}
 
 	get category() {
@@ -284,7 +284,7 @@ class CurrentFinalGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 						events: {
 							click: function() {
 								// noinspection JSPotentiallyInvalidUsageOfClassThis
-								that.addToCategory(Math.ceil(this.category));
+								that.filter.toggleCategory(Math.ceil(this.category));
 							}
 						}
 					}

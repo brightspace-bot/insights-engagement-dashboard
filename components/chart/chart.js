@@ -2,6 +2,7 @@ import 'highcharts';
 import 'highcharts/modules/histogram-bellcurve';
 import 'highcharts/modules/accessibility';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
+import '../overlay';
 
 import { css, html, LitElement } from 'lit-element';
 import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
@@ -35,7 +36,8 @@ class Chart extends SkeletonMixin(LitElement) {
 			constructorType: { type: String },
 			highcharts: { type: Object, attribute: false },
 			immutable: { type: Boolean },
-			updateArgs: { type: Array, attribute: false }
+			updateArgs: { type: Array, attribute: false },
+			doNotUseOverlay: { type: Boolean, attribute: 'do-not-use-overlay' }
 		};
 	}
 
@@ -112,7 +114,7 @@ class Chart extends SkeletonMixin(LitElement) {
 
 		return html`
 			<div id="chart-container" tabindex="${this.skeleton ? -1 : 0}"></div>
-			<d2l-insights-overlay spinner-size="150" ?loading="${this.skeleton}"></d2l-insights-overlay>
+			<d2l-insights-overlay spinner-size="150" ?skeleton="${this.skeleton && !this.doNotUseOverlay}"></d2l-insights-overlay>
 		`;
 	}
 

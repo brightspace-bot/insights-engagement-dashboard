@@ -80,6 +80,14 @@ export class TimeInContentVsGradeFilter {
 		return this.calculateQuadrant(record) === this.quadrant;
 	}
 
+	toggleQuadrant(quadrant) {
+		if (this.quadrant === quadrant) {
+			this.quadrant = null;
+		} else {
+			this.quadrant = quadrant;
+		}
+	}
+
 	//for Urlstate
 	get persistenceKey() { return 'tcgf'; }
 
@@ -90,6 +98,7 @@ export class TimeInContentVsGradeFilter {
 	set persistenceValue(value) {
 		this.quadrant = value === '' ? null : value;
 	}
+
 }
 decorate(TimeInContentVsGradeFilter, {
 	_data: observable,
@@ -143,6 +152,10 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				font-weight: bold;
 				text-indent: 3%;
 			}
+
+			:host([skeleton]) .d2l-insights-time-in-content-vs-grade-title {
+				margin-left: 19px;
+			}
 		`];
 	}
 
@@ -155,57 +168,17 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 	}
 
 	get _timeInContentText() {
-		return this.localize('components.insights-time-in-content-vs-grade-card.timeInContent');
-	}
-
-	get _plotDataForLeftBottomQuadrant() {
-		return this.filter.getDataForQuadrant('leftBottom');
-	}
-
-	get _plotDataForLeftTopQuadrant() {
-		return this.filter.getDataForQuadrant('leftTop');
-	}
-
-	get _plotDataForRightTopQuadrant() {
-		return this.filter.getDataForQuadrant('rightTop');
-	}
-
-	get _plotDataForRightBottomQuadrant() {
-		return this.filter.getDataForQuadrant('rightBottom');
+		return this.localize('components.insights-time-in-content-vs-grade-card.timeInContentLong');
 	}
 
 	get _dataMidPoints() {
 		const maxTimeInContent = this.filter.tiCVsGrades.reduce((max, arr) => {
 			return Math.max(max, arr[0]);
 		}, -Infinity);
-		return [[this.filter.avgTimeInContent / 2, 25],
-			[this.filter.avgTimeInContent / 2, 75],
-			[(maxTimeInContent + this.filter.avgTimeInContent) / 2, 25],
-			[(maxTimeInContent + this.filter.avgTimeInContent) / 2, 75]];
-	}
-
-	_colorAllPointsInAmethyst(series) {
-		series.forEach(series => {
-			if (series.name !== 'midPoint') {
-				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
-			}
-		});
-	}
-
-	_colorNonSelectedPointsInMica(series) {
-		series.forEach(series => {
-			if ((series.name !== this.filter.quadrant) && (series.name !== 'midPoint')) {
-				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-mica)' } });
-			}
-		});
-	}
-
-	_colorSelectedQuadrantPointsInAmethyst(series) {
-		series.forEach(series => {
-			if ((series.name === this.filter.quadrant) && (series.name !== 'midPoint')) {
-				series.update({ marker: { enabled: true, fillColor: 'var(--d2l-color-amethyst-plus-1)' } });
-			}
-		});
+		return [['leftBottom', this.filter.avgTimeInContent / 2, 25],
+			['rightBottom', this.filter.avgTimeInContent / 2, 75],
+			['leftTop', (maxTimeInContent + this.filter.avgTimeInContent) / 2, 25],
+			['rightTop', (maxTimeInContent + this.filter.avgTimeInContent) / 2, 75]];
 	}
 
 	_getQuadrantColor(name) {
@@ -219,59 +192,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 		return this.data.getFilter(filterId);
 	}
 
-	get activeQuadrant() {
-		return this.filter.quadrant;
-	}
-
-	get _plotData() {
-		return [{
-			name: 'leftBottom',
-			data: this._plotDataForLeftBottomQuadrant,
-			marker: {
-				enabled: true,
-				fillColor: this._getQuadrantColor('leftBottom')
-			}
-		},
-		{
-			name: 'leftTop',
-			data: this._plotDataForLeftTopQuadrant,
-			marker: {
-				enabled: true,
-				fillColor: this._getQuadrantColor('leftTop')
-			}
-		},
-		{
-			name: 'rightTop',
-			data: this._plotDataForRightTopQuadrant,
-			marker: {
-				enabled: true,
-				fillColor: this._getQuadrantColor('rightTop')
-			}
-		},
-		{
-			name: 'rightBottom',
-			data: this._plotDataForRightBottomQuadrant,
-			marker: {
-				enabled: true,
-				fillColor: this._getQuadrantColor('rightBottom')
-			}
-		},
-		{
-			name: 'midPoint',
-			data: this._dataMidPoints,
-			lineColor: 'transparent',
-			marker: {
-				fillColor: 'transparent',
-				states: {
-					hover: {
-						enabled: false
-					}
-				}
-			},
-		}];
-	}
-
-	_toolTipTextByQuadrant(quadrant, numberOfUsers) {
+	_descriptiveTextByQuadrant(quadrant, numberOfUsers) {
 		const quadrantTerm = `components.insights-time-in-content-vs-grade-card.${quadrant}`;
 		return this.localize(quadrantTerm, { numberOfUsers });
 	}
@@ -293,37 +214,14 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				width: 581,
 				events: {
 					click: function(event) {
-						//that._colorAllPointsInAmethyst(this.series);
 						that.filter.quadrant = that.filter.calculateQuadrant(Math.floor(event.xAxis[0].value), Math.floor(event.yAxis[0].value));
-						//that._colorNonSelectedPointsInMica(this.series);
 					},
-					// render: function() {
-					// 	if (that.filter.isApplied) {
-					// 		that._colorNonSelectedPointsInMica(this.series);
-					// 		that._colorSelectedQuadrantPointsInAmethyst(this.series);
-					// 	} else {
-					// 		that._colorAllPointsInAmethyst(this.series);
-					// 	}
-					// },
 				}
 			},
 			tooltip: {
 				formatter: function() {
 					if (this.series.name === 'midPoint') {
-						const midPoints = that._dataMidPoints;
-						const currentMidPoint = [this.x, this.y];
-						if (currentMidPoint.toString() === midPoints[0].toString()) {
-							return that._toolTipTextByQuadrant(this.series.chart.series[0].name, this.series.chart.series[0].data.length);
-						}
-						if (currentMidPoint.toString() === midPoints[1].toString()) {
-							return that._toolTipTextByQuadrant(this.series.chart.series[1].name, this.series.chart.series[1].data.length);
-						}
-						if (currentMidPoint.toString() === midPoints[2].toString()) {
-							return that._toolTipTextByQuadrant(this.series.chart.series[2].name, this.series.chart.series[2].data.length);
-						}
-						if (currentMidPoint.toString() === midPoints[3].toString()) {
-							return that._toolTipTextByQuadrant(this.series.chart.series[3].name, this.series.chart.series[3].data.length);
-						}
+						return that._descriptiveTextByQuadrant(this.point.custom.quadrant, this.point.custom.size);
 					}
 					return false;
 				},
@@ -337,7 +235,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				shared: false
 			},
 			title: {
-				text: this._cardTitle, // override default title
+				text: this._cardTitle,
 				style: {
 					display: 'none'
 				}
@@ -376,7 +274,14 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 					dashStyle: 'Dash',
 					value: this.filter.avgTimeInContent,
 					width: 1.5
-				}]
+				}],
+				accessibility:{
+					description: `${this._timeInContentText} ${
+						this.localize('components.insights-time-in-content-vs-grade-card.averageTimeInContent', {
+							avgTimeInContent: this.filter.avgTimeInContent
+						})
+					}`,
+				}
 			},
 			yAxis: {
 				title: {
@@ -408,43 +313,122 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 					dashStyle: 'Dash',
 					value: this.filter.avgGrade,
 					width: 1.5
-				}]
+				}],
+				accessibility:{
+					description: `${this._currentGradeText} ${
+						this.localize('components.insights-time-in-content-vs-grade-card.averageGrade', {
+							avgGrade: this.filter.avgGrade
+						})
+					}`,
+					rangeDescription: ''
+				}
 			},
 			plotOptions: {
 				series: {
-					marker: {
-						radius: 5,
-						fillColor: 'var(--d2l-color-amethyst-plus-1)',
-						symbol: 'circle'
-					},
 					states: {
 						hover: {
 							enabled: false
+						},
+						inactive: {
+							enabled: false
 						}
-					},
-					accessibility: {
-						pointDescriptionFormatter: function(point) {
-							return `${that._currentGradeText}: ${point.y} - ${that._timeInContentText}: ${point.x}`;
-						}
-					},
+					}
 				}
 			},
 			accessibility: {
 				screenReaderSection: {
 					beforeChartFormat: BEFORE_CHART_FORMAT
+				},
+				series: {
+					descriptionFormatter: () => this._cardTitle
 				}
 			},
-			series: this._plotData
+			series: this._series
 		};
+	}
+
+	get _series() {
+		const that = this;
+		return [
+			...this._scatterSeries,
+			{
+				// These points have two purposes:
+				// 1. They display a tool tip to summarize the quadrant.
+				// 2. They are the points screen-readers interact with.
+				name: 'midPoint',
+				data: this._dataMidPoints.map(x => ({
+					x: x[2],
+					y: x[1],
+					custom: {
+						quadrant: x[0],
+						size: this.filter.getDataForQuadrant(x[0]).length
+					}
+				})),
+				accessibility: {
+					pointDescriptionFormatter: function(point) {
+						return that._descriptiveTextByQuadrant(point.custom.quadrant, point.custom.size);
+					}
+				},
+				lineColor: 'transparent',
+				marker: {
+					fillColor: 'transparent',
+					states: {
+						hover: {
+							enabled: false
+						}
+					}
+				},
+				point: {
+					events: {
+						click: function() {
+							that.filter.toggleQuadrant(this.custom.quadrant);
+						}
+					}
+				}
+			}
+		];
+	}
+
+	get _scatterSeries() {
+		const that = this;
+		return this._scatterData.map(s => ({
+			name: s.name,
+			data: s.data,
+			accessibility: {
+				enabled: false,
+				keyboardNavigation: {
+					enabled: false
+				}
+			},
+			marker: {
+				radius: 5,
+				fillColor: (!this.filter.isApplied || this.filter.quadrant === s.name) ?
+					'var(--d2l-color-amethyst-plus-1)' :
+					'var(--d2l-color-mica)',
+				symbol: 'circle'
+			},
+			point: {
+				events: {
+					// handles clicks directly on markers (the chart click handler only works on empty spaces)
+					click: function() {
+						that.filter.toggleQuadrant(this.series.name);
+					}
+				}
+			}
+		}));
+	}
+
+	get _scatterData() {
+		return ['leftBottom', 'leftTop', 'rightTop', 'rightBottom']
+			.map(quadrant => ({
+				name: quadrant,
+				data: this.filter.getDataForQuadrant(quadrant)
+			}));
 	}
 }
 decorate(TimeInContentVsGradeCard, {
 	filter: computed,
-	_plotData: computed,
 	_dataMidPoints: computed,
-	_plotDataForLeftBottomQuadrant: computed,
-	_plotDataForLeftTopQuadrant: computed,
-	_plotDataForRightTopQuadrant: computed,
-	_plotDataForRightBottomQuadrant: computed
+	_scatterData: computed
 });
 customElements.define('d2l-insights-time-in-content-vs-grade-card', TimeInContentVsGradeCard);

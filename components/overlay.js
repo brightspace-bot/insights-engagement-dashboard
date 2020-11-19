@@ -1,30 +1,29 @@
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 
 import { css, html, LitElement } from 'lit-element/lit-element.js';
+import { SkeletonMixin } from '@brightspace-ui/core/components/skeleton/skeleton-mixin.js';
 
 /**
  * Requires that parent element has non-static position property. For instance, position: relative;
  *
  * @property {Number} spinner-size
- * @property {Boolean} loading
  */
-class Overlay extends LitElement {
+class Overlay extends SkeletonMixin(LitElement) {
 	static get properties() {
 		return {
-			spinnerSize: { type: Number, attribute: 'spinner-size' },
-			isLoading: { type: Boolean, attribute: 'loading' }
+			spinnerSize: { type: Number, attribute: 'spinner-size' }
 		};
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, css`
 			:host {
 				display: block;
 				left: 0;
 				position: absolute;
 				top: 0;
 			}
-			:host([loading]) {
+			:host([skeleton]) {
 				height: 100%;
 				width: 100%;
 			}
@@ -32,8 +31,9 @@ class Overlay extends LitElement {
 				display: none;
 			}
 
-			.d2l-insights-overlay {
+			.d2l-insights-overlay-container {
 				align-items: center;
+				background-color: var(--d2l-color-white);
 				border-radius: 15px;
 				display: flex;
 				height: 100%;
@@ -41,16 +41,16 @@ class Overlay extends LitElement {
 				margin: 1 1 1 1;
 				width: 100%;
 			}
-		`;
+		`];
 	}
 
 	render() {
-		if (!this.isLoading) {
+		if (!this.skeleton) {
 			return html``;
 		}
 
 		return html`
-			<div class="d2l-insights-overlay">
+			<div class="d2l-insights-overlay-container">
 				<d2l-loading-spinner size="${this.spinnerSize}"></d2l-loading-spinner>
 			</div>`;
 	}

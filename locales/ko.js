@@ -118,8 +118,8 @@ export default {
 	"components.insights-aria-loading-progress.loading-finish": "로딩되었습니다.",
 
 	"components.insights-default-view-popup.title": "참여 대시보드 기본 보기",
-	"components.insights-default-view-popup.defaultViewDescription1": "이 대시보드는 구성의 참여 부분을 볼 수 있도록 설계되어 있습니다. 표시되는 결과는 시작하기 위해 최근에 접근한 {numDefaultCourses}에서 가져온 것입니다.",
-	"components.insights-default-view-popup.defaultViewDescription2": "표시된 결과를 변경하려면 대시보드 필터를 사용합니다.",
+	"components.insights-default-view-popup.resultsFromNRecentCourses": "이 대시보드는 구성의 참여 부분을 볼 수 있도록 설계되어 있습니다. 표시되는 결과는 시작하기 위해 최근에 접근한 {numDefaultCourses}에서 가져온 것입니다.",
+	"components.insights-default-view-popup.promptUseFilters": "표시된 결과를 변경하려면 대시보드 필터를 사용합니다.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "확장하여 기본 보기에 포함된 강의를 봅니다.",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "기본 보기에 포함된 강의 목록을 축소합니다.",
 	"components.insights-default-view-popup.buttonOk": "확인"

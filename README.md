@@ -46,6 +46,19 @@ To make your usage of `d2l-insights-engagement-dashboard` accessible, use the fo
 
 After cloning the repo, run `npm install` to install dependencies.
 
+#### Releasing and Versioning
+
+To make a release, update the version number in package.json and
+make a release in github. BSI and LMS changes will be handled by
+automation (master branch only: release branches of the LMS
+have to be handled manually).
+
+This repo uses the following versioning scheme for both package.json
+and release tags:
+- major: always 1, so BSI automatically picks up every update
+- minor: the minor and patch LMS version with zero-padding; e.g. 2012 for 2020 December, 2101 for the January release, etc.
+- patch: increment as needed
+
 ### Running the demos
 
 To start an [es-dev-server](https://open-wc.org/developing/es-dev-server.html) that hosts the demo page and tests:
@@ -83,6 +96,11 @@ npm run test:headless
 # then navigate to `http://localhost:9876/debug.html`
 npm run test:headless:watch
 ```
+
+#### Note on Sauce Labs tests
+
+Pull requests run cross-browser tests using Sauce. For troubleshooting,
+see https://wiki.saucelabs.com/pages/viewpage.action?pageId=70072943.
 
 ### Visual Diff Testing
 
