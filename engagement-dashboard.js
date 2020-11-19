@@ -84,8 +84,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				}
 
 				.d2l-insights-immersive-nav-title {
+					align-items: center;
 					display: flex;
-  					align-items: center;
 				}
 
 				.d2l-insights-chart-container {
@@ -254,88 +254,88 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	_renderHomeView() {
 		return html`
 
-				<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
+			<d2l-insights-aria-loading-progress .data="${this._data}"></d2l-insights-aria-loading-progress>
 
-				<div class="d2l-heading-button-group">
-					<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
-					<d2l-action-button-group
-						class="d2l-main-action-button-group"
-						min-to-show="0"
-						max-to-show="2"
-						opener-type="more"
-					>
-						<d2l-button-subtle
-							icon="d2l-tier1:export"
-							text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
-							@click="${this._exportToCsv}">
-						</d2l-button-subtle>
-						<d2l-button-subtle
-							icon="d2l-tier1:help"
-							text=${this.localize('components.insights-engagement-dashboard.learMore')}
-							@click="${this._openHelpLink}">
-						</d2l-button-subtle>
-					</d2l-action-button-group>
-				</div>
-
-				<div class="view-filters-container">
-					<d2l-insights-ou-filter
-						.data="${this._serverData}"
-						@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
-					></d2l-insights-ou-filter>
-					<d2l-insights-semester-filter
-						page-size="10000"
-						?demo="${this.isDemo}"
-						.preSelected="${this._serverData.selectedSemesterIds}"
-						@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
-					></d2l-insights-semester-filter>
-					<d2l-insights-role-filter
-						@d2l-insights-role-filter-change="${this._roleFilterChange}"
-						?demo="${this.isDemo}"
-					></d2l-insights-role-filter>
-				</div>
-				<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
-				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
-				<div class="d2l-insights-summary-container-applied-filters">
-					<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
-				</div>
-				<div class="d2l-insights-summary-chart-layout">
-					<div class="d2l-insights-summary-container">
-						<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
-						<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
-						<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
-						<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
-					</div>
-					<div><d2l-insights-current-final-grade-card	.data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>
-					<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
-					<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
-				</div>
-				<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
-				<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
+			<div class="d2l-heading-button-group">
+				<h1 class="d2l-heading-1">${this.localize('components.insights-engagement-dashboard.title')}</h1>
+				<d2l-action-button-group
+					class="d2l-main-action-button-group"
+					min-to-show="0"
+					max-to-show="2"
+					opener-type="more"
+				>
 					<d2l-button-subtle
-						icon="d2l-tier1:email"
-						text="${this.localize('components.insights-engagement-dashboard.emailButton')}"
-						@click="${this._handleEmailButtonPress}">
+						icon="d2l-tier1:export"
+						text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
+						@click="${this._exportToCsv}">
+					</d2l-button-subtle>
+					<d2l-button-subtle
+						icon="d2l-tier1:help"
+						text=${this.localize('components.insights-engagement-dashboard.learMore')}
+						@click="${this._openHelpLink}">
 					</d2l-button-subtle>
 				</d2l-action-button-group>
+			</div>
 
-				<d2l-insights-users-table
-					.data="${this._data}"
-					?skeleton="${this._isLoading}"
-				></d2l-insights-users-table>
+			<div class="view-filters-container">
+				<d2l-insights-ou-filter
+					.data="${this._serverData}"
+					@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
+				></d2l-insights-ou-filter>
+				<d2l-insights-semester-filter
+					page-size="10000"
+					?demo="${this.isDemo}"
+					.preSelected="${this._serverData.selectedSemesterIds}"
+					@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
+				></d2l-insights-semester-filter>
+				<d2l-insights-role-filter
+					@d2l-insights-role-filter-change="${this._roleFilterChange}"
+					?demo="${this.isDemo}"
+				></d2l-insights-role-filter>
+			</div>
+			<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
+			<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
+			<div class="d2l-insights-summary-container-applied-filters">
+				<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
+			</div>
+			<div class="d2l-insights-summary-chart-layout">
+				<div class="d2l-insights-summary-container">
+					<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
+					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
+					<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
+					<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
+				</div>
+				<div><d2l-insights-current-final-grade-card	.data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>
+				<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
+				<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
+			</div>
+			<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
+			<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
+				<d2l-button-subtle
+					icon="d2l-tier1:email"
+					text="${this.localize('components.insights-engagement-dashboard.emailButton')}"
+					@click="${this._handleEmailButtonPress}">
+				</d2l-button-subtle>
+			</d2l-action-button-group>
+
+			<d2l-insights-users-table
+				.data="${this._data}"
+				?skeleton="${this._isLoading}"
+			></d2l-insights-users-table>
 
 
-				<d2l-insights-default-view-popup
-					?opened=${Boolean(this._serverData.isDefaultView)}
-					.data="${this._serverData}">
-				</d2l-insights-default-view-popup>
+			<d2l-insights-default-view-popup
+				?opened=${Boolean(this._serverData.isDefaultView)}
+				.data="${this._serverData}">
+			</d2l-insights-default-view-popup>
 
-				<d2l-dialog-confirm
-					id="no-users-selected-dialog"
-					text="${this.localize('components.insights-engagement-dashboard.noUsersSelectedDialogText')}">
-					<d2l-button slot="footer" primary data-dialog-action>
-						${this.localize('components.insights-default-view-popup.buttonOk')}
-					</d2l-button>
-				</d2l-dialog-confirm>
+			<d2l-dialog-confirm
+				id="no-users-selected-dialog"
+				text="${this.localize('components.insights-engagement-dashboard.noUsersSelectedDialogText')}">
+				<d2l-button slot="footer" primary data-dialog-action>
+					${this.localize('components.insights-default-view-popup.buttonOk')}
+				</d2l-button>
+			</d2l-dialog-confirm>
 		`;
 	}
 
