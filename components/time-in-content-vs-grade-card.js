@@ -181,13 +181,6 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 			['rightTop', (maxTimeInContent + this.filter.avgTimeInContent) / 2, 75]];
 	}
 
-	_getQuadrantColor(name) {
-		if (this.filter.quadrant === null || this.filter.quadrant === name) {
-			return 'var(--d2l-color-amethyst-plus-1)';
-		}
-		return 'var(--d2l-color-mica)';
-	}
-
 	get filter() {
 		return this.data.getFilter(filterId);
 	}
@@ -214,7 +207,7 @@ class TimeInContentVsGradeCard extends SkeletonMixin(Localizer(MobxLitElement)) 
 				width: 581,
 				events: {
 					click: function(event) {
-						that.filter.quadrant = that.filter.calculateQuadrant(Math.floor(event.xAxis[0].value), Math.floor(event.yAxis[0].value));
+						that.filter.toggleQuadrant(that.filter.calculateQuadrant(Math.floor(event.xAxis[0].value), Math.floor(event.yAxis[0].value)));
 					},
 				}
 			},
