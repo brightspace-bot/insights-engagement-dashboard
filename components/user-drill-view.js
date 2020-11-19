@@ -1,9 +1,13 @@
 import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/button/button.js';
+import './semester-filter';
+import './ou-filter';
 import { bodySmallStyles, heading2Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
+import { RECORD } from '../consts';
+import { SemesterSelectorFilter } from '../model/selectorFilters';
 
 /**
  * @property {Object} user - {firstName, lastName, username, userId}
@@ -12,6 +16,8 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 class UserDrill extends Localizer(MobxLitElement) {
 	static get properties() {
 		return {
+			data: { type: Object, attribute: true },
+			isDemo: { type: Boolean, attribute: 'demo' },
 			user: { type: Object, attribute: false }
 		};
 	}
@@ -77,6 +83,10 @@ class UserDrill extends Localizer(MobxLitElement) {
 				margin: 0.7em;
 				max-width: 300px;
 			}
+
+			.d2l-insights-view-filters-container {
+				margin-top: 20px;
+			}
 		`];
 	}
 
@@ -94,6 +104,15 @@ class UserDrill extends Localizer(MobxLitElement) {
 		 * @event d2l-insights-user-drill-view-back
 		 */
 		this.dispatchEvent(new CustomEvent('d2l-insights-user-drill-view-back'));
+	}
+
+	// pass the selections up to the root where data is managed
+	_semesterFilterChange(e) {
+		this.dispatchEvent(new CustomEvent('d2l-insights-semester-filter-change', { detail: e.detail }));
+	}
+
+	_orgUnitFilterChange(e) {
+		this.dispatchEvent(new CustomEvent('d2l-insights-ou-filter-change', { detail: e.detail }));
 	}
 
 	render() {
@@ -133,6 +152,19 @@ class UserDrill extends Localizer(MobxLitElement) {
 				primary
 				@click="${this._composeEmailHandler}"
 			>${this.localize('components.insights-user-drill-view.emailButton')}</d2l-button>
+
+			<div class="d2l-insights-view-filters-container">
+				<d2l-insights-ou-filter
+					.data="${this.data}"
+					@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
+				></d2l-insights-ou-filter>
+				<d2l-insights-semester-filter
+					page-size="10000"
+					?demo="${this.isDemo}"
+					.preSelected="${this.data.selectedSemesterIds}"
+					@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
+				></d2l-insights-semester-filter>
+			</div>
 
 			<div class="d2l-insights-user-drill-view-content">
 				<!-- put your tables here -->

@@ -168,13 +168,17 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			firstName: 'Dane',
 			lastName: 'Clarie',
 			username: 'claire.dane',
-			userId: 887
+			userId: 100
 		};
 
 		return html`
 			<d2l-insights-user-drill-view
+				?demo="${this.isDemo}"
 				.user="${user}"
+				.data="${this._serverData}"
 				@d2l-insights-user-drill-view-back="${this._backToHomeHandler}"
+				@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
+				@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
 			></d2l-insights-user-drill-view>
 		`;
 	}
@@ -341,12 +345,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	_orgUnitFilterChange(event) {
 		event.stopPropagation();
-		this._serverData.selectedOrgUnitIds = event.target.selected;
+		console.log(event.detail.selected);
+		this._serverData.selectedOrgUnitIds = event.detail.selected;
 	}
 
 	_semesterFilterChange(event) {
 		event.stopPropagation();
-		this._serverData.selectedSemesterIds = event.target.selected;
+		this._serverData.selectedSemesterIds = event.detail.selected;
 	}
 
 	_handleEmailButtonPress() {

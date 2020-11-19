@@ -80,7 +80,7 @@ class SemesterFilter extends Localizer(LitElement) {
 		/**
 		 * @event d2l-insights-semester-filter-change
 		 */
-		this.dispatchEvent(new Event('d2l-insights-semester-filter-change'));
+		this.dispatchEvent(new CustomEvent('d2l-insights-semester-filter-change', { detail: { selected: this.selected } }));
 	}
 
 	_filterClose() {
