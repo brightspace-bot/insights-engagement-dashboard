@@ -1,7 +1,5 @@
 import '@brightspace-ui/core/components/dialog/dialog-confirm';
 import 'd2l-button-group/d2l-action-button-group';
-import 'd2l-navigation/d2l-navigation-immersive';
-import 'd2l-navigation/d2l-navigation-link-back';
 
 import './components/histogram-card.js';
 import './components/ou-filter.js';
@@ -19,6 +17,7 @@ import './components/discussion-activity-card.js';
 import './components/message-container.js';
 import './components/default-view-popup.js';
 import './components/user-drill-view.js';
+import './components/immersive-nav.js';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
@@ -40,6 +39,7 @@ import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grad
 import { toJS } from 'mobx';
 
 const insightsPortalEndpoint = '/d2l/ap/insightsPortal/main.d2l';
+const engagementDashboardEndpoint = '/d2l/ap/visualizations/dashboards/engagement';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -81,11 +81,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				}
 				:host([hidden]) {
 					display: none;
-				}
-
-				.d2l-insights-immersive-nav-title {
-					align-items: center;
-					display: flex;
 				}
 
 				.d2l-insights-chart-container {
@@ -154,14 +149,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					padding: 50px;
 				}
 
-				.d2l-insights-link-back-default {
-					display: inline-block;
-				}
-
-				.d2l-insights-link-back-responsive {
-					display: none;
-				}
-
 				@media screen and (max-width: 615px) {
 					h1 {
 						line-height: 2rem;
@@ -176,14 +163,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					.d2l-insights-summary-container {
 						margin-right: 0;
 					}
-
-					.d2l-insights-link-back-default {
-						display: none;
-					}
-
-					.d2l-insights-link-back-responsive {
-						display: inline-block;
-					}
 				}
 			`
 		];
@@ -192,46 +171,34 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	firstUpdated() {
 		const linkToInsightsPortal = new URL(insightsPortalEndpoint, window.location.origin);
 		linkToInsightsPortal.searchParams.append('ou', this.orgUnitId);
-		this.linkToInsightsPortal = linkToInsightsPortal;
+		this.linkToInsightsPortal = linkToInsightsPortal.toString();
 	}
 
 	render() {
 		let innerView = html``;
+		let href = '';
+		let backLinkText = '';
 		switch (this.currentView) {
 			case 'home':
 				innerView = this._renderHomeView();
+				href = this.linkToInsightsPortal;
+				backLinkText = this.localize('components.insights-engagement-dashboard.backToInsightsPortal');
 				break;
 			case 'user':
 				innerView =  this._renderUserDrillView();
+				href = new URL(engagementDashboardEndpoint, window.location.origin).toString();
+				backLinkText = this.localize('components.insights-engagement-dashboard.backToEngagementDashboard');
 				break;
 		}
 
 		return html`
-			${ this._renderNavBar() }
+			<d2l-insights-immersive-nav
+				href="${href}"
+				main-text="${this.localize('components.insights-engagement-dashboard.title')}"
+				back-text="${backLinkText}"
+				back-text-short="${this.localize('components.insights-engagement-dashboard.backLinkTextShort')}"
+			></d2l-insights-immersive-nav>
 			${ innerView }
-		`;
-	}
-
-	_renderNavBar() {
-		return html`
-			<d2l-navigation-immersive
-				width-type="fullscreen">
-				<div slot="left">
-					<d2l-navigation-link-back
-						text="${this.localize('components.insights-engagement-dashboard.backLinkText')}"
-						href="${this.linkToInsightsPortal}"
-						class="d2l-insights-link-back-default">
-					</d2l-navigation-link-back>
-					<d2l-navigation-link-back
-						text="${this.localize('components.insights-engagement-dashboard.backLinkTextShort')}"
-						href="${this.linkToInsightsPortal}"
-						class="d2l-insights-link-back-responsive">
-					</d2l-navigation-link-back>
-				</div>
-				<div slot="middle" class="d2l-insights-immersive-nav-title">
-					${this.localize('components.insights-engagement-dashboard.title')}
-				</div>
-			</d2l-navigation-immersive>
 		`;
 	}
 
