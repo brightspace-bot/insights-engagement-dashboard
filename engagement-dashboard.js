@@ -1,5 +1,6 @@
 import '@brightspace-ui/core/components/dialog/dialog-confirm';
 import 'd2l-button-group/d2l-action-button-group';
+import 'd2l-navigation/d2l-navigation-immersive';
 
 import './components/histogram-card.js';
 import './components/ou-filter.js';
@@ -37,6 +38,8 @@ import { OverdueAssignmentsFilter } from './components/overdue-assignments-card'
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 import { toJS } from 'mobx';
 
+const insightsPortalEndpoint = '/d2l/ap/insightsPortal/main.d2l';
+
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
  * @property {String} currentView - is the name of supported view. Valid values: home, user, settings
@@ -48,6 +51,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	static get properties() {
 		return {
 			isDemo: { type: Boolean, attribute: 'demo' },
+			orgUnitId: { type: Number, attribute: 'org-unit-id' },
 			currentView: { type: String, attribute: 'view', reflect: true },
 			telemetryEndpoint: { type: String, attribute: 'telemetry-endpoint' },
 			telemetryId: { type: String, attribute: 'telemetry-id' },
@@ -56,7 +60,14 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	constructor() {
 		super();
+
+		this.orgUnitId = 0;
+		this.isDemo = false;
 		this.currentView = 'home';
+		this.telemetryEndpoint = '';
+		this.telemetryId = '';
+
+		this.linkToInsightsPortal = ''; // initialized in firstUpdated to get the actual orgUnitId value
 	}
 
 	static get styles() {
@@ -69,6 +80,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				}
 				:host([hidden]) {
 					display: none;
+				}
+
+				.d2l-insights-immersive-nav-title {
+					display: flex;
+  					align-items: center;
 				}
 
 				.d2l-insights-chart-container {
@@ -156,11 +172,34 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		];
 	}
 
+	firstUpdated() {
+		const linkToInsightsPortal = new URL(insightsPortalEndpoint, window.location.origin);
+		linkToInsightsPortal.searchParams.append('ou', this.orgUnitId);
+		this.linkToInsightsPortal = linkToInsightsPortal;
+	}
+
 	render() {
+		let innerView = html``;
 		switch (this.currentView) {
-			case 'home': return this._renderHomeView();
-			case 'user': return this._renderUserDrillView();
+			case 'home':
+				innerView = this._renderHomeView();
+				break;
+			case 'user':
+				innerView =  this._renderUserDrillView();
+				break;
 		}
+
+		return html`
+			<d2l-navigation-immersive
+				back-link-href="${this.linkToInsightsPortal}"
+				back-link-text="${this.localize('components.insights-engagement-dashboard.backLinkText')}"
+				width-type="fullscreen">
+				<div slot="middle" class="d2l-insights-immersive-nav-title">
+					${this.localize('components.insights-engagement-dashboard.title')}
+				</div>
+			</d2l-navigation-immersive>
+			${ innerView }
+		`;
 	}
 
 	_renderUserDrillView() {
