@@ -304,11 +304,13 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			'd2l-insights-table-cell-clickable': clickable
 		};
 
-		const clickHandler = this._clickHandler.bind(this, rowIdx, idx);
+		const clickHandler = clickable ? this._clickHandler.bind(this, rowIdx, idx) : null;
 
+		const defaultTextHtml = html`<div class="d2l-skeletize d2l-skeletize-95 d2l-body-standard">${cellValue}</div>`;
+		const defaultLinkHtml = html`<d2l-link @click="${clickHandler}">${cellValue}</d2l-link>`;
 		const defaultHtml = html`
 			<td class="${classMap(styles)}">
-				<div class="d2l-skeletize d2l-skeletize-95 d2l-body-standard">${cellValue}</div>
+				${clickable && !this.skeleton ? defaultLinkHtml : defaultTextHtml}
 			</td>
 		`;
 
