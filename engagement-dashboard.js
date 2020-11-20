@@ -62,13 +62,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	_installRoutes() {
+		page.configure({ hashbang: true });
+		page.base('/#!');
+
 		page.redirect('/', '/home');
 		page('/home', () => { this.currentView = 'home'; });
 		page('/user/:userId', (ctx) => this._userRoute(ctx));
 		page('*', (ctx) => this._notFoundRoute(ctx));
-
-		page.configure({ hashbang: true });
-		page.base('/#!');
 	}
 
 	firstUpdated() {
