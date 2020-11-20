@@ -112,12 +112,12 @@ class UserDrill extends Localizer(MobxLitElement) {
 					>
 					<d2l-button-subtle
 						icon="d2l-tier1:export"
-						text=${this.localize('components.insights-user-drill-view.exportToCsv')}
+						text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
 						@click="${this._exportToCsvHandler}">
 					</d2l-button-subtle>
 					<d2l-button-subtle
 						icon="d2l-tier1:print"
-						text=${this.localize('components.insights-user-drill-view.print')}
+						text=${this.localize('components.insights-engagement-dashboard.print')}
 						@click="${this._printHandler}">
 					</d2l-button-subtle>
 				</d2l-action-button-group>
@@ -127,7 +127,7 @@ class UserDrill extends Localizer(MobxLitElement) {
 			<d2l-button
 				primary
 				@click="${this._composeEmailHandler}"
-			>${this.localize('components.insights-user-drill-view.emailButton')}</d2l-button>
+			>${this.localize('components.insights-engagement-dashboard.emailButton')}</d2l-button>
 
 			<div class="d2l-insights-user-drill-view-content">
 				<!-- put your tables here -->
