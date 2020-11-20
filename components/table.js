@@ -1,5 +1,6 @@
 import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/inputs/input-checkbox';
+import '@brightspace-ui/core/components/link/link.js';
 import 'd2l-table/d2l-scroll-wrapper';
 
 import { bodySmallStyles, bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
@@ -295,10 +296,12 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 	_renderBodyCell(cellValue, idx) {
 		const columnType = this.columnInfo[idx].columnType;
+		const clickable = this.columnInfo[idx].clickable;
 		const styles = {
 			'd2l-insights-table-cell': true,
 			'd2l-insights-table-cell-first': idx === 0,
-			'd2l-insights-table-cell-last': idx === this._numColumns - 1
+			'd2l-insights-table-cell-last': idx === this._numColumns - 1,
+			'd2l-insights-table-cell-clickable': clickable
 		};
 
 		const defaultHtml = html`
@@ -324,9 +327,12 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				</td>
 			`;
 		} else if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
+			const regularCell = () => html`<div class="d2l-body-standard">${cellValue[0]}</div>`;
+			const clickableCell = () => html`<d2l-link href="${cellValue[2]}">${cellValue[0]}</d2l-link>`;
+
 			return html`
 				<td class="${classMap(styles)}">
-					<div class="d2l-body-standard">${cellValue[0]}</div>
+					${clickable ? clickableCell() : regularCell() }
 					<div class="d2l-body-small">${cellValue[1]}</div>
 				</td>
 			`;

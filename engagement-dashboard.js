@@ -35,12 +35,13 @@ import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
+import  page  from 'page';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 import { toJS } from 'mobx';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
- * @property {String} currentView - is the name of supported view. Valid values: home, user, settings
+ * @property {String} currentView - is the name of supported view. Valid values: home, user, user/100, settings
  * @property {String} telemetryEndpoint - endpoint for gathering telemetry performance data
  * @property {String} telemetryId - GUID that is used to group performance metrics for each separate page load
  */
@@ -58,6 +59,31 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	constructor() {
 		super();
 		this.currentView = 'home';
+		this._installRoutes();
+	}
+
+	_installRoutes() {
+		page.configure({ hashbang: true });
+		page.base('/#!');
+
+		page.redirect('/', '/home');
+		page('/home', () => { this.currentView = 'home'; });
+		page('/user/:userId', (ctx) => this._userRoute(ctx));
+		page('*', (ctx) => this._notFoundRoute(ctx));
+	}
+
+	firstUpdated() {
+		page.show(`/#!/${this.currentView}`);
+	}
+
+	_userRoute(ctx) {
+		this._userId = ctx.params.userId || -1;
+		this.currentView = 'user';
+	}
+
+	_notFoundRoute(ctx) {
+		console.dir(ctx);
+		page.show('/#!/home');
 	}
 
 	static get styles() {
@@ -165,6 +191,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	_renderUserDrillView() {
+		// get user data from this._userId
 		const user = {
 			firstName: 'Dane',
 			lastName: 'Clarie',
