@@ -82,7 +82,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	_notFoundRoute(ctx) {
 		console.dir(ctx);
-		page.show('home');
+		page.show('/#!/home');
 	}
 
 	static get styles() {
