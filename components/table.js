@@ -287,14 +287,14 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			<tbody>
 				${this.data.map((row, rowIdx) => html`
 					<tr class="${classMap(styles(rowIdx))}">
-						${row.map(this._renderBodyCell, this)}
+						${row.map((cell, cellIdx) => this._renderBodyCell(cell, cellIdx, rowIdx), this)}
 					</tr>
 				`)}
 			</tbody>
 		`;
 	}
 
-	_renderBodyCell(cellValue, idx) {
+	_renderBodyCell(cellValue, idx, rowIdx) {
 		const columnType = this.columnInfo[idx].columnType;
 		const clickable = this.columnInfo[idx].clickable;
 		const styles = {
@@ -303,6 +303,8 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 			'd2l-insights-table-cell-last': idx === this._numColumns - 1,
 			'd2l-insights-table-cell-clickable': clickable
 		};
+
+		const clickHandler = this._clickHandler.bind(this, rowIdx, idx);
 
 		const defaultHtml = html`
 			<td class="${classMap(styles)}">
@@ -327,12 +329,12 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				</td>
 			`;
 		} else if (columnType === COLUMN_TYPES.TEXT_SUB_TEXT) {
-			const regularCell = () => html`<div class="d2l-body-standard">${cellValue[0]}</div>`;
-			const clickableCell = () => html`<d2l-link href="${cellValue[2]}">${cellValue[0]}</d2l-link>`;
+			const regularCell = html`<div class="d2l-body-standard">${cellValue[0]}</div>`;
+			const clickableCell = html`<d2l-link @click="${clickHandler}">${cellValue[0]}</d2l-link>`;
 
 			return html`
 				<td class="${classMap(styles)}">
-					${clickable ? clickableCell() : regularCell() }
+					${clickable ? clickableCell : regularCell }
 					<div class="d2l-body-small">${cellValue[1]}</div>
 				</td>
 			`;
@@ -437,6 +439,16 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				selected: !isAllSelected
 			}
 		}));
+	}
+
+	_clickHandler(rowIdx, columnIdx, e) {
+		this.dispatchEvent(new CustomEvent('d2l-insights-table-cell-clicked', {
+			detail: {
+				rowIdx,
+				columnIdx
+			}
+		}));
+		e.preventDefault();
 	}
 }
 customElements.define('d2l-insights-table', Table);

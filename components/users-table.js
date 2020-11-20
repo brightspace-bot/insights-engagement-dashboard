@@ -21,14 +21,6 @@ export const TABLE_USER = {
 	LAST_ACCESSED_SYS: 6
 };
 
-const NAME_INFO = {
-	ID: 0,
-	FIRST_NAME: 1,
-	LAST_NAME: 2,
-	USERNAME: 3,
-	USER_URL: 4
-};
-
 const numberFormatOptions = { maximumFractionDigits: 2 };
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -162,7 +154,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			ariaLabel: this.localize('components.insights-users-table.selectorAriaLabel', { userLastFirstName }),
 			selected: this.selectedUserIds.includes(userId)
 		};
-		const userInfo = [user[USER.ID], user[USER.FIRST_NAME], user[USER.LAST_NAME], user[USER.USERNAME], `/#!/user/${userId}`];
+		const userInfo = [user[USER.ID], user[USER.FIRST_NAME], user[USER.LAST_NAME], user[USER.USERNAME]];
 		const userRecords = recordsByUser.get(user[USER.ID]);
 		const coursesWithGrades = userRecords.filter(r => r[RECORD.CURRENT_FINAL_GRADE] !== null);
 		const avgFinalGrade = avgOf(coursesWithGrades, RECORD.CURRENT_FINAL_GRADE);
@@ -191,8 +183,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		if (column === TABLE_USER.NAME_INFO) {
 			// NB: "desc" and "asc" are inverted for name info: desc sorts a-z whereas asc sorts z-a
 			return (user1, user2) => {
-				const lastFirstName1 = `${user1[TABLE_USER.NAME_INFO][NAME_INFO.LAST_NAME]}, ${user1[TABLE_USER.NAME_INFO][NAME_INFO.FIRST_NAME]}`.toLowerCase();
-				const lastFirstName2 = `${user2[TABLE_USER.NAME_INFO][NAME_INFO.LAST_NAME]}, ${user2[TABLE_USER.NAME_INFO][NAME_INFO.FIRST_NAME]}`.toLowerCase();
+				const lastFirstName1 = `${user1[TABLE_USER.NAME_INFO][USER.LAST_NAME]}, ${user1[TABLE_USER.NAME_INFO][USER.FIRST_NAME]}`.toLowerCase();
+				const lastFirstName2 = `${user2[TABLE_USER.NAME_INFO][USER.LAST_NAME]}, ${user2[TABLE_USER.NAME_INFO][USER.FIRST_NAME]}`.toLowerCase();
 				return (lastFirstName1 > lastFirstName2 ? ORDER[order][0] :
 					lastFirstName1 < lastFirstName2 ? ORDER[order][1] :
 						ORDER[order][2]);
@@ -240,9 +232,8 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		return this.userDataForDisplay.map(data => {
 			return [
 				data[TABLE_USER.SELECTOR_VALUE],
-				[`${data[TABLE_USER.NAME_INFO][NAME_INFO.LAST_NAME]}, ${data[TABLE_USER.NAME_INFO][NAME_INFO.FIRST_NAME]}`,
-					`${data[TABLE_USER.NAME_INFO][NAME_INFO.USERNAME]} - ${data[TABLE_USER.NAME_INFO][NAME_INFO.ID]}`,
-					data[TABLE_USER.NAME_INFO][NAME_INFO.USER_URL]],
+				[`${data[TABLE_USER.NAME_INFO][USER.LAST_NAME]}, ${data[TABLE_USER.NAME_INFO][USER.FIRST_NAME]}`,
+					`${data[TABLE_USER.NAME_INFO][USER.USERNAME]} - ${data[TABLE_USER.NAME_INFO][USER.ID]}`],
 				data[TABLE_USER.COURSES],
 				data[TABLE_USER.AVG_GRADE],
 				data[TABLE_USER.AVG_TIME_IN_CONTENT],
@@ -316,6 +307,7 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 				.data="${this._displayData}"
 				?skeleton="${this.skeleton}"
 				@d2l-insights-table-select-changed="${this._handleSelectChanged}"
+				@d2l-insights-table-cell-clicked="${this._handleCellClick}"
 			></d2l-insights-table>
 
 			<d2l-labs-pagination
@@ -373,6 +365,18 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 		} else {
 			this.selectedUserIds = this.selectedUserIds.filter(userId => !changedUserIds.includes(userId));
 		}
+	}
+
+	_handleCellClick(event) {
+		const table = this.shadowRoot.querySelector('d2l-insights-table');
+		const row = table.data[event.detail.rowIdx];
+		this.dispatchEvent(new CustomEvent('d2l-insights-users-table-cell-clicked', {
+			detail: {
+				userId: row[TABLE_USER.SELECTOR_VALUE].value,
+				row: row,
+				columnIdx: event.detail.columnIdx
+			}
+		}));
 	}
 }
 decorate(UsersTable, {

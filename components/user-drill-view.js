@@ -7,7 +7,6 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 
 /**
  * @property {Object} user - {firstName, lastName, username, userId}
- * @fires d2l-insights-user-drill-view-back
  */
 class UserDrill extends Localizer(MobxLitElement) {
 	static get properties() {
@@ -90,10 +89,6 @@ class UserDrill extends Localizer(MobxLitElement) {
 
 	_composeEmailHandler() {
 		// outside the scope of the story
-		/**
-		 * @event d2l-insights-user-drill-view-back
-		 */
-		this.dispatchEvent(new CustomEvent('d2l-insights-user-drill-view-back'));
 	}
 
 	render() {

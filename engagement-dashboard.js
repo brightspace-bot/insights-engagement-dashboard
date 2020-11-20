@@ -20,6 +20,7 @@ import './components/user-drill-view.js';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
+import { isDefault, UrlState } from './model/urlState';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
@@ -30,12 +31,10 @@ import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
-import { isDefault } from './model/urlState';
 import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
-import  page  from 'page';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 import { toJS } from 'mobx';
 
@@ -59,31 +58,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	constructor() {
 		super();
 		this.currentView = 'home';
-		this._installRoutes();
-	}
-
-	_installRoutes() {
-		page.configure({ hashbang: true });
-		page.base('/#!');
-
-		page.redirect('/', '/home');
-		page('/home', () => { this.currentView = 'home'; });
-		page('/user/:userId', (ctx) => this._userRoute(ctx));
-		page('*', (ctx) => this._notFoundRoute(ctx));
-	}
-
-	firstUpdated() {
-		page.show(`/#!/${this.currentView}`);
-	}
-
-	_userRoute(ctx) {
-		this._userId = ctx.params.userId || -1;
-		this.currentView = 'user';
-	}
-
-	_notFoundRoute(ctx) {
-		console.dir(ctx);
-		page.show('/#!/home');
+		this._urlState = new UrlState(this);
 	}
 
 	static get styles() {
@@ -278,6 +253,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				<d2l-insights-users-table
 					.data="${this._data}"
 					?skeleton="${this._isLoading}"
+					@d2l-insights-users-table-cell-clicked="${this._userTableCellClicked}"
 				></d2l-insights-users-table>
 
 
@@ -421,6 +397,15 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		});
 	}
 
+	_userTableCellClicked(event) {
+		const nameCellIdx = 1;
+		if (event.detail.columnIdx === nameCellIdx) {
+			this._userId = event.detail.userId;
+			this.currentView = 'user';
+			this._urlState.save();
+		}
+	}
+
 	connectedCallback() {
 		super.connectedCallback();
 
@@ -436,6 +421,25 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		document.removeEventListener('d2l-performance-measure', this._boundHandlePerformanceMeasure);
 
 		super.disconnectedCallback();
+	}
+
+	//for Urlstate
+	get persistenceKey() {
+		return 'v';
+	}
+
+	get persistenceValue() {
+		return [this.currentView, this._userId || 0].join(',');
+	}
+
+	set persistenceValue(value) {
+		if (value === '') {
+			return;
+		}
+
+		const [view, userId] = value.split(',');
+		this._userId = Number(userId);
+		this.currentView = view;
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);
