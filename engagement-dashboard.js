@@ -19,18 +19,18 @@ import './components/default-view-popup.js';
 import './components/user-drill-view.js';
 
 import { css, html } from 'lit-element/lit-element.js';
+import { Data, ViewState } from './model/data.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
-import { isDefault, UrlState } from './model/urlState';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
-import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
 import { ExportData } from './model/exportData';
 import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
+import { isDefault } from './model/urlState';
 import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -41,7 +41,6 @@ import { USER } from './consts.js';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
- * @property {String} currentView - is the name of supported view. Valid values: home, user, user/100, settings
  * @property {String} telemetryEndpoint - endpoint for gathering telemetry performance data
  * @property {String} telemetryId - GUID that is used to group performance metrics for each separate page load
  */
@@ -50,16 +49,15 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	static get properties() {
 		return {
 			isDemo: { type: Boolean, attribute: 'demo' },
-			currentView: { type: String, attribute: 'view', reflect: true },
 			telemetryEndpoint: { type: String, attribute: 'telemetry-endpoint' },
 			telemetryId: { type: String, attribute: 'telemetry-id' },
 		};
 	}
 
-	constructor() {
-		super();
-		this.currentView = 'home';
-		this._urlState = new UrlState(this);
+	firstUpdated() {
+		this._viewState = new ViewState({});
+		// moved loadData call here because its inderect call in render function via _data getter causes nested render call with exception
+		this._serverData.loadData({ defaultView: isDefault() });
 	}
 
 	static get styles() {
@@ -159,23 +157,24 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		];
 	}
 
-	render() {
-		// if a user entered other than home view in url should we show home's view loading page?
-		const currentView = this._isLoading ? 'home' : this.currentView;
+	get currentView() {
+		if (!this._viewState) return 'home';
+		return this._viewState.currentView;
+	}
 
-		switch (currentView) {
+	render() {
+		switch (this.currentView) {
 			case 'home': return this._renderHomeView();
 			case 'user': return this._renderUserDrillView();
 		}
 	}
 
 	_renderUserDrillView() {
-		const userId = this._userId || -1;
+		const userId = this._viewState.userViewUserId;
 		const userData = this._serverData.userDictionary.get(userId);
 
 		if (!userData) {
 			console.log(`User id ${this._userId} is not provided.`);
-			this.currentView = 'home';
 			return;
 		}
 
@@ -284,11 +283,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		`;
 	}
 
-	_backToHomeHandler(event) {
-		event.stopPropagation();
-		this.currentView = 'home';
-	}
-
 	_exportToCsv() {
 		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
 		ExportData.userDataToCsv(usersTable.dataForExport, usersTable.headersForExport);
@@ -329,7 +323,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		if (!this.__serverData) {
 
 			this.__serverData = new Data({
-				isDefault: isDefault(),
 				recordProvider: this.isDemo ? fetchDemoData : fetchData
 			});
 		}
@@ -411,10 +404,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	_userTableCellClicked(event) {
 		const nameCellIdx = 1;
-		if (event.detail.columnIdx === nameCellIdx) {
-			this._userId = event.detail.userId;
-			this.currentView = 'user';
-			this._urlState.save();
+		if (this._viewState && event.detail.columnIdx === nameCellIdx) {
+			this._viewState.setUserView(event.detail.userId);
 		}
 	}
 
@@ -433,25 +424,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		document.removeEventListener('d2l-performance-measure', this._boundHandlePerformanceMeasure);
 
 		super.disconnectedCallback();
-	}
-
-	//for Urlstate
-	get persistenceKey() {
-		return 'v';
-	}
-
-	get persistenceValue() {
-		return [this.currentView, this._userId || 0].join(',');
-	}
-
-	set persistenceValue(value) {
-		if (value === '') {
-			return;
-		}
-
-		const [view, userId] = value.split(',');
-		this._userId = Number(userId);
-		this.currentView = view;
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard', EngagementDashboard);

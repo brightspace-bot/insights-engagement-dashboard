@@ -3,17 +3,19 @@ import { COURSE_OFFERING, USER } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 import { Tree } from '../components/tree-filter';
+import { UrlState } from './urlState';
 
 /**
  * Data from the server, along with filter settings that are passed in server calls.
  */
 export class Data {
-	constructor({ recordProvider, isDefault }) {
+	constructor({ recordProvider }) {
 		this.recordProvider = recordProvider;
 		this.orgUnitTree = new Tree({});
 		this.userDictionary = null;
 
 		// @observables
+		this.userViewUserId = null;
 		this.isLoading = true;
 		this.serverData = {
 			records: [],
@@ -39,8 +41,6 @@ export class Data {
 			semester: new SemesterSelectorFilter(this),
 			orgUnit: new OrgUnitSelectorFilter(this)
 		};
-
-		this.loadData({ defaultView: isDefault });
 	}
 
 	loadData({ newRoleIds = null, newSemesterIds = null, newOrgUnitIds = null, defaultView = false }) {
@@ -151,10 +151,63 @@ export class Data {
 	}
 }
 
+export class ViewState {
+	constructor({ view = 'home', userViewUserId = null }) {
+		this.userViewUserId = userViewUserId;
+		this.currentView = view;
+
+		new UrlState(this);
+	}
+
+	setUserView(userId) {
+		this.currentView = 'user';
+		this.userViewUserId = userId;
+	}
+
+	setHomeView() {
+		this.currentView = 'home';
+	}
+
+	//for Urlstate
+	get persistenceKey() {
+		return 'v';
+	}
+
+	get persistenceValue() {
+		return [this.currentView, this.userViewUserId || 0].join(',');
+	}
+
+	set persistenceValue(value) {
+		if (value === '') {
+			return;
+		}
+
+		const [view, userId] = value.split(',');
+
+		switch (view) {
+			case 'home': this.setHomeView();
+				break;
+			case 'user': this.setUserView(Number(userId));
+				break;
+			default:
+				this.setHomeView();
+				break;
+		}
+	}
+}
+
+decorate(ViewState, {
+	userViewUserId: observable,
+	currentView: observable,
+	setUserView: action,
+	setHomeView: action
+});
+
 decorate(Data, {
 	serverData: observable,
 	orgUnitTree: observable,
 	isLoading: observable,
+	userViewUserId: observable,
 	records: computed,
 	onServerDataReload: action
 });
