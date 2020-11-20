@@ -37,6 +37,7 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 import { toJS } from 'mobx';
+import { USER } from './consts.js';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -159,19 +160,30 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	render() {
-		switch (this.currentView) {
+		// if a user entered other than home view in url should we show home's view loading page?
+		const currentView = this._isLoading ? 'home' : this.currentView;
+
+		switch (currentView) {
 			case 'home': return this._renderHomeView();
 			case 'user': return this._renderUserDrillView();
 		}
 	}
 
 	_renderUserDrillView() {
-		// get user data from this._userId
+		const userId = this._userId || -1;
+		const userData = this._serverData.userDictionary.get(userId);
+
+		if (!userData) {
+			console.log(`User id ${this._userId} is not provided.`);
+			this.currentView = 'home';
+			return;
+		}
+
 		const user = {
-			firstName: 'Dane',
-			lastName: 'Clarie',
-			username: 'claire.dane',
-			userId: 887
+			firstName: userData[USER.FIRST_NAME],
+			lastName: userData[USER.LAST_NAME],
+			username: userData[USER.USERNAME],
+			userId: userId
 		};
 
 		return html`
