@@ -56,6 +56,22 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			currentView: { type: String, attribute: 'view', reflect: true },
 			telemetryEndpoint: { type: String, attribute: 'telemetry-endpoint' },
 			telemetryId: { type: String, attribute: 'telemetry-id' },
+
+			// user preferences:
+			showCourseAccessCard: { type: Boolean, attribute: 'course-access-card', reflect: true },
+			showCoursesCol: { type: Boolean, attribute: 'courses-col', reflect: true },
+			showDiscussionsCard: { type: Boolean, attribute: 'discussions-card', reflect: true },
+			showDiscussionsCol: { type: Boolean, attribute: 'discussions-col', reflect: true },
+			showGradesCard: { type: Boolean, attribute: 'grades-card', reflect: true },
+			showGradeCol: { type: Boolean, attribute: 'grade-col', reflect: true },
+			showLastAccessCol: { type: Boolean, attribute: 'last-access-col', reflect: true },
+			showOverdueCard: { type: Boolean, attribute: 'overdue-card', reflect: true },
+			showResultsCard: { type: Boolean, attribute: 'results-card', reflect: true },
+			showSystemAccessCard: { type: Boolean, attribute: 'system-access-card', reflect: true },
+			showTicCol: { type: Boolean, attribute: 'tic-col', reflect: true },
+			showTicGradesCard: { type: Boolean, attribute: 'tic-grades-card', reflect: true },
+			lastAccessThresholdDays: { type: Number, attribute: 'last-access-threshold-days', reflect: true },
+			includeRoles: { type: Array, attribute: 'include-roles', converter: v => v.split(',') }
 		};
 	}
 
@@ -67,6 +83,21 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this.currentView = 'home';
 		this.telemetryEndpoint = '';
 		this.telemetryId = '';
+
+		this.showCourseAccessCard = false;
+		this.showCoursesCol = false;
+		this.showDiscussionsCard = false;
+		this.showDiscussionsCol = false;
+		this.showGradesCard = false;
+		this.showGradeCol = false;
+		this.showLastAccessCol = false;
+		this.showOverdueCard = false;
+		this.showResultsCard = false;
+		this.showSystemAccessCard = false;
+		this.showTicCol = false;
+		this.showTicGradesCard = false;
+		this.lastAccessThresholdDays = 14;
+		this.includeRoles = [];
 
 		this.linkToInsightsPortal = ''; // initialized in firstUpdated to get the actual orgUnitId value
 	}
@@ -267,14 +298,14 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			</div>
 			<div class="d2l-insights-summary-chart-layout">
 				<div class="d2l-insights-summary-container">
-					<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>
-					<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>
-					<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>
-					<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>
+					${this._resultsCard}
+					${this._overdueAssignmentsCard}
+					${this._discussionsCard}
+					${this._lastAccessCard}
 				</div>
-				<div><d2l-insights-current-final-grade-card	.data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>
-				<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>
-				<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>
+				${this._gradesCard}
+				${this._ticGradesCard}
+				${this._courseAccessCard}
 			</div>
 			<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 			<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
@@ -288,6 +319,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			<d2l-insights-users-table
 				.data="${this._data}"
 				?skeleton="${this._isLoading}"
+				?show-courses-col="${this.showCoursesCol}"
+				?show-discussions-col="${this.showDiscussionsCol}"
+				?show-grade-col="${this.showGradeCol}"
+				?show-last-access-col="${this.showLastAccessCol}"
+				?show-tic-col="${this.showTicCol}"
 			></d2l-insights-users-table>
 
 
@@ -304,6 +340,41 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				</d2l-button>
 			</d2l-dialog-confirm>
 		`;
+	}
+
+	get _courseAccessCard() {
+		if (!this.showCourseAccessCard) return '';
+		return html`<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>`;
+	}
+
+	get _discussionsCard() {
+		if (!this.showDiscussionsCard) return '';
+		return html`<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>`;
+	}
+
+	get _gradesCard() {
+		if (!this.showGradesCard) return '';
+		return html`<div><d2l-insights-current-final-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>`;
+	}
+
+	get _lastAccessCard() {
+		if (!this.showSystemAccessCard) return '';
+		return html`<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>`;
+	}
+
+	get _overdueAssignmentsCard() {
+		if (!this.showOverdueCard) return '';
+		return html`<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>`;
+	}
+
+	get _resultsCard() {
+		if (!this.showResultsCard) return '';
+		return html`<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>`;
+	}
+
+	get _ticGradesCard() {
+		if (!this.showTicGradesCard) return '';
+		return html`<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>`;
 	}
 
 	_backToHomeHandler(event) {
