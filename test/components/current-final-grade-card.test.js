@@ -126,7 +126,6 @@ describe('d2l-insights-current-final-grade-card', () => {
 				const filter = new CurrentFinalGradesFilter();
 				expect([...filter.selectedCategories]).to.eql([1, 2, 3]);
 
-				filter.toggleCategory(1);
 				filter.toggleCategory(2);
 				filter.toggleCategory(3);
 				filter.toggleCategory(4);
@@ -135,7 +134,7 @@ describe('d2l-insights-current-final-grade-card', () => {
 				// check that the change state was saved
 				const params = new URLSearchParams(window.location.search);
 				const state = params.get(filter.persistenceKey);
-				expect(state).to.equal('4,5');
+				expect(state).to.equal('1,4,5');
 			});
 		});
 	});
