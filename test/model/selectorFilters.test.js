@@ -127,9 +127,6 @@ describe('selectorFilters', () => {
 			});
 
 			it('should return true if the record orgUnit id has a selected semester id as one of its ancestors', () => {
-				// const mockOrgUnitAncestors = {
-				// 	hasAncestorsInList: (/* any */) => true
-				// };
 				const record = [1, 1, 1]; // doesn't matter what the ids are here
 				const sut = new SemesterSelectorFilter(
 					{
@@ -146,9 +143,6 @@ describe('selectorFilters', () => {
 			});
 
 			it('should return false if the record orgUnitId has no ancestors in the selected ids', () => {
-				// const mockOrgUnitAncestors = {
-				// 	hasAncestorsInList: (/* any */) => false
-				// };
 				const record = [1, 1, 1]; // doesn't matter what the ids are here
 				const sut = new SemesterSelectorFilter(
 					{
