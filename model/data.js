@@ -3,7 +3,6 @@ import { COURSE_OFFERING, USER } from '../consts';
 import { fetchCachedChildren, fetchLastSearch } from './lms.js';
 import { OrgUnitSelectorFilter, RoleSelectorFilter, SemesterSelectorFilter } from './selectorFilters.js';
 import { Tree } from '../components/tree-filter';
-import { UrlState } from './urlState';
 
 /**
  * Data from the server, along with filter settings that are passed in server calls.
@@ -150,64 +149,6 @@ export class Data {
 		});
 	}
 }
-
-export class ViewState {
-	constructor() {
-		this._urlState = new UrlState(this);
-	}
-
-	setUserView(userId) {
-		this.currentView = 'user';
-		this.userViewUserId = userId;
-		// odd, but after second navigation to user view
-		// autorun reaction stops observing properties form ViewState
-		// therefore this line is needed
-		if (this._urlState) this._urlState.save();
-	}
-
-	setHomeView() {
-		this.currentView = 'home';
-		this.userViewUserId = 0;
-		// odd, but after second navigation to user view
-		// autorun reaction stops observing properties form ViewState
-		// therefore this line is needed
-		if (this._urlState) this._urlState.save();
-	}
-
-	//for Urlstate
-	get persistenceKey() {
-		return 'v';
-	}
-
-	get persistenceValue() {
-		return [this.currentView || 'home', this.userViewUserId || 0].join(',');
-	}
-
-	set persistenceValue(value) {
-		if (value === '') {
-			return;
-		}
-
-		const [view, userId] = value.split(',');
-
-		switch (view) {
-			case 'home': this.setHomeView();
-				break;
-			case 'user': this.setUserView(Number(userId));
-				break;
-			default:
-				this.setHomeView();
-				break;
-		}
-	}
-}
-
-decorate(ViewState, {
-	userViewUserId: observable,
-	currentView: observable,
-	setUserView: action,
-	setHomeView: action
-});
 
 decorate(Data, {
 	serverData: observable,
