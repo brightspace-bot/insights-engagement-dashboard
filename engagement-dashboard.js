@@ -172,6 +172,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this.linkToInsightsPortal = linkToInsightsPortal.toString();
 
 		this._viewState = new ViewState({});
+		// if current view is not provided in url
 		if (!this._viewState.currentView) {
 			this._viewState.setHomeView();
 		}
