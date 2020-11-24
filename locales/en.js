@@ -2,6 +2,7 @@
 
 export default {
 	"components.insights-engagement-dashboard.title": "Engagement Dashboard",
+	"components.insights-engagement-dashboard.title-user-view": "Learner Engagement Dashboard",
 	"components.insights-engagement-dashboard.backToInsightsPortal": "Back to Insights Portal",
 	"components.insights-engagement-dashboard.backToEngagementDashboard": "Back to Engagement Dashboard",
 	"components.insights-engagement-dashboard.backLinkTextShort": "Back",

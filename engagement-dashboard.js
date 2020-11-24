@@ -41,8 +41,6 @@ import { toJS } from 'mobx';
 import { USER } from './consts.js';
 
 const insightsPortalEndpoint = '/d2l/ap/insightsPortal/main.d2l';
-const engagementDashboardEndpoint = '/d2l/ap/visualizations/dashboards/engagement';
-const D2L_NAVIGATION_LINK_BACK = 'D2L-NAVIGATION-LINK-BACK';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -189,44 +187,22 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	render() {
 		let innerView = html``;
-		let href = '';
-		let backLinkText = '';
 		switch (this.currentView) {
 			case 'home':
 				innerView = this._renderHomeView();
-				href = this.linkToInsightsPortal;
-				backLinkText = this.localize('components.insights-engagement-dashboard.backToInsightsPortal');
 				break;
 			case 'user':
 				innerView =  this._renderUserDrillView();
-				href = new URL(engagementDashboardEndpoint, window.location.origin).toString();
-				backLinkText = this.localize('components.insights-engagement-dashboard.backToEngagementDashboard');
 				break;
 		}
 
 		return html`
 			<d2l-insights-immersive-nav
-				href="${href}"
-				main-text="${this.localize('components.insights-engagement-dashboard.title')}"
-				back-text="${backLinkText}"
-				back-text-short="${this.localize('components.insights-engagement-dashboard.backLinkTextShort')}"
-				@click="${this._backLinkClickHandler}"
+				href="${this.linkToInsightsPortal}"
+				view="${this.currentView}"
 			></d2l-insights-immersive-nav>
 			${ innerView }
 		`;
-	}
-
-	_backLinkClickHandler(e) {
-		if (this.currentView === 'home') {
-			return true;
-		}
-
-		const isBackLinkClick = e.path.map(e => e.nodeName).some(tag => tag === D2L_NAVIGATION_LINK_BACK);
-		if (isBackLinkClick) {
-			window.history.back();
-		}
-		e.preventDefault();
-		return false;
 	}
 
 	_renderUserDrillView() {

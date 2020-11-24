@@ -2,15 +2,16 @@ import 'd2l-navigation/d2l-navigation-immersive';
 import 'd2l-navigation/d2l-navigation-link-back';
 
 import { css, html, LitElement } from 'lit-element/lit-element';
+import { Localizer } from '../locales/localizer';
+
+const D2L_NAVIGATION_LINK_BACK = 'D2L-NAVIGATION-LINK-BACK';
 
 // Extends the standard immersive nav to resize the back link on small screens
-class InsightsImmersiveNav extends LitElement {
+class InsightsImmersiveNav extends Localizer(LitElement) {
 	static get properties() {
 		return {
 			href: { type: String, attribute: true },
-			mainText: { type: String, attribute: 'main-text' },
-			backText: { type: String, attribute: 'back-text' },
-			backTextShort: { type: String, attribute: 'back-text-short' } // optional - will default to backText if unspecified
+			view: { type: String, attribute: true }
 		};
 	}
 
@@ -44,9 +45,23 @@ class InsightsImmersiveNav extends LitElement {
 	constructor() {
 		super();
 		this.href = '';
-		this.mainText = '';
-		this.backText = '';
-		this.backTextShort = '';
+		this.view = 'home';
+	}
+
+	get mainText() {
+		switch (this.view) {
+			case 'home': return this.localize('components.insights-engagement-dashboard.title');
+			case 'user': return this.localize('components.insights-engagement-dashboard.title-user-view');
+		}
+		return this.localize('components.insights-engagement-dashboard.title');
+	}
+
+	get backText() {
+		switch (this.view) {
+			case 'home': return this.localize('components.insights-engagement-dashboard.backToInsightsPortal');
+			case 'user': return this.localize('components.insights-engagement-dashboard.backToEngagementDashboard');
+		}
+		return this.localize('components.insights-engagement-dashboard.backToInsightsPortal');
 	}
 
 	render() {
@@ -57,12 +72,14 @@ class InsightsImmersiveNav extends LitElement {
 					<d2l-navigation-link-back
 						text="${this.backText}"
 						href="${this.href}"
-						class="d2l-insights-link-back-default">
+						class="d2l-insights-link-back-default"
+						@click=${this._backLinkClickHandler}>
 					</d2l-navigation-link-back>
 					<d2l-navigation-link-back
-						text="${this.backTextShort || this.backText}"
+						text="${this.localize('components.insights-engagement-dashboard.backLinkTextShort')}"
 						href="${this.href}"
-						class="d2l-insights-link-back-responsive">
+						class="d2l-insights-link-back-responsive"
+						@click=${this._backLinkClickHandler}>
 					</d2l-navigation-link-back>
 				</div>
 
@@ -72,6 +89,17 @@ class InsightsImmersiveNav extends LitElement {
 
 			</d2l-navigation-immersive>
 		`;
+	}
+
+	_backLinkClickHandler(e) {
+		if (this.view === 'home') {
+			return true;
+		}
+
+		window.history.back();
+		// prevent href navigation
+		e.preventDefault();
+		return false;
 	}
 }
 customElements.define('d2l-insights-immersive-nav', InsightsImmersiveNav);
