@@ -4,14 +4,14 @@ import 'd2l-navigation/d2l-navigation-link-back';
 import { css, html, LitElement } from 'lit-element/lit-element';
 import { Localizer } from '../locales/localizer';
 
-const D2L_NAVIGATION_LINK_BACK = 'D2L-NAVIGATION-LINK-BACK';
+const insightsPortalEndpoint = '/d2l/ap/insightsPortal/main.d2l';
 
 // Extends the standard immersive nav to resize the back link on small screens
 class InsightsImmersiveNav extends Localizer(LitElement) {
 	static get properties() {
 		return {
-			href: { type: String, attribute: true },
-			view: { type: String, attribute: true }
+			view: { type: String, attribute: true },
+			orgUnitId: { type: Number, attribute: 'org-unit-id' },
 		};
 	}
 
@@ -44,8 +44,8 @@ class InsightsImmersiveNav extends Localizer(LitElement) {
 
 	constructor() {
 		super();
-		this.href = '';
 		this.view = 'home';
+		this.orgUnitId = 0;
 	}
 
 	get mainText() {
@@ -65,19 +65,23 @@ class InsightsImmersiveNav extends Localizer(LitElement) {
 	}
 
 	render() {
+		const linkToInsightsPortal = new URL(insightsPortalEndpoint, window.location.origin);
+		linkToInsightsPortal.searchParams.append('ou', this.orgUnitId);
+		const href = linkToInsightsPortal.toString();
+
 		return html`
 			<d2l-navigation-immersive width-type="fullscreen">
 
 				<div slot="left">
 					<d2l-navigation-link-back
 						text="${this.backText}"
-						href="${this.href}"
+						href="${href}"
 						class="d2l-insights-link-back-default"
 						@click=${this._backLinkClickHandler}>
 					</d2l-navigation-link-back>
 					<d2l-navigation-link-back
 						text="${this.localize('components.insights-engagement-dashboard.backLinkTextShort')}"
-						href="${this.href}"
+						href="${href}"
 						class="d2l-insights-link-back-responsive"
 						@click=${this._backLinkClickHandler}>
 					</d2l-navigation-link-back>

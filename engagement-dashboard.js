@@ -40,8 +40,6 @@ import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grad
 import { toJS } from 'mobx';
 import { USER } from './consts.js';
 
-const insightsPortalEndpoint = '/d2l/ap/insightsPortal/main.d2l';
-
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
  * @property {String} telemetryEndpoint - endpoint for gathering telemetry performance data
@@ -65,8 +63,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this.isDemo = false;
 		this.telemetryEndpoint = '';
 		this.telemetryId = '';
-
-		this.linkToInsightsPortal = ''; // initialized in firstUpdated to get the actual orgUnitId value
 	}
 
 	static get styles() {
@@ -167,10 +163,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	firstUpdated() {
-		const linkToInsightsPortal = new URL(insightsPortalEndpoint, window.location.origin);
-		linkToInsightsPortal.searchParams.append('ou', this.orgUnitId);
-		this.linkToInsightsPortal = linkToInsightsPortal.toString();
-
 		this._viewState = new ViewState({});
 		// if current view is not provided in url
 		if (!this._viewState.currentView) {
@@ -199,8 +191,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 		return html`
 			<d2l-insights-immersive-nav
-				href="${this.linkToInsightsPortal}"
 				view="${this.currentView}"
+				org-unit-id="${this.orgUnitId}"
 			></d2l-insights-immersive-nav>
 			${ innerView }
 		`;
