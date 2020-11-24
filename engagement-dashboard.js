@@ -42,6 +42,7 @@ import { USER } from './consts.js';
 
 const insightsPortalEndpoint = '/d2l/ap/insightsPortal/main.d2l';
 const engagementDashboardEndpoint = '/d2l/ap/visualizations/dashboards/engagement';
+const D2L_NAVIGATION_LINK_BACK = 'D2L-NAVIGATION-LINK-BACK';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -173,6 +174,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this.linkToInsightsPortal = linkToInsightsPortal.toString();
 
 		this._viewState = new ViewState({});
+		if (!this._viewState.currentView) {
+			this._viewState.setHomeView();
+		}
+
 		// moved loadData call here because its inderect call in render function via _data getter causes nested render call with exception
 		this._serverData.loadData({ defaultView: isDefault() });
 	}
@@ -205,9 +210,23 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				main-text="${this.localize('components.insights-engagement-dashboard.title')}"
 				back-text="${backLinkText}"
 				back-text-short="${this.localize('components.insights-engagement-dashboard.backLinkTextShort')}"
+				@click="${this._backLinkClickHandler}"
 			></d2l-insights-immersive-nav>
 			${ innerView }
 		`;
+	}
+
+	_backLinkClickHandler(e) {
+		if (this.currentView === 'home') {
+			return true;
+		}
+
+		const isBackLinkClick = e.path.map(e => e.nodeName).some(tag => tag === D2L_NAVIGATION_LINK_BACK);
+		if (isBackLinkClick) {
+			window.history.back();
+		}
+		e.preventDefault();
+		return false;
 	}
 
 	_renderUserDrillView() {
@@ -229,7 +248,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return html`
 			<d2l-insights-user-drill-view
 				.user="${user}"
-				@d2l-insights-user-drill-view-back="${this._backToHomeHandler}"
 			></d2l-insights-user-drill-view>
 		`;
 	}
