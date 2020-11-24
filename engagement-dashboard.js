@@ -20,11 +20,11 @@ import './components/user-drill-view.js';
 import './components/immersive-nav.js';
 
 import { css, html } from 'lit-element/lit-element.js';
-import { Data, ViewState } from './model/data.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
+import { Data } from './model/data.js';
 import { DiscussionActivityFilter } from './components/discussion-activity-card';
 import { ExportData } from './model/exportData';
 import { fetchData } from './model/lms.js';
@@ -39,6 +39,7 @@ import { OverdueAssignmentsFilter } from './components/overdue-assignments-card'
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 import { toJS } from 'mobx';
 import { USER } from './consts.js';
+import { ViewState } from './model/view-state';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS

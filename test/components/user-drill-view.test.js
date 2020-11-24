@@ -1,15 +1,25 @@
 import '../../components/user-drill-view';
 
 import { expect, fixture, html } from '@open-wc/testing';
+import { flush } from '@polymer/polymer/lib/utils/render-status.js';
 import { runConstructor } from '@brightspace-ui/core/tools/constructor-test-helper.js';
 
 describe('d2l-insights-user-drill-view', () => {
-	let user = {
+	const user = {
 		firstName: 'firstName',
 		lastName: 'lastName',
 		username: 'username',
 		userId: 232
 	};
+
+	afterEach(() => {
+		// d2l-action-button-group uses afterNextRender that causes
+		// 'Cannot read property 'disconnect' of undefined'
+		// when scheduled rendering does not happen, but the node is removed
+		// flush - fixes that by calling scheduled rendering. Alternative is fixing d2l-action-button-group attached/detached functions
+		flush();
+	});
+
 	describe('constructor', () => {
 		it('should construct', () => {
 			runConstructor('d2l-insights-user-drill-view');
