@@ -21,6 +21,7 @@ import './components/immersive-nav.js';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
+import { ViewState, DefaultViewState } from './model/view-state';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
@@ -31,7 +32,6 @@ import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
-import { ifDefined } from 'lit-html/directives/if-defined';
 import { isDefault } from './model/urlState';
 import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
@@ -40,7 +40,6 @@ import { OverdueAssignmentsFilter } from './components/overdue-assignments-card'
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 import { toJS } from 'mobx';
 import { USER } from './consts.js';
-import { ViewState } from './model/view-state';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
@@ -78,6 +77,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		super();
 
 		this.__defaultViewPopupShown = false; // a test-and-set variable: will always be true after the first read
+		this._viewState = DefaultViewState;
 
 		this.orgUnitId = 0;
 		this.isDemo = false;
@@ -209,7 +209,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	get currentView() {
-		if (!this._viewState) return 'home';
 		return this._viewState.currentView;
 	}
 
@@ -226,7 +225,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 		return html`
 			<d2l-insights-immersive-nav
-				view="${ifDefined(this.currentView)}"
+				.viewState="${this._viewState}"
 				org-unit-id="${this.orgUnitId}"
 			></d2l-insights-immersive-nav>
 
@@ -384,11 +383,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	get _ticGradesCard() {
 		if (!this.showTicGradesCard) return '';
 		return html`<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>`;
-	}
-
-	_backToHomeHandler(event) {
-		event.stopPropagation();
-		this.currentView = 'home';
 	}
 
 	_exportToCsv() {

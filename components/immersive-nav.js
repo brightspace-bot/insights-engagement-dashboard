@@ -2,6 +2,7 @@ import 'd2l-navigation/d2l-navigation-immersive';
 import 'd2l-navigation/d2l-navigation-link-back';
 
 import { css, html, LitElement } from 'lit-element/lit-element';
+import { DefaultViewState } from '../model/view-state';
 import { Localizer } from '../locales/localizer';
 
 const insightsPortalEndpoint = '/d2l/ap/insightsPortal/main.d2l';
@@ -10,7 +11,7 @@ const insightsPortalEndpoint = '/d2l/ap/insightsPortal/main.d2l';
 class InsightsImmersiveNav extends Localizer(LitElement) {
 	static get properties() {
 		return {
-			view: { type: String, attribute: true },
+			viewState: { type: Object, attribute: false },
 			orgUnitId: { type: Number, attribute: 'org-unit-id' },
 		};
 	}
@@ -44,8 +45,12 @@ class InsightsImmersiveNav extends Localizer(LitElement) {
 
 	constructor() {
 		super();
-		this.view = 'home';
 		this.orgUnitId = 0;
+		this.viewState = DefaultViewState;
+	}
+
+	get view() {
+		return this.viewState.currentView;
 	}
 
 	get mainText() {
@@ -100,7 +105,7 @@ class InsightsImmersiveNav extends Localizer(LitElement) {
 			return true;
 		}
 
-		window.history.back();
+		this.viewState.setHomeView();
 		// prevent href navigation
 		e.preventDefault();
 		return false;

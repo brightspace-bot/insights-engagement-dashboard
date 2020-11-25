@@ -1,6 +1,10 @@
 import { action, decorate, observable } from 'mobx';
 import { UrlState } from './urlState';
 
+export const DefaultViewState = {
+	currentView: 'home'
+};
+
 export class ViewState {
 	constructor() {
 		this._urlState = new UrlState(this);
