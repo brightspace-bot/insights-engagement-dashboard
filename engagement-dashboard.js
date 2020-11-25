@@ -292,7 +292,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					?demo="${this.isDemo}"
 				></d2l-insights-role-filter>
 			</div>
-			<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
+			<d2l-insights-message-container
+				.data="${this._data}"
+				.isNoDataReturned="${this._isNoUserResults}"
+				@d2l-insights-undo-last-filter="${this._handleUndo}">
+			</d2l-insights-message-container>
 			${this._summaryViewHeader}
 			<div class="d2l-insights-summary-container-applied-filters">
 				<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
@@ -396,6 +400,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	_exportToCsv() {
 		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
 		ExportData.userDataToCsv(usersTable.dataForExport, usersTable.headersForExport);
+	}
+
+	_handleUndo() {
+		window.history.back();
 	}
 
 	get _isLoading() {
