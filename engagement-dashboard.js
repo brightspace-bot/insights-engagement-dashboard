@@ -242,7 +242,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		const userData = this._serverData.userDictionary.get(userId);
 
 		if (!userData) {
-			console.log(`User id ${this._userId} is not provided.`);
 			return;
 		}
 
@@ -464,12 +463,20 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return this.__telemetryHelper;
 	}
 
+	_backToHomeHandler() {
+		if (this._viewState) {
+			this._viewState.setHomeView();
+		}
+	}
+
 	_openHelpLink() {
 		window.open('https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide', '_blank');
 	}
 
 	_openSettingsPage() {
-		this.currentView = 'settings';
+		if (this._viewState) {
+			this._viewState.setSettingsView();
+		}
 	}
 
 	_roleFilterChange(event) {
