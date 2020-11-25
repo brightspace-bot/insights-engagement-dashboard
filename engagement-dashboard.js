@@ -20,8 +20,8 @@ import './components/user-drill-view.js';
 import './components/immersive-nav.js';
 
 import { css, html } from 'lit-element/lit-element.js';
+import { DefaultViewState, ViewState } from './model/view-state';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
-import { ViewState, DefaultViewState } from './model/view-state';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
