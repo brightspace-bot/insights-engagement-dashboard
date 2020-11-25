@@ -72,7 +72,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			showTicCol: { type: Boolean, attribute: 'tic-col', reflect: true },
 			showTicGradesCard: { type: Boolean, attribute: 'tic-grades-card', reflect: true },
 			lastAccessThresholdDays: { type: Number, attribute: 'last-access-threshold-days', reflect: true },
-			includeRoles: { type: Array, attribute: 'include-roles', converter: v => v.split(',').filter(x => x).map(Number) }
+			includeRoles: { type: String, attribute: 'include-roles', reflect: true }
 		};
 	}
 
@@ -98,7 +98,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this.showTicCol = false;
 		this.showTicGradesCard = false;
 		this.lastAccessThresholdDays = 14;
-		this.includeRoles = [];
+		this.includeRoles = '';
 
 		this.linkToInsightsPortal = ''; // initialized in firstUpdated to get the actual orgUnitId value
 	}
@@ -421,7 +421,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			this.__serverData = new Data({
 				isDefault: isDefault(),
 				recordProvider: this.isDemo ? fetchDemoData : fetchData,
-				includeRoles: this.includeRoles
+				includeRoles: this.includeRoles.split(',').filter(x => x).map(Number)
 			});
 		}
 
