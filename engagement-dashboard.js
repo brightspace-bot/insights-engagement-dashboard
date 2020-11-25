@@ -397,7 +397,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			// on the results of the other: we avoid this by building them on specific sets of filters.
 			const rowFilteredData = new FilteredData(this._serverData)
 				.withFilter(new OverdueAssignmentsFilter())
-				.withFilter(new LastAccessFilter())
+				.withFilter(new LastAccessFilter(this.lastAccessThresholdDays))
 				.withFilter(new CourseLastAccessFilter())
 				.withFilter(new CurrentFinalGradesFilter())
 				.withFilter(new DiscussionActivityFilter());
