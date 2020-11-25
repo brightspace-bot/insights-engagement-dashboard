@@ -328,11 +328,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.data="${this._data}"
 				?skeleton="${this._isLoading}"
 				@d2l-insights-users-table-cell-clicked="${this._userTableCellClicked}"
-				?show-courses-col="${this.showCoursesCol}"
-				?show-discussions-col="${this.showDiscussionsCol}"
-				?show-grade-col="${this.showGradeCol}"
-				?show-last-access-col="${this.showLastAccessCol}"
-				?show-tic-col="${this.showTicCol}"
+				?courses-col="${this.showCoursesCol}"
+				?discussions-col="${this.showDiscussionsCol}"
+				?grade-col="${this.showGradeCol}"
+				?last-access-col="${this.showLastAccessCol}"
+				?tic-col="${this.showTicCol}"
 			></d2l-insights-users-table>
 
 
