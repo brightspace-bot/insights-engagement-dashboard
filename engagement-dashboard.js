@@ -293,7 +293,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				></d2l-insights-role-filter>
 			</div>
 			<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
-			<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
+			${this._summaryViewHeader}
 			<div class="d2l-insights-summary-container-applied-filters">
 				<d2l-insights-applied-filters .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-applied-filters>
 			</div>
@@ -308,6 +308,60 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				${this._ticGradesCard}
 				${this._courseAccessCard}
 			</div>
+			${this._userTable}
+			<d2l-insights-default-view-popup
+				?opened=${Boolean(this._serverData.isDefaultView)}
+				.data="${this._serverData}">
+			</d2l-insights-default-view-popup>
+
+			<d2l-dialog-confirm
+				id="no-users-selected-dialog"
+				text="${this.localize('components.insights-engagement-dashboard.noUsersSelectedDialogText')}">
+				<d2l-button slot="footer" primary data-dialog-action>
+					${this.localize('components.insights-default-view-popup.buttonOk')}
+				</d2l-button>
+			</d2l-dialog-confirm>
+		`;
+	}
+
+	get _courseAccessCard() {
+		if (!this.showCourseAccessCard || this._isNoUserResults) return '';
+		return html`<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>`;
+	}
+
+	get _discussionsCard() {
+		if (!this.showDiscussionsCard || this._isNoUserResults) return '';
+		return html`<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>`;
+	}
+
+	get _gradesCard() {
+		if (!this.showGradesCard || this._isNoUserResults) return '';
+		return html`<div><d2l-insights-current-final-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>`;
+	}
+
+	get _lastAccessCard() {
+		if (!this.showSystemAccessCard || this._isNoUserResults) return '';
+		return html`<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>`;
+	}
+
+	get _overdueAssignmentsCard() {
+		if (!this.showOverdueCard || this._isNoUserResults) return '';
+		return html`<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>`;
+	}
+
+	get _resultsCard() {
+		if (!this.showResultsCard || this._isNoUserResults) return '';
+		return html`<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>`;
+	}
+
+	get _ticGradesCard() {
+		if (!this.showTicGradesCard || this._isNoUserResults) return '';
+		return html`<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>`;
+	}
+
+	get _userTable() {
+		if (this._isNoUserResults) return '';
+		return html`
 			<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.resultsHeading')}</h2>
 			<d2l-action-button-group class="d2l-table-action-button-group" min-to-show="0" max-to-show="2" opener-type="more">
 				<d2l-button-subtle
@@ -326,56 +380,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				?show-last-access-col="${this.showLastAccessCol}"
 				?show-tic-col="${this.showTicCol}"
 			></d2l-insights-users-table>
-
-
-			<d2l-insights-default-view-popup
-				?opened=${Boolean(this._serverData.isDefaultView)}
-				.data="${this._serverData}">
-			</d2l-insights-default-view-popup>
-
-			<d2l-dialog-confirm
-				id="no-users-selected-dialog"
-				text="${this.localize('components.insights-engagement-dashboard.noUsersSelectedDialogText')}">
-				<d2l-button slot="footer" primary data-dialog-action>
-					${this.localize('components.insights-default-view-popup.buttonOk')}
-				</d2l-button>
-			</d2l-dialog-confirm>
 		`;
 	}
 
-	get _courseAccessCard() {
-		if (!this.showCourseAccessCard) return '';
-		return html`<div><d2l-insights-course-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-course-last-access-card></div>`;
-	}
-
-	get _discussionsCard() {
-		if (!this.showDiscussionsCard) return '';
-		return html`<d2l-insights-discussion-activity-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-discussion-activity-card>`;
-	}
-
-	get _gradesCard() {
-		if (!this.showGradesCard) return '';
-		return html`<div><d2l-insights-current-final-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-current-final-grade-card></div>`;
-	}
-
-	get _lastAccessCard() {
-		if (!this.showSystemAccessCard) return '';
-		return html`<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>`;
-	}
-
-	get _overdueAssignmentsCard() {
-		if (!this.showOverdueCard) return '';
-		return html`<d2l-insights-overdue-assignments-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-overdue-assignments-card>`;
-	}
-
-	get _resultsCard() {
-		if (!this.showResultsCard) return '';
-		return html`<d2l-insights-results-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-results-card>`;
-	}
-
-	get _ticGradesCard() {
-		if (!this.showTicGradesCard) return '';
-		return html`<div><d2l-insights-time-in-content-vs-grade-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-time-in-content-vs-grade-card></div>`;
+	get _summaryViewHeader() {
+		if (this._isNoUserResults) return '';
+		return html`<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>`;
 	}
 
 	_backToHomeHandler(event) {
@@ -413,10 +423,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	get _isNoUserResults() {
-		if (!this.isDemo) {
-			return this._data.records.length === 0 && !this._data.isLoading;
-		}
-		return false;
+		return this._data.records.length === 0 && !this._data.isLoading;
 	}
 
 	get _serverData() {
