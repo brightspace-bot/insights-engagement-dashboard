@@ -40,7 +40,6 @@ export class UrlState {
 
 	constructor(wrapped) {
 		this._wrapped = wrapped;
-		this.popping = false;
 
 		if (isDisabledForTesting) return;
 
@@ -49,15 +48,11 @@ export class UrlState {
 		this._load();
 		this._onpopstate = this._onpopstate.bind(this);
 		window.addEventListener('popstate', this._onpopstate);
-
 		autorun(() => this.save());
 	}
 
 	save() {
-
 		// don't save state changes if we are restoring an old state
-		if (this.popping) return;
-
 		const url = new URL(window.location.href);
 		const valueToSave = this.value;
 		if (valueToSave === '' && url.searchParams.has(this.key)) {
@@ -83,9 +78,7 @@ export class UrlState {
 	}
 
 	_onpopstate(e) {
-		this.popping = true;
 		if (e.state !== null) this._load();
-		this.popping = false;
 	}
 
 	_load() {
