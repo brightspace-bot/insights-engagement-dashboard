@@ -31,6 +31,7 @@ import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
+import { ifDefined } from 'lit-html/directives/if-defined';
 import { isDefault } from './model/urlState';
 import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
@@ -59,6 +60,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	constructor() {
 		super();
+
+		this.__defaultViewPopupShown = false; // a test-and-set variable: will always be true after the first read
 
 		this.orgUnitId = 0;
 		this.isDemo = false;
@@ -192,7 +195,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 		return html`
 			<d2l-insights-immersive-nav
-				view="${this.currentView}"
+				view="${ifDefined(this.currentView)}"
 				org-unit-id="${this.orgUnitId}"
 			></d2l-insights-immersive-nav>
 
@@ -298,7 +301,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 
 			<d2l-insights-default-view-popup
-				?opened=${Boolean(this._serverData.isDefaultView)}
+				?opened=${Boolean(this._serverData.isDefaultView && !this._defaultViewPopupShown)}
 				.data="${this._serverData}">
 			</d2l-insights-default-view-popup>
 
@@ -315,6 +318,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	_exportToCsv() {
 		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
 		ExportData.userDataToCsv(usersTable.dataForExport, usersTable.headersForExport);
+	}
+
+	get _defaultViewPopupShown() {
+		const currentVal = this.__defaultViewPopupShown;
+		this.__defaultViewPopupShown = true;
+		return currentVal;
 	}
 
 	get _isLoading() {
