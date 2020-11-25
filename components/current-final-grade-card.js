@@ -1,4 +1,4 @@
-import { computed, decorate } from 'mobx';
+import { action, computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { BEFORE_CHART_FORMAT } from './chart/chart';
 import { bodyStandardStyles } from '@brightspace-ui/core/components/typography/styles.js';
@@ -46,8 +46,7 @@ export class CurrentFinalGradesFilter extends CategoryFilter {
 			return;
 		}
 		const categories = value.split(',').map(category => Number(category));
-		this.selectedCategories.clear();
-		categories.forEach(category => this.selectCategory(category));
+		this.setCategories(categories);
 	}
 }
 
