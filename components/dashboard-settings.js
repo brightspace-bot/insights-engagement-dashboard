@@ -1,10 +1,11 @@
 import { css, html, LitElement } from 'lit-element';
+import { heading1Styles, heading2Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
 class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 	static get styles() {
-		return [css`
+		return [heading1Styles, heading2Styles, css`
 			:host {
 				display: flex;
 				flex-direction: column; /* required so the footer actually appears on-screen */
@@ -17,6 +18,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			.d2l-insights-settings-page-main-container {
 				height: 100%;
 				overflow-y: auto;
+				padding-top: 30px;
 			}
 
 			.d2l-insights-settings-page-main-content {
@@ -45,15 +47,15 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 				width: 100%;
 			}
 
-			h1, h2 {
+			h1.d2l-heading-1, h2.d2l-heading-2 {
 				font-weight: normal;
-				line-height: 2rem;
 			}
 
 			/* buttons */
 			.d2l-insights-settings-footer-button,
 			.d2l-insights-settings-footer-button-desktop,
 			.d2l-insights-settings-footer-button-responsive {
+				margin-left: 0;
 				margin-right: 0.75rem;
 			}
 
@@ -61,6 +63,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			:host([dir="rtl"]) .d2l-insights-settings-footer-button-desktop,
 			:host([dir="rtl"]) .d2l-insights-settings-footer-button-responsive {
 				margin-left: 0.75rem;
+				margin-right: 0;
 			}
 
 			.d2l-insights-settings-footer-button-desktop {
@@ -72,6 +75,10 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			}
 
 			@media screen and (max-width: 615px) {
+				h1.d2l-heading-1, h2.d2l-heading-2 {
+					font-weight: normal;
+				}
+
 				footer {
 					padding: 0.75rem 18px;
 				}
@@ -103,8 +110,8 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		return html`
 			<div class="d2l-insights-settings-page-main-container">
 				<div class="d2l-insights-settings-page-main-content">
-						<h1>${this.localize('components.insights-settings-view.title')}</h1>
-						<h2>${this.localize('components.insights-settings-view.description')}</h2>
+						<h1 class="d2l-heading-1">${this.localize('components.insights-settings-view.title')}</h1>
+						<h2 class="d2l-heading-2">${this.localize('components.insights-settings-view.description')}</h2>
 						<p>Mock content</p>
 						<p>Mock content</p>
 						<p>Mock content</p>
