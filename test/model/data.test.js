@@ -66,7 +66,7 @@ describe('Data', () => {
 
 	describe('constructor', () => {
 		it('should set configured roles', () => {
-			expect(new Data({ recordProvider, cardFilters, includeRoles: [123, 4, 567] }).selectedRoleIds)
+			expect(new Data({ recordProvider, includeRoles: [123, 4, 567] }).selectedRoleIds)
 				.to.deep.equal([123, 4, 567]);
 		});
 	});
