@@ -64,6 +64,13 @@ describe('Data', () => {
 		await new Promise(resolve => setTimeout(resolve, 0)); // allow recordProvider to resolve
 	});
 
+	describe('constructor', () => {
+		it('should set configured roles', () => {
+			expect(new Data({ recordProvider, cardFilters, includeRoles: [123, 4, 567] }).selectedRoleIds)
+				.to.deep.equal([123, 4, 567]);
+		});
+	});
+
 	describe('reload from server', () => {
 		it('maintains ou tree open state', async() => {
 			const oldTree = sut.orgUnitTree;
