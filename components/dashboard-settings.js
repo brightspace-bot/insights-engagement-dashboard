@@ -2,8 +2,29 @@ import { css, html, LitElement } from 'lit-element';
 import { heading1Styles, heading2Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
+import { saveSettings } from '../model/lms';
 
 class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
+
+	static get properties() {
+		return {
+			showCourseAccessCard: { type: Boolean, attribute: 'course-access-card', reflect: true },
+			showCoursesCol: { type: Boolean, attribute: 'courses-col', reflect: true },
+			showDiscussionsCard: { type: Boolean, attribute: 'discussions-card', reflect: true },
+			showDiscussionsCol: { type: Boolean, attribute: 'discussions-col', reflect: true },
+			showGradesCard: { type: Boolean, attribute: 'grades-card', reflect: true },
+			showGradeCol: { type: Boolean, attribute: 'grade-col', reflect: true },
+			showLastAccessCol: { type: Boolean, attribute: 'last-access-col', reflect: true },
+			showOverdueCard: { type: Boolean, attribute: 'overdue-card', reflect: true },
+			showResultsCard: { type: Boolean, attribute: 'results-card', reflect: true },
+			showSystemAccessCard: { type: Boolean, attribute: 'system-access-card', reflect: true },
+			showTicCol: { type: Boolean, attribute: 'tic-col', reflect: true },
+			showTicGradesCard: { type: Boolean, attribute: 'tic-grades-card', reflect: true },
+			lastAccessThresholdDays: { type: Number, attribute: 'last-access-threshold-days', reflect: true },
+			includeRoles: { type: Array, attribute: 'include-roles' }
+		};
+	}
+
 	static get styles() {
 		return [heading1Styles, heading2Styles, css`
 			:host {
@@ -106,6 +127,25 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		`];
 	}
 
+	constructor() {
+		super();
+
+		this.showCourseAccessCard = false;
+		this.showCoursesCol = false;
+		this.showDiscussionsCard = false;
+		this.showDiscussionsCol = false;
+		this.showGradesCard = false;
+		this.showGradeCol = false;
+		this.showLastAccessCol = false;
+		this.showOverdueCard = false;
+		this.showResultsCard = false;
+		this.showSystemAccessCard = false;
+		this.showTicCol = false;
+		this.showTicGradesCard = false;
+		this.lastAccessThresholdDays = 14;
+		this.includeRoles = [];
+	}
+
 	render() {
 		return html`
 			<div class="d2l-insights-settings-page-main-container">
@@ -147,9 +187,25 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		`;
 	}
 
-	_handleSaveAndClose() {
-		// out of scope: save settings
+	async _handleSaveAndClose() {
+		await saveSettings({
+			showResultsCard: this.showResultsCard,
+			showOverdueCard: this.showOverdueCard,
+			showDiscussionsCard: this.showDiscussionsCard,
+			showSystemAccessCard: this.showSystemAccessCard,
+			showGradesCard: this.showGradesCard,
+			showTicGradesCard: this.showTicGradesCard,
+			showCourseAccessCard: this.showCourseAccessCard,
+			showCoursesCol: this.showCoursesCol,
+			showGradeCol: this.showGradeCol,
+			showTicCol: this.showTicCol,
+			showDiscussionsCol: this.showDiscussionsCol,
+			showLastAccessCol: this.showLastAccessCol,
+			lastAccessThresholdDays: this.lastAccessThresholdDays,
+			includeRoles: this.includeRoles
+		});
 
+		// todo: apply settings to dashboard, probably by firing an event
 		this._returnToEngagementDashboard();
 	}
 
