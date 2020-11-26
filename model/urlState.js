@@ -99,7 +99,7 @@ export class UrlState {
 		return url.searchParams.get(this.key) || '';
 	}
 
-	// static history managment classes
+	// static history managment methods
 
 	static backOrResetView() {
 		if (this.currentId === 0) {
