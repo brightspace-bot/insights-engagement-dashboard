@@ -146,5 +146,11 @@ export default {
 	"components.insights-default-view-popup.emptyResultsFromNRecentSemesters": "This dashboard is designed to look at portions of your organization's engagement. You do not have permission to review data in any courses in the most recently created {numDefaultSemesters} semesters.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Expand to see the courses included in your default view",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Collapse the list of courses included in your default view",
-	"components.insights-default-view-popup.buttonOk": "Ok"
+	"components.insights-default-view-popup.buttonOk": "Ok",
+
+	"components.insights-settings-view.title": "Settings",
+	"components.insights-settings-view.description": "Set which metrics display in the Summary and Result Detail section of the Engagement Dashboard.",
+	"components.insights-settings-view.saveAndClose": "Save and Close",
+	"components.insights-settings-view.save": "Save",
+	"components.insights-settings-view.cancel": "Cancel"
 };

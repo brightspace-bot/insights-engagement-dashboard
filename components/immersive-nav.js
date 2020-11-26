@@ -58,14 +58,18 @@ class InsightsImmersiveNav extends Localizer(MobxLitElement) {
 		switch (this.view) {
 			case 'home': return this.localize('components.insights-engagement-dashboard.title');
 			case 'user': return this.localize('components.insights-engagement-dashboard.title-user-view');
+			case 'settings': return this.localize('components.insights-settings-view.title');
 		}
 		return this.localize('components.insights-engagement-dashboard.title');
 	}
 
 	get backText() {
 		switch (this.view) {
-			case 'home': return this.localize('components.insights-engagement-dashboard.backToInsightsPortal');
-			case 'user': return this.localize('components.insights-engagement-dashboard.backToEngagementDashboard');
+			case 'home':
+				return this.localize('components.insights-engagement-dashboard.backToInsightsPortal');
+			case 'user':
+			case 'settings':
+				return this.localize('components.insights-engagement-dashboard.backToEngagementDashboard');
 		}
 		return this.localize('components.insights-engagement-dashboard.backToInsightsPortal');
 	}
