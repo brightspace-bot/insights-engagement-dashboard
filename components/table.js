@@ -298,8 +298,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 	_renderBodyCell(cellValue, idx, rowIdx) {
 		const columnType = this.columnInfo[idx].columnType;
 		const clickable = this.columnInfo[idx].clickable;
-		const ariaLabelFn = this.columnInfo[idx].ariaLabelFn;
-		const ariaLabel = clickable ? ariaLabelFn(cellValue) : undefined;
+		const ariaLabel = clickable && this.columnInfo[idx].ariaLabelFn ? this.columnInfo[idx].ariaLabelFn(cellValue) : undefined;
 
 		const styles = {
 			'd2l-insights-table-cell': true,
