@@ -44,6 +44,7 @@ class UserDrill extends Localizer(MobxLitElement) {
 
 			.d2l-insights-user-drill-view-profile {
 				display: flex;
+				flex-wrap: wrap;
 			}
 
 			.d2l-insights-user-drill-view-profile-pic {
@@ -55,6 +56,7 @@ class UserDrill extends Localizer(MobxLitElement) {
 			.d2l-insights-user-drill-view-profile-name {
 				display: flex;
 				flex-direction: column;
+				min-width: 160px;
 			}
 
 			.d2l-insights-user-drill-view-profile-name > div.d2l-heading-2 {
