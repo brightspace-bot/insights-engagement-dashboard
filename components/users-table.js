@@ -315,7 +315,10 @@ class UsersTable extends SkeletonMixin(Localizer(MobxLitElement)) {
 			{
 				headerText: this.localize('components.insights-users-table.lastFirstName'),
 				columnType: COLUMN_TYPES.TEXT_SUB_TEXT,
-				clickable: true
+				clickable: true,
+				ariaLabelFn: (cellValue) => {
+					return this.localize('components.insights-users-table.openUserPage', { userName: cellValue[0] });
+				}
 			},
 			{
 				headerText: this.localize('components.insights-users-table.courses'),
