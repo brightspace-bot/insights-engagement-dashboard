@@ -58,18 +58,17 @@ export class UrlState {
 	}
 
 	save() {
-
 		const url = new URL(window.location.href);
 		const valueToSave = this.value;
 		if (valueToSave === '' && url.searchParams.has(this.key)) {
 			UrlState.currentId += 1;
 			url.searchParams.delete(this.key);
-			window.history.pushState({ count: UrlState.currentId }, '', url.toString());
+			UrlState.pushState(url);
 		}
 		else if (valueToSave !== this._savedValue(url)) {
 			UrlState.currentId += 1;
 			url.searchParams.set(this.key, valueToSave);
-			window.history.pushState({ count: UrlState.currentId }, '', url.toString());
+			UrlState.pushState(url);
 		}
 	}
 
@@ -86,7 +85,7 @@ export class UrlState {
 	}
 
 	_onpopstate(e) {
-		UrlState.currentId = e.state.count ? e.state.count : -1;
+		UrlState.currentId = (e.state !== null && e.state.count) ? e.state.count : 0;
 		if (e.state !== null) this._load();
 	}
 
@@ -108,11 +107,15 @@ export class UrlState {
 			window.history.back();
 		}
 	}
+
+	static pushState(url) {
+		window.history.pushState({ count: this.currentId }, '', url.toString());
+	}
 }
 
 export function resetUrlState() {
 	const url = new URL(window.location.href);
 	url.search = new URLSearchParams();
-	window.history.pushState({ count: UrlState.currentId }, '', url);
+	UrlState.pushState(url);
 	window.location.reload();
 }

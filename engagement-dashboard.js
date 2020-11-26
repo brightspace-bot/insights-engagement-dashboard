@@ -84,8 +84,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this.telemetryEndpoint = '';
 		this.telemetryId = '';
 
-		this.lastUrl = '';
-
 		this.showCourseAccessCard = false;
 		this.showCoursesCol = false;
 		this.showDiscussionsCard = false;
