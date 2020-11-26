@@ -409,11 +409,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return html`<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>`;
 	}
 
-	_backToHomeHandler(event) {
-		event.stopPropagation();
-		this.currentView = 'home';
-	}
-
 	_exportToCsv() {
 		const usersTable = this.shadowRoot.querySelector('d2l-insights-users-table');
 		ExportData.userDataToCsv(usersTable.dataForExport, usersTable.headersForExport);
