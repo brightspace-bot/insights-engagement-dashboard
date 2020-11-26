@@ -11,7 +11,12 @@ export function enableUrlState() {
 export function isDefault() {
 	// this function does not attempt to handle
 	// pages that include query parameters for the server in their default state
-	return window.location.search === '';
+	const searchParams = new URLSearchParams(window.location.search);
+	const keys = Array.from(searchParams.keys());
+
+	// there are no query params or one `v` parame pointed to the home view
+	return keys.length < 1
+		|| (keys.length < 2 && keys[0] === 'v' && searchParams.get('v').startsWith('home'));
 }
 
 export function setStateForTesting(key, value) {

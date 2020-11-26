@@ -98,7 +98,7 @@ export class Tree {
 		if (this._nodes.size === 0) {
 			return [...this._state]
 				.filter(([, state]) => state === 'explicit')
-				.flat();
+				.map(([id]) => id);
 		}
 
 		// if there are nodes, only return the root of each selected subtree

@@ -20,6 +20,7 @@ import './components/user-drill-view.js';
 import './components/immersive-nav.js';
 
 import { css, html } from 'lit-element/lit-element.js';
+import { DefaultViewState, ViewState } from './model/view-state';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
@@ -38,13 +39,10 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
 import { TimeInContentVsGradeFilter } from './components/time-in-content-vs-grade-card';
 import { toJS } from 'mobx';
-
-const insightsPortalEndpoint = '/d2l/ap/insightsPortal/main.d2l';
-const engagementDashboardEndpoint = '/d2l/ap/visualizations/dashboards/engagement';
+import { USER } from './consts.js';
 
 /**
  * @property {Boolean} isDemo - if true, use canned data; otherwise call the LMS
- * @property {String} currentView - is the name of supported view. Valid values: home, user, settings
  * @property {String} telemetryEndpoint - endpoint for gathering telemetry performance data
  * @property {String} telemetryId - GUID that is used to group performance metrics for each separate page load
  */
@@ -54,7 +52,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return {
 			isDemo: { type: Boolean, attribute: 'demo' },
 			orgUnitId: { type: Number, attribute: 'org-unit-id' },
-			currentView: { type: String, attribute: 'view', reflect: true },
 			telemetryEndpoint: { type: String, attribute: 'telemetry-endpoint' },
 			telemetryId: { type: String, attribute: 'telemetry-id' },
 
@@ -72,16 +69,18 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			showTicCol: { type: Boolean, attribute: 'tic-col', reflect: true },
 			showTicGradesCard: { type: Boolean, attribute: 'tic-grades-card', reflect: true },
 			lastAccessThresholdDays: { type: Number, attribute: 'last-access-threshold-days', reflect: true },
-			includeRoles: { type: Array, attribute: 'include-roles', converter: v => v.split(',') }
+			includeRoles: { type: String, attribute: 'include-roles', reflect: true }
 		};
 	}
 
 	constructor() {
 		super();
 
+		this.__defaultViewPopupShown = false; // a test-and-set variable: will always be true after the first read
+		this._viewState = DefaultViewState;
+
 		this.orgUnitId = 0;
 		this.isDemo = false;
-		this.currentView = 'home';
 		this.telemetryEndpoint = '';
 		this.telemetryId = '';
 
@@ -98,9 +97,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this.showTicCol = false;
 		this.showTicGradesCard = false;
 		this.lastAccessThresholdDays = 14;
-		this.includeRoles = [];
-
-		this.linkToInsightsPortal = ''; // initialized in firstUpdated to get the actual orgUnitId value
+		this.includeRoles = '';
 	}
 
 	static get styles() {
@@ -201,51 +198,60 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	firstUpdated() {
-		const linkToInsightsPortal = new URL(insightsPortalEndpoint, window.location.origin);
-		linkToInsightsPortal.searchParams.append('ou', this.orgUnitId);
-		this.linkToInsightsPortal = linkToInsightsPortal.toString();
+		this._viewState = new ViewState({});
+		// if current view is not provided in url
+		if (!this._viewState.currentView) {
+			this._viewState.setHomeView();
+		}
+
+		// moved loadData call here because its inderect call in render function via _data getter causes nested render call with exception
+		this._serverData.loadData({ defaultView: isDefault() });
+	}
+
+	get currentView() {
+		return this._viewState.currentView;
 	}
 
 	render() {
 		let innerView = html``;
-		let href = '';
-		let backLinkText = '';
 		switch (this.currentView) {
 			case 'home':
 				innerView = this._renderHomeView();
-				href = this.linkToInsightsPortal;
-				backLinkText = this.localize('components.insights-engagement-dashboard.backToInsightsPortal');
 				break;
 			case 'user':
 				innerView =  this._renderUserDrillView();
-				href = new URL(engagementDashboardEndpoint, window.location.origin).toString();
-				backLinkText = this.localize('components.insights-engagement-dashboard.backToEngagementDashboard');
 				break;
 		}
 
 		return html`
 			<d2l-insights-immersive-nav
-				href="${href}"
-				main-text="${this.localize('components.insights-engagement-dashboard.title')}"
-				back-text="${backLinkText}"
-				back-text-short="${this.localize('components.insights-engagement-dashboard.backLinkTextShort')}"
+				.viewState="${this._viewState}"
+				org-unit-id="${this.orgUnitId}"
 			></d2l-insights-immersive-nav>
+
 			${ innerView }
 		`;
 	}
 
 	_renderUserDrillView() {
+		const userId = this._viewState.userViewUserId;
+		const userData = this._serverData.userDictionary.get(userId);
+
+		if (!userData) {
+			console.log(`User id ${this._userId} is not provided.`);
+			return;
+		}
+
 		const user = {
-			firstName: 'Dane',
-			lastName: 'Clarie',
-			username: 'claire.dane',
-			userId: 887
+			firstName: userData[USER.FIRST_NAME],
+			lastName: userData[USER.LAST_NAME],
+			username: userData[USER.USERNAME],
+			userId: userId
 		};
 
 		return html`
 			<d2l-insights-user-drill-view
 				.user="${user}"
-				@d2l-insights-user-drill-view-back="${this._backToHomeHandler}"
 			></d2l-insights-user-drill-view>
 		`;
 	}
@@ -287,11 +293,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					.preSelected="${this._serverData.selectedSemesterIds}"
 					@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
 				></d2l-insights-semester-filter>
-				<d2l-insights-role-filter
-					@d2l-insights-role-filter-change="${this._roleFilterChange}"
-					.selected="${this._serverData.selectedRoleIds}"
-					?demo="${this.isDemo}"
-				></d2l-insights-role-filter>
 			</div>
 			<d2l-insights-message-container
 				.data="${this._data}"
@@ -315,7 +316,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			</div>
 			${this._userTable}
 			<d2l-insights-default-view-popup
-				?opened=${Boolean(this._serverData.isDefaultView)}
+				?opened=${Boolean(this._serverData.isDefaultView && !this._defaultViewPopupShown)}
 				.data="${this._serverData}">
 			</d2l-insights-default-view-popup>
 
@@ -407,6 +408,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		window.history.back();
 	}
 
+	get _defaultViewPopupShown() {
+		const currentVal = this.__defaultViewPopupShown;
+		this.__defaultViewPopupShown = true;
+		return currentVal;
+	}
+
 	get _isLoading() {
 		return this._data.isLoading;
 	}
@@ -439,8 +446,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		if (!this.__serverData) {
 
 			this.__serverData = new Data({
-				isDefault: isDefault(),
-				recordProvider: this.isDemo ? fetchDemoData : fetchData
+				recordProvider: this.isDemo ? fetchDemoData : fetchData,
+				includeRoles: this.includeRoles.split(',').filter(x => x).map(Number)
 			});
 		}
 
@@ -517,6 +524,13 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			measures: [event.detail.value],
 			action: 'PageLoad'
 		});
+	}
+
+	_userTableCellClicked(event) {
+		const nameCellIdx = 1;
+		if (this._viewState && event.detail.columnIdx === nameCellIdx) {
+			this._viewState.setUserView(event.detail.userId);
+		}
 	}
 
 	connectedCallback() {
