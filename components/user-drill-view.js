@@ -11,7 +11,6 @@ import { SemesterSelectorFilter } from '../model/selectorFilters';
 
 /**
  * @property {Object} user - {firstName, lastName, username, userId}
- * @fires d2l-insights-user-drill-view-back
  */
 class UserDrill extends Localizer(MobxLitElement) {
 	static get properties() {
@@ -51,6 +50,7 @@ class UserDrill extends Localizer(MobxLitElement) {
 
 			.d2l-insights-user-drill-view-profile {
 				display: flex;
+				flex-wrap: wrap;
 			}
 
 			.d2l-insights-user-drill-view-profile-pic {
@@ -62,6 +62,7 @@ class UserDrill extends Localizer(MobxLitElement) {
 			.d2l-insights-user-drill-view-profile-name {
 				display: flex;
 				flex-direction: column;
+				min-width: 160px;
 			}
 
 			.d2l-insights-user-drill-view-profile-name > div.d2l-heading-2 {
@@ -78,7 +79,7 @@ class UserDrill extends Localizer(MobxLitElement) {
 				width: 100;
 			}
 
-			.d2l-main-action-button-group {
+			.d2l-insights-user-drill-view-action-button-group {
 				flex-grow: 1;
 				margin: 0.7em;
 				max-width: 300px;
@@ -100,10 +101,6 @@ class UserDrill extends Localizer(MobxLitElement) {
 
 	_composeEmailHandler() {
 		// outside the scope of the story
-		/**
-		 * @event d2l-insights-user-drill-view-back
-		 */
-		this.dispatchEvent(new CustomEvent('d2l-insights-user-drill-view-back'));
 	}
 
 	// pass the selections up to the root where data is managed
@@ -129,19 +126,19 @@ class UserDrill extends Localizer(MobxLitElement) {
 				</div>
 
 				<d2l-action-button-group
-						class="d2l-main-action-button-group"
+						class="d2l-insights-user-drill-view-action-button-group"
 						min-to-show="0"
 						max-to-show="2"
 						opener-type="more"
 					>
 					<d2l-button-subtle
 						icon="d2l-tier1:export"
-						text=${this.localize('components.insights-user-drill-view.exportToCsv')}
+						text=${this.localize('components.insights-engagement-dashboard.exportToCsv')}
 						@click="${this._exportToCsvHandler}">
 					</d2l-button-subtle>
 					<d2l-button-subtle
 						icon="d2l-tier1:print"
-						text=${this.localize('components.insights-user-drill-view.print')}
+						text=${this.localize('components.insights-engagement-dashboard.print')}
 						@click="${this._printHandler}">
 					</d2l-button-subtle>
 				</d2l-action-button-group>
@@ -151,7 +148,7 @@ class UserDrill extends Localizer(MobxLitElement) {
 			<d2l-button
 				primary
 				@click="${this._composeEmailHandler}"
-			>${this.localize('components.insights-user-drill-view.emailButton')}</d2l-button>
+			>${this.localize('components.insights-engagement-dashboard.emailButton')}</d2l-button>
 
 			<div class="d2l-insights-view-filters-container">
 				<d2l-insights-ou-filter
