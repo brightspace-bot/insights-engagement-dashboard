@@ -69,7 +69,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			showTicCol: { type: Boolean, attribute: 'tic-col', reflect: true },
 			showTicGradesCard: { type: Boolean, attribute: 'tic-grades-card', reflect: true },
 			lastAccessThresholdDays: { type: Number, attribute: 'last-access-threshold-days', reflect: true },
-			includeRoles: { type: Array, attribute: 'include-roles', converter: v => v.split(',') }
+			includeRoles: { type: String, attribute: 'include-roles', reflect: true }
 		};
 	}
 
@@ -97,7 +97,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this.showTicCol = false;
 		this.showTicGradesCard = false;
 		this.lastAccessThresholdDays = 14;
-		this.includeRoles = [];
+		this.includeRoles = '';
 	}
 
 	static get styles() {
@@ -293,10 +293,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 					.preSelected="${this._serverData.selectedSemesterIds}"
 					@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
 				></d2l-insights-semester-filter>
-				<d2l-insights-role-filter
-					@d2l-insights-role-filter-change="${this._roleFilterChange}"
-					?demo="${this.isDemo}"
-				></d2l-insights-role-filter>
 			</div>
 			<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
 			<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
@@ -431,7 +427,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		if (!this.__serverData) {
 
 			this.__serverData = new Data({
-				recordProvider: this.isDemo ? fetchDemoData : fetchData
+				recordProvider: this.isDemo ? fetchDemoData : fetchData,
+				includeRoles: this.includeRoles.split(',').filter(x => x).map(Number)
 			});
 		}
 

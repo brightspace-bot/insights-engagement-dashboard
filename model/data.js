@@ -8,7 +8,7 @@ import { Tree } from '../components/tree-filter';
  * Data from the server, along with filter settings that are passed in server calls.
  */
 export class Data {
-	constructor({ recordProvider }) {
+	constructor({ recordProvider, includeRoles }) {
 		this.recordProvider = recordProvider;
 		this.orgUnitTree = new Tree({});
 		this.userDictionary = null;
@@ -30,7 +30,7 @@ export class Data {
 			semesterTypeId: null,
 			numDefaultSemesters: 0,
 			selectedOrgUnitIds: [],
-			selectedRolesIds: [],
+			selectedRolesIds: includeRoles || [],
 			selectedSemestersIds: [],
 			defaultViewOrgUnitIds: null
 		};
