@@ -62,10 +62,12 @@ class LastAccessCard extends SkeletonMixin(Localizer(MobxLitElement)) {
 	}
 
 	get _cardMessage() {
-		return this.localize(
-			'components.insights-engagement-dashboard.lastSystemAccessMessage',
-			{ thresholdDays: this.filter.thresholdDays }
-		);
+		return this.filter.thresholdDays !== 1 ?
+			this.localize(
+				'components.insights-engagement-dashboard.lastSystemAccessMessage',
+				{ thresholdDays: this.filter.thresholdDays }
+			) :
+			this.localize('components.insights-engagement-dashboard.lastSystemAccessMessageOneDay');
 	}
 
 	get _cardTitle() {
