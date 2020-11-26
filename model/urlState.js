@@ -107,7 +107,7 @@ export class UrlState {
 	}
 
 	static pushState(url) {
-		UrlState.currentId += 1;
+		this.currentId += 1;
 		window.history.pushState({ id: this.currentId }, '', url.toString());
 	}
 }
