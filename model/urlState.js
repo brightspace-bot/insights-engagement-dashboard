@@ -52,7 +52,7 @@ export class UrlState {
 	}
 
 	save() {
-		// don't save state changes if we are restoring an old state
+
 		const url = new URL(window.location.href);
 		const valueToSave = this.value;
 		if (valueToSave === '' && url.searchParams.has(this.key)) {
