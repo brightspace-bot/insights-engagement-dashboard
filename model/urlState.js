@@ -43,9 +43,10 @@ export function clearUrlState() {
  */
 export class UrlState {
 
+	static currentId = 0;
+
 	constructor(wrapped) {
 		this._wrapped = wrapped;
-
 		if (isDisabledForTesting) return;
 
 		// load state from the url on setup, and again when the user hits forward or back;
@@ -61,12 +62,14 @@ export class UrlState {
 		const url = new URL(window.location.href);
 		const valueToSave = this.value;
 		if (valueToSave === '' && url.searchParams.has(this.key)) {
+			UrlState.currentId += 1;
 			url.searchParams.delete(this.key);
-			window.history.pushState({}, '', url.toString());
+			window.history.pushState({ count: UrlState.currentId }, '', url.toString());
 		}
 		else if (valueToSave !== this._savedValue(url)) {
+			UrlState.currentId += 1;
 			url.searchParams.set(this.key, valueToSave);
-			window.history.pushState({}, '', url.toString());
+			window.history.pushState({ count: UrlState.currentId }, '', url.toString());
 		}
 	}
 
@@ -83,6 +86,7 @@ export class UrlState {
 	}
 
 	_onpopstate(e) {
+		UrlState.currentId = e.state.count ? e.state.count : -1;
 		if (e.state !== null) this._load();
 	}
 
@@ -94,4 +98,21 @@ export class UrlState {
 	_savedValue(url) {
 		return url.searchParams.get(this.key) || '';
 	}
+
+	// static history managment classes
+
+	static backOrResetView() {
+		if (this.currentId === 0) {
+			resetUrlState();
+		} else {
+			window.history.back();
+		}
+	}
+}
+
+export function resetUrlState() {
+	const url = new URL(window.location.href);
+	url.search = new URLSearchParams();
+	window.history.pushState({ count: UrlState.currentId }, '', url);
+	window.location.reload();
 }

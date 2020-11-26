@@ -22,6 +22,7 @@ import './components/immersive-nav.js';
 import { css, html } from 'lit-element/lit-element.js';
 import { DefaultViewState, ViewState } from './model/view-state';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
+import { isDefault, UrlState } from './model/urlState';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
@@ -32,7 +33,6 @@ import { fetchData } from './model/lms.js';
 import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
-import { isDefault } from './model/urlState';
 import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
@@ -83,6 +83,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		this.isDemo = false;
 		this.telemetryEndpoint = '';
 		this.telemetryId = '';
+
+		this.lastUrl = '';
 
 		this.showCourseAccessCard = false;
 		this.showCoursesCol = false;
@@ -405,7 +407,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	_handleUndo() {
-		window.history.back();
+		UrlState.backOrResetView();
 	}
 
 	get _defaultViewPopupShown() {
