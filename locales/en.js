@@ -11,7 +11,8 @@ export default {
 	"components.insights-engagement-dashboard.resultsReturned": "Users returned within results.",
 	"components.insights-engagement-dashboard.overdueAssignments": "Users currently have one or more overdue assignments.",
 	"components.insights-engagement-dashboard.overdueAssignmentsHeading": "Overdue Assignments",
-	"components.insights-engagement-dashboard.lastSystemAccess": "Users have no system access in the last 14 days.",
+	"components.insights-engagement-dashboard.lastSystemAccessMessage": 'Users have no system access in the last {thresholdDays} days.',
+	"components.insights-engagement-dashboard.lastSystemAccessMessageOneDay": 'Users have no system access in the last day.',
 	"components.insights-engagement-dashboard.lastSystemAccessHeading": "System Access",
 	"components.insights-engagement-dashboard.tooManyResults": "There are too many results in your filters. Please refine your selection.",
 	"components.insights-engagement-dashboard.learMore": "Learn More",
@@ -57,6 +58,7 @@ export default {
 	"components.insights-users-table.title": "User Details",
 	"components.insights-users-table.loadingPlaceholder": "Loading",
 	"components.insights-users-table.lastFirstName": "Name",
+	"components.insights-users-table.openUserPage": "Open user's page for {userName}",
 	"components.insights-users-table.lastAccessedSystem": "Last Accessed System",
 	"components.insights-users-table.courses": "Courses",
 	"components.insights-users-table.avgGrade": "Average Grade",
@@ -145,5 +147,11 @@ export default {
 	"components.insights-default-view-popup.emptyResultsFromNRecentSemesters": "This dashboard is designed to look at portions of your organization's engagement. You do not have permission to review data in any courses in the most recently created {numDefaultSemesters} semesters.",
 	"components.insights-default-view-popup.expandDefaultCourseList": "Expand to see the courses included in your default view",
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Collapse the list of courses included in your default view",
-	"components.insights-default-view-popup.buttonOk": "Ok"
+	"components.insights-default-view-popup.buttonOk": "Ok",
+
+	"components.insights-settings-view.title": "Settings",
+	"components.insights-settings-view.description": "Set which metrics display in the Summary and Result Detail section of the Engagement Dashboard.",
+	"components.insights-settings-view.saveAndClose": "Save and Close",
+	"components.insights-settings-view.save": "Save",
+	"components.insights-settings-view.cancel": "Cancel"
 };

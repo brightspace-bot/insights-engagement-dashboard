@@ -18,6 +18,7 @@ import './components/message-container.js';
 import './components/default-view-popup.js';
 import './components/user-drill-view.js';
 import './components/immersive-nav.js';
+import './components/dashboard-settings';
 
 import { css, html } from 'lit-element/lit-element.js';
 import { DefaultViewState, ViewState } from './model/view-state';
@@ -219,7 +220,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				innerView = this._renderHomeView();
 				break;
 			case 'user':
-				innerView =  this._renderUserDrillView();
+				innerView = this._renderUserDrillView();
+				break;
+			case 'settings':
+				innerView = this._renderSettingsView();
 				break;
 		}
 
@@ -238,7 +242,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		const userData = this._serverData.userDictionary.get(userId);
 
 		if (!userData) {
-			console.log(`User id ${this._userId} is not provided.`);
 			return;
 		}
 
@@ -256,6 +259,14 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		`;
 	}
 
+	_renderSettingsView() {
+		return html`
+			<d2l-insights-engagement-dashboard-settings
+				@d2l-insights-settings-view-back="${this._backToHomeHandler}"
+			></d2l-insights-engagement-dashboard-settings>
+		`;
+	}
+
 	_renderHomeView() {
 		return html`
 
@@ -266,7 +277,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				<d2l-action-button-group
 					class="d2l-main-action-button-group"
 					min-to-show="0"
-					max-to-show="2"
 					opener-type="more"
 				>
 					<d2l-button-subtle
@@ -278,6 +288,11 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 						icon="d2l-tier1:help"
 						text=${this.localize('components.insights-engagement-dashboard.learMore')}
 						@click="${this._openHelpLink}">
+					</d2l-button-subtle>
+					<d2l-button-subtle
+						icon="d2l-tier1:gear"
+						text=${this.localize('components.insights-settings-view.title')}
+						@click="${this._openSettingsPage}">
 					</d2l-button-subtle>
 				</d2l-action-button-group>
 			</div>
@@ -427,7 +442,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			// on the results of the other: we avoid this by building them on specific sets of filters.
 			const rowFilteredData = new FilteredData(this._serverData)
 				.withFilter(new OverdueAssignmentsFilter())
-				.withFilter(new LastAccessFilter())
+				.withFilter(new LastAccessFilter(this.lastAccessThresholdDays))
 				.withFilter(new CourseLastAccessFilter())
 				.withFilter(new CurrentFinalGradesFilter())
 				.withFilter(new DiscussionActivityFilter());
@@ -466,8 +481,20 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return this.__telemetryHelper;
 	}
 
+	_backToHomeHandler() {
+		if (this._viewState) {
+			this._viewState.setHomeView();
+		}
+	}
+
 	_openHelpLink() {
 		window.open('https://community.brightspace.com/s/article/Brightspace-Performance-Plus-Analytics-Administrator-Guide', '_blank');
+	}
+
+	_openSettingsPage() {
+		if (this._viewState) {
+			this._viewState.setSettingsView();
+		}
 	}
 
 	_roleFilterChange(event) {
