@@ -277,7 +277,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				<d2l-action-button-group
 					class="d2l-main-action-button-group"
 					min-to-show="0"
-					max-to-show="2"
 					opener-type="more"
 				>
 					<d2l-button-subtle
