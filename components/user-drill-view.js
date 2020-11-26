@@ -6,8 +6,6 @@ import { bodySmallStyles, heading2Styles } from '@brightspace-ui/core/components
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { RECORD } from '../consts';
-import { SemesterSelectorFilter } from '../model/selectorFilters';
 
 /**
  * @property {Object} user - {firstName, lastName, username, userId}
