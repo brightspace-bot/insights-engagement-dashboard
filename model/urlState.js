@@ -61,12 +61,10 @@ export class UrlState {
 		const url = new URL(window.location.href);
 		const valueToSave = this.value;
 		if (valueToSave === '' && url.searchParams.has(this.key)) {
-			UrlState.currentId += 1;
 			url.searchParams.delete(this.key);
 			UrlState.pushState(url);
 		}
 		else if (valueToSave !== this._savedValue(url)) {
-			UrlState.currentId += 1;
 			url.searchParams.set(this.key, valueToSave);
 			UrlState.pushState(url);
 		}
@@ -85,7 +83,7 @@ export class UrlState {
 	}
 
 	_onpopstate(e) {
-		UrlState.currentId = (e.state !== null && e.state.count) ? e.state.count : 0;
+		UrlState.currentId = (e.state !== null && e.state.id) ? e.state.id : 0;
 		if (e.state !== null) this._load();
 	}
 
@@ -109,7 +107,8 @@ export class UrlState {
 	}
 
 	static pushState(url) {
-		window.history.pushState({ count: this.currentId }, '', url.toString());
+		UrlState.currentId += 1;
+		window.history.pushState({ id: this.currentId }, '', url.toString());
 	}
 }
 
