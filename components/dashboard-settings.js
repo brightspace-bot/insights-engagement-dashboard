@@ -1,3 +1,8 @@
+import '@brightspace-ui/core/components/list/list';
+import '@brightspace-ui/core/components/list/list-item';
+import '@brightspace-ui/core/components/tabs/tabs';
+import '@brightspace-ui/core/components/tabs/tab-panel';
+
 import { css, html, LitElement } from 'lit-element';
 import { heading1Styles, heading2Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
@@ -110,16 +115,28 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		return html`
 			<div class="d2l-insights-settings-page-main-container">
 				<div class="d2l-insights-settings-page-main-content">
-						<h1 class="d2l-heading-1">${this.localize('components.insights-settings-view.title')}</h1>
-						<h2 class="d2l-heading-2">${this.localize('components.insights-settings-view.description')}</h2>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
+					<h1 class="d2l-heading-1">${this.localize('components.insights-settings-view.title')}</h1>
+					<h2 class="d2l-heading-2">${this.localize('components.insights-settings-view.description')}</h2>
+
+					<d2l-tabs>
+						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleSummaryMetrics')}">
+							<!-- out of scope: roles selection -->
+
+							<!-- card selection -->
+							<d2l-list>
+								<d2l-list-item key="1" selectable>
+
+								</d2l-list-item>
+								<d2l-list-item key="2" selectable>Test2</d2l-list-item>
+								<d2l-list-item key="3" selectable>Test3</d2l-list-item>
+								<d2l-list-item key="4" selectable>Test4</d2l-list-item>
+							</d2l-list>
+						</d2l-tab-panel>
+
+						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleResultsTableMetrics')}">
+							<!-- out of scope: users table column selection -->
+						</d2l-tab-panel>
+					</d2l-tabs>
 				</div>
 			</div>
 

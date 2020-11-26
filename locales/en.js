@@ -149,6 +149,8 @@ export default {
 
 	"components.insights-settings-view.title": "Settings",
 	"components.insights-settings-view.description": "Set which metrics display in the Summary and Result Detail section of the Engagement Dashboard.",
+	"components.insights-settings-view.tabTitleSummaryMetrics": "Summary Metrics",
+	"components.insights-settings-view.tabTitleResultsTableMetrics": "Results Table Metrics",
 	"components.insights-settings-view.saveAndClose": "Save and Close",
 	"components.insights-settings-view.save": "Save",
 	"components.insights-settings-view.cancel": "Cancel"
