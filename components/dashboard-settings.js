@@ -188,7 +188,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 	}
 
 	async _handleSaveAndClose() {
-		await saveSettings({
+		const settings = {
 			showResultsCard: this.showResultsCard,
 			showOverdueCard: this.showOverdueCard,
 			showDiscussionsCard: this.showDiscussionsCard,
@@ -203,14 +203,16 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			showLastAccessCol: this.showLastAccessCol,
 			lastAccessThresholdDays: this.lastAccessThresholdDays,
 			includeRoles: this.includeRoles
-		});
+		};
+		await saveSettings(settings);
 
-		// todo: apply settings to dashboard, probably by firing an event
-		this._returnToEngagementDashboard();
+		this._returnToEngagementDashboard(settings);
 	}
 
-	_returnToEngagementDashboard() {
-		this.dispatchEvent(new Event('d2l-insights-settings-view-back'));
+	_returnToEngagementDashboard(settings) {
+		this.dispatchEvent(new CustomEvent('d2l-insights-settings-view-back', {
+			detail: settings
+		}));
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard-settings', DashboardSettings);
