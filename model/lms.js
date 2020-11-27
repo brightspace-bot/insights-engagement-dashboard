@@ -3,6 +3,7 @@ const semestersEndpoint = '/d2l/api/ap/unstable/insights/data/semesters';
 const dataEndpoint = '/d2l/api/ap/unstable/insights/data/engagement';
 const relevantChildrenEndpoint = orgUnitId => `/d2l/api/ap/unstable/insights/data/orgunits/${orgUnitId}/children`;
 const ouSearchEndpoint = '/d2l/api/ap/unstable/insights/data/orgunits';
+const saveSettingsEndpoint = '/d2l/api/ap/unstable/insights/mysettings/engagement';
 
 /**
  * @param {[Number]} roleIds
@@ -124,4 +125,40 @@ export function fetchLastSearch(selectedSemesterIds) {
 	}
 
 	return null;
+}
+
+/**
+ * Save user preferences to the LMS.
+ * @param settings Must contain values for all the card and column settings (validated on call);
+ * "lastAccessThresholdDays" (number) and "includeRoles" (array) fields are optional.
+ */
+export async function saveSettings(settings) {
+	const requiredFields = [
+		'showResultsCard',
+		'showOverdueCard',
+		'showDiscussionsCard',
+		'showSystemAccessCard',
+		'showGradesCard',
+		'showTicGradesCard',
+		'showCourseAccessCard',
+		'showCoursesCol',
+		'showGradeCol',
+		'showTicCol',
+		'showDiscussionsCol',
+		'showLastAccessCol'
+	];
+	requiredFields.forEach(field => {
+		if (settings[field] !== true && settings[field] !== false) {
+			throw new Error(`save settings: missing required field ${field}`);
+		}
+	});
+
+	const url = new URL(saveSettingsEndpoint, window.location.origin);
+	await fetch(url.toString(), {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(settings)
+	});
 }
