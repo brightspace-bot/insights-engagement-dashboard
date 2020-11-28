@@ -2,15 +2,23 @@ import '@brightspace-ui/core/components/list/list';
 import '@brightspace-ui/core/components/list/list-item';
 import '@brightspace-ui/core/components/tabs/tabs';
 import '@brightspace-ui/core/components/tabs/tab-panel';
+import '@brightspace-ui/core/components/inputs/input-number';
 
+import '../components/summary-card';
+import '../components/svg/course-access-thumbnail.svg';
+import '../components/svg/current-grade-thumbnail.svg';
+import '../components/svg/tic-vs-grade-thumbnail.svg';
+import '../components/svg/disc-activity-thumbnail.svg';
+
+import { bodySmallStyles, bodyStandardStyles, heading1Styles, heading2Styles, heading3Styles }
+	from '@brightspace-ui/core/components/typography/styles.js';
 import { css, html, LitElement } from 'lit-element';
-import { heading1Styles, heading2Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
 class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 	static get styles() {
-		return [heading1Styles, heading2Styles, css`
+		return [bodySmallStyles, bodyStandardStyles, heading1Styles, heading2Styles, heading3Styles, css`
 			:host {
 				display: flex;
 				flex-direction: column; /* required so the footer actually appears on-screen */
@@ -54,6 +62,20 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 			h1.d2l-heading-1, h2.d2l-heading-2 {
 				font-weight: normal;
+			}
+
+			h3.d2l-heading-3 {
+				margin-top: 0;
+			}
+
+			.d2l-demo-card {
+				margin: 10px 30px;
+			}
+
+			.d2l-system-access-edit-input {
+				display: inline-block;
+				width: 3.5rem;
+				z-index: 2; /* otherwise the input isn't selectable */
 			}
 
 			/* buttons */
@@ -122,15 +144,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleSummaryMetrics')}">
 							<!-- out of scope: roles selection -->
 
-							<!-- card selection -->
-							<d2l-list>
-								<d2l-list-item key="1" selectable>
-
-								</d2l-list-item>
-								<d2l-list-item key="2" selectable>Test2</d2l-list-item>
-								<d2l-list-item key="3" selectable>Test3</d2l-list-item>
-								<d2l-list-item key="4" selectable>Test4</d2l-list-item>
-							</d2l-list>
+							${this._renderCardSelectionList()}
 						</d2l-tab-panel>
 
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleResultsTableMetrics')}">
@@ -139,7 +153,85 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 					</d2l-tabs>
 				</div>
 			</div>
+			${this._renderFooter()}
+		`;
+	}
 
+	_renderCardSelectionList() {
+		return html`
+			<d2l-list>
+				<d2l-list-item key="1" selectable>
+					<d2l-insights-current-grade-thumbnail class="d2l-demo-card"></d2l-insights-current-grade-thumbnail>
+					<div>
+						<h3 class="d2l-heading-3">${this.localize('components.insights-current-final-grade-card.currentGrade')}</h3>
+						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.currentGradeDesc')}</p>
+					</div>
+				</d2l-list-item>
+				<d2l-list-item key="2" selectable>
+					<d2l-insights-course-access-thumbnail class="d2l-demo-card"></d2l-insights-course-access-thumbnail>
+					<div>
+						<h3 class="d2l-heading-3">${this.localize('components.insights-course-last-access-card.courseAccess')}</h3>
+						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.courseAccessDesc')}</p>
+					</div>
+				</d2l-list-item>
+				<d2l-list-item key="3" selectable>
+					<d2l-insights-tic-vs-grade-thumbnail class="d2l-demo-card"></d2l-insights-tic-vs-grade-thumbnail>
+					<div>
+						<h3 class="d2l-heading-3">${this.localize('components.insights-time-in-content-vs-grade-card.timeInContentVsGrade')}</h3>
+						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.ticVsGradeDesc')}</p>
+					</div>
+				</d2l-list-item>
+				<d2l-list-item key="4" selectable>
+					<d2l-labs-summary-card
+						class="d2l-demo-card"
+						card-title="${this.localize('components.insights-engagement-dashboard.overdueAssignmentsHeading')}"
+						card-value="22"
+						card-message="${this.localize('components.insights-engagement-dashboard.overdueAssignments')}">
+					</d2l-labs-summary-card>
+					<div>
+						<h3 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.overdueAssignmentsHeading')}</h3>
+						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.overdueAssignmentsDesc')}</p>
+					</div>
+				</d2l-list-item>
+				<d2l-list-item key="5" selectable>
+					<d2l-labs-summary-card
+						class="d2l-demo-card"
+						card-title="${this.localize('components.insights-engagement-dashboard.lastSystemAccessHeading')}"
+						card-value="10"
+						card-message="${this.localize('components.insights-engagement-dashboard.lastSystemAccess')}">
+					</d2l-labs-summary-card>
+					<div>
+						<h3 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.lastSystemAccessHeading')}</h3>
+						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.systemAccessDesc')}</p>
+						${this._renderSystemAccessEditText()}
+					</div>
+				</d2l-list-item>
+				<d2l-list-item key="6" selectable>
+					<d2l-insights-disc-activity-thumbnail class="d2l-demo-card"></d2l-insights-disc-activity-thumbnail>
+					<div>
+						<h3 class="d2l-heading-3">${this.localize('components.insights-discussion-activity-card.cardTitle')}</h3>
+						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.discActivityDesc')}</p>
+					</div>
+				</d2l-list-item>
+			</d2l-list>
+		`;
+	}
+
+	_renderSystemAccessEditText() {
+		const text = this.localize('components.insights-settings-view.systemAccessEdit', { num: '{num}' }).split('{num}');
+
+		// TODO: use current value as placeholder
+		return html`
+			<div>
+				<span class="d2l-body-small">${text[0]}</span>
+				<d2l-input-number class="d2l-system-access-edit-input"></d2l-input-number>
+				<span class="d2l-body-small">${text[1]}</span>
+			</div>
+		`;
+	}
+
+	_renderFooter() {
+		return html`
 			<footer>
 				<div class="d2l-insights-settings-page-footer">
 					<d2l-button
