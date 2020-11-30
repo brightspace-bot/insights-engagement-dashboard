@@ -28,8 +28,8 @@ class RoleList extends Localizer(LitElement) {
 			}
 
 			span {
-				margin-top: 6px;
 				margin-bottom: 24px;
+				margin-top: 6px;
 			}
 
 			d2l-input-checkbox {
