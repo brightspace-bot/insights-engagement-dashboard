@@ -266,6 +266,20 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.serverData="${this._serverData}"
 				@d2l-insights-settings-view-back="${this._backToHomeHandler}"
 				@d2l-insights-settings-view-save-and-close="${this._settingSaveAndCloseHandler}"
+				?course-access-card="${this.showCourseAccessCard}"
+				?courses-col="${this.showCoursesCol}"
+				?discussions-card="${this.showDiscussionsCard}"
+				?discussions-col="${this.showDiscussionsCol}"
+				?grade-col="${this.showGradeCol}"
+				?grades-card="${this.showGradesCard}"
+				?last-access-col="${this.showLastAccessCol}"
+				?overdue-card="${this.showOverdueCard}"
+				?results-card="${this.showResultsCard}"
+				?system-access-card="${this.showSystemAccessCard}"
+				?tic-col="${this.showTicCol}"
+				?tic-grades-card="${this.showTicGradesCard}"
+				last-access-threshold-days="${this.lastAccessThresholdDays}"
+				.include-roles="${this._parsedIncludeRoles}"
 			></d2l-insights-engagement-dashboard-settings>
 		`;
 	}
@@ -423,7 +437,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			// on the results of the other: we avoid this by building them on specific sets of filters.
 			const rowFilteredData = new FilteredData(this._serverData)
 				.withFilter(new OverdueAssignmentsFilter())
-				.withFilter(new LastAccessFilter())
+				.withFilter(new LastAccessFilter(this.lastAccessThresholdDays))
 				.withFilter(new CourseLastAccessFilter())
 				.withFilter(new CurrentFinalGradesFilter())
 				.withFilter(new DiscussionActivityFilter());
@@ -446,11 +460,15 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 			this.__serverData = new Data({
 				recordProvider: this.isDemo ? fetchDemoData : fetchData,
-				includeRoles: this.includeRoles.split(',').filter(x => x).map(Number)
+				includeRoles: this._parsedIncludeRoles
 			});
 		}
 
 		return this.__serverData;
+	}
+
+	get _parsedIncludeRoles() {
+		return this.includeRoles.split(',').filter(x => x).map(Number);
 	}
 
 	get _telemetryHelper() {
