@@ -265,7 +265,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				?demo="${this.isDemo}"
 				.serverData="${this._serverData}"
 				@d2l-insights-settings-view-back="${this._backToHomeHandler}"
-				@d2l-insights-settings-view-save-and-close="${this._settingSaveAndCloseHandler}"
 				?course-access-card="${this.showCourseAccessCard}"
 				?courses-col="${this.showCoursesCol}"
 				?discussions-card="${this.showDiscussionsCard}"
@@ -483,7 +482,25 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return this.__telemetryHelper;
 	}
 
-	_backToHomeHandler() {
+	_backToHomeHandler(e) {
+		if (e.detail) {
+			this.showResultsCard = e.detail.showResultsCard;
+			this.showOverdueCard = e.detail.showOverdueCard;
+			this.showDiscussionsCard = e.detail.showDiscussionsCard;
+			this.showSystemAccessCard = e.detail.showSystemAccessCard;
+			this.showGradesCard = e.detail.showGradesCard;
+			this.showTicGradesCard = e.detail.showTicGradesCard;
+			this.showCourseAccessCard = e.detail.showCourseAccessCard;
+			this.showCoursesCol = e.detail.showCoursesCol;
+			this.showGradeCol = e.detail.showGradeCol;
+			this.showTicCol = e.detail.showTicCol;
+			this.showDiscussionsCol = e.detail.showDiscussionsCol;
+			this.showLastAccessCol = e.detail.showLastAccessCol;
+			this.lastAccessThresholdDays = e.detail.lastAccessThresholdDays;
+			this.includeRoles = (e.detail.includeRoles || []).join(',');
+
+			this._serverData.selectedRoleIds = e.detail.includeRoles;
+		}
 		if (this._viewState) {
 			this._viewState.setHomeView();
 		}
@@ -497,12 +514,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		if (this._viewState) {
 			this._viewState.setSettingsView();
 		}
-	}
-
-	_settingSaveAndCloseHandler(event) {
-		event.stopPropagation();
-		this._viewState.setHomeView();
-		this._serverData.selectedRoleIds = event.detail.selectedRoleIds;
 	}
 
 	_orgUnitFilterChange(event) {

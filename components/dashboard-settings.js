@@ -10,7 +10,6 @@ import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 import { saveSettings } from '../model/lms';
 
 /**
- * @fires d2l-insights-settings-view-save-and-close
  * @fires d2l-insights-settings-view-back
  */
 class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
@@ -198,7 +197,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 					</d2l-button>
 					<d2l-button
 						class="d2l-insights-settings-footer-button"
-						@click="${this._returnToEngagementDashboard}">
+						@click="${this._handleCancel}">
 						${this.localize('components.insights-settings-view.cancel')}
 					</d2l-button>
 				</div>
@@ -211,9 +210,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 	}
 
 	async _handleSaveAndClose() {
-		const selectedRoleIds = this._selectedRoleIds;
-
-		const response = await saveSettings({
+		const settings = {
 			showResultsCard: this.showResultsCard,
 			showOverdueCard: this.showOverdueCard,
 			showDiscussionsCard: this.showDiscussionsCard,
@@ -227,23 +224,27 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			showDiscussionsCol: this.showDiscussionsCol,
 			showLastAccessCol: this.showLastAccessCol,
 			lastAccessThresholdDays: this.lastAccessThresholdDays,
-			includeRoles: selectedRoleIds
-		});
+			includeRoles: this._selectedRoleIds
+		};
+
+		const response = await saveSettings(settings);
 
 		if (!response.ok) {
 			console.error('Dashboard Settings View. Cannot save settings!');
 			return;
 		}
 
-		this.dispatchEvent(new CustomEvent('d2l-insights-settings-view-save-and-close', {
-			detail: {
-				selectedRoleIds
-			}
-		}));
+		this._returnToEngagementDashboard(settings);
 	}
 
-	_returnToEngagementDashboard() {
-		this.dispatchEvent(new Event('d2l-insights-settings-view-back'));
+	_handleCancel() {
+		this._returnToEngagementDashboard();
+	}
+
+	_returnToEngagementDashboard(settings) {
+		this.dispatchEvent(new CustomEvent('d2l-insights-settings-view-back', {
+			detail: settings
+		}));
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard-settings', DashboardSettings);

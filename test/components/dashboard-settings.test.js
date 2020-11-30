@@ -29,10 +29,10 @@ describe('d2l-insights-engagement-dashboard-settings', () => {
 			await listener;
 		});
 
-		it('should fire d2l-insights-settings-view-save-and-close when closed with save button', async() => {
+		it('should fire d2l-insights-settings-view-back when closed with save button', async() => {
 			const el = await fixture(html`<d2l-insights-engagement-dashboard-settings></d2l-insights-engagement-dashboard-settings>`);
 			const button = el.shadowRoot.querySelector('.d2l-insights-settings-page-footer > d2l-button:first-child');
-			const listener = oneEvent(el, 'd2l-insights-settings-view-save-and-close');
+			const listener = oneEvent(el, 'd2l-insights-settings-view-back');
 
 			button.click();
 
