@@ -1,4 +1,4 @@
-import { fetchCachedChildren, fetchLastSearch, fetchRelevantChildren, fetchRoles, orgUnitSearch } from '../../model/lms';
+import { fetchCachedChildren, fetchLastSearch, fetchRelevantChildren, fetchRoles, orgUnitSearch, saveSettings } from '../../model/lms';
 import { expect } from '@open-wc/testing';
 import fetchMock from 'fetch-mock/esm/client';
 
@@ -269,6 +269,49 @@ describe('Lms', () => {
 
 			expect(fetchLastSearch([4, 500, 8])).to.deep.equal(null);
 			expect(fetchLastSearch([1, 2, 3])).to.deep.equal(mockLmsResponseData2.Items);
+		});
+	});
+
+	describe('saveSettings', () => {
+		it('should throw if settings are missing', async() => {
+			let didThrow = false;
+			try {
+				await saveSettings({ showOverdueCard: true });
+			} catch (err) {
+				didThrow = true;
+			}
+			expect(didThrow, 'didThrow').to.be.true;
+		});
+
+		it('should send the settings to the lms', async() => {
+			const settings = {
+				showResultsCard: true,
+				showOverdueCard: true,
+				showDiscussionsCard: true,
+				showSystemAccessCard: false,
+				showGradesCard: true,
+				showTicGradesCard: true,
+				showCourseAccessCard: false,
+				showCoursesCol: true,
+				showGradeCol: false,
+				showTicCol: true,
+				showDiscussionsCol: true,
+				showLastAccessCol: true
+			};
+			fetchMock.put(
+				'end:/d2l/api/ap/unstable/insights/mysettings/engagement',
+				200
+			);
+
+			await saveSettings(settings);
+
+			expect(fetchMock.lastOptions()).to.deep.equal({
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(settings)
+			});
 		});
 	});
 });
