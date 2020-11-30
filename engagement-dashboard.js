@@ -23,6 +23,7 @@ import './components/dashboard-settings';
 import { css, html } from 'lit-element/lit-element.js';
 import { DefaultViewState, ViewState } from './model/view-state';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
+import { LastAccessFilter, filterId as lastAccessFilterId } from './components/last-access-card';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
@@ -34,7 +35,6 @@ import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
 import { isDefault } from './model/urlState';
-import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
@@ -398,6 +398,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	get _lastAccessCard() {
 		if (!this.showSystemAccessCard) return '';
+
+		// update LastSystemAccess filter's threshold, as it may have changed (e.g. if new settings were saved)
+		this._data.getFilter(lastAccessFilterId).thresholdDays = this.lastAccessThresholdDays;
+
 		return html`<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>`;
 	}
 
