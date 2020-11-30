@@ -52,6 +52,8 @@
     "array-flat-polyfill": "^1.0.1",
     "d2l-button-group": "BrightspaceUI/button-group#semver:^3",
     "d2l-facet-filter-sort": "BrightspaceUI/facet-filter-sort#semver:^3",
+    "d2l-fetch": "Brightspace/d2l-fetch.git#semver:^2",
+    "d2l-fetch-auth": "^1",
     "d2l-navigation": "BrightspaceUI/navigation#semver:^4",
     "d2l-table": "BrightspaceUI/table#semver:^2",
     "d2l-telemetry-browser-client": "Brightspace/d2l-telemetry-browser-client#semver:^1",
