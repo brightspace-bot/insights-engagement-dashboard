@@ -31,7 +31,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			showTicCol: { type: Boolean, attribute: 'tic-col', reflect: true },
 			showTicGradesCard: { type: Boolean, attribute: 'tic-grades-card', reflect: true },
 			lastAccessThresholdDays: { type: Number, attribute: 'last-access-threshold-days', reflect: true },
-			includeRoles: { type: String, attribute: 'include-roles' }
+			includeRoles: { type: Array, attribute: false }
 		};
 	}
 
@@ -155,7 +155,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		this.showTicCol = false;
 		this.showTicGradesCard = false;
 		this.lastAccessThresholdDays = 14;
-		this.includeRoles = '';
+		this.includeRoles = [];
 	}
 
 	render() {
@@ -171,7 +171,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 							<d2l-insights-role-list
 								?demo="${this.isDemo}"
-								include-roles="${this.includeRoles}">
+								.includeRoles="${this.includeRoles}">
 							</d2l-insights-role-list>
 						</d2l-tab-panel>
 

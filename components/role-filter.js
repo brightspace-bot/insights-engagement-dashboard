@@ -42,7 +42,7 @@ class RoleList extends Localizer(LitElement) {
 		return {
 			isDemo: { type: Boolean, attribute: 'demo' },
 			selected: { type: Array, attribute: true },
-			includeRoles: { type: String, attribute: 'include-roles' },
+			includeRoles: { type: Array, attribute: false },
 			_filterData: { type: Array, attribute: false }
 		};
 	}
@@ -60,7 +60,7 @@ class RoleList extends Localizer(LitElement) {
 	async firstUpdated() {
 		const dataProvider = this.isDemo ? fetchDemoRoles : fetchRoles;
 		const data = await dataProvider();
-		this.selected = this._parsedIncludeRoles || [];
+		this.selected = this.includeRoles || [];
 		this._setRoleData(data);
 	}
 
@@ -69,10 +69,6 @@ class RoleList extends Localizer(LitElement) {
 			.filter(checkbox => checkbox.checked)
 			.map(checkbox => checkbox.value)
 			.map(roleId => Number(roleId));
-	}
-
-	get _parsedIncludeRoles() {
-		return this.includeRoles.split(',').filter(x => x).map(Number);
 	}
 
 	_setRoleData(roleData) {

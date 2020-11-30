@@ -279,7 +279,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				?tic-col="${this.showTicCol}"
 				?tic-grades-card="${this.showTicGradesCard}"
 				last-access-threshold-days="${this.lastAccessThresholdDays}"
-				include-roles="${this._serverData.selectedRoleIds.join(',')}"
+				.includeRoles="${this._serverData.selectedRoleIds}"
 			></d2l-insights-engagement-dashboard-settings>
 		`;
 	}
