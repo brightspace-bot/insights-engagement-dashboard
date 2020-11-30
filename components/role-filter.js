@@ -34,7 +34,19 @@ class RoleList extends Localizer(LitElement) {
 
 			d2l-input-checkbox {
 				margin-left: 24px;
+				flex: 1 1 40%;
+				min-width: 260px;
 			}
+
+			.d2l-insights-role-list-list {
+				display: flex;
+				flex-wrap: wrap;
+				flex-direction: row;
+				overflow-y: auto;
+				max-height: 536px;
+				max-width: 100vw;
+			}
+
 		`];
 	}
 
@@ -94,7 +106,9 @@ class RoleList extends Localizer(LitElement) {
 			<h3 class="d2l-heading-3">${this.localize('components.insights-settings-view-role-list.title')}</h3>
 			<span>${this.localize('components.insights-settings-view-role-list.description')}</span>
 
-			${this._filterData.map(item => html`<d2l-input-checkbox value="${item.id}" @change="${this._handleSelectionChange}" ?checked="${item.selected}" >${item.displayName}</d2l-input-checkbox>`)}
+			<div class="d2l-insights-role-list-list">
+				${this._filterData.map(item => html`<d2l-input-checkbox value="${item.id}" @change="${this._handleSelectionChange}" ?checked="${item.selected}" >${item.displayName}</d2l-input-checkbox>`)}
+			</div>
 		`;
 	}
 
