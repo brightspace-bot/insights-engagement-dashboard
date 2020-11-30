@@ -179,7 +179,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 					</d2l-button>
 					<d2l-button
 						class="d2l-insights-settings-footer-button"
-						@click="${this._returnToEngagementDashboard}">
+						@click="${this._handleCancel}">
 						${this.localize('components.insights-settings-view.cancel')}
 					</d2l-button>
 				</div>
@@ -204,9 +204,14 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			lastAccessThresholdDays: this.lastAccessThresholdDays,
 			includeRoles: this.includeRoles
 		};
+
 		await saveSettings(settings);
 
 		this._returnToEngagementDashboard(settings);
+	}
+
+	_handleCancel() {
+		this._returnToEngagementDashboard();
 	}
 
 	_returnToEngagementDashboard(settings) {

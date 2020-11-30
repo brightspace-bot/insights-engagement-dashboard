@@ -495,7 +495,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			this.showDiscussionsCol = e.detail.showDiscussionsCol;
 			this.showLastAccessCol = e.detail.showLastAccessCol;
 			this.lastAccessThresholdDays = e.detail.lastAccessThresholdDays;
-			this.includeRoles = e.detail.includeRoles;
+			this.includeRoles = (e.detail.includeRoles || []).join(',');
 		}
 		if (this._viewState) {
 			this._viewState.setHomeView();
