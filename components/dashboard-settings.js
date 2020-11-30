@@ -8,7 +8,24 @@ import { heading1Styles, heading2Styles } from '@brightspace-ui/core/components/
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
+/**
+ * @fires d2l-insights-settings-view-save-and-close
+ * @fires d2l-insights-settings-view-back
+ */
 class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
+
+	static get properties() {
+		return {
+			isDemo: { type: Boolean, attribute: 'demo' },
+		};
+	}
+
+	constructor() {
+		super();
+
+		this.isDemo = false;
+	}
+
 	static get styles() {
 		return [heading1Styles, heading2Styles, css`
 			:host {
@@ -122,15 +139,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleSummaryMetrics')}">
 							<!-- out of scope: roles selection -->
 
-							<!-- card selection -->
-							<d2l-list>
-								<d2l-list-item key="1" selectable>
-
-								</d2l-list-item>
-								<d2l-list-item key="2" selectable>Test2</d2l-list-item>
-								<d2l-list-item key="3" selectable>Test3</d2l-list-item>
-								<d2l-list-item key="4" selectable>Test4</d2l-list-item>
-							</d2l-list>
+							<d2l-insights-role-list ?demo="${this.isDemo}"></d2l-insights-role-list>
 						</d2l-tab-panel>
 
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleResultsTableMetrics')}">
@@ -164,10 +173,18 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		`;
 	}
 
-	_handleSaveAndClose() {
-		// out of scope: save settings
+	get _selectedRoleIds() {
+		return this.shadowRoot.querySelector('d2l-insights-role-list').selected;
+	}
 
-		this._returnToEngagementDashboard();
+	_handleSaveAndClose() {
+		const selectedRoleIds = this._selectedRoleIds;
+		// TODO save selectedRoleIds to LMS
+		this.dispatchEvent(new CustomEvent('d2l-insights-settings-view-save-and-close', {
+			detail: {
+				selectedRoleIds
+			}
+		}));
 	}
 
 	_returnToEngagementDashboard() {

@@ -262,7 +262,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	_renderSettingsView() {
 		return html`
 			<d2l-insights-engagement-dashboard-settings
+				?demo="${this.isDemo}"
+				.serverData="${this._serverData}"
 				@d2l-insights-settings-view-back="${this._backToHomeHandler}"
+				@d2l-insights-settings-view-save-and-close="${this._settingSaveAndCloseHandler}"
 			></d2l-insights-engagement-dashboard-settings>
 		`;
 	}
@@ -478,9 +481,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		}
 	}
 
-	_roleFilterChange(event) {
+	_settingSaveAndCloseHandler(event) {
 		event.stopPropagation();
-		this._serverData.selectedRoleIds = event.target.selected;
+		this._viewState.setHomeView();
+		this._serverData.selectedRoleIds = event.detail.selectedRoleIds;
 	}
 
 	_orgUnitFilterChange(event) {
