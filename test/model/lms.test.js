@@ -306,16 +306,11 @@ describe('Lms', () => {
 
 			await saveSettings(settings);
 
-			const actualOptions = fetchMock.lastOptions();
-			expect(actualOptions).to.deep.include({
-				method: 'PUT',
-				headers: {
-					'content-type': 'application/json',
-					'x-csrf-token': 'token'
-				}
-			});
-			// fetchMock wraps the request body in a promise
-			expect(await actualOptions.body).to.equal(JSON.stringify(settings));
+			const request = fetchMock.lastCall().request; // assumes fetch was called with a Request
+			expect(request.method).to.equal('PUT');
+			expect(request.headers.get('content-type')).to.equal('application/json');
+			expect(request.headers.get('x-csrf-token')).to.equal('token');
+			expect(await request.json()).to.deep.equal(settings);
 		});
 	});
 });
