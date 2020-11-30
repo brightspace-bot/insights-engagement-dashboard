@@ -400,6 +400,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				?show-grade-col="${this.showGradeCol}"
 				?show-last-access-col="${this.showLastAccessCol}"
 				?show-tic-col="${this.showTicCol}"
+				@d2l-insights-users-table-cell-clicked="${this._userTableCellClicked}"
 			></d2l-insights-users-table>
 		`;
 	}
