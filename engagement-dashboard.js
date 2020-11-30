@@ -128,6 +128,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				d2l-insights-results-card,
 				d2l-insights-discussion-activity-card {
 					margin-right: 12px;
+					margin-top: 10px;
+				}
+
+				d2l-insights-overdue-assignments-card,
+				d2l-insights-last-access-card {
+					margin-top: 10px;
 				}
 
 				.d2l-insights-summary-container {

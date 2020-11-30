@@ -161,6 +161,7 @@ export default {
 	"components.insights-settings-view.discActivityDesc": "The Discussion Activity card shows passive and active social engagement in each course. The metric captures and shows when a user creates a post, replies to an existing post or reads a post.",
 
 	"components.insights-settings-view.systemAccessEdit": "Show users who have not accessed the system in the last {num} days.",
+	"components.insights-settings-view.systemAccessEditLabel": "Edit system access threshold",
 
 	"components.insights-settings-view.saveAndClose": "Save and Close",
 	"components.insights-settings-view.save": "Save",

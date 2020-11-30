@@ -17,7 +17,8 @@ import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 import { saveSettings } from '../model/lms';
 
-const lastSysAccessThresholdMinDays = 0; // TODO: should this be 1? should there be a max as well?
+const lastSysAccessThresholdMinDays = 1;
+const lastSysAccessThresholdMaxDays = 30;
 
 class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
@@ -93,6 +94,10 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 			.d2l-demo-card {
 				margin: 10px 30px;
+			}
+
+			.d2l-card-selection-text {
+				margin: 10px 0;
 			}
 
 			.d2l-system-access-edit-input {
@@ -207,7 +212,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			<d2l-list id="card-selection-list" @d2l-list-selection-change="${this._handleCardSelectionListChange}">
 				<d2l-list-item key="showGradesCard" selectable ?selected="${this.showGradesCard}">
 					<d2l-insights-current-grade-thumbnail class="d2l-demo-card"></d2l-insights-current-grade-thumbnail>
-					<div>
+					<div class="d2l-card-selection-text">
 						<h3 class="d2l-heading-3">${this.localize('components.insights-current-final-grade-card.currentGrade')}</h3>
 						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.currentGradeDesc')}</p>
 					</div>
@@ -215,7 +220,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 				<d2l-list-item key="showCourseAccessCard" selectable ?selected="${this.showCourseAccessCard}">
 					<d2l-insights-course-access-thumbnail class="d2l-demo-card"></d2l-insights-course-access-thumbnail>
-					<div>
+					<div class="d2l-card-selection-text">
 						<h3 class="d2l-heading-3">${this.localize('components.insights-course-last-access-card.courseAccess')}</h3>
 						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.courseAccessDesc')}</p>
 					</div>
@@ -223,7 +228,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 				<d2l-list-item key="showTicGradesCard" selectable ?selected="${this.showTicGradesCard}">
 					<d2l-insights-tic-vs-grade-thumbnail class="d2l-demo-card"></d2l-insights-tic-vs-grade-thumbnail>
-					<div>
+					<div class="d2l-card-selection-text">
 						<h3 class="d2l-heading-3">${this.localize('components.insights-time-in-content-vs-grade-card.timeInContentVsGrade')}</h3>
 						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.ticVsGradeDesc')}</p>
 					</div>
@@ -236,7 +241,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 						card-value="22"
 						card-message="${this.localize('components.insights-engagement-dashboard.overdueAssignments')}">
 					</d2l-labs-summary-card>
-					<div>
+					<div class="d2l-card-selection-text">
 						<h3 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.overdueAssignmentsHeading')}</h3>
 						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.overdueAssignmentsDesc')}</p>
 					</div>
@@ -248,7 +253,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 				<d2l-list-item key="showDiscussionsCard" selectable ?selected="${this.showDiscussionsCard}">
 					<d2l-insights-disc-activity-thumbnail class="d2l-demo-card"></d2l-insights-disc-activity-thumbnail>
-					<div>
+					<div class="d2l-card-selection-text">
 						<h3 class="d2l-heading-3">${this.localize('components.insights-discussion-activity-card.cardTitle')}</h3>
 						<p class="d2l-body-standard">${this.localize('components.insights-settings-view.discActivityDesc')}</p>
 					</div>
@@ -266,8 +271,6 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		// hack to get 2 parts of a localized version of a string
 		const editTextParts = this.localize('components.insights-settings-view.systemAccessEdit', { num: '{num}' }).split('{num}');
 
-		// TODO: input label
-
 		return html`
 			<d2l-labs-summary-card
 				class="d2l-demo-card"
@@ -275,7 +278,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 				card-value="10"
 				card-message="${summaryCardMessage}">
 			</d2l-labs-summary-card>
-			<div>
+			<div class="d2l-card-selection-text">
 				<h3 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.lastSystemAccessHeading')}</h3>
 				<p class="d2l-body-standard">${this.localize('components.insights-settings-view.systemAccessDesc')}</p>
 
@@ -286,6 +289,9 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 						class="d2l-system-access-edit-input"
 						value="${this.lastAccessThresholdDays}"
 						min="${lastSysAccessThresholdMinDays}"
+						max="${lastSysAccessThresholdMaxDays}"
+						label="${this.localize('components.insights-settings-view.systemAccessEditLabel')}"
+						label-hidden
 						@change="${this._handleThresholdFieldChange}">
 					</d2l-input-number>
 					<span class="d2l-body-small">${editTextParts[1]}</span>
@@ -326,7 +332,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 	_handleThresholdFieldChange(event) {
 		const newValue = Number(event.target.value);
-		if (isNaN(newValue) || newValue < lastSysAccessThresholdMinDays) {
+		if (isNaN(newValue) || newValue < lastSysAccessThresholdMinDays || newValue > lastSysAccessThresholdMaxDays) {
 			return;
 		}
 
