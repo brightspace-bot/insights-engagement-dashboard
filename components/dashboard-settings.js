@@ -31,7 +31,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			showTicCol: { type: Boolean, attribute: 'tic-col', reflect: true },
 			showTicGradesCard: { type: Boolean, attribute: 'tic-grades-card', reflect: true },
 			lastAccessThresholdDays: { type: Number, attribute: 'last-access-threshold-days', reflect: true },
-			includeRoles: { type: Array, attribute: 'include-roles' }
+			includeRoles: { type: String, attribute: 'include-roles' }
 		};
 	}
 
@@ -155,7 +155,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		this.showTicCol = false;
 		this.showTicGradesCard = false;
 		this.lastAccessThresholdDays = 14;
-		this.includeRoles = [];
+		this.includeRoles = '';
 	}
 
 	render() {
@@ -169,7 +169,10 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleSummaryMetrics')}">
 							<!-- out of scope: roles selection -->
 
-							<d2l-insights-role-list ?demo="${this.isDemo}"></d2l-insights-role-list>
+							<d2l-insights-role-list
+								?demo="${this.isDemo}"
+								include-roles="${this.includeRoles}">
+							</d2l-insights-role-list>
 						</d2l-tab-panel>
 
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleResultsTableMetrics')}">
@@ -210,7 +213,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 	async _handleSaveAndClose() {
 		const selectedRoleIds = this._selectedRoleIds;
 
-		await saveSettings({
+		const response = await saveSettings({
 			showResultsCard: this.showResultsCard,
 			showOverdueCard: this.showOverdueCard,
 			showDiscussionsCard: this.showDiscussionsCard,
@@ -224,8 +227,13 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			showDiscussionsCol: this.showDiscussionsCol,
 			showLastAccessCol: this.showLastAccessCol,
 			lastAccessThresholdDays: this.lastAccessThresholdDays,
-			includeRoles: this.includeRoles
+			includeRoles: selectedRoleIds
 		});
+
+		if (!response.ok) {
+			console.error('Dashboard Settings View. Cannot save settings!');
+			return;
+		}
 
 		this.dispatchEvent(new CustomEvent('d2l-insights-settings-view-save-and-close', {
 			detail: {

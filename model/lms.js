@@ -154,7 +154,7 @@ export async function saveSettings(settings) {
 	});
 
 	const url = new URL(saveSettingsEndpoint, window.location.origin);
-	await fetch(url.toString(), {
+	return await fetch(url.toString(), {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json'

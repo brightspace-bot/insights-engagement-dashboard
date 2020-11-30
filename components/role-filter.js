@@ -7,7 +7,8 @@ import { heading3Styles } from '@brightspace-ui/core/components/typography/style
 import { Localizer } from '../locales/localizer';
 
 /**
- * @property {Number[]} selected - list of selected roles
+ * @property {Number[]} selected - component managed user selected roles
+ * @property {Number[]} includeRoles - user selected roles from preferences
  * @fires d2l-insights-role-list-change
  */
 class RoleList extends Localizer(LitElement) {
@@ -40,6 +41,8 @@ class RoleList extends Localizer(LitElement) {
 	static get properties() {
 		return {
 			isDemo: { type: Boolean, attribute: 'demo' },
+			selected: { type: Array, attribute: true },
+			includeRoles: { type: String, attribute: 'include-roles' },
 			_filterData: { type: Array, attribute: false }
 		};
 	}
@@ -49,6 +52,7 @@ class RoleList extends Localizer(LitElement) {
 
 		this.isDemo = false;
 		this.selected = [];
+		this.includeRoles = [];
 		/** @type {{id: string, displayName: string}[]} */
 		this._filterData = [];
 	}
@@ -56,6 +60,7 @@ class RoleList extends Localizer(LitElement) {
 	async firstUpdated() {
 		const dataProvider = this.isDemo ? fetchDemoRoles : fetchRoles;
 		const data = await dataProvider();
+		this.selected = this._parsedIncludeRoles || [];
 		this._setRoleData(data);
 	}
 
@@ -64,6 +69,10 @@ class RoleList extends Localizer(LitElement) {
 			.filter(checkbox => checkbox.checked)
 			.map(checkbox => checkbox.value)
 			.map(roleId => Number(roleId));
+	}
+
+	get _parsedIncludeRoles() {
+		return this.includeRoles.split(',').filter(x => x).map(Number);
 	}
 
 	_setRoleData(roleData) {
@@ -78,8 +87,9 @@ class RoleList extends Localizer(LitElement) {
 	}
 
 	_setFilterData(roleData) {
+		const selected = new Set(this.selected.map(String));
 		this._filterData = roleData.map(obj => {
-			return { id: obj.Identifier, displayName: obj.DisplayName };
+			return { id: obj.Identifier, displayName: obj.DisplayName, selected: selected.has(obj.Identifier) };
 		});
 	}
 
@@ -88,7 +98,7 @@ class RoleList extends Localizer(LitElement) {
 			<h3 class="d2l-heading-3">${this.localize('components.insights-settings-view-role-list.title')}</h3>
 			<span>${this.localize('components.insights-settings-view-role-list.description')}</span>
 
-			${this._filterData.map(item => html`<d2l-input-checkbox value="${item.id}" @change="${this._handleSelectionChange}">${item.displayName}</d2l-input-checkbox>`)}
+			${this._filterData.map(item => html`<d2l-input-checkbox value="${item.id}" @change="${this._handleSelectionChange}" ?checked="${item.selected}" >${item.displayName}</d2l-input-checkbox>`)}
 		`;
 	}
 
