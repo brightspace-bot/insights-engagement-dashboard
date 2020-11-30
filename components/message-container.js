@@ -1,4 +1,4 @@
-import 'd2l-button';
+import '@brightspace-ui/core/components/button/button';
 import { computed, decorate } from 'mobx';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
