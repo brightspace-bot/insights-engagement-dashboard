@@ -189,7 +189,7 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 				};
 			}
 
-			td.discussion-info {
+			td.d2l-insights-discussion-info {
 				vertical-align: top;
 			}
 		`];
@@ -353,21 +353,21 @@ class Table extends SkeletonMixin(Localizer(RtlMixin(LitElement))) {
 
 					<table>
 						<tr>
-							<td class="discussion-info">
+							<td class="d2l-insights-discussion-info">
 								<div class="d2l-body-standard" style="text-align:center;">${cellValue[0]}</div>
 								<div class="d2l-body-standard" style="text-align:center;">${this.localize('components.insights-discussion-activity-card.threads')}</div>
 							</td>
 							<td>
 								<d2l-icon icon="tier2:divider"></d2l-icon>
 							</td>
-							<td class="discussion-info">
+							<td class="d2l-insights-discussion-info">
 								<div class="d2l-body-standard" style="text-align:center;">${cellValue[1]}</div>
 								<div class="d2l-body-standard" style="text-align:center;">${this.localize('components.insights-discussion-activity-card.reads')}</div>
 							</td>
 							<td>
 								<d2l-icon icon="tier2:divider"></d2l-icon>
 							</td>
-							<td class="discussion-info">
+							<td class="d2l-insights-discussion-info">
 								<div class="d2l-body-standard" style="text-align:center;">${cellValue[2]}</div>
 								<div class="d2l-body-standard" style="text-align:center;">${this.localize('components.insights-discussion-activity-card.replies')}</div>
 							</td>
