@@ -8,7 +8,6 @@ import { heading3Styles } from '@brightspace-ui/core/components/typography/style
 import { Localizer } from '../locales/localizer';
 
 /**
- * @property {Number[]} selected - component managed user selected roles
  * @property {Number[]} includeRoles - user selected roles from preferences
  * @fires d2l-insights-role-list-change
  */
@@ -55,7 +54,6 @@ class RoleList extends Localizer(LitElement) {
 	static get properties() {
 		return {
 			isDemo: { type: Boolean, attribute: 'demo' },
-			selected: { type: Array, attribute: true },
 			includeRoles: { type: Array, attribute: false },
 			_filterData: { type: Array, attribute: false }
 		};
@@ -65,7 +63,6 @@ class RoleList extends Localizer(LitElement) {
 		super();
 
 		this.isDemo = false;
-		this.selected = [];
 		this.includeRoles = [];
 		/** @type {{id: string, displayName: string}[]} */
 		this._filterData = [];
@@ -74,7 +71,6 @@ class RoleList extends Localizer(LitElement) {
 	async firstUpdated() {
 		const dataProvider = this.isDemo ? fetchDemoRoles : fetchRoles;
 		const data = await dataProvider();
-		this.selected = this.includeRoles || [];
 		this._setRoleData(data);
 	}
 
@@ -97,7 +93,7 @@ class RoleList extends Localizer(LitElement) {
 	}
 
 	_setFilterData(roleData) {
-		const selected = new Set(this.selected.map(String));
+		const selected = new Set(this.includeRoles.map(String));
 		this._filterData = roleData.map(obj => {
 			return { id: obj.Identifier, displayName: obj.DisplayName, selected: selected.has(obj.Identifier) };
 		});
@@ -115,7 +111,7 @@ class RoleList extends Localizer(LitElement) {
 	}
 
 	_handleSelectionChange() {
-		this.selected = this._selected;
+		this.includeRoles = this._selected;
 		this.dispatchEvent(new Event('d2l-insights-role-list-change'));
 	}
 }

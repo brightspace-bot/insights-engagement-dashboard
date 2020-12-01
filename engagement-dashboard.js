@@ -262,7 +262,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		return html`
 			<d2l-insights-engagement-dashboard-settings
 				?demo="${this.isDemo}"
-				.serverData="${this._serverData}"
 				@d2l-insights-settings-view-back="${this._backToHomeHandler}"
 				?course-access-card="${this.showCourseAccessCard}"
 				?courses-col="${this.showCoursesCol}"

@@ -168,7 +168,6 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 					<d2l-tabs>
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleSummaryMetrics')}">
-							<!-- out of scope: roles selection -->
 
 							<d2l-insights-role-list
 								?demo="${this.isDemo}"
@@ -208,7 +207,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 	}
 
 	get _selectedRoleIds() {
-		return this.shadowRoot.querySelector('d2l-insights-role-list').selected;
+		return this.shadowRoot.querySelector('d2l-insights-role-list').includeRoles;
 	}
 
 	async _handleSaveAndClose() {

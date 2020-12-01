@@ -117,7 +117,7 @@ describe('d2l-insights-role-list', () => {
 			checkboxes.find(checkbox => checkbox.value === '2').simulateClick();
 			checkboxes.find(checkbox => checkbox.value === '3').simulateClick();
 
-			expect(el.selected).to.deep.equal([2]);
+			expect(el.includeRoles).to.deep.equal([2]);
 		});
 	});
 
