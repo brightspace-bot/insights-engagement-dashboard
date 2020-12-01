@@ -1,7 +1,5 @@
 import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/button/button.js';
-import './semester-filter';
-import './ou-filter';
 import { bodySmallStyles, heading2Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { css, html } from 'lit-element/lit-element.js';
 import { Localizer } from '../locales/localizer';
@@ -13,8 +11,6 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 class UserDrill extends Localizer(MobxLitElement) {
 	static get properties() {
 		return {
-			data: { type: Object, attribute: true },
-			isDemo: { type: Boolean, attribute: 'demo' },
 			user: { type: Object, attribute: false }
 		};
 	}
@@ -99,15 +95,6 @@ class UserDrill extends Localizer(MobxLitElement) {
 
 	_composeEmailHandler() {
 		// outside the scope of the story
-	}
-
-	// pass the selections up to the root where data is managed
-	_semesterFilterChange(e) {
-		this.dispatchEvent(new CustomEvent('d2l-insights-semester-filter-change', { detail: e.detail }));
-	}
-
-	_orgUnitFilterChange(e) {
-		this.dispatchEvent(new CustomEvent('d2l-insights-ou-filter-change', { detail: e.detail }));
 	}
 
 	render() {

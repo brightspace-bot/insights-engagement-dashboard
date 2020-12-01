@@ -254,9 +254,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 		return html`
 			<d2l-insights-user-drill-view
-				?demo="${this.isDemo}"
 				.user="${user}"
-				.data="${this._serverData}"
 				@d2l-insights-user-drill-view-back="${this._backToHomeHandler}"
 			>
 				<div slot="filters">
@@ -516,12 +514,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	_orgUnitFilterChange(event) {
 		event.stopPropagation();
-		this._serverData.selectedOrgUnitIds = event.detail.selected;
+		this._serverData.selectedOrgUnitIds = event.target.selected;
 	}
 
 	_semesterFilterChange(event) {
 		event.stopPropagation();
-		this._serverData.selectedSemesterIds = event.detail.selected;
+		this._serverData.selectedSemesterIds = event.target.selected;
 	}
 
 	_handleEmailButtonPress() {

@@ -51,9 +51,7 @@ class OuFilter extends Localizer(MobxLitElement) {
 		 */
 		this.dispatchEvent(new CustomEvent(
 			'd2l-insights-ou-filter-change',
-			{ bubbles: true, composed: false, detail: {
-				selected: this.selected
-			} }
+			{ bubbles: true, composed: false }
 		));
 	}
 
