@@ -5,7 +5,6 @@ import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/results-card.js';
 import './components/debug-card.js';
-import './components/role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
 import './components/table.js';

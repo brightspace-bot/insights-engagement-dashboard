@@ -3,6 +3,8 @@ import '@brightspace-ui/core/components/list/list-item';
 import '@brightspace-ui/core/components/tabs/tabs';
 import '@brightspace-ui/core/components/tabs/tab-panel';
 
+import './role-list.js';
+
 import { css, html, LitElement } from 'lit-element';
 import { heading1Styles, heading2Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
