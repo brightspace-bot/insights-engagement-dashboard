@@ -46,6 +46,7 @@ class RoleList extends Localizer(LitElement) {
 				overflow-y: auto;
 				max-height: 536px;
 				max-width: 100vw;
+				min-height:200px;
 			}
 
 		`];
