@@ -22,6 +22,7 @@ import './components/dashboard-settings';
 import { css, html } from 'lit-element/lit-element.js';
 import { DefaultViewState, ViewState } from './model/view-state';
 import { getPerformanceLoadPageMeasures, TelemetryHelper } from './model/telemetry-helper';
+import { LastAccessFilter, filterId as lastAccessFilterId } from './components/last-access-card';
 import { CourseLastAccessFilter } from './components/course-last-access-card';
 import { createComposeEmailPopup } from './components/email-integration';
 import { CurrentFinalGradesFilter } from './components/current-final-grade-card';
@@ -33,7 +34,6 @@ import { fetchData as fetchDemoData } from './model/fake-lms.js';
 import { FilteredData } from './model/filteredData';
 import { heading3Styles } from '@brightspace-ui/core/components/typography/styles';
 import { isDefault } from './model/urlState';
-import { LastAccessFilter } from './components/last-access-card';
 import { Localizer } from './locales/localizer';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { OverdueAssignmentsFilter } from './components/overdue-assignments-card';
@@ -127,6 +127,12 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				d2l-insights-results-card,
 				d2l-insights-discussion-activity-card {
 					margin-right: 12px;
+					margin-top: 10px;
+				}
+
+				d2l-insights-overdue-assignments-card,
+				d2l-insights-last-access-card {
+					margin-top: 10px;
 				}
 
 				.d2l-insights-summary-container {
@@ -509,6 +515,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			this.includeRoles = (e.detail.includeRoles || []).join(',');
 
 			this._serverData.selectedRoleIds = e.detail.includeRoles;
+			// update LastSystemAccess filter's threshold, as it may have changed (e.g. if new settings were saved)
+			this._data.getFilter(lastAccessFilterId).thresholdDays = this.lastAccessThresholdDays;
 		}
 		if (this._viewState) {
 			this._viewState.setHomeView();
