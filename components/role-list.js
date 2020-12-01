@@ -34,19 +34,19 @@ class RoleList extends Localizer(LitElement) {
 			}
 
 			d2l-input-checkbox {
-				margin-left: 24px;
 				flex: 1 1 40%;
+				margin-left: 24px;
 				min-width: 260px;
 			}
 
 			.d2l-insights-role-list-list {
 				display: flex;
-				flex-wrap: wrap;
 				flex-direction: row;
-				overflow-y: auto;
+				flex-wrap: wrap;
 				max-height: 536px;
 				max-width: 100vw;
-				min-height:200px;
+				min-height: 200px;
+				overflow-y: auto;
 			}
 
 		`];
