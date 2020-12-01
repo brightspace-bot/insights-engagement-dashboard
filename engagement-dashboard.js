@@ -398,10 +398,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 
 	get _lastAccessCard() {
 		if (!this.showSystemAccessCard) return '';
-
-		// update LastSystemAccess filter's threshold, as it may have changed (e.g. if new settings were saved)
-		this._data.getFilter(lastAccessFilterId).thresholdDays = this.lastAccessThresholdDays;
-
 		return html`<d2l-insights-last-access-card .data="${this._data}" ?skeleton="${this._isLoading}"></d2l-insights-last-access-card>`;
 	}
 
@@ -508,6 +504,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			this.includeRoles = (e.detail.includeRoles || []).join(',');
 
 			this._serverData.selectedRoleIds = e.detail.includeRoles;
+			// update LastSystemAccess filter's threshold, as it may have changed (e.g. if new settings were saved)
+			this._data.getFilter(lastAccessFilterId).thresholdDays = this.lastAccessThresholdDays;
 		}
 		if (this._viewState) {
 			this._viewState.setHomeView();
