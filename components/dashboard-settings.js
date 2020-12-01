@@ -2,7 +2,9 @@ import '@brightspace-ui/core/components/list/list';
 import '@brightspace-ui/core/components/list/list-item';
 import '@brightspace-ui/core/components/tabs/tabs';
 import '@brightspace-ui/core/components/tabs/tab-panel';
+import '@brightspace-ui/core/components/inputs/input-number';
 
+import './card-selection-list';
 import './role-list.js';
 import './column-configuration';
 
@@ -50,7 +52,6 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 			.d2l-insights-settings-page-main-container {
 				height: 100%;
-				overflow-y: auto;
 				padding-top: 30px;
 			}
 
@@ -174,6 +175,17 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 								?demo="${this.isDemo}"
 								.includeRoles="${this.includeRoles}">
 							</d2l-insights-role-list>
+
+							<d2l-insights-engagement-card-selection-list
+								?course-access-card="${this.showCourseAccessCard}"
+								?discussions-card="${this.showDiscussionsCard}"
+								?grades-card="${this.showGradesCard}"
+								?overdue-card="${this.showOverdueCard}"
+								?results-card="${this.showResultsCard}"
+								?system-access-card="${this.showSystemAccessCard}"
+								?tic-grades-card="${this.showTicGradesCard}"
+								last-access-threshold-days="${this.lastAccessThresholdDays}"
+							></d2l-insights-engagement-card-selection-list>
 						</d2l-tab-panel>
 
 						<d2l-tab-panel text="${this.localize('components.insights-engagement-settings.tabTitleResultsTableMetrics')}">
@@ -188,7 +200,12 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 					</d2l-tabs>
 				</div>
 			</div>
+			${this._renderFooter()}
+		`;
+	}
 
+	_renderFooter() {
+		return html`
 			<footer>
 				<div class="d2l-insights-settings-page-footer">
 					<d2l-button
@@ -218,21 +235,16 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 	}
 
 	async _handleSaveAndClose() {
+		const cardSelectionList = this.shadowRoot.querySelector('d2l-insights-engagement-card-selection-list');
+
 		const columnConfig = this.shadowRoot.querySelector('d2l-insights-engagement-column-configuration');
 		const settings = {
-			showResultsCard: this.showResultsCard,
-			showOverdueCard: this.showOverdueCard,
-			showDiscussionsCard: this.showDiscussionsCard,
-			showSystemAccessCard: this.showSystemAccessCard,
-			showGradesCard: this.showGradesCard,
-			showTicGradesCard: this.showTicGradesCard,
-			showCourseAccessCard: this.showCourseAccessCard,
+			...cardSelectionList.settings,
 			showCoursesCol: columnConfig.showCoursesCol,
 			showGradeCol: columnConfig.showGradeCol,
 			showTicCol: columnConfig.showTicCol,
 			showDiscussionsCol: columnConfig.showDiscussionsCol,
 			showLastAccessCol: columnConfig.showLastAccessCol,
-			lastAccessThresholdDays: this.lastAccessThresholdDays,
 			includeRoles: this._selectedRoleIds
 		};
 
