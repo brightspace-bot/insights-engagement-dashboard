@@ -51,8 +51,8 @@ describe('d2l-insights-engagement-dashboard', () => {
 					include-roles="900, 1000, 11"
 					demo
 				></d2l-insights-engagement-dashboard>`);
+			await el.updateComplete;
 			await new Promise(resolve => setTimeout(resolve, 100));
-
 			expect(el._serverData.selectedRoleIds).to.deep.equal([900, 1000, 11]);
 		});
 
