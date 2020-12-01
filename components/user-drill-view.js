@@ -149,16 +149,7 @@ class UserDrill extends Localizer(MobxLitElement) {
 			>${this.localize('components.insights-engagement-dashboard.emailButton')}</d2l-button>
 
 			<div class="d2l-insights-view-filters-container">
-				<d2l-insights-ou-filter
-					.data="${this.data}"
-					@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
-				></d2l-insights-ou-filter>
-				<d2l-insights-semester-filter
-					page-size="10000"
-					?demo="${this.isDemo}"
-					.preSelected="${this.data.selectedSemesterIds}"
-					@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
-				></d2l-insights-semester-filter>
+				<slot name="filters"></slot>
 			</div>
 
 			<div class="d2l-insights-user-drill-view-content">

@@ -258,9 +258,20 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				.user="${user}"
 				.data="${this._serverData}"
 				@d2l-insights-user-drill-view-back="${this._backToHomeHandler}"
-				@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
-				@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
-			></d2l-insights-user-drill-view>
+			>
+				<div slot="filters">
+					<d2l-insights-ou-filter
+						.data="${this._serverData}"
+						@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
+					></d2l-insights-ou-filter>
+					<d2l-insights-semester-filter
+						page-size="10000"
+						?demo="${this.isDemo}"
+						.preSelected="${this._serverData.selectedSemesterIds}"
+						@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
+					></d2l-insights-semester-filter>
+				</div>
+			</d2l-insights-user-drill-view>
 		`;
 	}
 
