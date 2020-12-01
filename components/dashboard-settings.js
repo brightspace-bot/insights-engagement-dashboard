@@ -46,7 +46,6 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 			.d2l-insights-settings-page-main-container {
 				height: 100%;
-				overflow-y: auto;
 				padding-top: 30px;
 			}
 
@@ -165,7 +164,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleSummaryMetrics')}">
 							<!-- out of scope: roles selection -->
 
-							<d2l-card-selection-list
+							<d2l-insights-engagement-card-selection-list
 								?course-access-card="${this.showCourseAccessCard}"
 								?discussions-card="${this.showDiscussionsCard}"
 								?grades-card="${this.showGradesCard}"
@@ -174,7 +173,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 								?system-access-card="${this.showSystemAccessCard}"
 								?tic-grades-card="${this.showTicGradesCard}"
 								last-access-threshold-days="${this.lastAccessThresholdDays}"
-							></d2l-card-selection-list>
+							></d2l-insights-engagement-card-selection-list>
 						</d2l-tab-panel>
 
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleResultsTableMetrics')}">
@@ -214,7 +213,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 	}
 
 	async _handleSaveAndClose() {
-		const cardSelectionList = this.shadowRoot.querySelector('d2l-card-selection-list');
+		const cardSelectionList = this.shadowRoot.querySelector('d2l-insights-engagement-card-selection-list');
 
 		const settings = {
 			...cardSelectionList.settings,
