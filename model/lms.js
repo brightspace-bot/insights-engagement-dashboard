@@ -168,7 +168,7 @@ export async function saveSettings(settings) {
 	});
 
 	const url = new URL(saveSettingsEndpoint, window.location.origin);
-	await d2lfetch.fetch(new Request(url.toString(), {
+	return await d2lfetch.fetch(new Request(url.toString(), {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json'
