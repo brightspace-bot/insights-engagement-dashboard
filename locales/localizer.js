@@ -90,9 +90,4 @@ export const Localizer = superclass => class extends LocalizeMixin(superclass) {
 			};
 		}
 	}
-
-	truncateString(str, maxLength) {
-		if (str.length <= maxLength) return str;
-		return `${str.substring(0, maxLength - 3)}...`;
-	}
 };

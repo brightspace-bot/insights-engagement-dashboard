@@ -1,36 +1,15 @@
-import { css, html, LitElement } from 'lit-element/lit-element';
+import { html, LitElement } from 'lit-element/lit-element';
 import { Localizer } from '../../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
+import { thumbnailCardStyles } from './thumbnail-card-styles';
 
 class DiscActivityThumbnailSvg extends RtlMixin(Localizer(LitElement)) {
 	static get styles() {
-		return [css`
-			.d2l-insights-disc-activity-thumbnail-title {
-				font-size: smaller;
-				font-weight: bold;
-				margin-left: 16px;
-				margin-right: 0;
-				margin-top: 5px;
-				position: absolute;
-				z-index: 1;
-			}
-
-			:host([dir="rtl"]) .d2l-insights-disc-activity-thumbnail-title {
-				font-size: smaller;
-				font-weight: bold;
-				margin-left: 0;
-				margin-right: 14px;
-				margin-top: 5px;
-				position: absolute;
-				z-index: 1;
-			}
-		`];
+		return [thumbnailCardStyles];
 	}
-
 	render() {
-		const title = this.truncateString(this.localize('components.insights-discussion-activity-card.cardTitle'), 35);
 		return html`
-			<span class="d2l-insights-disc-activity-thumbnail-title">${title}</span>
+			<span class="d2l-insights-thumbnail-title">${this.localize('components.insights-discussion-activity-card.cardTitle')}</span>
 			<svg xmlns="http://www.w3.org/2000/svg" width="293" height="150" viewBox="0 0 291 150">
 				<g id="Discussion">
 					<g fill="#fff" stroke="#e3e9f1" stroke-miterlimit="10" stroke-width="1">
