@@ -24,6 +24,8 @@ export default {
 	"components.insights-engagement-dashboard.noResultsAvailable": "There are no results available that match your filters.",
 
 	"components.insights-role-filter.name": "Role",
+	"components.insights-settings-view-role-list.title": "Roles filter",
+	"components.insights-settings-view-role-list.description": "Set which learner roles to include in your dashboard data. All other roles will be filtered out.",
 
 	"components.org-unit-filter.name-all-selected": "Org Unit: All",
 	"components.org-unit-filter.name-some-selected": "Org Unit: Selections Applied",
@@ -150,6 +152,8 @@ export default {
 
 	"components.insights-settings-view.title": "Settings",
 	"components.insights-settings-view.description": "Set which metrics display in the Summary and Result Detail section of the Engagement Dashboard.",
+	"components.insights-settings-view.tabTitleSummaryMetrics": "Summary Metrics",
+	"components.insights-settings-view.tabTitleResultsTableMetrics": "Results Table Metrics",
 	"components.insights-settings-view.saveAndClose": "Save and Close",
 	"components.insights-settings-view.save": "Save",
 	"components.insights-settings-view.cancel": "Cancel"

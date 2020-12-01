@@ -5,7 +5,6 @@ import './components/histogram-card.js';
 import './components/ou-filter.js';
 import './components/results-card.js';
 import './components/debug-card.js';
-import './components/role-filter.js';
 import './components/semester-filter.js';
 import './components/users-table.js';
 import './components/table.js';
@@ -262,6 +261,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	_renderSettingsView() {
 		return html`
 			<d2l-insights-engagement-dashboard-settings
+				?demo="${this.isDemo}"
 				@d2l-insights-settings-view-back="${this._backToHomeHandler}"
 				?course-access-card="${this.showCourseAccessCard}"
 				?courses-col="${this.showCoursesCol}"
@@ -276,7 +276,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				?tic-col="${this.showTicCol}"
 				?tic-grades-card="${this.showTicGradesCard}"
 				last-access-threshold-days="${this.lastAccessThresholdDays}"
-				.include-roles="${this._parsedIncludeRoles}"
+				.includeRoles="${this._serverData.selectedRoleIds}"
 			></d2l-insights-engagement-dashboard-settings>
 		`;
 	}
@@ -496,6 +496,8 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			this.showLastAccessCol = e.detail.showLastAccessCol;
 			this.lastAccessThresholdDays = e.detail.lastAccessThresholdDays;
 			this.includeRoles = (e.detail.includeRoles || []).join(',');
+
+			this._serverData.selectedRoleIds = e.detail.includeRoles;
 		}
 		if (this._viewState) {
 			this._viewState.setHomeView();
@@ -510,11 +512,6 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 		if (this._viewState) {
 			this._viewState.setSettingsView();
 		}
-	}
-
-	_roleFilterChange(event) {
-		event.stopPropagation();
-		this._serverData.selectedRoleIds = event.target.selected;
 	}
 
 	_orgUnitFilterChange(event) {

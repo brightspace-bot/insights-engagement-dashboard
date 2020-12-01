@@ -145,7 +145,7 @@ export function fetchLastSearch(selectedSemesterIds) {
  * "lastAccessThresholdDays" (number) and "includeRoles" (array) fields are optional.
  */
 export async function saveSettings(settings) {
-	if (isMocked) return;
+	if (isMocked) return { ok: true };
 
 	const requiredFields = [
 		'showResultsCard',
@@ -168,7 +168,7 @@ export async function saveSettings(settings) {
 	});
 
 	const url = new URL(saveSettingsEndpoint, window.location.origin);
-	await d2lfetch.fetch(new Request(url.toString(), {
+	return await d2lfetch.fetch(new Request(url.toString(), {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json'
