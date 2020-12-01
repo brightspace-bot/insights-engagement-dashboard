@@ -150,11 +150,20 @@ export default {
 	"components.insights-default-view-popup.collapseDefaultCourseList": "Collapse the list of courses included in your default view",
 	"components.insights-default-view-popup.buttonOk": "Ok",
 
-	"components.insights-settings-view.title": "Settings",
-	"components.insights-settings-view.description": "Set which metrics display in the Summary and Result Detail section of the Engagement Dashboard.",
-	"components.insights-settings-view.tabTitleSummaryMetrics": "Summary Metrics",
-	"components.insights-settings-view.tabTitleResultsTableMetrics": "Results Table Metrics",
-	"components.insights-settings-view.saveAndClose": "Save and Close",
-	"components.insights-settings-view.save": "Save",
-	"components.insights-settings-view.cancel": "Cancel"
+	"components.insights-engagement-settings.title": "Settings",
+	"components.insights-engagement-settings.description": "Set which metrics display in the Summary and Result Detail section of the Engagement Dashboard.",
+	"components.insights-engagement-settings.tabTitleSummaryMetrics": "Summary Metrics",
+	"components.insights-engagement-settings.tabTitleResultsTableMetrics": "Results Table Metrics",
+	"components.insights-engagement-settings.saveAndClose": "Save and Close",
+	"components.insights-engagement-settings.save": "Save",
+	"components.insights-engagement-settings.cancel": "Cancel",
+
+	"components.insights-engagement-settings.avgGrade": "Average Grade Performance Summary",
+	"components.insights-engagement-settings.avgTimeInContent": "Average Time in Content Summary",
+	"components.insights-engagement-settings.avgDiscussionActivity": "Average Discussion Participation Summary",
+	"components.insights-engagement-settings.lastAccessedSystem": "System Last Access",
+	"components.insights-engagement-settings.avgGrade-description": "The Average Grades Performance Summary indicator presents the current average grade for the student across all the applied filtered fields.",
+	"components.insights-engagement-settings.avgTimeInContent-description": "The Average Time in Content indicator shows the average time spent in content across all the applied filtered fields. The metric is tracked in minutes.",
+	"components.insights-engagement-settings.avgDiscussionActivity-description": "The Average Discussion Participation Summary indicator presents user statistics for average reading, posting, and responding to discussions across all the applied filtered fields.",
+	"components.insights-engagement-settings.lastAccessedSystem-description": "The System Last Access indicator displays the last session date and local time that a user has accessed the system and any subsequent courses in the system.",
 };
