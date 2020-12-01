@@ -46,7 +46,7 @@
   "dependencies": {
     "@adobe/lit-mobx": "0.0.x",
     "@brightspace-ui-labs/pagination": "^1",
-    "@brightspace-ui/core": "^1.83.1",
+    "@brightspace-ui/core": "^1.102.8",
     "@brightspace-ui/intl": "^3.0.11",
     "@webcomponents/webcomponentsjs": "^2",
     "array-flat-polyfill": "^1.0.1",
