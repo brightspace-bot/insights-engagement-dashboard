@@ -14,7 +14,6 @@ export class Data {
 		this.userDictionary = null;
 
 		// @observables
-		this.userViewUserId = null;
 		this.isLoading = true;
 		this.serverData = {
 			records: [],
@@ -154,7 +153,6 @@ decorate(Data, {
 	serverData: observable,
 	orgUnitTree: observable,
 	isLoading: observable,
-	userViewUserId: observable,
 	records: computed,
 	onServerDataReload: action
 });

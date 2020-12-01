@@ -1,9 +1,41 @@
+import '@brightspace-ui/core/components/list/list';
+import '@brightspace-ui/core/components/list/list-item';
+import '@brightspace-ui/core/components/tabs/tabs';
+import '@brightspace-ui/core/components/tabs/tab-panel';
+
+import './role-list.js';
+
 import { css, html, LitElement } from 'lit-element';
 import { heading1Styles, heading2Styles } from '@brightspace-ui/core/components/typography/styles.js';
 import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
+import { saveSettings } from '../model/lms';
 
+/**
+ * @fires d2l-insights-settings-view-back
+ */
 class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
+
+	static get properties() {
+		return {
+			isDemo: { type: Boolean, attribute: 'demo' },
+			showCourseAccessCard: { type: Boolean, attribute: 'course-access-card', reflect: true },
+			showCoursesCol: { type: Boolean, attribute: 'courses-col', reflect: true },
+			showDiscussionsCard: { type: Boolean, attribute: 'discussions-card', reflect: true },
+			showDiscussionsCol: { type: Boolean, attribute: 'discussions-col', reflect: true },
+			showGradesCard: { type: Boolean, attribute: 'grades-card', reflect: true },
+			showGradeCol: { type: Boolean, attribute: 'grade-col', reflect: true },
+			showLastAccessCol: { type: Boolean, attribute: 'last-access-col', reflect: true },
+			showOverdueCard: { type: Boolean, attribute: 'overdue-card', reflect: true },
+			showResultsCard: { type: Boolean, attribute: 'results-card', reflect: true },
+			showSystemAccessCard: { type: Boolean, attribute: 'system-access-card', reflect: true },
+			showTicCol: { type: Boolean, attribute: 'tic-col', reflect: true },
+			showTicGradesCard: { type: Boolean, attribute: 'tic-grades-card', reflect: true },
+			lastAccessThresholdDays: { type: Number, attribute: 'last-access-threshold-days', reflect: true },
+			includeRoles: { type: Array, attribute: false }
+		};
+	}
+
 	static get styles() {
 		return [heading1Styles, heading2Styles, css`
 			:host {
@@ -106,20 +138,47 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		`];
 	}
 
+	constructor() {
+		super();
+
+		this.isDemo = false;
+
+		this.showCourseAccessCard = false;
+		this.showCoursesCol = false;
+		this.showDiscussionsCard = false;
+		this.showDiscussionsCol = false;
+		this.showGradesCard = false;
+		this.showGradeCol = false;
+		this.showLastAccessCol = false;
+		this.showOverdueCard = false;
+		this.showResultsCard = false;
+		this.showSystemAccessCard = false;
+		this.showTicCol = false;
+		this.showTicGradesCard = false;
+		this.lastAccessThresholdDays = 14;
+		this.includeRoles = [];
+	}
+
 	render() {
 		return html`
 			<div class="d2l-insights-settings-page-main-container">
 				<div class="d2l-insights-settings-page-main-content">
-						<h1 class="d2l-heading-1">${this.localize('components.insights-settings-view.title')}</h1>
-						<h2 class="d2l-heading-2">${this.localize('components.insights-settings-view.description')}</h2>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
-						<p>Mock content</p>
+					<h1 class="d2l-heading-1">${this.localize('components.insights-settings-view.title')}</h1>
+					<h2 class="d2l-heading-2">${this.localize('components.insights-settings-view.description')}</h2>
+
+					<d2l-tabs>
+						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleSummaryMetrics')}">
+
+							<d2l-insights-role-list
+								?demo="${this.isDemo}"
+								.includeRoles="${this.includeRoles}">
+							</d2l-insights-role-list>
+						</d2l-tab-panel>
+
+						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleResultsTableMetrics')}">
+							<!-- out of scope: users table column selection -->
+						</d2l-tab-panel>
+					</d2l-tabs>
 				</div>
 			</div>
 
@@ -139,7 +198,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 					</d2l-button>
 					<d2l-button
 						class="d2l-insights-settings-footer-button"
-						@click="${this._returnToEngagementDashboard}">
+						@click="${this._handleCancel}">
 						${this.localize('components.insights-settings-view.cancel')}
 					</d2l-button>
 				</div>
@@ -147,14 +206,46 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		`;
 	}
 
-	_handleSaveAndClose() {
-		// out of scope: save settings
+	get _selectedRoleIds() {
+		return this.shadowRoot.querySelector('d2l-insights-role-list').includeRoles;
+	}
 
+	async _handleSaveAndClose() {
+		const settings = {
+			showResultsCard: this.showResultsCard,
+			showOverdueCard: this.showOverdueCard,
+			showDiscussionsCard: this.showDiscussionsCard,
+			showSystemAccessCard: this.showSystemAccessCard,
+			showGradesCard: this.showGradesCard,
+			showTicGradesCard: this.showTicGradesCard,
+			showCourseAccessCard: this.showCourseAccessCard,
+			showCoursesCol: this.showCoursesCol,
+			showGradeCol: this.showGradeCol,
+			showTicCol: this.showTicCol,
+			showDiscussionsCol: this.showDiscussionsCol,
+			showLastAccessCol: this.showLastAccessCol,
+			lastAccessThresholdDays: this.lastAccessThresholdDays,
+			includeRoles: this._selectedRoleIds
+		};
+
+		const response = await saveSettings(settings);
+
+		if (!response.ok) {
+			console.error('Dashboard Settings View. Cannot save settings!');
+			return;
+		}
+
+		this._returnToEngagementDashboard(settings);
+	}
+
+	_handleCancel() {
 		this._returnToEngagementDashboard();
 	}
 
-	_returnToEngagementDashboard() {
-		this.dispatchEvent(new Event('d2l-insights-settings-view-back'));
+	_returnToEngagementDashboard(settings) {
+		this.dispatchEvent(new CustomEvent('d2l-insights-settings-view-back', {
+			detail: settings
+		}));
 	}
 }
 customElements.define('d2l-insights-engagement-dashboard-settings', DashboardSettings);
