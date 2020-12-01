@@ -1,3 +1,5 @@
+import '@brightspace-ui/core/components/offscreen/offscreen.js';
+
 import '../components/summary-card';
 import '../components/svg/course-access-thumbnail.svg';
 import '../components/svg/current-grade-thumbnail.svg';
@@ -35,10 +37,6 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 				display: none;
 			}
 
-			h3.d2l-heading-3 {
-				margin-top: 0;
-			}
-
 			.d2l-demo-card {
 				margin-bottom: 10px;
 				margin-left: 30px;
@@ -58,6 +56,10 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 				flex-direction: row;
 			}
 
+			.d2l-card-selection-title {
+				margin-top: 0;
+			}
+
 			.d2l-card-selection-text {
 				margin: 10px 30px;
 			}
@@ -72,6 +74,14 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 				.d2l-insights-list-flex-container {
 					display: flex;
 					flex-direction: column;
+				}
+
+				.d2l-card-selection-title {
+					display: none;
+				}
+
+				.d2l-card-selection-text p {
+					margin-top: 0;
 				}
 			}
 		`];
@@ -98,9 +108,12 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 			<d2l-list id="card-selection-list" @d2l-list-selection-change="${this._handleCardSelectionListChange}">
 				<d2l-list-item key="showGradesCard" selectable ?selected="${this.showGradesCard}">
 					<div class="d2l-insights-list-flex-container">
-						<d2l-insights-current-grade-thumbnail aria-hidden="true" class="d2l-demo-card"></d2l-insights-current-grade-thumbnail>
+						<d2l-insights-current-grade-thumbnail class="d2l-demo-card" aria-hidden="true"></d2l-insights-current-grade-thumbnail>
 						<div class="d2l-card-selection-text">
-							<h3 class="d2l-heading-3">${this.localize('components.insights-current-final-grade-card.currentGrade')}</h3>
+							<h3 class="d2l-heading-3 d2l-card-selection-title" aria-hidden="true">
+								${this.localize('components.insights-current-final-grade-card.currentGrade')}
+							</h3>
+							<d2l-offscreen>${this.localize('components.insights-current-final-grade-card.currentGrade')}</d2l-offscreen>
 							<p class="d2l-body-standard">${this.localize('components.insights-settings-view.currentGradeDesc')}</p>
 						</div>
 					</div>
@@ -108,9 +121,12 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 
 				<d2l-list-item key="showCourseAccessCard" selectable ?selected="${this.showCourseAccessCard}">
 					<div class="d2l-insights-list-flex-container">
-						<d2l-insights-course-access-thumbnail aria-hidden="true" class="d2l-demo-card"></d2l-insights-course-access-thumbnail>
+						<d2l-insights-course-access-thumbnail class="d2l-demo-card" aria-hidden="true"></d2l-insights-course-access-thumbnail>
 						<div class="d2l-card-selection-text">
-							<h3 class="d2l-heading-3">${this.localize('components.insights-course-last-access-card.courseAccess')}</h3>
+							<h3 class="d2l-heading-3 d2l-card-selection-title" aria-hidden="true">
+								${this.localize('components.insights-course-last-access-card.courseAccess')}
+							</h3>
+							<d2l-offscreen>${this.localize('components.insights-course-last-access-card.courseAccess')}</d2l-offscreen>
 							<p class="d2l-body-standard">${this.localize('components.insights-settings-view.courseAccessDesc')}</p>
 						</div>
 					</div>
@@ -118,9 +134,12 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 
 				<d2l-list-item key="showTicGradesCard" selectable ?selected="${this.showTicGradesCard}">
 					<div class="d2l-insights-list-flex-container">
-						<d2l-insights-tic-vs-grade-thumbnail aria-hidden="true" class="d2l-demo-card"></d2l-insights-tic-vs-grade-thumbnail>
+						<d2l-insights-tic-vs-grade-thumbnail class="d2l-demo-card" aria-hidden="true"></d2l-insights-tic-vs-grade-thumbnail>
 						<div class="d2l-card-selection-text">
-							<h3 class="d2l-heading-3">${this.localize('components.insights-time-in-content-vs-grade-card.timeInContentVsGrade')}</h3>
+							<h3 class="d2l-heading-3 d2l-card-selection-title" aria-hidden="true">
+								${this.localize('components.insights-time-in-content-vs-grade-card.timeInContentVsGrade')}
+							</h3>
+							<d2l-offscreen>${this.localize('components.insights-time-in-content-vs-grade-card.timeInContentVsGrade')}</d2l-offscreen>
 							<p class="d2l-body-standard">${this.localize('components.insights-settings-view.ticVsGradeDesc')}</p>
 						</div>
 					</div>
@@ -133,10 +152,14 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 							card-title="${this.localize('components.insights-engagement-dashboard.overdueAssignmentsHeading')}"
 							card-value="22"
 							card-message="${this.localize('components.insights-engagement-dashboard.overdueAssignments')}"
-							aria-hidden="true">
+							aria-hidden="true"
+						>
 						</d2l-labs-summary-card>
 						<div class="d2l-card-selection-text">
-							<h3 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.overdueAssignmentsHeading')}</h3>
+							<h3 class="d2l-heading-3 d2l-card-selection-title" aria-hidden="true">
+								${this.localize('components.insights-engagement-dashboard.overdueAssignmentsHeading')}
+							</h3>
+							<d2l-offscreen>${this.localize('components.insights-engagement-dashboard.overdueAssignmentsHeading')}</d2l-offscreen>
 							<p class="d2l-body-standard">${this.localize('components.insights-settings-view.overdueAssignmentsDesc')}</p>
 						</div>
 					</div>
@@ -150,9 +173,12 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 
 				<d2l-list-item key="showDiscussionsCard" selectable ?selected="${this.showDiscussionsCard}">
 					<div class="d2l-insights-list-flex-container">
-						<d2l-insights-disc-activity-thumbnail aria-hidden="true" class="d2l-demo-card"></d2l-insights-disc-activity-thumbnail>
+						<d2l-insights-disc-activity-thumbnail class="d2l-demo-card" aria-hidden="true"></d2l-insights-disc-activity-thumbnail>
 						<div class="d2l-card-selection-text">
-							<h3 class="d2l-heading-3">${this.localize('components.insights-discussion-activity-card.cardTitle')}</h3>
+							<h3 class="d2l-heading-3 d2l-card-selection-title" aria-hidden="true">
+								${this.localize('components.insights-discussion-activity-card.cardTitle')}
+							</h3>
+							<d2l-offscreen>${this.localize('components.insights-discussion-activity-card.cardTitle')}</d2l-offscreen>
 							<p class="d2l-body-standard">${this.localize('components.insights-settings-view.discActivityDesc')}</p>
 						</div>
 					</div>
@@ -176,10 +202,13 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 				card-title="${this.localize('components.insights-engagement-dashboard.lastSystemAccessHeading')}"
 				card-value="10"
 				card-message="${summaryCardMessage}"
-				aria-hidden="true">
+			 	aria-hidden="true">
 			</d2l-labs-summary-card>
 			<div class="d2l-card-selection-text">
-				<h3 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.lastSystemAccessHeading')}</h3>
+				<h3 class="d2l-heading-3 d2l-card-selection-title" aria-hidden="true">
+					${this.localize('components.insights-engagement-dashboard.lastSystemAccessHeading')}
+				</h3>
+				<d2l-offscreen>${this.localize('components.insights-settings-view.systemAccessDesc')}</d2l-offscreen>
 				<p class="d2l-body-standard">${this.localize('components.insights-settings-view.systemAccessDesc')}</p>
 
 				<div>
