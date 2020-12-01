@@ -1,10 +1,36 @@
-import {  html, LitElement } from 'lit-element/lit-element';
+import { css, html, LitElement } from 'lit-element/lit-element';
 import { Localizer } from '../../locales/localizer';
+import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
-class TicVsGradeThumbnailSvg extends Localizer(LitElement) {
+class TicVsGradeThumbnailSvg extends RtlMixin(Localizer(LitElement)) {
+	static get styles() {
+		return [css`
+			.d2l-insights-tic-vs-grade-thumbnail-title {
+				font-size: smaller;
+				font-weight: bold;
+				margin-left: 16px;
+				margin-right: 0;
+				margin-top: 5px;
+				position: absolute;
+				z-index: 1;
+			}
+
+			:host([dir="rtl"]) .d2l-insights-tic-vs-grade-thumbnail-title {
+				font-size: smaller;
+				font-weight: bold;
+				margin-left: 0;
+				margin-right: 14px;
+				margin-top: 5px;
+				position: absolute;
+				z-index: 1;
+			}
+		`];
+	}
+
 	render() {
-		const title = this.truncateString(this.localize('components.insights-time-in-content-vs-grade-card.timeInContentVsGrade'), 40);
+		const title = this.truncateString(this.localize('components.insights-time-in-content-vs-grade-card.timeInContentVsGrade'), 35);
 		return html`
+			<span class="d2l-insights-tic-vs-grade-thumbnail-title">${title}</span>
 			<svg xmlns="http://www.w3.org/2000/svg" width="293" height="150" viewBox="0 0 291 150">
 				<g id="TiC_v_Grade">
 					<g fill="#fff" stroke="#e3e9f1" stroke-miterlimit="10" stroke-width="1">
@@ -12,10 +38,6 @@ class TicVsGradeThumbnailSvg extends Localizer(LitElement) {
 						<rect x="0.5" y="0.5" width="291" height="143" rx="14.5" fill="none"/>
 					</g>
 					<g transform="translate(5 15)">
-						<text id="Time_in_Content_vs.-2" transform="translate(12 -5)" fill="#494c4e"
-							  font-size="14" font-family="Lato-Bold, Lato" font-weight="700" letter-spacing="0.014em">
-							<tspan x="0" y="14">${title}</tspan>
-						</text>
 						<g transform="translate(25.873 14.498)">
 							<path id="Line_3-6" d="M.5.449V102.612" transform="translate(1.452 -0.199)"
 								  fill="none" stroke="#979797" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1"/>

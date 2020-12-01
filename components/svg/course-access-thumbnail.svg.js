@@ -1,10 +1,36 @@
-import { html, LitElement } from 'lit-element/lit-element';
+import { css, html, LitElement } from 'lit-element/lit-element';
 import { Localizer } from '../../locales/localizer';
+import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
-class CourseAccessThumbnailSvg extends Localizer(LitElement) {
+class CourseAccessThumbnailSvg extends RtlMixin(Localizer(LitElement)) {
+	static get styles() {
+		return [css`
+			.d2l-insights-course-access-thumbnail-title {
+				font-size: smaller;
+				font-weight: bold;
+				margin-left: 16px;
+				margin-right: 0;
+				margin-top: 5px;
+				position: absolute;
+				z-index: 1;
+			}
+
+			:host([dir="rtl"]) .d2l-insights-course-access-thumbnail-title {
+				font-size: smaller;
+				font-weight: bold;
+				margin-left: 0;
+				margin-right: 14px;
+				margin-top: 5px;
+				position: absolute;
+				z-index: 1;
+			}
+		`];
+	}
+
 	render() {
-		const title = this.truncateString(this.localize('components.insights-course-last-access-card.courseAccess'), 40);
+		const title = this.truncateString(this.localize('components.insights-course-last-access-card.courseAccess'), 35);
 		return html`
+			<span class="d2l-insights-course-access-thumbnail-title">${title}</span>
 			<svg xmlns="http://www.w3.org/2000/svg" width="293" height="150" viewBox="0 0 291 150">
 				<g id="Course_Access">
 					<g fill="#fff" stroke="#e3e9f1"
@@ -13,10 +39,6 @@ class CourseAccessThumbnailSvg extends Localizer(LitElement) {
 						<rect x="0.5" y="0.5" width="291" height="143" rx="14.5" fill="none"/>
 					</g>
 					<g id="Course_Access-2" transform="translate(10 5)">
-						<text id="Time_in_Content_vs." transform="translate(9.047 5)" fill="#494c4e"
-							  font-size="14" font-family="Lato-Bold, Lato" font-weight="700" letter-spacing="0.014em">
-							<tspan x="0" y="14">${title}</tspan>
-						</text>
 						<g transform="translate(75.558 31.449)">
 							<path d="M.5.449V94" transform="translate(-0.5 -0.449)" fill="none"
 								  stroke="#979797" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1"/>

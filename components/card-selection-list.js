@@ -27,34 +27,42 @@ class CardSelectionList extends RtlMixin(Localizer(LitElement)) {
 	}
 
 	static get styles() {
-		return [bodySmallStyles, bodyStandardStyles, heading3Styles,
-			css`
-				:host {
-					display: block;
-				}
-				:host([hidden]) {
-					display: none;
-				}
+		return [bodySmallStyles, bodyStandardStyles, heading3Styles, css`
+			:host {
+				display: block;
+			}
+			:host([hidden]) {
+				display: none;
+			}
 
-				h3.d2l-heading-3 {
-					margin-top: 0;
-				}
+			h3.d2l-heading-3 {
+				margin-top: 0;
+			}
 
-				.d2l-demo-card {
-					margin: 10px 30px;
-				}
+			.d2l-demo-card {
+				margin-bottom: 10px;
+				margin-left: 30px;
+				margin-right: 0;
+				margin-top: 10px;
+			}
 
-				.d2l-card-selection-text {
-					margin: 10px 0;
-				}
+			:host([dir="rtl"]) .d2l-demo-card {
+				margin-bottom: 10px;
+				margin-left: 0;
+				margin-right: 30px;
+				margin-top: 10px;
+			}
 
-				.d2l-system-access-edit-input {
-					display: inline-block;
-					width: 3.5rem;
-					z-index: 2; /* otherwise the input isn't selectable */
-				}
-			`
-		];
+			.d2l-card-selection-text {
+				margin: 10px 30px;
+			}
+
+			.d2l-system-access-edit-input {
+				display: inline-block;
+				width: 3.5rem;
+				z-index: 2; /* otherwise the input isn't selectable */
+			}
+		`];
 	}
 
 	constructor() {

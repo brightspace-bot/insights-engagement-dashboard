@@ -1,10 +1,36 @@
-import { html, LitElement } from 'lit-element/lit-element';
+import { css, html, LitElement } from 'lit-element/lit-element';
 import { Localizer } from '../../locales/localizer';
+import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 
-class CurrentGradeThumbnailSvg extends Localizer(LitElement) {
+class CurrentGradeThumbnailSvg extends RtlMixin(Localizer(LitElement)) {
+	static get styles() {
+		return [css`
+			.d2l-insights-current-grade-thumbnail-title {
+				font-size: smaller;
+				font-weight: bold;
+				margin-left: 16px;
+				margin-right: 0;
+				margin-top: 5px;
+				position: absolute;
+				z-index: 1;
+			}
+
+			:host([dir="rtl"]) .d2l-insights-current-grade-thumbnail-title {
+				font-size: smaller;
+				font-weight: bold;
+				margin-left: 0;
+				margin-right: 14px;
+				margin-top: 5px;
+				position: absolute;
+				z-index: 1;
+			}
+		`];
+	}
+
 	render() {
-		const title = this.truncateString(this.localize('components.insights-current-final-grade-card.currentGrade'), 40);
+		const title = this.truncateString(this.localize('components.insights-current-final-grade-card.currentGrade'), 35);
 		return html`
+			<span class="d2l-insights-current-grade-thumbnail-title">${title}</span>
 			<svg xmlns="http://www.w3.org/2000/svg" width="293" height="150" viewBox="0 0 291 150">
 				<g id="Current_Grade" data-name="Current Grade">
 					<g fill="#fff" stroke="#e3e9f1" stroke-width="1">
@@ -12,11 +38,6 @@ class CurrentGradeThumbnailSvg extends Localizer(LitElement) {
 						<rect x="0.5" y="0.5" width="291" height="143" rx="14.5" fill="none"/>
 					</g>
 					<g id="Current_Grade-2" transform="translate(10 25)">
-						<text id="Current_Final_Grade" transform="translate(6.173 -17)"
-							  fill="#494c4e" font-size="14" font-family="Lato-Bold, Lato" font-weight="700"
-							  letter-spacing="0.014em">
-							<tspan x="0" y="14">${title}</tspan>
-						</text>
 						<g id="Chart" transform="translate(17.605 20.263)">
 							<path id="Line_4" d="M.479.5H241.973" transform="translate(-0.479 -0.5)" fill="none"
 								  stroke="#979797" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1"/>
