@@ -158,15 +158,15 @@ export default {
 	"components.insights-engagement-settings.save": "Save",
 	"components.insights-engagement-settings.cancel": "Cancel",
 
-	"components.insights-settings-view.currentGradeDesc": "The Current Grade card shows the current grade for each enrollment per user. Data shown will appear both with the card and in the Result Detail table.",
-	"components.insights-settings-view.courseAccessDesc": "The Course Access card shows the last access in a course for each enrollment per user. Data shown will appear both with the card and in the Result Detail table.",
-	"components.insights-settings-view.ticVsGradeDesc": "The Time in Content vs. Grade card shows the time spent relative to the current grade for each enrollment per user. The chart is mapped into quadrants of high or low time and grade based off of course averages. Data shown will appear both with the card and in the Result Detail table.",
-	"components.insights-settings-view.overdueAssignmentsDesc": "The Overdue Assignments card shows the number of users who have one or more assignments overdue. Data shown will appear both with the card and in the Result Detail table.",
-	"components.insights-settings-view.systemAccessDesc": "The System Access card shows the last access in the system per user even if no courses have been accessed. Data shown will appear both with the card and in the Result Detail table.",
-	"components.insights-settings-view.discActivityDesc": "The Discussion Activity card shows passive and active social engagement in each course. The metric captures and shows when a user creates a post, replies to an existing post or reads a post.",
+	"components.insights-engagement-settings.currentGradeDesc": "The Current Grade card shows the current grade for each enrollment per user. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.courseAccessDesc": "The Course Access card shows the last access in a course for each enrollment per user. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.ticVsGradeDesc": "The Time in Content vs. Grade card shows the time spent relative to the current grade for each enrollment per user. The chart is mapped into quadrants of high or low time and grade based off of course averages. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.overdueAssignmentsDesc": "The Overdue Assignments card shows the number of users who have one or more assignments overdue. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.systemAccessDesc": "The System Access card shows the last access in the system per user even if no courses have been accessed. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.discActivityDesc": "The Discussion Activity card shows passive and active social engagement in each course. The metric captures and shows when a user creates a post, replies to an existing post or reads a post.",
 
-	"components.insights-settings-view.systemAccessEdit": "Show users who have not accessed the system in the last {num} days.",
-	"components.insights-settings-view.systemAccessEditLabel": "Edit system access threshold",
+	"components.insights-engagement-settings.systemAccessEdit": "Show users who have not accessed the system in the last {num} days.",
+	"components.insights-engagement-settings.systemAccessEditLabel": "Edit system access threshold",
 
 	"components.insights-engagement-settings.avgGrade": "Average Grade Performance Summary",
 	"components.insights-engagement-settings.avgTimeInContent": "Average Time in Content Summary",
