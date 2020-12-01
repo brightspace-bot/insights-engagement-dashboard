@@ -89,7 +89,7 @@ class ColumnConfiguration extends RtlMixin(Localizer(LitElement)) {
 				</d2l-list-item>
 				<d2l-list-item key="showTicCol" selectable ?selected="${this.showTicCol}">
 					<div class="d2l-insights-config-list-item">
-						<div class="d2l-column-example" slot="illustration">${formatNumber(92, numberFormatOptions)}</div>
+						<div class="d2l-column-example">${formatNumber(92, numberFormatOptions)}</div>
 						<div class="d2l-column-selection-text">
 							<h3 class="d2l-heading-3">${this.localize('components.insights-engagement-settings.avgTimeInContent')}</h3>
 							<p class="d2l-body-standard">${this.localize('components.insights-engagement-settings.avgTimeInContent-description')}</p>
@@ -98,7 +98,7 @@ class ColumnConfiguration extends RtlMixin(Localizer(LitElement)) {
 				</d2l-list-item>
 				<d2l-list-item key="showDiscussionsCol" selectable ?selected="${this.showDiscussionsCol}">
 					<div class="d2l-insights-config-list-item">
-						<div class="d2l-column-example" slot="illustration">${this._discussionsExample}</div>
+						<div class="d2l-column-example">${this._discussionsExample}</div>
 						<div class="d2l-column-selection-text">
 							<h3 class="d2l-heading-3">${this.localize('components.insights-engagement-settings.avgDiscussionActivity')}</h3>
 							<p class="d2l-body-standard">${this.localize('components.insights-engagement-settings.avgDiscussionActivity-description')}</p>
@@ -107,7 +107,7 @@ class ColumnConfiguration extends RtlMixin(Localizer(LitElement)) {
 				</d2l-list-item>
 				<d2l-list-item key="showLastAccessCol" selectable ?selected="${this.showLastAccessCol}">
 					<div class="d2l-insights-config-list-item">
-						<div class="d2l-column-example" slot="illustration">${formatDateTime(thirtyHoursAgo(), { format: 'medium' })}</div>
+						<div class="d2l-column-example">${formatDateTime(thirtyHoursAgo(), { format: 'medium' })}</div>
 						<div class="d2l-column-selection-text">
 							<h3 class="d2l-heading-3">${this.localize('components.insights-engagement-settings.lastAccessedSystem')}</h3>
 							<p class="d2l-body-standard">${this.localize('components.insights-engagement-settings.lastAccessedSystem-description')}</p>
