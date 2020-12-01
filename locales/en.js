@@ -24,6 +24,8 @@ export default {
 	"components.insights-engagement-dashboard.noResultsAvailable": "There are no results available that match your filters.",
 
 	"components.insights-role-filter.name": "Role",
+	"components.insights-settings-view-role-list.title": "Roles filter",
+	"components.insights-settings-view-role-list.description": "Set which learner roles to include in your dashboard data. All other roles will be filtered out.",
 
 	"components.org-unit-filter.name-all-selected": "Org Unit: All",
 	"components.org-unit-filter.name-some-selected": "Org Unit: Selections Applied",

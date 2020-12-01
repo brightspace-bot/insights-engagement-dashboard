@@ -5,6 +5,7 @@ import '@brightspace-ui/core/components/tabs/tab-panel';
 import '@brightspace-ui/core/components/inputs/input-number';
 
 import './card-selection-list';
+import './role-list.js';
 
 import { css, html, LitElement } from 'lit-element';
 import { heading1Styles, heading2Styles } from '@brightspace-ui/core/components/typography/styles.js';
@@ -12,10 +13,14 @@ import { Localizer } from '../locales/localizer';
 import { RtlMixin } from '@brightspace-ui/core/mixins/rtl-mixin';
 import { saveSettings } from '../model/lms';
 
+/**
+ * @fires d2l-insights-settings-view-back
+ */
 class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 	static get properties() {
 		return {
+			isDemo: { type: Boolean, attribute: 'demo' },
 			showCourseAccessCard: { type: Boolean, attribute: 'course-access-card', reflect: true },
 			showCoursesCol: { type: Boolean, attribute: 'courses-col', reflect: true },
 			showDiscussionsCard: { type: Boolean, attribute: 'discussions-card', reflect: true },
@@ -29,7 +34,7 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			showTicCol: { type: Boolean, attribute: 'tic-col', reflect: true },
 			showTicGradesCard: { type: Boolean, attribute: 'tic-grades-card', reflect: true },
 			lastAccessThresholdDays: { type: Number, attribute: 'last-access-threshold-days', reflect: true },
-			includeRoles: { type: Array, attribute: 'include-roles' }
+			includeRoles: { type: Array, attribute: false }
 		};
 	}
 
@@ -137,6 +142,8 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 	constructor() {
 		super();
 
+		this.isDemo = false;
+
 		this.showCourseAccessCard = false;
 		this.showCoursesCol = false;
 		this.showDiscussionsCard = false;
@@ -162,7 +169,10 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 
 					<d2l-tabs>
 						<d2l-tab-panel text="${this.localize('components.insights-settings-view.tabTitleSummaryMetrics')}">
-							<!-- out of scope: roles selection -->
+							<d2l-insights-role-list
+								?demo="${this.isDemo}"
+								.includeRoles="${this.includeRoles}">
+							</d2l-insights-role-list>
 
 							<d2l-insights-engagement-card-selection-list
 								?course-access-card="${this.showCourseAccessCard}"
@@ -212,6 +222,10 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 		`;
 	}
 
+	get _selectedRoleIds() {
+		return this.shadowRoot.querySelector('d2l-insights-role-list').includeRoles;
+	}
+
 	async _handleSaveAndClose() {
 		const cardSelectionList = this.shadowRoot.querySelector('d2l-insights-engagement-card-selection-list');
 
@@ -222,10 +236,15 @@ class DashboardSettings extends RtlMixin(Localizer(LitElement)) {
 			showTicCol: this.showTicCol,
 			showDiscussionsCol: this.showDiscussionsCol,
 			showLastAccessCol: this.showLastAccessCol,
-			includeRoles: this.includeRoles
+			includeRoles: this._selectedRoleIds
 		};
 
-		await saveSettings(settings);
+		const response = await saveSettings(settings);
+
+		if (!response.ok) {
+			console.error('Dashboard Settings View. Cannot save settings!');
+			return;
+		}
 
 		this._returnToEngagementDashboard(settings);
 	}
