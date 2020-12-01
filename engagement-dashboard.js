@@ -260,18 +260,24 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 				@d2l-insights-user-drill-view-back="${this._backToHomeHandler}"
 			>
 				<div slot="filters">
-					<d2l-insights-ou-filter
-						.data="${this._serverData}"
-						@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
-					></d2l-insights-ou-filter>
-					<d2l-insights-semester-filter
-						page-size="10000"
-						?demo="${this.isDemo}"
-						.preSelected="${this._serverData.selectedSemesterIds}"
-						@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
-					></d2l-insights-semester-filter>
+					${this._renderFilters()}
 				</div>
 			</d2l-insights-user-drill-view>
+		`;
+	}
+
+	_renderFilters() {
+		return html`
+		<d2l-insights-ou-filter
+			.data="${this._serverData}"
+			@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
+		></d2l-insights-ou-filter>
+		<d2l-insights-semester-filter
+			page-size="10000"
+			?demo="${this.isDemo}"
+			.preSelected="${this._serverData.selectedSemesterIds}"
+			@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
+		></d2l-insights-semester-filter>
 		`;
 	}
 
@@ -328,16 +334,7 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 			</div>
 
 			<div class="view-filters-container">
-				<d2l-insights-ou-filter
-					.data="${this._serverData}"
-					@d2l-insights-ou-filter-change="${this._orgUnitFilterChange}"
-				></d2l-insights-ou-filter>
-				<d2l-insights-semester-filter
-					page-size="10000"
-					?demo="${this.isDemo}"
-					.preSelected="${this._serverData.selectedSemesterIds}"
-					@d2l-insights-semester-filter-change="${this._semesterFilterChange}"
-				></d2l-insights-semester-filter>
+				${this._renderFilters()}
 			</div>
 			<d2l-insights-message-container .data="${this._data}" .isNoDataReturned="${this._isNoUserResults}"></d2l-insights-message-container>
 			<h2 class="d2l-heading-3">${this.localize('components.insights-engagement-dashboard.summaryHeading')}</h2>
