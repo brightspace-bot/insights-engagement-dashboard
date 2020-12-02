@@ -481,7 +481,10 @@ class EngagementDashboard extends Localizer(MobxLitElement) {
 	}
 
 	get _isNoUserResults() {
-		return this._data.records.length === 0 && !this._data.isLoading;
+		if (!this.isDemo) {
+			return this._data.records.length === 0 && !this._data.isLoading;
+		}
+		return false;
 	}
 
 	get _serverData() {
