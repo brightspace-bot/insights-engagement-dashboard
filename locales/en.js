@@ -22,6 +22,7 @@ export default {
 	"components.insights-engagement-dashboard.print": "Print",
 	"components.insights-engagement-dashboard.noUsersSelectedDialogText": "Please select one or more users to email.",
 	"components.insights-engagement-dashboard.noResultsAvailable": "There are no results available that match your filters.",
+	"components.insights-engagement-dashboard.undoLastAction": "Undo Last Action",
 
 	"components.insights-role-filter.name": "Role",
 	"components.insights-settings-view-role-list.title": "Roles filter",
