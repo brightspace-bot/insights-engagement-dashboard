@@ -39,7 +39,7 @@ class RoleList extends Localizer(LitElement) {
 				min-width: 260px;
 			}
 
-			.d2l-insights-role-list-small-list > d2l-input-checkbox{
+			.d2l-insights-role-list-small-list > d2l-input-checkbox {
 				flex: 1 1 50%;
 			}
 
