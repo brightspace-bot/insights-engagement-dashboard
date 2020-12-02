@@ -22,8 +22,11 @@ export default {
 	"components.insights-engagement-dashboard.print": "Skriv ut",
 	"components.insights-engagement-dashboard.noUsersSelectedDialogText": "Välj en eller flera användare att skicka e-post till.",
 	"components.insights-engagement-dashboard.noResultsAvailable": "Inga tillgängliga resultat överensstämmer med filtret.",
+	"components.insights-engagement-dashboard.undoLastAction": "Undo Last Action",
 
 	"components.insights-role-filter.name": "Roll",
+	"components.insights-settings-view-role-list.title": "Roles filter",
+	"components.insights-settings-view-role-list.description": "Set which learner roles to include in your dashboard data. All other roles will be filtered out.",
 
 	"components.org-unit-filter.name-all-selected": "Organisationsenhet: alla",
 	"components.org-unit-filter.name-some-selected": "Organisationsenhet: använt urval",
@@ -57,7 +60,7 @@ export default {
 	"components.insights-users-table.title": "Användarinformation",
 	"components.insights-users-table.loadingPlaceholder": "Laddar",
 	"components.insights-users-table.lastFirstName": "Namn",
-	"components.insights-users-table.openUserPage": "Open user's page for {userName}",
+	"components.insights-users-table.openUserPage": "Open user\'s page for {userName}",
 	"components.insights-users-table.lastAccessedSystem": "Senaste åtkomstsystem",
 	"components.insights-users-table.courses": "Kurser",
 	"components.insights-users-table.avgGrade": "Genomsnittligt betyg",
@@ -150,7 +153,28 @@ export default {
 
 	"components.insights-engagement-settings.title": "Inställningar",
 	"components.insights-engagement-settings.description": "Set which metrics display in the Summary and Result Detail section of the Engagement Dashboard.",
+	"components.insights-engagement-settings.tabTitleSummaryMetrics": "Summary Metrics",
+	"components.insights-engagement-settings.tabTitleResultsTableMetrics": "Results Table Metrics",
 	"components.insights-engagement-settings.saveAndClose": "Spara och stäng",
 	"components.insights-engagement-settings.save": "Spara",
-	"components.insights-engagement-settings.cancel": "Avbryt"
+	"components.insights-engagement-settings.cancel": "Avbryt",
+
+	"components.insights-engagement-settings.currentGradeDesc": "The Current Grade card shows the current grade for each enrollment per user. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.courseAccessDesc": "The Course Access card shows the last access in a course for each enrollment per user. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.ticVsGradeDesc": "The Time in Content vs. Grade card shows the time spent relative to the current grade for each enrollment per user. The chart is mapped into quadrants of high or low time and grade based off of course averages. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.overdueAssignmentsDesc": "The Overdue Assignments card shows the number of users who have one or more assignments overdue. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.systemAccessDesc": "The System Access card shows the last access in the system per user even if no courses have been accessed. Data shown will appear both with the card and in the Result Detail table.",
+	"components.insights-engagement-settings.discActivityDesc": "The Discussion Activity card shows passive and active social engagement in each course. The metric captures and shows when a user creates a post, replies to an existing post or reads a post.",
+
+	"components.insights-engagement-settings.systemAccessEdit": "Show users who have not accessed the system in the last {num} days.",
+	"components.insights-engagement-settings.systemAccessEditLabel": "Edit system access threshold",
+
+	"components.insights-engagement-settings.avgGrade": "Average Grade Performance Summary",
+	"components.insights-engagement-settings.avgTimeInContent": "Average Time in Content Summary",
+	"components.insights-engagement-settings.avgDiscussionActivity": "Average Discussion Participation Summary",
+	"components.insights-engagement-settings.lastAccessedSystem": "System Last Access",
+	"components.insights-engagement-settings.avgGrade-description": "The Average Grades Performance Summary indicator presents the current average grade for the student across all the applied filtered fields.",
+	"components.insights-engagement-settings.avgTimeInContent-description": "The Average Time in Content indicator shows the average time spent in content across all the applied filtered fields. The metric is tracked in minutes.",
+	"components.insights-engagement-settings.avgDiscussionActivity-description": "The Average Discussion Participation Summary indicator presents user statistics for average reading, posting, and responding to discussions across all the applied filtered fields.",
+	"components.insights-engagement-settings.lastAccessedSystem-description": "The System Last Access indicator displays the last session date and local time that a user has accessed the system and any subsequent courses in the system.",
 };
