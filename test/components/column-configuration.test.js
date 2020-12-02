@@ -26,10 +26,12 @@ describe('d2l-insights-engagement-column-configuration', () => {
 			listItem.setSelected(true);
 			await el.updateComplete;
 			expect(el.showTicCol).to.be.true;
+			expect(el.showGradeCol).to.be.false;
 
 			listItem.setSelected(false);
 			await el.updateComplete;
 			expect(el.showTicCol).to.be.false;
+			expect(el.showGradeCol).to.be.false;
 		});
 	});
 });
